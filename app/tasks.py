@@ -2,6 +2,8 @@ import asyncio
 from datetime import datetime
 import asyncssh
 
+from app.utils.ssh import build_conn_kwargs
+
 from app.utils.db_session import SessionLocal
 from app.models.models import ConfigBackup
 from app.utils.audit import log_audit
@@ -19,14 +21,7 @@ async def run_push_queue_once():
             backup.queued = False
             db.commit()
             continue
-        conn_kwargs = {"username": cred.username}
-        if cred.password:
-            conn_kwargs["password"] = cred.password
-        if cred.private_key:
-            try:
-                conn_kwargs["client_keys"] = [asyncssh.import_private_key(cred.private_key)]
-            except Exception:
-                pass
+        conn_kwargs = build_conn_kwargs(cred)
         try:
             async with asyncssh.connect(device.ip, **conn_kwargs) as conn:
                 session = await conn.create_session(asyncssh.SSHClientProcess)

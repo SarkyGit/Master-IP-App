@@ -5,6 +5,8 @@ import asyncio
 import time
 import logging
 
+from app.utils.ssh import build_conn_kwargs
+
 from app.utils.db_session import SessionLocal
 from app.models.models import Device, User
 from app.utils.auth import ROLE_HIERARCHY
@@ -37,14 +39,7 @@ async def terminal_ws(websocket: WebSocket, device_id: int):
             return
 
         cred = device.ssh_credential
-        conn_kwargs = {"username": cred.username}
-        if cred.password:
-            conn_kwargs["password"] = cred.password
-        if cred.private_key:
-            try:
-                conn_kwargs["client_keys"] = [asyncssh.import_private_key(cred.private_key)]
-            except Exception:
-                pass
+        conn_kwargs = build_conn_kwargs(cred)
 
         try:
             async with asyncssh.connect(device.ip, **conn_kwargs) as conn:
