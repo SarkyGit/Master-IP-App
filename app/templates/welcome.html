@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-2xl mb-4">Welcome {{ role|title }}</h1>
+<ul class="list-disc list-inside ml-4">
+{% for line in text %}
+  <li>{{ line }}</li>
+{% endfor %}
+</ul>
+{% endblock %}

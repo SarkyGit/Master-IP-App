@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, WebSocket
+from fastapi import FastAPI, Request, WebSocket, Depends
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
@@ -18,6 +18,8 @@ from app.routes.tunables import router as tunables_router
 from app.routes.editor import router as editor_router
 from app.websockets.editor import shell_ws
 from app.websockets.terminal import router as terminal_ws_router
+from app.routes.welcome import router as welcome_router
+from app.utils.auth import get_current_user
 from app.tasks import start_queue_worker
 
 app = FastAPI()
@@ -41,13 +43,18 @@ app.include_router(admin_router)
 app.include_router(audit_router)
 app.include_router(admin_debug_router)
 app.include_router(terminal_ws_router)
+app.include_router(welcome_router)
 
 
 @app.get("/")
-async def read_root(request: Request):
-    """Render the base template with a test message."""
-    context = {"request": request, "message": "Hello, CES"}
-    return templates.TemplateResponse("base.html", context)
+async def read_root(request: Request, current_user=Depends(get_current_user)):
+    """Render the home page with login link and welcome text."""
+    context = {
+        "request": request,
+        "message": "",
+        "current_user": current_user,
+    }
+    return templates.TemplateResponse("index.html", context)
 
 
 @app.websocket("/ws/editor")

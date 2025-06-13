@@ -8,6 +8,6 @@
   <strong>User:</strong> {{ log.user.email if log.user else 'System' }}<br>
   <strong>Action Type:</strong> {{ log.action_type }}
 </div>
-<pre class="bg-gray-800 p-4 whitespace-pre-wrap overflow-x-auto">{{ log.details }}</pre>
+<pre class="bg-black p-4 whitespace-pre-wrap overflow-x-auto">{{ log.details }}</pre>
 <a href="/admin/debug" class="underline">Back to Debug Logs</a>
 {% endblock %}

@@ -2,7 +2,7 @@
 
 {% block content %}
 <h1 class="text-xl mb-4">Config Backups for {{ device.hostname }}</h1>
-<table class="min-w-full bg-gray-800">
+<table class="min-w-full bg-black">
   <thead>
     <tr>
       <th class="px-4 py-2 text-left">Timestamp</th>
@@ -13,7 +13,7 @@
   </thead>
   <tbody>
   {% for backup in backups %}
-    <tr class="border-t border-gray-700">
+    <tr class="border-t border-white">
       <td class="px-4 py-2">{{ backup.created_at }}</td>
       <td class="px-4 py-2">{{ backup.source }}</td>
       <td class="px-4 py-2">
