@@ -4,6 +4,8 @@ from .models import (
     SSHCredential,
     SNMPCommunity,
     ConfigBackup,
+    User,
+    SystemTunable,
     AuditLog,
 )
 
@@ -13,5 +15,7 @@ __all__ = [
     "SSHCredential",
     "SNMPCommunity",
     "ConfigBackup",
+    "User",
+    "SystemTunable",
     "AuditLog",
 ]

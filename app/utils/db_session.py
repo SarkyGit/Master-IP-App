@@ -3,6 +3,9 @@ from sqlalchemy.orm import sessionmaker
 
 from app.utils.database import Base
 
+# Import models so that Base.metadata is aware of them before creating tables
+from app import models  # noqa: F401
+
 DATABASE_URL = "sqlite:///ces_inventory.db"
 
 engine = create_engine(
