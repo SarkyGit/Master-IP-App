@@ -34,6 +34,14 @@ Start the FastAPI application using [uvicorn](https://www.uvicorn.org/):
 uvicorn app.main:app --reload
 ```
 
+`uvicorn` binds to `127.0.0.1` by default, so only the local machine can connect.
+To access the app from other computers, specify `--host 0.0.0.0` and optionally
+set the port:
+
+```bash
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
 The `--reload` flag automatically restarts the server on code changes.
 
 Visit [http://localhost:8000](http://localhost:8000) in your browser. Log in with the credentials created by `seed_superuser.py`:
@@ -45,6 +53,12 @@ After logging in you can add devices, VLANs and manage configuration backups thr
 
 
 ## Troubleshooting
+
+### Can't access the app from another machine
+If the browser shows a *connection refused* error when visiting
+`http://<server-ip>:8000`, the server is likely only listening on `127.0.0.1`.
+Start it with `uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload` and
+ensure the port is allowed through any firewall.
 
 ### "No such file or directory" during `pip install`
 If you see an error like:
