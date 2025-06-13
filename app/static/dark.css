@@ -1,0 +1,25 @@
+body {
+  background-color: #1b1b1b;
+  color: #eee;
+}
+.table {
+  background-color: #222;
+  color: #eee;
+}
+.form-control, .form-select, textarea {
+  background-color: #333;
+  color: #eee;
+  border-color: #444;
+}
+.btn-primary {
+  background-color: #0f0;
+  color: #000;
+  border: none;
+}
+.btn-success {
+  background-color: #090;
+  border: none;
+}
+.alert {
+  color: #000;
+}
