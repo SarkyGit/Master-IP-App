@@ -3,7 +3,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 
-from app.routes import auth_router
+from app.routes import auth_router, devices_router
 
 app = FastAPI()
 
@@ -14,6 +14,7 @@ templates = Jinja2Templates(directory="app/templates")
 app.add_middleware(SessionMiddleware, secret_key="change-me")
 
 app.include_router(auth_router, prefix="/auth")
+app.include_router(devices_router)
 
 
 @app.get("/")
