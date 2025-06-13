@@ -1,7 +1,6 @@
-import bcrypt
-
 from app.utils.db_session import SessionLocal
 from app.models.models import User
+from app.utils.auth import get_password_hash
 
 
 def main():
@@ -9,10 +8,15 @@ def main():
     try:
         existing = db.query(User).filter_by(email="barny@ces.net").first()
         if existing:
-            print("Superuser already exists.")
+            if existing.hashed_password != get_password_hash("C0pperpa!r"):
+                existing.hashed_password = get_password_hash("C0pperpa!r")
+                db.commit()
+                print("Superuser password updated.")
+            else:
+                print("Superuser already exists.")
             return
 
-        hashed_pw = bcrypt.hashpw("C0pperpa!r".encode(), bcrypt.gensalt()).decode()
+        hashed_pw = get_password_hash("C0pperpa!r")
         user = User(
             email="barny@ces.net",
             hashed_password=hashed_pw,
