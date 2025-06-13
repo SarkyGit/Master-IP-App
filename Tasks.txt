@@ -1,87 +1,31 @@
 PHASE 1: CORE STRUCTURE
 
-Set Up Database Models
-Directive: Create Device, VLAN, SSHCredential, SNMPCommunity, User, ConfigBackup
-Test: Launch shell, add test rows manually
-
-Configure Database Engine
-Directive: Use SQLAlchemy with SQLite (or PostgreSQL if you later prefer)
-Test: App boots without DB errors
-
-Add Templating (Jinja2)
-Directive: Add base.html, layout with dark theme, logo placeholder
-Test: Access / renders base layout
-
-Add User Auth System
-Directive: Use sessions to support login/logout with roles
-Test: Login as test user, redirected to dashboard
-
-Create Role-Based Access System
-Directive: Permissions: viewer, user, editor, admin, superadmin
-Test: Try accessing admin page as viewer → blocked
+[x] Set Up Database Models
+[x] Configure Database Engine
+[x] Add Templating (Jinja2)
+[x] Add User Auth System
+[x] Create Role-Based Access System
 
 PHASE 2: DEVICE + VLAN MGMT
 
-Add Device List View
-Directive: Table showing name, IP, model, VLAN, SSH/SNMP status
-Test: Visit /devices, verify test data displays
-
-Add Device Create/Edit/Delete
-Directive: Form to create/edit devices, dropdown for VLANs, creds
-Test: Add a device, edit name, delete it — all via UI
-
-Add VLAN Management Page
-Directive: VLAN list with tag, description, usage
-Test: Add/edit/remove VLANs, assign to device
-
-Implement VLAN Derivation from IP
-Directive: Auto-suggest VLAN based on second IP octet, except 10.100 → 1, 10.101 → CAPWAP
-Test: Enter 10.200.3.10 → suggests VLAN 200
-
-Superadmin: SSH/SNMP Credential Management
-Directive: Add/edit/remove SSH and SNMP profiles
-Test: Create SSH profile and assign it to a device
+[x] Add Device List View
+[x] Add Device Create/Edit/Delete
+[x] Add VLAN Management Page
+[x] Implement VLAN Derivation from IP
+[x] Superadmin: SSH/SNMP Credential Management
 
 PHASE 3: CONFIG BACKUP + LOGGING
 
-Pull Config via AsyncSSH
-Directive: Add button on device view to trigger live config pull
-Test: Simulated CLI output saved and shown on GUI
-
-Push Config via AsyncSSH
-Directive: Form-based config push, queued if offline
-Test: Add snippet, simulate success/failure log
-
-Track Config Versions
-Directive: Store max N backups per device, show diffs
-Test: Pull config twice, see diff
-
-Implement Config Queue System
-Directive: Allow batch "push when online" queue
-Test: Offline device stores push request, processed when available
-
-Log Actions
-Directive: Record pulls, pushes, edits, logins in AuditLog
-Test: Confirm log entries after each user action
+[x] Pull Config via AsyncSSH
+[x] Push Config via AsyncSSH
+[x] Track Config Versions
+[x] Implement Config Queue System
+[x] Log Actions
 
 PHASE 4: UI & TERMINAL
 
-Add Live Port Status via SNMP
-Directive: Poll device → get port name, VLAN, speed, PoE
-Test: Show visual table with green/red icons
-
-Add SSH Web Terminal (xterm.js + WebSocket)
-Directive: One terminal per session per device
-Test: Open terminal, confirm interactive shell
-
-Auto-expire Sessions
-Directive: Expire after 15 min idle, close websocket
-Test: Leave terminal idle, verify expiration
-
-Add Config Push Templates
-Directive: Create VLAN, reset port, change description
-Test: Select template, auto-fill form, push it
-
-Superadmin Debug Page
-Directive: Show all logs, raw output, filters for "debug" only
-Test: View logs, test filtering, link to audit records
+[x] Add Live Port Status via SNMP
+[ ] Add SSH Web Terminal (xterm.js + WebSocket)
+[ ] Auto-expire Sessions
+[ ] Add Config Push Templates
+[ ] Superadmin Debug Page
