@@ -6,3 +6,4 @@ asyncssh
 python-dotenv
 python-multipart
 itsdangerous
+bcrypt

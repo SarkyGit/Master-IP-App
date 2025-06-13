@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request, Depends, Form
+from fastapi import APIRouter, Request, Depends, Form, HTTPException
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
@@ -37,3 +37,13 @@ async def logout(request: Request):
     """Clear the user session and redirect to login."""
     request.session.clear()
     return RedirectResponse(url="/login", status_code=302)
+
+
+@router.get("/me")
+async def get_me(current_user: User = Depends(auth_utils.get_current_user)):
+    """Return information about the currently logged-in user."""
+    if not current_user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+
+    return {"email": current_user.email, "role": current_user.role}
+
