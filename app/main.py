@@ -13,7 +13,7 @@ templates = Jinja2Templates(directory="app/templates")
 # Store login information in signed cookies
 app.add_middleware(SessionMiddleware, secret_key="change-me")
 
-app.include_router(auth_router)
+app.include_router(auth_router, prefix="/auth")
 
 
 @app.get("/")
@@ -21,3 +21,4 @@ async def read_root(request: Request):
     """Render the base template with a test message."""
     context = {"request": request, "message": "Hello, CES"}
     return templates.TemplateResponse("base.html", context)
+
