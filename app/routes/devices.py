@@ -248,3 +248,78 @@ async def pull_device_config(
     db.commit()
 
     return RedirectResponse(url="/devices?message=Config+pulled", status_code=302)
+
+
+@router.get("/devices/{device_id}/push-config")
+async def push_config_form(
+    device_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("editor")),
+):
+    """Render form to push configuration snippet to a device."""
+    device = db.query(Device).filter(Device.id == device_id).first()
+    if not device:
+        raise HTTPException(status_code=404, detail="Device not found")
+
+    context = {"request": request, "device": device, "error": None, "current_user": current_user}
+    return templates.TemplateResponse("config_push_form.html", context)
+
+
+@router.post("/devices/{device_id}/push-config")
+async def push_device_config(
+    device_id: int,
+    request: Request,
+    config_text: str = Form(...),
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("editor")),
+):
+    """Push provided config lines to the device via SSH."""
+    device = db.query(Device).filter(Device.id == device_id).first()
+    if not device:
+        raise HTTPException(status_code=404, detail="Device not found")
+
+    cred = device.ssh_credential
+    if not cred:
+        context = {
+            "request": request,
+            "device": device,
+            "error": "No SSH credentials",
+            "current_user": current_user,
+        }
+        return templates.TemplateResponse("config_push_form.html", context)
+
+    conn_kwargs = {"username": cred.username}
+    if cred.password:
+        conn_kwargs["password"] = cred.password
+    if cred.private_key:
+        try:
+            conn_kwargs["client_keys"] = [asyncssh.import_private_key(cred.private_key)]
+        except Exception:
+            pass
+
+    error = None
+    try:
+        async with asyncssh.connect(device.ip, **conn_kwargs) as conn:
+            session = await conn.create_session(asyncssh.SSHClientProcess)
+            for line in config_text.splitlines():
+                session.stdin.write(line + "\n")
+            session.stdin.write("exit\n")
+            await session.wait_closed()
+    except Exception as exc:
+        error = str(exc)
+
+    if error:
+        context = {
+            "request": request,
+            "device": device,
+            "error": error,
+            "current_user": current_user,
+        }
+        return templates.TemplateResponse("config_push_form.html", context)
+
+    backup = ConfigBackup(device_id=device.id, source="manual_push", config_text=config_text)
+    db.add(backup)
+    db.commit()
+
+    return RedirectResponse(url="/devices?message=Config+pushed", status_code=302)
