@@ -46,6 +46,9 @@
         </form>
         <a href="/devices/{{ device.id }}/push-config" class="text-purple-400 underline ml-2">Push Config</a>
         <a href="/devices/{{ device.id }}/configs" class="text-yellow-400 underline ml-2">Configs</a>
+        {% if device.snmp_community %}
+        <a href="/devices/{{ device.id }}/ports" class="text-indigo-400 underline ml-2">Port Status</a>
+        {% endif %}
       </td>
       {% endif %}
     </tr>

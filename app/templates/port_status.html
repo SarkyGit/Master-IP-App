@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-xl mb-4">Port Status for {{ device.hostname }}</h1>
+{% if error %}
+  <p class="text-red-500 mb-4">{{ error }}</p>
+{% endif %}
+<table class="min-w-full bg-gray-800">
+  <thead>
+    <tr>
+      <th class="px-4 py-2 text-left">Port Name</th>
+      <th class="px-4 py-2 text-left">Status</th>
+      <th class="px-4 py-2 text-left">Admin State</th>
+      <th class="px-4 py-2 text-left">Speed</th>
+      <th class="px-4 py-2 text-left">Description</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for port in ports %}
+    <tr class="border-t border-gray-700">
+      <td class="px-4 py-2">{{ port.name or port.descr }}</td>
+      <td class="px-4 py-2">
+        {% if port.oper_status == 'up' %}
+          <span class="text-green-400">up</span>
+        {% else %}
+          <span class="text-red-400">down</span>
+        {% endif %}
+      </td>
+      <td class="px-4 py-2">{{ port.admin_status }}</td>
+      <td class="px-4 py-2">{{ port.speed }}</td>
+      <td class="px-4 py-2">{{ port.alias or '' }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
