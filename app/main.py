@@ -16,6 +16,7 @@ from app.routes import (
 from app.routes.tunables import router as tunables_router
 from app.routes.editor import router as editor_router
 from app.websockets.editor import shell_ws
+from app.websockets.terminal import router as terminal_ws_router
 from app.tasks import start_queue_worker
 
 app = FastAPI()
@@ -37,6 +38,7 @@ app.include_router(admin_profiles_router)
 app.include_router(configs_router)
 app.include_router(admin_router)
 app.include_router(audit_router)
+app.include_router(terminal_ws_router)
 
 
 @app.get("/")

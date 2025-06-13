@@ -441,3 +441,19 @@ async def port_status(
         "current_user": current_user,
     }
     return templates.TemplateResponse("port_status.html", context)
+
+
+@router.get("/devices/{device_id}/terminal")
+async def device_terminal(
+    device_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("editor")),
+):
+    """Render a page with an interactive terminal for the device."""
+    device = db.query(Device).filter(Device.id == device_id).first()
+    if not device:
+        raise HTTPException(status_code=404, detail="Device not found")
+
+    context = {"request": request, "device": device, "current_user": current_user}
+    return templates.TemplateResponse("terminal.html", context)
