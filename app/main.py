@@ -13,6 +13,7 @@ from app.routes import (
     admin_router,
     audit_router,
     admin_debug_router,
+    device_types_router,
 )
 from app.routes.tunables import router as tunables_router
 from app.routes.editor import router as editor_router
@@ -44,6 +45,7 @@ app.include_router(audit_router)
 app.include_router(admin_debug_router)
 app.include_router(terminal_ws_router)
 app.include_router(welcome_router)
+app.include_router(device_types_router)
 
 
 @app.get("/")

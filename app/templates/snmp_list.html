@@ -3,9 +3,11 @@
 {% block content %}
 <h1 class="text-xl mb-4">SNMP Communities</h1>
 <a href="/admin/snmp/new" class="underline">Add SNMP Profile</a>
+<form method="post" action="/admin/snmp/bulk-delete">
 <table class="min-w-full bg-black mt-4">
   <thead>
     <tr>
+      <th class="px-2"><input type="checkbox" id="select-all"></th>
       <th class="px-4 py-2 text-left">Name</th>
       <th class="px-4 py-2 text-left">Community</th>
       <th class="px-4 py-2 text-left">Version</th>
@@ -15,6 +17,7 @@
   <tbody>
   {% for profile in profiles %}
     <tr class="border-t border-white">
+      <td class="px-2"><input type="checkbox" name="selected" value="{{ profile.id }}"></td>
       <td class="px-4 py-2">{{ profile.name }}</td>
       <td class="px-4 py-2">{{ profile.community_string }}</td>
       <td class="px-4 py-2">{{ profile.version }}</td>
@@ -28,4 +31,11 @@
   {% endfor %}
   </tbody>
 </table>
+<button type="submit" class="mt-2 bg-red-600 px-3 py-1">Delete Selected</button>
+</form>
+<script>
+document.getElementById('select-all').addEventListener('change', function(e){
+  document.querySelectorAll('input[name="selected"]').forEach(cb => cb.checked = e.target.checked);
+});
+</script>
 {% endblock %}

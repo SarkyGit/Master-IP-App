@@ -20,9 +20,23 @@
     <input type="text" name="model" value="{{ device.model if device else '' }}" class="w-full p-2 text-black" />
   </div>
   <div>
+    <label class="block">Manufacturer</label>
+    <input type="text" name="manufacturer" value="{{ device.manufacturer if device else '' }}" class="w-full p-2 text-black" required />
+  </div>
+  <div>
+    <label class="block">Device Type</label>
+    <select name="device_type_id" class="w-full p-2 text-black" required>
+      <option value="">---</option>
+      {% for dt in device_types %}
+      <option value="{{ dt.id }}" {% if device and device.device_type_id == dt.id %}selected{% endif %}>{{ dt.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
     <label class="block">Location</label>
     <input type="text" name="location" value="{{ device.location if device else '' }}" class="w-full p-2 text-black" />
   </div>
+  {% if device %}
   <div>
     <label class="block">Status</label>
     <select name="status" class="w-full p-2 text-black">
@@ -41,6 +55,7 @@
       {% endfor %}
     </select>
   </div>
+  {% endif %}
   <div>
     <label class="block">SSH Profile</label>
     <select name="ssh_credential_id" class="w-full p-2 text-black">
@@ -69,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const ipField = document.getElementById('ip-field');
   const vlanField = document.getElementById('vlan-field');
   const note = document.getElementById('vlan-suggestion');
-
+  
   async function fetchSuggestion() {
     const ip = ipField.value.trim();
     if (!ip) return;
@@ -77,21 +92,25 @@ document.addEventListener('DOMContentLoaded', function () {
       const res = await fetch(`/api/suggest-vlan?ip=${encodeURIComponent(ip)}`);
       if (!res.ok) return;
       const data = await res.json();
-      if (data.suggested_vlan_id) {
-        vlanField.value = data.suggested_vlan_id;
-        note.textContent = `VLAN ${data.suggested_vlan_id} suggested based on IP`;
-      } else if (data.label) {
-        note.textContent = data.label;
-      } else {
-        note.textContent = '';
+      if (vlanField) {
+        if (data.suggested_vlan_id) {
+          vlanField.value = data.suggested_vlan_id;
+          note.textContent = `VLAN ${data.suggested_vlan_id} suggested based on IP`;
+        } else if (data.label) {
+          note.textContent = data.label;
+        } else {
+          note.textContent = '';
+        }
       }
     } catch (err) {
       console.error('suggest-vlan', err);
     }
   }
 
-  ipField.addEventListener('change', fetchSuggestion);
-  ipField.addEventListener('blur', fetchSuggestion);
+  if (vlanField) {
+    ipField.addEventListener('change', fetchSuggestion);
+    ipField.addEventListener('blur', fetchSuggestion);
+  }
 });
 </script>
 {% endblock %}

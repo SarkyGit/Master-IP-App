@@ -45,6 +45,16 @@ class SNMPCommunity(Base):
     devices = relationship("Device", back_populates="snmp_community")
 
 
+class DeviceType(Base):
+    __tablename__ = "device_types"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String, unique=True, nullable=False)
+    manufacturer = Column(String, nullable=False)
+
+    devices = relationship("Device", back_populates="device_type")
+
+
 class Device(Base):
     __tablename__ = "devices"
 
@@ -53,6 +63,8 @@ class Device(Base):
     ip = Column(String, unique=True, nullable=False)
     mac = Column(String, nullable=True)
     model = Column(String, nullable=True)
+    manufacturer = Column(String, nullable=False)
+    device_type_id = Column(Integer, ForeignKey("device_types.id"), nullable=False)
     location = Column(String, nullable=True)
     status = Column(String, nullable=True)
     vlan_id = Column(Integer, ForeignKey("vlans.id"))
@@ -63,6 +75,7 @@ class Device(Base):
     vlan = relationship("VLAN", back_populates="devices")
     ssh_credential = relationship("SSHCredential", back_populates="devices")
     snmp_community = relationship("SNMPCommunity", back_populates="devices")
+    device_type = relationship("DeviceType", back_populates="devices")
     backups = relationship(
         "ConfigBackup",
         back_populates="device",
