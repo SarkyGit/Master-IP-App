@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-xl mb-4">VLANs</h1>
+<a href="/vlans/new" class="underline">Add VLAN</a>
+<table class="min-w-full bg-gray-800 mt-4">
+  <thead>
+    <tr>
+      <th class="px-4 py-2 text-left">Tag</th>
+      <th class="px-4 py-2 text-left">Description</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for vlan in vlans %}
+    <tr class="border-t border-gray-700">
+      <td class="px-4 py-2">{{ vlan.tag }}</td>
+      <td class="px-4 py-2">{{ vlan.description or '' }}</td>
+      <td class="px-4 py-2">
+        <a href="/vlans/{{ vlan.id }}/edit" class="text-blue-400 underline mr-2">Edit</a>
+        <form method="post" action="/vlans/{{ vlan.id }}/delete" style="display:inline">
+          <button type="submit" class="text-red-400 underline" onclick="return confirm('Delete VLAN?')">Delete</button>
+        </form>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

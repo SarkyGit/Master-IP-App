@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-xl mb-4">{{ form_title }}</h1>
+<form method="post" class="space-y-4">
+  <div>
+    <label class="block">Tag</label>
+    <input type="number" name="tag" value="{{ vlan.tag if vlan else '' }}" class="w-full p-2 text-black" required />
+  </div>
+  <div>
+    <label class="block">Description</label>
+    <input type="text" name="description" value="{{ vlan.description if vlan else '' }}" class="w-full p-2 text-black" />
+  </div>
+  {% if error %}
+  <p class="text-red-500">{{ error }}</p>
+  {% endif %}
+  <div>
+    <button type="submit" class="bg-blue-600 px-4 py-2">Submit</button>
+    <a href="/vlans" class="ml-2 underline">Cancel</a>
+  </div>
+</form>
+{% endblock %}
