@@ -109,3 +109,19 @@ class SystemTunable(Base):
     file_type = Column(String, nullable=False)
     data_type = Column(String, nullable=False, default="text")
     options = Column(String, nullable=True)
+
+
+class AuditLog(Base):
+    """Record user actions for auditing configuration changes."""
+
+    __tablename__ = "audit_logs"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    action_type = Column(String, nullable=False)
+    device_id = Column(Integer, ForeignKey("devices.id"), nullable=True)
+    timestamp = Column(DateTime, default=datetime.utcnow)
+    details = Column(Text, nullable=True)
+
+    user = relationship("User")
+    device = relationship("Device")
