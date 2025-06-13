@@ -4,6 +4,7 @@ import asyncssh
 
 from app.utils.db_session import SessionLocal
 from app.models.models import ConfigBackup
+from app.utils.audit import log_audit
 
 QUEUE_INTERVAL = 60  # seconds
 
@@ -36,6 +37,7 @@ async def run_push_queue_once():
             backup.queued = False
             backup.status = "pushed"
             backup.created_at = datetime.utcnow()
+            log_audit(db, None, "push", device, f"Queued config pushed to {device.ip}")
         except Exception:
             backup.status = "pending"
         db.commit()

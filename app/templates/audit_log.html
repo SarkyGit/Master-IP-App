@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-xl mb-4">Audit Log</h1>
+<table class="min-w-full bg-gray-800">
+  <thead>
+    <tr>
+      <th class="px-4 py-2 text-left">Timestamp</th>
+      <th class="px-4 py-2 text-left">User</th>
+      <th class="px-4 py-2 text-left">Device</th>
+      <th class="px-4 py-2 text-left">Action</th>
+      <th class="px-4 py-2 text-left">Details</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for entry in logs %}
+    <tr class="border-t border-gray-700">
+      <td class="px-4 py-2">{{ entry.timestamp }}</td>
+      <td class="px-4 py-2">{{ entry.user.email if entry.user else 'System' }}</td>
+      <td class="px-4 py-2">{{ entry.device.hostname if entry.device else '' }}</td>
+      <td class="px-4 py-2">{{ entry.action_type }}</td>
+      <td class="px-4 py-2">{{ entry.details }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

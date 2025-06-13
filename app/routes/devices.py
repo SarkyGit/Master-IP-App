@@ -17,7 +17,9 @@ from app.models.models import (
     SSHCredential,
     SNMPCommunity,
     ConfigBackup,
+    AuditLog,
 )
+from app.utils.audit import log_audit
 
 import asyncssh
 
@@ -247,6 +249,13 @@ async def pull_device_config(
     backup = ConfigBackup(device_id=device.id, source="ssh", config_text=output)
     db.add(backup)
     db.commit()
+    log_audit(
+        db,
+        current_user,
+        "pull",
+        device,
+        f"Pulled running-config from {device.ip}",
+    )
 
     backups = (
         db.query(ConfigBackup)
@@ -257,6 +266,7 @@ async def pull_device_config(
     if len(backups) > MAX_BACKUPS:
         for old in backups[MAX_BACKUPS:]:
             db.delete(old)
+            log_audit(db, current_user, "delete", device, f"Deleted backup {old.id}")
         db.commit()
 
     return RedirectResponse(url="/devices?message=Config+pulled", status_code=302)
@@ -331,6 +341,10 @@ async def push_device_config(
     )
     db.add(backup)
     db.commit()
+    if success:
+        log_audit(db, current_user, "push", device, f"Pushed config to {device.ip}")
+    else:
+        log_audit(db, current_user, "queue", device, f"Queued config for {device.ip}")
 
     backups = (
         db.query(ConfigBackup)
@@ -341,6 +355,7 @@ async def push_device_config(
     if len(backups) > MAX_BACKUPS:
         for old in backups[MAX_BACKUPS:]:
             db.delete(old)
+            log_audit(db, current_user, "delete", device, f"Deleted backup {old.id}")
         db.commit()
 
     message = "Config+pushed" if success else "Config+queued"
