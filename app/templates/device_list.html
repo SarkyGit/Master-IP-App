@@ -2,6 +2,9 @@
 
 {% block content %}
 <h1 class="text-xl mb-4">Devices</h1>
+{% if current_user and current_user.role in ['editor','admin','superadmin'] %}
+  <a href="/devices/new" class="underline">Add Device</a>
+{% endif %}
 <table class="min-w-full bg-gray-800">
   <thead>
     <tr>
@@ -12,6 +15,9 @@
       <th class="px-4 py-2 text-left">VLAN</th>
       <th class="px-4 py-2 text-left">SSH Profile</th>
       <th class="px-4 py-2 text-left">SNMP Profile</th>
+      {% if current_user and current_user.role in ['editor','admin','superadmin'] %}
+      <th></th>
+      {% endif %}
     </tr>
   </thead>
   <tbody>
@@ -24,6 +30,14 @@
       <td class="px-4 py-2">{{ device.vlan.tag if device.vlan else '' }}</td>
       <td class="px-4 py-2">{{ device.ssh_credential.name if device.ssh_credential else '' }}</td>
       <td class="px-4 py-2">{{ device.snmp_community.name if device.snmp_community else '' }}</td>
+      {% if current_user and current_user.role in ['editor','admin','superadmin'] %}
+      <td class="px-4 py-2">
+        <a href="/devices/{{ device.id }}/edit" class="text-blue-400 underline mr-2">Edit</a>
+        <form method="post" action="/devices/{{ device.id }}/delete" style="display:inline">
+          <button type="submit" class="text-red-400 underline" onclick="return confirm('Delete device?')">Delete</button>
+        </form>
+      </td>
+      {% endif %}
     </tr>
   {% endfor %}
   </tbody>
