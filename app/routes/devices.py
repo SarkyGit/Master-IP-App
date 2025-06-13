@@ -265,7 +265,8 @@ async def pull_device_config(
     output = ""
     try:
         async with asyncssh.connect(device.ip, **conn_kwargs) as conn:
-            result = await conn.run("echo test-config", check=False)
+            # Retrieve the device's running configuration
+            result = await conn.run("show running-config", check=False)
             output = result.stdout
     except Exception as exc:
         log_audit(db, current_user, "debug", device, f"SSH pull error: {exc}")
