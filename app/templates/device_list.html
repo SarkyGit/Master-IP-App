@@ -5,6 +5,11 @@
 {% if current_user and current_user.role in ['editor','admin','superadmin'] %}
   <a href="/devices/new" class="underline">Add Device</a>
 {% endif %}
+{% if current_user and current_user.role == 'superadmin' %}
+  <form method="post" action="/admin/run-push-queue" style="display:inline">
+    <button type="submit" class="ml-2">🔄 Run Push Queue Now</button>
+  </form>
+{% endif %}
 <table class="min-w-full bg-gray-800">
   <thead>
     <tr>

@@ -310,7 +310,7 @@ async def push_device_config(
         except Exception:
             pass
 
-    error = None
+    success = False
     try:
         async with asyncssh.connect(device.ip, **conn_kwargs) as conn:
             session = await conn.create_session(asyncssh.SSHClientProcess)
@@ -318,19 +318,17 @@ async def push_device_config(
                 session.stdin.write(line + "\n")
             session.stdin.write("exit\n")
             await session.wait_closed()
-    except Exception as exc:
-        error = str(exc)
+            success = True
+    except Exception:
+        success = False
 
-    if error:
-        context = {
-            "request": request,
-            "device": device,
-            "error": error,
-            "current_user": current_user,
-        }
-        return templates.TemplateResponse("config_push_form.html", context)
-
-    backup = ConfigBackup(device_id=device.id, source="manual_push", config_text=config_text)
+    backup = ConfigBackup(
+        device_id=device.id,
+        source="manual_push",
+        config_text=config_text,
+        queued=not success,
+        status="pushed" if success else "pending",
+    )
     db.add(backup)
     db.commit()
 
@@ -345,4 +343,5 @@ async def push_device_config(
             db.delete(old)
         db.commit()
 
-    return RedirectResponse(url="/devices?message=Config+pushed", status_code=302)
+    message = "Config+pushed" if success else "Config+queued"
+    return RedirectResponse(url=f"/devices?message={message}", status_code=302)

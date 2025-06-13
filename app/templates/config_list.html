@@ -7,6 +7,7 @@
     <tr>
       <th class="px-4 py-2 text-left">Timestamp</th>
       <th class="px-4 py-2 text-left">Source</th>
+      <th class="px-4 py-2 text-left">Status</th>
       <th class="px-4 py-2 text-left">Diff</th>
     </tr>
   </thead>
@@ -15,6 +16,15 @@
     <tr class="border-t border-gray-700">
       <td class="px-4 py-2">{{ backup.created_at }}</td>
       <td class="px-4 py-2">{{ backup.source }}</td>
+      <td class="px-4 py-2">
+        {% if backup.queued %}
+          <span class="text-yellow-400">Pending</span>
+        {% elif backup.status == 'failed' %}
+          <span class="text-red-400">Failed</span>
+        {% else %}
+          <span class="text-green-400">Pushed</span>
+        {% endif %}
+      </td>
       <td class="px-4 py-2">
         {% if not loop.last %}
         <a href="/configs/{{ backup.id }}/diff" class="text-blue-400 underline">View Diff</a>

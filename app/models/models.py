@@ -78,6 +78,8 @@ class ConfigBackup(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     config_text = Column(Text, nullable=False)
     source = Column(String, nullable=False)
+    queued = Column(Boolean, default=False)
+    status = Column(String, nullable=True)
 
     device = relationship("Device", back_populates="backups")
 

@@ -10,12 +10,15 @@ from app.routes import (
     api_router,
     admin_profiles_router,
     configs_router,
+    admin_router,
 )
 from app.routes.tunables import router as tunables_router
 from app.routes.editor import router as editor_router
 from app.websockets.editor import shell_ws
+from app.tasks import start_queue_worker
 
 app = FastAPI()
+start_queue_worker(app)
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
@@ -31,6 +34,7 @@ app.include_router(editor_router)
 app.include_router(api_router)
 app.include_router(admin_profiles_router)
 app.include_router(configs_router)
+app.include_router(admin_router)
 
 
 @app.get("/")
