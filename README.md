@@ -19,10 +19,11 @@ This application manages network devices, VLANs and configuration backups using 
    ```bash
    pip install -r requirements.txt
    ```
-4. **Seed the database** with default values. This will create a superuser and initial system settings:
+4. **Seed the database** with default values. This will create a superuser, system settings, and some sample devices:
    ```bash
    python seed_tunables.py
    python seed_superuser.py
+   python seed_data.py
    ```
    These commands create a SQLite database file named `ces_inventory.db` in the project directory.
 
