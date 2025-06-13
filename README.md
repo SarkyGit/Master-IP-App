@@ -50,6 +50,7 @@ Visit [http://localhost:8000](http://localhost:8000) in your browser. Log in wit
 - **Password:** `C0pperpa!r`
 
 After logging in you can add devices, VLANs and manage configuration backups through the web interface.
+If the login form reports **Invalid credentials**, run `python seed_superuser.py` again to ensure the password is stored correctly.
 
 
 ## Troubleshooting
