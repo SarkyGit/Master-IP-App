@@ -9,6 +9,7 @@ from .configs import router as configs_router
 from .admin import router as admin_router
 from .audit import router as audit_router
 from .admin_debug import router as admin_debug_router
+from .welcome import router as welcome_router
 
 __all__ = [
     "auth_router",
@@ -22,4 +23,5 @@ __all__ = [
     "admin_router",
     "audit_router",
     "admin_debug_router",
+    "welcome_router",
 ]

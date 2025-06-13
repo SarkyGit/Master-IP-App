@@ -2,7 +2,7 @@
 
 {% block content %}
 <h1 class="text-xl mb-4">Audit Log</h1>
-<table class="min-w-full bg-gray-800">
+<table class="min-w-full bg-black">
   <thead>
     <tr>
       <th class="px-4 py-2 text-left">Timestamp</th>
@@ -14,7 +14,7 @@
   </thead>
   <tbody>
   {% for entry in logs %}
-    <tr class="border-t border-gray-700">
+    <tr class="border-t border-white">
       <td class="px-4 py-2">{{ entry.timestamp }}</td>
       <td class="px-4 py-2">{{ entry.user.email if entry.user else 'System' }}</td>
       <td class="px-4 py-2">{{ entry.device.hostname if entry.device else '' }}</td>

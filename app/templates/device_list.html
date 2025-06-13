@@ -10,7 +10,7 @@
     <button type="submit" class="ml-2">🔄 Run Push Queue Now</button>
   </form>
 {% endif %}
-<table class="min-w-full bg-gray-800">
+<table class="min-w-full bg-black">
   <thead>
     <tr>
       <th class="px-4 py-2 text-left">Hostname</th>
@@ -27,7 +27,7 @@
   </thead>
   <tbody>
   {% for device in devices %}
-    <tr class="border-t border-gray-700">
+    <tr class="border-t border-white">
       <td class="px-4 py-2">{{ device.hostname }}</td>
       <td class="px-4 py-2">{{ device.ip }}</td>
       <td class="px-4 py-2">{{ device.model or '' }}</td>

@@ -2,7 +2,7 @@
 
 {% block content %}
 <h1 class="text-xl mb-4">Config Diff for {{ device.hostname }}</h1>
-<pre class="bg-gray-800 p-4 whitespace-pre-wrap overflow-x-auto">
+<pre class="bg-black p-4 whitespace-pre-wrap overflow-x-auto">
 {% for line in diff_lines %}
 <span class="{% if line.startswith('+') %}text-green-400{% elif line.startswith('-') %}text-red-400{% endif %}">{{ line }}</span>
 {% endfor %}
