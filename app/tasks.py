@@ -38,8 +38,9 @@ async def run_push_queue_once():
             backup.status = "pushed"
             backup.created_at = datetime.utcnow()
             log_audit(db, None, "push", device, f"Queued config pushed to {device.ip}")
-        except Exception:
+        except Exception as exc:
             backup.status = "pending"
+            log_audit(db, None, "debug", device, f"Queue push error: {exc}")
         db.commit()
     db.close()
 

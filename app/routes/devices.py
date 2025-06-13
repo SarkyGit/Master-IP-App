@@ -251,6 +251,7 @@ async def pull_device_config(
             result = await conn.run("echo test-config", check=False)
             output = result.stdout
     except Exception as exc:
+        log_audit(db, current_user, "debug", device, f"SSH pull error: {exc}")
         return RedirectResponse(
             url=f"/devices?message=SSH+error:+{str(exc)}", status_code=302
         )
@@ -338,8 +339,9 @@ async def push_device_config(
             session.stdin.write("exit\n")
             await session.wait_closed()
             success = True
-    except Exception:
+    except Exception as exc:
         success = False
+        log_audit(db, current_user, "debug", device, f"SSH push error: {exc}")
 
     backup = ConfigBackup(
         device_id=device.id,
@@ -455,8 +457,9 @@ async def push_template_config(
             session.stdin.write("exit\n")
             await session.wait_closed()
             success = True
-    except Exception:
+    except Exception as exc:
         success = False
+        log_audit(db, current_user, "debug", device, f"SSH template push error: {exc}")
 
     backup = ConfigBackup(
         device_id=device.id,
@@ -535,6 +538,7 @@ async def port_status(
         speed = await _gather_snmp_table(client, "1.3.6.1.2.1.2.2.1.5")
         alias = await _gather_snmp_table(client, "1.3.6.1.2.1.31.1.1.1.18")
     except SnmpError as exc:
+        log_audit(db, current_user, "debug", device, f"SNMP error: {exc}")
         context = {
             "request": request,
             "device": device,
@@ -544,6 +548,7 @@ async def port_status(
         }
         return templates.TemplateResponse("port_status.html", context)
     except Exception as exc:
+        log_audit(db, current_user, "debug", device, f"SNMP exception: {exc}")
         context = {
             "request": request,
             "device": device,

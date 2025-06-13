@@ -8,6 +8,7 @@ from .admin_profiles import router as admin_profiles_router
 from .configs import router as configs_router
 from .admin import router as admin_router
 from .audit import router as audit_router
+from .admin_debug import router as admin_debug_router
 
 __all__ = [
     "auth_router",
@@ -20,4 +21,5 @@ __all__ = [
     "configs_router",
     "admin_router",
     "audit_router",
+    "admin_debug_router",
 ]

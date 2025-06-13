@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-xl mb-4">Debug Log Detail</h1>
+<div class="mb-4">
+  <strong>Timestamp:</strong> {{ log.timestamp }}<br>
+  <strong>Device:</strong> {{ log.device.hostname if log.device else '' }}<br>
+  <strong>User:</strong> {{ log.user.email if log.user else 'System' }}<br>
+  <strong>Action Type:</strong> {{ log.action_type }}
+</div>
+<pre class="bg-gray-800 p-4 whitespace-pre-wrap overflow-x-auto">{{ log.details }}</pre>
+<a href="/admin/debug" class="underline">Back to Debug Logs</a>
+{% endblock %}
