@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-xl mb-4">SNMP Communities</h1>
+<a href="/admin/snmp/new" class="underline">Add SNMP Profile</a>
+<table class="min-w-full bg-gray-800 mt-4">
+  <thead>
+    <tr>
+      <th class="px-4 py-2 text-left">Name</th>
+      <th class="px-4 py-2 text-left">Community</th>
+      <th class="px-4 py-2 text-left">Version</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for profile in profiles %}
+    <tr class="border-t border-gray-700">
+      <td class="px-4 py-2">{{ profile.name }}</td>
+      <td class="px-4 py-2">{{ profile.community_string }}</td>
+      <td class="px-4 py-2">{{ profile.version }}</td>
+      <td class="px-4 py-2">
+        <a href="/admin/snmp/{{ profile.id }}/edit" class="text-blue-400 underline mr-2">Edit</a>
+        <form method="post" action="/admin/snmp/{{ profile.id }}/delete" style="display:inline">
+          <button type="submit" class="text-red-400 underline" onclick="return confirm('Delete profile?')">Delete</button>
+        </form>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
