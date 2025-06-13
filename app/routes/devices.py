@@ -22,6 +22,8 @@ from app.models.models import (
 from app.utils.audit import log_audit
 
 import asyncssh
+from puresnmp import Client, PyWrapper, V2C
+from puresnmp.exc import SnmpError
 
 templates = Jinja2Templates(directory="app/templates")
 
@@ -360,3 +362,82 @@ async def push_device_config(
 
     message = "Config+pushed" if success else "Config+queued"
     return RedirectResponse(url=f"/devices?message={message}", status_code=302)
+
+
+async def _gather_snmp_table(client: PyWrapper, oid: str) -> dict:
+    data = {}
+    async for vb in client.walk(oid):
+        idx = int(vb.oid.rsplit(".", 1)[-1])
+        data[idx] = vb.value
+    return data
+
+
+@router.get("/devices/{device_id}/ports")
+async def port_status(
+    device_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("user")),
+):
+    device = db.query(Device).filter(Device.id == device_id).first()
+    if not device:
+        raise HTTPException(status_code=404, detail="Device not found")
+
+    profile = device.snmp_community
+    if not profile:
+        context = {
+            "request": request,
+            "device": device,
+            "error": "SNMP profile not set",
+            "ports": [],
+            "current_user": current_user,
+        }
+        return templates.TemplateResponse("port_status.html", context)
+
+    client = PyWrapper(Client(device.ip, V2C(profile.community_string)))
+    try:
+        names = await _gather_snmp_table(client, "1.3.6.1.2.1.31.1.1.1.1")
+        descr = await _gather_snmp_table(client, "1.3.6.1.2.1.2.2.1.2")
+        oper = await _gather_snmp_table(client, "1.3.6.1.2.1.2.2.1.8")
+        admin = await _gather_snmp_table(client, "1.3.6.1.2.1.2.2.1.7")
+        speed = await _gather_snmp_table(client, "1.3.6.1.2.1.2.2.1.5")
+        alias = await _gather_snmp_table(client, "1.3.6.1.2.1.31.1.1.1.18")
+    except SnmpError as exc:
+        context = {
+            "request": request,
+            "device": device,
+            "error": f"SNMP error: {exc}",
+            "ports": [],
+            "current_user": current_user,
+        }
+        return templates.TemplateResponse("port_status.html", context)
+    except Exception as exc:
+        context = {
+            "request": request,
+            "device": device,
+            "error": f"Error contacting device: {exc}",
+            "ports": [],
+            "current_user": current_user,
+        }
+        return templates.TemplateResponse("port_status.html", context)
+
+    ports = []
+    for idx in sorted(set(names) | set(descr)):
+        port = {
+            "name": names.get(idx),
+            "descr": descr.get(idx),
+            "oper_status": "up" if oper.get(idx) == 1 else "down",
+            "admin_status": "up" if admin.get(idx) == 1 else "down",
+            "speed": speed.get(idx),
+            "alias": alias.get(idx),
+        }
+        ports.append(port)
+
+    context = {
+        "request": request,
+        "device": device,
+        "ports": ports,
+        "error": None,
+        "current_user": current_user,
+    }
+    return templates.TemplateResponse("port_status.html", context)
