@@ -36,6 +36,9 @@
         <form method="post" action="/devices/{{ device.id }}/delete" style="display:inline">
           <button type="submit" class="text-red-400 underline" onclick="return confirm('Delete device?')">Delete</button>
         </form>
+        <form method="post" action="/devices/{{ device.id }}/pull-config" style="display:inline">
+          <button type="submit" class="text-green-400 underline ml-2">Pull Config</button>
+        </form>
       </td>
       {% endif %}
     </tr>

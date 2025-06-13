@@ -16,7 +16,10 @@ from app.models.models import (
     VLAN,
     SSHCredential,
     SNMPCommunity,
+    ConfigBackup,
 )
+
+import asyncssh
 
 templates = Jinja2Templates(directory="app/templates")
 
@@ -37,10 +40,12 @@ async def list_devices(
         raise HTTPException(status_code=401, detail="Not authenticated")
 
     devices = db.query(Device).all()
+    message = request.query_params.get("message")
     context = {
         "request": request,
         "devices": devices,
         "current_user": current_user,
+        "message": message,
     }
     return templates.TemplateResponse("device_list.html", context)
 
@@ -199,3 +204,47 @@ async def delete_device(
     db.delete(device)
     db.commit()
     return RedirectResponse(url="/devices", status_code=302)
+
+
+@router.post("/devices/{device_id}/pull-config")
+async def pull_device_config(
+    device_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("editor")),
+):
+    """Pull running configuration via SSH and store as ConfigBackup."""
+    device = db.query(Device).filter(Device.id == device_id).first()
+    if not device:
+        raise HTTPException(status_code=404, detail="Device not found")
+
+    cred = device.ssh_credential
+    if not cred:
+        return RedirectResponse(
+            url="/devices?message=No+SSH+credentials", status_code=302
+        )
+
+    conn_kwargs = {"username": cred.username}
+    if cred.password:
+        conn_kwargs["password"] = cred.password
+    if cred.private_key:
+        try:
+            conn_kwargs["client_keys"] = [asyncssh.import_private_key(cred.private_key)]
+        except Exception:
+            pass
+
+    output = ""
+    try:
+        async with asyncssh.connect(device.ip, **conn_kwargs) as conn:
+            result = await conn.run("echo test-config", check=False)
+            output = result.stdout
+    except Exception as exc:
+        return RedirectResponse(
+            url=f"/devices?message=SSH+error:+{str(exc)}", status_code=302
+        )
+
+    backup = ConfigBackup(device_id=device.id, source="ssh", config_text=output)
+    db.add(backup)
+    db.commit()
+
+    return RedirectResponse(url="/devices?message=Config+pulled", status_code=302)
