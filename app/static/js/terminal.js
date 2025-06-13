@@ -8,7 +8,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
   socket.addEventListener('open', () => term.clear());
   socket.addEventListener('message', (evt) => term.write(evt.data));
-  socket.addEventListener('close', () => term.write('\r\n*** Disconnected ***\r\n'));
+  socket.addEventListener('close', () => {
+    term.write('\r\n*** Disconnected ***\r\n');
+    clearInterval(pingInterval);
+  });
 
-  term.onData(data => socket.send(data));
+  term.onData(data => {
+    if (socket.readyState === WebSocket.OPEN) {
+      socket.send(data);
+    }
+  });
+
+  const pingInterval = setInterval(() => {
+    if (socket.readyState === WebSocket.OPEN) {
+      socket.send('');
+    }
+  }, 60000);
 });
