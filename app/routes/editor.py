@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Request, Depends
-from fastapi.templating import Jinja2Templates
+from app.utils.templates import templates
 from app.utils.auth import require_role
 
 router = APIRouter()
-templates = Jinja2Templates(directory="app/templates")
+
 
 
 @router.get("/editor")

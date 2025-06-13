@@ -6,7 +6,7 @@ from fastapi import (
     Form,
 )
 from fastapi.responses import RedirectResponse
-from fastapi.templating import Jinja2Templates
+from app.utils.templates import templates
 from sqlalchemy.orm import Session
 
 from app.utils.db_session import get_db
@@ -28,7 +28,7 @@ from app.utils.ssh import build_conn_kwargs
 from puresnmp import Client, PyWrapper, V2C
 from puresnmp.exc import SnmpError
 
-templates = Jinja2Templates(directory="app/templates")
+
 
 router = APIRouter()
 

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Request, Depends, Form
-from fastapi.templating import Jinja2Templates
+from app.utils.templates import templates
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 import subprocess
@@ -8,7 +8,7 @@ from app.utils.db_session import get_db
 from app.utils.auth import require_role
 from app.models.models import SystemTunable
 
-templates = Jinja2Templates(directory="app/templates")
+
 
 router = APIRouter()
 

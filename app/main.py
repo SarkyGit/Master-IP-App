@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Request, WebSocket, Depends
 from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
+
 from starlette.middleware.sessions import SessionMiddleware
 
 from app.routes import (
@@ -25,23 +25,12 @@ from app.websockets.terminal import router as terminal_ws_router
 from app.routes.welcome import router as welcome_router, WELCOME_TEXT
 from app.utils.auth import get_current_user
 from app.tasks import start_queue_worker
-from app.utils.db_session import SessionLocal
-from app.models.models import DeviceType
+from app.utils.templates import templates
 
 app = FastAPI()
 start_queue_worker(app)
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
-templates = Jinja2Templates(directory="app/templates")
-
-# Provide device types for navbar dropdown
-def get_device_types():
-    db = SessionLocal()
-    types = db.query(DeviceType).all()
-    db.close()
-    return types
-
-templates.env.globals["get_device_types"] = get_device_types
 
 # Store login information in signed cookies
 app.add_middleware(SessionMiddleware, secret_key="change-me")
