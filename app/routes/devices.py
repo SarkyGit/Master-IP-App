@@ -53,6 +53,26 @@ def _load_form_options(db: Session):
     return vlans, ssh_credentials, snmp_communities
 
 
+def suggest_vlan_from_ip(db: Session, ip: str):
+    """Return VLAN suggestion based on the IP's second octet."""
+    try:
+        second_octet = int(ip.split(".")[1])
+    except (IndexError, ValueError):
+        return None, None
+
+    if second_octet == 100:
+        # Special case mapping
+        return 1, None
+    if second_octet == 101:
+        # Label for CAPWAP networks
+        return None, "CAPWAP"
+
+    vlan = db.query(VLAN).filter(VLAN.tag == second_octet).first()
+    if vlan:
+        return vlan.id, vlan.description
+    return None, None
+
+
 @router.get("/devices/new")
 async def new_device_form(
     request: Request,

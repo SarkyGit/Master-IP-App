@@ -3,7 +3,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 
-from app.routes import auth_router, devices_router, vlans_router
+from app.routes import auth_router, devices_router, vlans_router, api_router
 from app.routes.tunables import router as tunables_router
 from app.routes.editor import router as editor_router
 from app.websockets.editor import shell_ws
@@ -21,6 +21,7 @@ app.include_router(devices_router)
 app.include_router(vlans_router)
 app.include_router(tunables_router)
 app.include_router(editor_router)
+app.include_router(api_router)
 
 
 @app.get("/")
