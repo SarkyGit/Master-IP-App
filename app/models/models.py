@@ -1,5 +1,13 @@
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Text
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    ForeignKey,
+    DateTime,
+    Text,
+    Boolean,
+)
 from sqlalchemy.orm import relationship
 
 from app.utils.database import Base
@@ -72,3 +80,16 @@ class ConfigBackup(Base):
     source = Column(String, nullable=False)
 
     device = relationship("Device", back_populates="backups")
+
+
+class User(Base):
+    """User account with role-based permissions."""
+
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True)
+    email = Column(String, unique=True, nullable=False)
+    hashed_password = Column(String, nullable=False)
+    role = Column(String, nullable=False, default="viewer")
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.utcnow)

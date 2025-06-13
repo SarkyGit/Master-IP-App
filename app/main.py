@@ -1,11 +1,19 @@
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from starlette.middleware.sessions import SessionMiddleware
+
+from app.routes import auth_router
 
 app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
+
+# Store login information in signed cookies
+app.add_middleware(SessionMiddleware, secret_key="change-me")
+
+app.include_router(auth_router)
 
 
 @app.get("/")
