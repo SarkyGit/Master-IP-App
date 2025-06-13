@@ -43,3 +43,24 @@ Visit [http://localhost:8000](http://localhost:8000) in your browser. Log in wit
 
 After logging in you can add devices, VLANs and manage configuration backups through the web interface.
 
+
+## Troubleshooting
+
+### "No such file or directory" during `pip install`
+If you see an error like:
+
+```
+ERROR: Could not install packages due to an OSError: [Errno 2] No such file or directory: '.../fastapi-<version>.dist-info/METADATA'
+```
+
+the virtual environment may be corrupted or was created with a different Python version. Recreate the environment and reinstall the requirements:
+
+```bash
+rm -rf venv
+python3 -m venv venv
+source venv/bin/activate
+python -m pip install -r requirements.txt
+```
+
+### `venv/bin/python: No such file or directory`
+This message appears when the `venv` directory has not been created. Run the commands above to create the virtual environment before installing the dependencies.
