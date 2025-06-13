@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="text-xl mb-4">System Tunables</h1>
+{% for function, files in groups.items() %}
+  <h2 class="text-lg mt-4">{{ function }}</h2>
+  {% for file, tunables in files.items() %}
+    <h3 class="mt-2">{{ file }}</h3>
+    {% for tunable in tunables %}
+    <form method="post" action="/tunables/{{ tunable.id }}">
+      <div class="mb-2">
+        <label class="block">{{ tunable.name }}</label>
+        {% if tunable.data_type == 'bool' %}
+          <input type="checkbox" name="value" value="true" {% if tunable.value == 'true' %}checked{% endif %}>
+        {% elif tunable.data_type == 'choice' %}
+          <select name="value">
+            {% for opt in tunable.options.split(',') %}
+              <option value="{{ opt }}" {% if tunable.value == opt %}selected{% endif %}>{{ opt }}</option>
+            {% endfor %}
+          </select>
+        {% else %}
+          <input type="text" name="value" value="{{ tunable.value }}" class="text-black">
+        {% endif %}
+        <button type="submit" class="bg-blue-600 px-2 py-1 ml-2">Save</button>
+      </div>
+    </form>
+    {% endfor %}
+  {% endfor %}
+{% endfor %}
+{% endblock %}

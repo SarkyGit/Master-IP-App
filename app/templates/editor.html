@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="text-xl mb-4">Editing {{ file_path }}</h1>
+<div id="terminal" style="height:500px;" class="bg-black text-white"></div>
+<script src="https://cdn.jsdelivr.net/npm/xterm@4.19.0/lib/xterm.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@4.19.0/css/xterm.css" />
+<script>
+  const term = new Terminal();
+  term.open(document.getElementById('terminal'));
+  const socket = new WebSocket(`ws://${location.host}/ws/editor?file={{ file_path }}`);
+  term.onData(data => socket.send(new TextEncoder().encode(data)));
+  socket.onmessage = evt => {
+    const reader = new FileReader();
+    reader.onload = () => term.write(reader.result);
+    reader.readAsText(evt.data);
+  };
+</script>
+{% endblock %}

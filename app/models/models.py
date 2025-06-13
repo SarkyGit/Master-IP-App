@@ -93,3 +93,17 @@ class User(Base):
     role = Column(String, nullable=False, default="viewer")
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class SystemTunable(Base):
+    """Key/value settings that control system behavior."""
+
+    __tablename__ = "system_tunables"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String, unique=True, nullable=False)
+    value = Column(String, nullable=False)
+    function = Column(String, nullable=False)
+    file_type = Column(String, nullable=False)
+    data_type = Column(String, nullable=False, default="text")
+    options = Column(String, nullable=True)
