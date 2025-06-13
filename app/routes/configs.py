@@ -84,4 +84,5 @@ async def diff_config(
         "diff_lines": diff_lines,
         "current_user": current_user,
     }
+    log_audit(db, current_user, "debug", backup.device, f"Viewed config diff {backup.id}")
     return templates.TemplateResponse("config_diff.html", context)

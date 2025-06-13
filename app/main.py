@@ -12,6 +12,7 @@ from app.routes import (
     configs_router,
     admin_router,
     audit_router,
+    admin_debug_router,
 )
 from app.routes.tunables import router as tunables_router
 from app.routes.editor import router as editor_router
@@ -38,6 +39,7 @@ app.include_router(admin_profiles_router)
 app.include_router(configs_router)
 app.include_router(admin_router)
 app.include_router(audit_router)
+app.include_router(admin_debug_router)
 app.include_router(terminal_ws_router)
 
 
