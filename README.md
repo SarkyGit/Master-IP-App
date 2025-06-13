@@ -27,6 +27,12 @@ This application manages network devices, VLANs and configuration backups using 
    ```
    These commands create a SQLite database file named `ces_inventory.db` in the project directory.
 
+   **Note:** The sample devices created by `seed_data.py` use hostnames like
+   `SW10.x` as their IP addresses. These hostnames must resolve through DNS or
+   entries in `/etc/hosts`; otherwise operations such as "Pull Config" will fail
+   with a *Name or service not known* error. If no DNS records exist, edit the
+   devices in the UI or modify `seed_data.py` to specify real IP addresses.
+
 ## Running the server
 
 Start the FastAPI application using [uvicorn](https://www.uvicorn.org/):
