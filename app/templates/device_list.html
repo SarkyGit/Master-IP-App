@@ -39,6 +39,7 @@
         <form method="post" action="/devices/{{ device.id }}/pull-config" style="display:inline">
           <button type="submit" class="text-green-400 underline ml-2">Pull Config</button>
         </form>
+        <a href="/devices/{{ device.id }}/push-config" class="text-purple-400 underline ml-2">Push Config</a>
       </td>
       {% endif %}
     </tr>
