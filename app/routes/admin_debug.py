@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Request, Depends, HTTPException
-from fastapi.templating import Jinja2Templates
+from app.utils.templates import templates
 from sqlalchemy.orm import Session
 from typing import Optional
 
@@ -7,7 +7,7 @@ from app.utils.db_session import get_db
 from app.utils.auth import require_role
 from app.models.models import AuditLog, User, Device
 
-templates = Jinja2Templates(directory="app/templates")
+
 
 router = APIRouter()
 
