@@ -2,6 +2,7 @@ from fastapi import APIRouter, Request, Depends, Form
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
+import subprocess
 
 from app.utils.db_session import get_db
 from app.utils.auth import require_role
@@ -13,10 +14,31 @@ router = APIRouter()
 
 
 def grouped_tunables(db: Session):
+    """Return system tunables from the database and host sysctl values."""
     tunables = db.query(SystemTunable).all()
     grouped = {}
     for t in tunables:
         grouped.setdefault(t.function, {}).setdefault(t.file_type, []).append(t)
+
+    # Append sysctl parameters from the running system
+    try:
+        output = subprocess.check_output(["sysctl", "-a"], text=True, stderr=subprocess.DEVNULL)
+        for line in output.splitlines():
+            if "=" not in line:
+                continue
+            name, value = [part.strip() for part in line.split("=", 1)]
+            tmp = SystemTunable(
+                name=name,
+                value=value,
+                function="sysctl",
+                file_type="/proc/sys",
+                data_type="text",
+            )
+            grouped.setdefault("sysctl", {}).setdefault("/proc/sys", []).append(tmp)
+    except Exception:
+        # Ignore sysctl failures to keep page functional
+        pass
+
     return grouped
 
 
