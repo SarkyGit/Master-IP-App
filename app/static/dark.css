@@ -1,25 +1,44 @@
 body {
-  background-color: #1b1b1b;
-  color: #eee;
+  background-color: #121212;
+  color: #f8f9fa;
 }
+
+.form-control,
+.form-select,
+textarea {
+  background-color: #212529;
+  color: #f8f9fa;
+  border: 1px solid #6c757d;
+}
+
+.card,
 .table {
-  background-color: #222;
-  color: #eee;
+  background-color: #212529;
+  color: #f8f9fa;
 }
-.form-control, .form-select, textarea {
-  background-color: #333;
-  color: #eee;
-  border-color: #444;
+
+.table thead th {
+  color: #ffffff;
+  background-color: #343a40;
 }
-.btn-primary {
-  background-color: #0f0;
-  color: #000;
-  border: none;
-}
-.btn-success {
-  background-color: #090;
-  border: none;
-}
+
 .alert {
-  color: #000;
+  border: 1px solid #6c757d;
+}
+
+.dropdown-menu {
+  background-color: #212529;
+  color: #f8f9fa;
+}
+
+.dropdown-item {
+  color: #f8f9fa;
+}
+
+.dropdown-item:hover {
+  background-color: #343a40;
+}
+
+.navbar .dropdown:hover .dropdown-menu {
+  display: block;
 }
