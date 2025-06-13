@@ -123,8 +123,8 @@ async def create_device(
     manufacturer: str = Form(...),
     device_type_id: int = Form(...),
     location: str = Form(None),
-    ssh_credential_id: int = Form(None),
-    snmp_community_id: int = Form(None),
+    ssh_credential_id: str = Form(None),
+    snmp_community_id: str = Form(None),
     db: Session = Depends(get_db),
     current_user=Depends(require_role("editor")),
 ):
@@ -137,8 +137,8 @@ async def create_device(
         manufacturer=manufacturer,
         device_type_id=device_type_id,
         location=location or None,
-        ssh_credential_id=ssh_credential_id or None,
-        snmp_community_id=snmp_community_id or None,
+        ssh_credential_id=int(ssh_credential_id) if ssh_credential_id else None,
+        snmp_community_id=int(snmp_community_id) if snmp_community_id else None,
     )
     db.add(device)
     db.commit()
@@ -183,9 +183,9 @@ async def update_device(
     device_type_id: int = Form(...),
     location: str = Form(None),
     status: str = Form(None),
-    vlan_id: int = Form(None),
-    ssh_credential_id: int = Form(None),
-    snmp_community_id: int = Form(None),
+    vlan_id: str = Form(None),
+    ssh_credential_id: str = Form(None),
+    snmp_community_id: str = Form(None),
     db: Session = Depends(get_db),
     current_user=Depends(require_role("editor")),
 ):
@@ -202,9 +202,9 @@ async def update_device(
     device.device_type_id = device_type_id
     device.location = location or None
     device.status = status or None
-    device.vlan_id = vlan_id or None
-    device.ssh_credential_id = ssh_credential_id or None
-    device.snmp_community_id = snmp_community_id or None
+    device.vlan_id = int(vlan_id) if vlan_id else None
+    device.ssh_credential_id = int(ssh_credential_id) if ssh_credential_id else None
+    device.snmp_community_id = int(snmp_community_id) if snmp_community_id else None
 
     db.commit()
     return RedirectResponse(url="/devices", status_code=302)
