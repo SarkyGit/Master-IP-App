@@ -27,11 +27,10 @@ This application manages network devices, VLANs and configuration backups using 
    ```
    These commands create a SQLite database file named `ces_inventory.db` in the project directory.
 
-   **Note:** The sample devices created by `seed_data.py` use hostnames like
-   `SW10.x` as their IP addresses. These hostnames must resolve through DNS or
-   entries in `/etc/hosts`; otherwise operations such as "Pull Config" will fail
-   with a *Name or service not known* error. If no DNS records exist, edit the
-   devices in the UI or modify `seed_data.py` to specify real IP addresses.
+   **Note:** The sample devices created by `seed_data.py` use example IP
+   addresses in the `192.168.10.0/24` range. Adjust these addresses in
+   `seed_data.py` or modify the devices through the UI if they do not match your
+   environment.
 
 ## Running the server
 
