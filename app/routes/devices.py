@@ -23,6 +23,8 @@ from app.models.models import (
 from app.utils.audit import log_audit
 
 import asyncssh
+
+from app.utils.ssh import build_conn_kwargs
 from puresnmp import Client, PyWrapper, V2C
 from puresnmp.exc import SnmpError
 
@@ -258,14 +260,7 @@ async def pull_device_config(
             url="/devices?message=No+SSH+credentials", status_code=302
         )
 
-    conn_kwargs = {"username": cred.username}
-    if cred.password:
-        conn_kwargs["password"] = cred.password
-    if cred.private_key:
-        try:
-            conn_kwargs["client_keys"] = [asyncssh.import_private_key(cred.private_key)]
-        except Exception:
-            pass
+    conn_kwargs = build_conn_kwargs(cred)
 
     output = ""
     try:
@@ -343,14 +338,7 @@ async def push_device_config(
         }
         return templates.TemplateResponse("config_push_form.html", context)
 
-    conn_kwargs = {"username": cred.username}
-    if cred.password:
-        conn_kwargs["password"] = cred.password
-    if cred.private_key:
-        try:
-            conn_kwargs["client_keys"] = [asyncssh.import_private_key(cred.private_key)]
-        except Exception:
-            pass
+    conn_kwargs = build_conn_kwargs(cred)
 
     success = False
     try:
@@ -461,14 +449,7 @@ async def push_template_config(
         }
         return templates.TemplateResponse("template_config_form.html", context)
 
-    conn_kwargs = {"username": cred.username}
-    if cred.password:
-        conn_kwargs["password"] = cred.password
-    if cred.private_key:
-        try:
-            conn_kwargs["client_keys"] = [asyncssh.import_private_key(cred.private_key)]
-        except Exception:
-            pass
+    conn_kwargs = build_conn_kwargs(cred)
 
     success = False
     try:
