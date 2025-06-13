@@ -6,6 +6,7 @@ from .editor import router as editor_router
 from .api import router as api_router
 from .admin_profiles import router as admin_profiles_router
 from .configs import router as configs_router
+from .admin import router as admin_router
 
 __all__ = [
     "auth_router",
@@ -16,4 +17,5 @@ __all__ = [
     "api_router",
     "admin_profiles_router",
     "configs_router",
+    "admin_router",
 ]
