@@ -9,6 +9,7 @@
       <th class="px-4 py-2 text-left">Source</th>
       <th class="px-4 py-2 text-left">Status</th>
       <th class="px-4 py-2 text-left">Diff</th>
+      <th class="px-4 py-2 text-left">Config</th>
     </tr>
   </thead>
   <tbody>
@@ -31,6 +32,18 @@
         {% else %}
         N/A
         {% endif %}
+      </td>
+      <td class="px-4 py-2">
+        <button class="text-blue-400 underline" data-bs-toggle="offcanvas" data-bs-target="#config{{ backup.id }}">View Config</button>
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="config{{ backup.id }}" aria-labelledby="configLabel{{ backup.id }}">
+          <div class="offcanvas-header">
+            <h5 id="configLabel{{ backup.id }}">Config from {{ backup.created_at }}</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <pre class="bg-black p-2 whitespace-pre-wrap overflow-auto">{{ backup.config_text }}</pre>
+          </div>
+        </div>
       </td>
     </tr>
   {% endfor %}
