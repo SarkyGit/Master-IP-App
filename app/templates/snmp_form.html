@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-xl mb-4">{{ form_title }}</h1>
+<form method="post" class="space-y-4">
+  <div>
+    <label class="block">Name</label>
+    <input type="text" name="name" value="{{ profile.name if profile else '' }}" class="w-full p-2 text-black" required />
+  </div>
+  <div>
+    <label class="block">Community String</label>
+    <input type="text" name="community_string" value="{{ profile.community_string if profile else '' }}" class="w-full p-2 text-black" required />
+  </div>
+  <div>
+    <label class="block">Version</label>
+    <input type="text" name="version" value="{{ profile.version if profile else '2c' }}" class="w-full p-2 text-black" />
+  </div>
+  {% if error %}
+  <p class="text-red-500">{{ error }}</p>
+  {% endif %}
+  <div>
+    <button type="submit" class="bg-blue-600 px-4 py-2">Submit</button>
+    <a href="/admin/snmp" class="ml-2 underline">Cancel</a>
+  </div>
+</form>
+{% endblock %}
