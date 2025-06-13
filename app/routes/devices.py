@@ -32,6 +32,13 @@ router = APIRouter()
 # Basic status options for dropdown menus
 STATUS_OPTIONS = ["active", "inactive", "maintenance"]
 MAX_BACKUPS = 10
+# Available configuration templates for push-config form
+TEMPLATE_OPTIONS = [
+    "Trunk Port",
+    "Access Port",
+    "Reset Port",
+    "Set Description",
+]
 
 
 @router.get("/devices")
@@ -362,6 +369,131 @@ async def push_device_config(
 
     message = "Config+pushed" if success else "Config+queued"
     return RedirectResponse(url=f"/devices?message={message}", status_code=302)
+
+
+@router.get("/devices/{device_id}/template-config")
+async def template_config_form(
+    device_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("editor")),
+):
+    """Render form to push configuration templates."""
+    device = db.query(Device).filter(Device.id == device_id).first()
+    if not device:
+        raise HTTPException(status_code=404, detail="Device not found")
+
+    context = {
+        "request": request,
+        "device": device,
+        "templates": TEMPLATE_OPTIONS,
+        "snippet": None,
+        "message": None,
+        "current_user": current_user,
+    }
+    return templates.TemplateResponse("template_config_form.html", context)
+
+
+@router.post("/devices/{device_id}/template-config")
+async def push_template_config(
+    device_id: int,
+    request: Request,
+    template_name: str = Form(...),
+    interface: str = Form(None),
+    vlan: str = Form(None),
+    description: str = Form(None),
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("editor")),
+):
+    """Render a config snippet from template and push it via SSH."""
+    device = db.query(Device).filter(Device.id == device_id).first()
+    if not device:
+        raise HTTPException(status_code=404, detail="Device not found")
+
+    # Build configuration snippet based on selected template
+    snippet = ""
+    if template_name == "Trunk Port":
+        snippet = f"interface {interface}\n switchport mode trunk"
+    elif template_name == "Access Port":
+        snippet = (
+            f"interface {interface}\n"
+            f" switchport mode access\n"
+            f" switchport access vlan {vlan}"
+        )
+    elif template_name == "Reset Port":
+        snippet = f"default interface {interface}"
+    elif template_name == "Set Description":
+        snippet = f"interface {interface}\n description {description}"
+
+    cred = device.ssh_credential
+    if not cred:
+        context = {
+            "request": request,
+            "device": device,
+            "templates": TEMPLATE_OPTIONS,
+            "snippet": snippet,
+            "message": "No SSH credentials",
+            "current_user": current_user,
+        }
+        return templates.TemplateResponse("template_config_form.html", context)
+
+    conn_kwargs = {"username": cred.username}
+    if cred.password:
+        conn_kwargs["password"] = cred.password
+    if cred.private_key:
+        try:
+            conn_kwargs["client_keys"] = [asyncssh.import_private_key(cred.private_key)]
+        except Exception:
+            pass
+
+    success = False
+    try:
+        async with asyncssh.connect(device.ip, **conn_kwargs) as conn:
+            session = await conn.create_session(asyncssh.SSHClientProcess)
+            for line in snippet.splitlines():
+                session.stdin.write(line + "\n")
+            session.stdin.write("exit\n")
+            await session.wait_closed()
+            success = True
+    except Exception:
+        success = False
+
+    backup = ConfigBackup(
+        device_id=device.id,
+        source="template",
+        config_text=snippet,
+        queued=not success,
+        status="pushed" if success else "pending",
+    )
+    db.add(backup)
+    db.commit()
+    if success:
+        log_audit(db, current_user, "push", device, f"Pushed template {template_name}")
+    else:
+        log_audit(db, current_user, "queue", device, f"Queued template {template_name}")
+
+    backups = (
+        db.query(ConfigBackup)
+        .filter(ConfigBackup.device_id == device.id)
+        .order_by(ConfigBackup.created_at.desc())
+        .all()
+    )
+    if len(backups) > MAX_BACKUPS:
+        for old in backups[MAX_BACKUPS:]:
+            db.delete(old)
+            log_audit(db, current_user, "delete", device, f"Deleted backup {old.id}")
+        db.commit()
+
+    message = "Config pushed" if success else "Config queued"
+    context = {
+        "request": request,
+        "device": device,
+        "templates": TEMPLATE_OPTIONS,
+        "snippet": snippet,
+        "message": message,
+        "current_user": current_user,
+    }
+    return templates.TemplateResponse("template_config_form.html", context)
 
 
 async def _gather_snmp_table(client: PyWrapper, oid: str) -> dict:

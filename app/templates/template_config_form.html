@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-xl mb-4">Push Template to {{ device.hostname }}</h1>
+<form method="post" class="space-y-4">
+  <div>
+    <label class="block">Template</label>
+    <select id="template-select" name="template_name" class="w-full p-2 text-black">
+      {% for tpl in templates %}
+      <option value="{{ tpl }}">{{ tpl }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div id="interface-field">
+    <label class="block">Interface</label>
+    <input type="text" name="interface" class="w-full p-2 text-black" />
+  </div>
+  <div id="vlan-field">
+    <label class="block">VLAN</label>
+    <input type="number" name="vlan" class="w-full p-2 text-black" />
+  </div>
+  <div id="descr-field">
+    <label class="block">Description</label>
+    <input type="text" name="description" class="w-full p-2 text-black" />
+  </div>
+  {% if snippet %}
+  <div>
+    <label class="block">Rendered Config</label>
+    <pre class="bg-gray-800 p-2">{{ snippet }}</pre>
+  </div>
+  {% endif %}
+  {% if message %}
+  <p class="text-green-400">{{ message }}</p>
+  {% endif %}
+  <div>
+    <button type="submit" class="bg-blue-600 px-4 py-2">Push Config</button>
+    <a href="/devices" class="ml-2 underline">Cancel</a>
+  </div>
+</form>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const select = document.getElementById('template-select');
+  const vlanField = document.getElementById('vlan-field');
+  const descrField = document.getElementById('descr-field');
+  function update() {
+    const val = select.value;
+    vlanField.style.display = val === 'Access Port' ? 'block' : 'none';
+    descrField.style.display = val === 'Set Description' ? 'block' : 'none';
+  }
+  select.addEventListener('change', update);
+  update();
+});
+</script>
+{% endblock %}
