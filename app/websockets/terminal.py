@@ -2,6 +2,8 @@ from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from sqlalchemy.orm import Session
 import asyncssh
 import asyncio
+import time
+import logging
 
 from app.utils.db_session import SessionLocal
 from app.models.models import Device, User
@@ -15,6 +17,8 @@ async def terminal_ws(websocket: WebSocket, device_id: int):
     """Interactive SSH terminal over WebSocket."""
     await websocket.accept()
     db: Session = SessionLocal()
+    last_msg = time.monotonic()
+    log = logging.getLogger(__name__)
     try:
         user_id = websocket.session.get("user_id") if hasattr(websocket, "session") else None
         if not user_id:
@@ -47,24 +51,56 @@ async def terminal_ws(websocket: WebSocket, device_id: int):
                 session = await conn.create_session(asyncssh.SSHClientProcess)
 
                 async def ws_to_ssh():
+                    nonlocal last_msg
                     try:
                         while True:
-                            data = await asyncio.wait_for(websocket.receive_text(), timeout=900)
-                            session.stdin.write(data)
-                    except (WebSocketDisconnect, asyncio.TimeoutError):
+                            data = await websocket.receive_text()
+                            last_msg = time.monotonic()
+                            if data:
+                                session.stdin.write(data)
+                    except WebSocketDisconnect:
                         pass
+                    except Exception:
+                        log.exception("ws_to_ssh error")
 
                 async def ssh_to_ws():
                     try:
                         while True:
-                            data = await asyncio.wait_for(session.stdout.read(1024), timeout=900)
+                            data = await session.stdout.read(1024)
                             if not data:
                                 break
                             await websocket.send_text(data)
-                    except asyncio.TimeoutError:
-                        pass
+                    except Exception:
+                        log.exception("ssh_to_ws error")
 
-                await asyncio.gather(ws_to_ssh(), ssh_to_ws())
+                async def inactivity_checker():
+                    nonlocal last_msg
+                    try:
+                        while True:
+                            await asyncio.sleep(30)
+                            if time.monotonic() - last_msg > 900:
+                                try:
+                                    await websocket.send_text("\u26A0\uFE0F Session expired due to inactivity")
+                                except Exception:
+                                    pass
+                                try:
+                                    session.stdin.write("exit\n")
+                                    await session.wait_closed()
+                                except Exception:
+                                    pass
+                                await websocket.close()
+                                break
+                    except Exception:
+                        log.exception("inactivity_checker error")
+
+                tasks = [
+                    asyncio.create_task(ws_to_ssh()),
+                    asyncio.create_task(ssh_to_ws()),
+                    asyncio.create_task(inactivity_checker()),
+                ]
+                done, pending = await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
+                for task in pending:
+                    task.cancel()
         except Exception as exc:
             await websocket.send_text(f"Connection error: {exc}")
     finally:
