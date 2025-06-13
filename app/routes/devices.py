@@ -27,6 +27,7 @@ router = APIRouter()
 
 # Basic status options for dropdown menus
 STATUS_OPTIONS = ["active", "inactive", "maintenance"]
+MAX_BACKUPS = 10
 
 
 @router.get("/devices")
@@ -247,6 +248,17 @@ async def pull_device_config(
     db.add(backup)
     db.commit()
 
+    backups = (
+        db.query(ConfigBackup)
+        .filter(ConfigBackup.device_id == device.id)
+        .order_by(ConfigBackup.created_at.desc())
+        .all()
+    )
+    if len(backups) > MAX_BACKUPS:
+        for old in backups[MAX_BACKUPS:]:
+            db.delete(old)
+        db.commit()
+
     return RedirectResponse(url="/devices?message=Config+pulled", status_code=302)
 
 
@@ -321,5 +333,16 @@ async def push_device_config(
     backup = ConfigBackup(device_id=device.id, source="manual_push", config_text=config_text)
     db.add(backup)
     db.commit()
+
+    backups = (
+        db.query(ConfigBackup)
+        .filter(ConfigBackup.device_id == device.id)
+        .order_by(ConfigBackup.created_at.desc())
+        .all()
+    )
+    if len(backups) > MAX_BACKUPS:
+        for old in backups[MAX_BACKUPS:]:
+            db.delete(old)
+        db.commit()
 
     return RedirectResponse(url="/devices?message=Config+pushed", status_code=302)

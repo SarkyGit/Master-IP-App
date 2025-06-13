@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-xl mb-4">Config Backups for {{ device.hostname }}</h1>
+<table class="min-w-full bg-gray-800">
+  <thead>
+    <tr>
+      <th class="px-4 py-2 text-left">Timestamp</th>
+      <th class="px-4 py-2 text-left">Source</th>
+      <th class="px-4 py-2 text-left">Diff</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for backup in backups %}
+    <tr class="border-t border-gray-700">
+      <td class="px-4 py-2">{{ backup.created_at }}</td>
+      <td class="px-4 py-2">{{ backup.source }}</td>
+      <td class="px-4 py-2">
+        {% if not loop.last %}
+        <a href="/configs/{{ backup.id }}/diff" class="text-blue-400 underline">View Diff</a>
+        {% else %}
+        N/A
+        {% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
