@@ -14,20 +14,34 @@ from app.routes import (
     audit_router,
     admin_debug_router,
     device_types_router,
+    network_router,
+    task_views_router,
+    user_management_router,
 )
 from app.routes.tunables import router as tunables_router
 from app.routes.editor import router as editor_router
 from app.websockets.editor import shell_ws
 from app.websockets.terminal import router as terminal_ws_router
-from app.routes.welcome import router as welcome_router
+from app.routes.welcome import router as welcome_router, WELCOME_TEXT
 from app.utils.auth import get_current_user
 from app.tasks import start_queue_worker
+from app.utils.db_session import SessionLocal
+from app.models.models import DeviceType
 
 app = FastAPI()
 start_queue_worker(app)
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
+
+# Provide device types for navbar dropdown
+def get_device_types():
+    db = SessionLocal()
+    types = db.query(DeviceType).all()
+    db.close()
+    return types
+
+templates.env.globals["get_device_types"] = get_device_types
 
 # Store login information in signed cookies
 app.add_middleware(SessionMiddleware, secret_key="change-me")
@@ -46,16 +60,24 @@ app.include_router(admin_debug_router)
 app.include_router(terminal_ws_router)
 app.include_router(welcome_router)
 app.include_router(device_types_router)
+app.include_router(network_router)
+app.include_router(task_views_router)
+app.include_router(user_management_router)
 
 
 @app.get("/")
 async def read_root(request: Request, current_user=Depends(get_current_user)):
-    """Render the home page with login link and welcome text."""
-    context = {
-        "request": request,
-        "message": "",
-        "current_user": current_user,
-    }
+    """Render a role-based welcome page or login screen."""
+    if current_user:
+        text = WELCOME_TEXT.get(current_user.role, [])
+        context = {
+            "request": request,
+            "role": current_user.role,
+            "text": text,
+            "current_user": current_user,
+        }
+        return templates.TemplateResponse("welcome.html", context)
+    context = {"request": request, "message": "", "current_user": None}
     return templates.TemplateResponse("index.html", context)
 
 

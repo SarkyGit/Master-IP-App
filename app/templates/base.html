@@ -24,38 +24,53 @@
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Devices</a>
                 <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="/devices">View Devices</a></li>
+                  <li><a class="dropdown-item" href="/devices">All Devices</a></li>
+                  {% for dtype in get_device_types() %}
+                  <li><a class="dropdown-item" href="/devices/type/{{ dtype.id }}">{{ dtype.name }}</a></li>
+                  {% endfor %}
                   {% if current_user and current_user.role in ['editor','admin','superadmin'] %}
                   <li><a class="dropdown-item" href="/devices/new">Add Device</a></li>
                   {% endif %}
                 </ul>
               </li>
               <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">VLANs</a>
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Network</a>
                 <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="/vlans">View VLANs</a></li>
-                  {% if current_user and current_user.role in ['editor','admin','superadmin'] %}
-                  <li><a class="dropdown-item" href="/vlans/new">Add VLAN</a></li>
-                  {% endif %}
+                  <li><a class="dropdown-item" href="/network/ip-search">IP Search</a></li>
+                  <li><a class="dropdown-item" href="/vlans">VLAN MGMT</a></li>
                 </ul>
               </li>
-              {% if current_user and current_user.role == 'superadmin' %}
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Admin</a>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="/admin/ssh">SSH Profiles</a></li>
-                  <li><a class="dropdown-item" href="/admin/snmp">SNMP Profiles</a></li>
-                  <li><a class="dropdown-item" href="/device-types">Device Types</a></li>
-                  <li><a class="dropdown-item" href="/admin/audit">Audit Log</a></li>
-                  <li><a class="dropdown-item" href="/admin/debug">Debug Logs</a></li>
-                  <li><a class="dropdown-item" href="/tunables">Tunables</a></li>
-                </ul>
+              <li class="nav-item">
+                <a class="nav-link" href="/tasks">Tasks</a>
               </li>
-              {% endif %}
             </ul>
-            <div class="d-flex">
+            <div class="d-flex align-items-center">
               {% if current_user %}
                 <span class="navbar-text me-2">Logged in as {{ current_user.email }}</span>
+                <a class="btn btn-sm btn-outline-light me-2" href="/dashboard">Dashboard</a>
+                {% if current_user.role in ['admin','superadmin'] %}
+                <div class="btn-group me-2">
+                  <button type="button" class="btn btn-sm btn-outline-light dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    {{ 'Super Admin' if current_user.role == 'superadmin' else 'Admin' }}
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-end">
+                    {% if current_user.role == 'superadmin' %}
+                    <li><a class="dropdown-item" href="/tunables">Tunables</a></li>
+                    <li><a class="dropdown-item" href="/admin/ssh">SSH Credentials</a></li>
+                    <li><a class="dropdown-item" href="/admin/snmp">SNMP Credentials</a></li>
+                    <li><a class="dropdown-item" href="/device-types">Device Types</a></li>
+                    <li><a class="dropdown-item" href="/admin/audit">Audit Log</a></li>
+                    <li><a class="dropdown-item" href="/admin/users">User Management</a></li>
+                    <li><a class="dropdown-item" href="/admin/debug">Debug Logs</a></li>
+                    {% else %}
+                    <li><a class="dropdown-item" href="/admin/ssh">SSH Credentials</a></li>
+                    <li><a class="dropdown-item" href="/admin/snmp">SNMP Credentials</a></li>
+                    <li><a class="dropdown-item" href="/device-types">Device Types</a></li>
+                    <li><a class="dropdown-item" href="/admin/users">User Management</a></li>
+                    {% endif %}
+                  </ul>
+                </div>
+                {% endif %}
                 <a href="/auth/logout" class="btn btn-sm btn-outline-warning">Logout</a>
               {% else %}
                 <a href="/auth/login" class="btn btn-sm btn-outline-light">Login</a>

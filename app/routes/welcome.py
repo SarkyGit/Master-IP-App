@@ -32,3 +32,12 @@ async def welcome_role(role: str, request: Request, current_user=Depends(get_cur
     text = WELCOME_TEXT.get(role, [])
     context = {"request": request, "role": role, "text": text, "current_user": current_user}
     return templates.TemplateResponse("welcome.html", context)
+
+
+@router.get("/dashboard")
+async def dashboard(request: Request, current_user=Depends(get_current_user)):
+    if not current_user:
+        return templates.TemplateResponse("index.html", {"request": request, "current_user": None, "message": ""})
+    text = WELCOME_TEXT.get(current_user.role, [])
+    context = {"request": request, "role": current_user.role, "text": text, "current_user": current_user}
+    return templates.TemplateResponse("welcome.html", context)

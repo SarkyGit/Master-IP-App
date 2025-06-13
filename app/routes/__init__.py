@@ -11,6 +11,9 @@ from .audit import router as audit_router
 from .admin_debug import router as admin_debug_router
 from .welcome import router as welcome_router
 from .device_types import router as device_types_router
+from .network import router as network_router
+from .task_views import router as task_views_router
+from .user_management import router as user_management_router
 
 __all__ = [
     "auth_router",
@@ -26,4 +29,7 @@ __all__ = [
     "admin_debug_router",
     "welcome_router",
     "device_types_router",
+    "network_router",
+    "task_views_router",
+    "user_management_router",
 ]

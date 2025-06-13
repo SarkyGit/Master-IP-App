@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-xl mb-4">Users</h1>
+<table class="min-w-full bg-black">
+  <thead>
+    <tr>
+      <th class="px-4 py-2 text-left">Email</th>
+      <th class="px-4 py-2 text-left">Role</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for user in users %}
+    <tr class="border-t border-white">
+      <td class="px-4 py-2">{{ user.email }}</td>
+      <td class="px-4 py-2">{{ user.role }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

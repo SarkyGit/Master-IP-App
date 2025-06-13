@@ -65,6 +65,27 @@ async def list_devices(
     return templates.TemplateResponse("device_list.html", context)
 
 
+@router.get("/devices/type/{type_id}")
+async def list_devices_by_type(
+    type_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    if not current_user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    devices = db.query(Device).filter(Device.device_type_id == type_id).all()
+    dtype = db.query(DeviceType).filter(DeviceType.id == type_id).first()
+    context = {
+        "request": request,
+        "devices": devices,
+        "current_user": current_user,
+        "device_type": dtype,
+        "message": None,
+    }
+    return templates.TemplateResponse("device_list.html", context)
+
+
 def _load_form_options(db: Session):
     """Helper to load dropdown options for device forms."""
     device_types = db.query(DeviceType).all()
