@@ -6,6 +6,7 @@ import difflib
 from app.utils.db_session import get_db
 from app.utils.auth import get_current_user
 from app.models.models import Device, ConfigBackup
+from app.utils.audit import log_audit
 
 templates = Jinja2Templates(directory="app/templates")
 
