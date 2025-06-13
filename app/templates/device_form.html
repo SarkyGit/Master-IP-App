@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-xl mb-4">{{ form_title }}</h1>
+<form method="post" class="space-y-4">
+  <div>
+    <label class="block">Hostname</label>
+    <input type="text" name="hostname" value="{{ device.hostname if device else '' }}" class="w-full p-2 text-black" required />
+  </div>
+  <div>
+    <label class="block">IP Address</label>
+    <input type="text" name="ip" value="{{ device.ip if device else '' }}" class="w-full p-2 text-black" required />
+  </div>
+  <div>
+    <label class="block">MAC Address</label>
+    <input type="text" name="mac" value="{{ device.mac if device else '' }}" class="w-full p-2 text-black" />
+  </div>
+  <div>
+    <label class="block">Model</label>
+    <input type="text" name="model" value="{{ device.model if device else '' }}" class="w-full p-2 text-black" />
+  </div>
+  <div>
+    <label class="block">Location</label>
+    <input type="text" name="location" value="{{ device.location if device else '' }}" class="w-full p-2 text-black" />
+  </div>
+  <div>
+    <label class="block">Status</label>
+    <select name="status" class="w-full p-2 text-black">
+      <option value="">---</option>
+      {% for st in status_options %}
+      <option value="{{ st }}" {% if device and device.status == st %}selected{% endif %}>{{ st }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label class="block">VLAN</label>
+    <select name="vlan_id" class="w-full p-2 text-black">
+      <option value="">---</option>
+      {% for vlan in vlans %}
+      <option value="{{ vlan.id }}" {% if device and device.vlan_id == vlan.id %}selected{% endif %}>{{ vlan.tag }} - {{ vlan.description or '' }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label class="block">SSH Profile</label>
+    <select name="ssh_credential_id" class="w-full p-2 text-black">
+      <option value="">---</option>
+      {% for cred in ssh_credentials %}
+      <option value="{{ cred.id }}" {% if device and device.ssh_credential_id == cred.id %}selected{% endif %}>{{ cred.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label class="block">SNMP Profile</label>
+    <select name="snmp_community_id" class="w-full p-2 text-black">
+      <option value="">---</option>
+      {% for snmp in snmp_communities %}
+      <option value="{{ snmp.id }}" {% if device and device.snmp_community_id == snmp.id %}selected{% endif %}>{{ snmp.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <button type="submit" class="bg-blue-600 px-4 py-2">Submit</button>
+    <a href="/devices" class="ml-2 underline">Cancel</a>
+  </div>
+</form>
+{% endblock %}
