@@ -18,6 +18,7 @@ from app.models.models import (
     SNMPCommunity,
     ConfigBackup,
     AuditLog,
+    DeviceType,
 )
 from app.utils.audit import log_audit
 
@@ -64,10 +65,11 @@ async def list_devices(
 
 def _load_form_options(db: Session):
     """Helper to load dropdown options for device forms."""
+    device_types = db.query(DeviceType).all()
     vlans = db.query(VLAN).all()
     ssh_credentials = db.query(SSHCredential).all()
     snmp_communities = db.query(SNMPCommunity).all()
-    return vlans, ssh_credentials, snmp_communities
+    return device_types, vlans, ssh_credentials, snmp_communities
 
 
 def suggest_vlan_from_ip(db: Session, ip: str):
@@ -97,10 +99,11 @@ async def new_device_form(
     current_user=Depends(require_role("editor")),
 ):
     """Render a blank device form."""
-    vlans, ssh_credentials, snmp_communities = _load_form_options(db)
+    device_types, vlans, ssh_credentials, snmp_communities = _load_form_options(db)
     context = {
         "request": request,
         "device": None,
+        "device_types": device_types,
         "vlans": vlans,
         "ssh_credentials": ssh_credentials,
         "snmp_communities": snmp_communities,
@@ -117,9 +120,9 @@ async def create_device(
     ip: str = Form(...),
     mac: str = Form(None),
     model: str = Form(None),
+    manufacturer: str = Form(...),
+    device_type_id: int = Form(...),
     location: str = Form(None),
-    status: str = Form(None),
-    vlan_id: int = Form(None),
     ssh_credential_id: int = Form(None),
     snmp_community_id: int = Form(None),
     db: Session = Depends(get_db),
@@ -131,9 +134,9 @@ async def create_device(
         ip=ip,
         mac=mac or None,
         model=model or None,
+        manufacturer=manufacturer,
+        device_type_id=device_type_id,
         location=location or None,
-        status=status or None,
-        vlan_id=vlan_id or None,
         ssh_credential_id=ssh_credential_id or None,
         snmp_community_id=snmp_community_id or None,
     )
@@ -154,10 +157,11 @@ async def edit_device_form(
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
 
-    vlans, ssh_credentials, snmp_communities = _load_form_options(db)
+    device_types, vlans, ssh_credentials, snmp_communities = _load_form_options(db)
     context = {
         "request": request,
         "device": device,
+        "device_types": device_types,
         "vlans": vlans,
         "ssh_credentials": ssh_credentials,
         "snmp_communities": snmp_communities,
@@ -175,6 +179,8 @@ async def update_device(
     ip: str = Form(...),
     mac: str = Form(None),
     model: str = Form(None),
+    manufacturer: str = Form(...),
+    device_type_id: int = Form(...),
     location: str = Form(None),
     status: str = Form(None),
     vlan_id: int = Form(None),
@@ -192,6 +198,8 @@ async def update_device(
     device.ip = ip
     device.mac = mac or None
     device.model = model or None
+    device.manufacturer = manufacturer
+    device.device_type_id = device_type_id
     device.location = location or None
     device.status = status or None
     device.vlan_id = vlan_id or None
@@ -214,6 +222,20 @@ async def delete_device(
         raise HTTPException(status_code=404, detail="Device not found")
 
     db.delete(device)
+    db.commit()
+    return RedirectResponse(url="/devices", status_code=302)
+
+
+@router.post("/devices/bulk-delete")
+async def bulk_delete_devices(
+    selected: list[int] = Form(...),
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("editor")),
+):
+    for device_id in selected:
+        device = db.query(Device).filter(Device.id == device_id).first()
+        if device:
+            db.delete(device)
     db.commit()
     return RedirectResponse(url="/devices", status_code=302)
 

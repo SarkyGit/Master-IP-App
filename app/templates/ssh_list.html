@@ -3,9 +3,11 @@
 {% block content %}
 <h1 class="text-xl mb-4">SSH Credentials</h1>
 <a href="/admin/ssh/new" class="underline">Add SSH Credential</a>
+<form method="post" action="/admin/ssh/bulk-delete">
 <table class="min-w-full bg-black mt-4">
   <thead>
     <tr>
+      <th class="px-2"><input type="checkbox" id="select-all"></th>
       <th class="px-4 py-2 text-left">Name</th>
       <th class="px-4 py-2 text-left">Username</th>
       <th></th>
@@ -14,6 +16,7 @@
   <tbody>
   {% for cred in creds %}
     <tr class="border-t border-white">
+      <td class="px-2"><input type="checkbox" name="selected" value="{{ cred.id }}"></td>
       <td class="px-4 py-2">{{ cred.name }}</td>
       <td class="px-4 py-2">{{ cred.username }}</td>
       <td class="px-4 py-2">
@@ -26,4 +29,11 @@
   {% endfor %}
   </tbody>
 </table>
+<button type="submit" class="mt-2 bg-red-600 px-3 py-1">Delete Selected</button>
+</form>
+<script>
+document.getElementById('select-all').addEventListener('change', function(e){
+  document.querySelectorAll('input[name="selected"]').forEach(cb => cb.checked = e.target.checked);
+});
+</script>
 {% endblock %}

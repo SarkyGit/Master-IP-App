@@ -10,12 +10,16 @@
     <button type="submit" class="ml-2">🔄 Run Push Queue Now</button>
   </form>
 {% endif %}
+<form method="post" action="/devices/bulk-delete">
 <table class="min-w-full bg-black">
   <thead>
     <tr>
+      <th class="px-2"><input type="checkbox" id="select-all"></th>
       <th class="px-4 py-2 text-left">Hostname</th>
       <th class="px-4 py-2 text-left">IP</th>
       <th class="px-4 py-2 text-left">Model</th>
+      <th class="px-4 py-2 text-left">Manufacturer</th>
+      <th class="px-4 py-2 text-left">Type</th>
       <th class="px-4 py-2 text-left">Status</th>
       <th class="px-4 py-2 text-left">VLAN</th>
       <th class="px-4 py-2 text-left">SSH Profile</th>
@@ -28,9 +32,12 @@
   <tbody>
   {% for device in devices %}
     <tr class="border-t border-white">
+      <td class="px-2"><input type="checkbox" name="selected" value="{{ device.id }}"></td>
       <td class="px-4 py-2">{{ device.hostname }}</td>
       <td class="px-4 py-2">{{ device.ip }}</td>
       <td class="px-4 py-2">{{ device.model or '' }}</td>
+      <td class="px-4 py-2">{{ device.manufacturer }}</td>
+      <td class="px-4 py-2">{{ device.device_type.name if device.device_type else '' }}</td>
       <td class="px-4 py-2">{{ device.status or '' }}</td>
       <td class="px-4 py-2">{{ device.vlan.tag if device.vlan else '' }}</td>
       <td class="px-4 py-2">{{ device.ssh_credential.name if device.ssh_credential else '' }}</td>
@@ -55,4 +62,11 @@
   {% endfor %}
   </tbody>
 </table>
+<button type="submit" class="mt-2 bg-red-600 px-3 py-1">Delete Selected</button>
+</form>
+<script>
+document.getElementById('select-all').addEventListener('change', function(e){
+  document.querySelectorAll('input[name="selected"]').forEach(cb => cb.checked = e.target.checked);
+});
+</script>
 {% endblock %}

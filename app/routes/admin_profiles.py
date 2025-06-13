@@ -126,6 +126,20 @@ async def delete_ssh_credential(
     return RedirectResponse(url="/admin/ssh", status_code=302)
 
 
+@router.post("/admin/ssh/bulk-delete")
+async def bulk_delete_ssh(
+    selected: list[int] = Form(...),
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("superadmin")),
+):
+    for cred_id in selected:
+        cred = db.query(SSHCredential).filter(SSHCredential.id == cred_id).first()
+        if cred:
+            db.delete(cred)
+    db.commit()
+    return RedirectResponse(url="/admin/ssh", status_code=302)
+
+
 @router.get("/admin/snmp")
 async def list_snmp_profiles(
     request: Request,
@@ -227,5 +241,19 @@ async def delete_snmp_profile(
         raise HTTPException(status_code=404, detail="SNMP profile not found")
 
     db.delete(profile)
+    db.commit()
+    return RedirectResponse(url="/admin/snmp", status_code=302)
+
+
+@router.post("/admin/snmp/bulk-delete")
+async def bulk_delete_snmp(
+    selected: list[int] = Form(...),
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("superadmin")),
+):
+    for profile_id in selected:
+        profile = db.query(SNMPCommunity).filter(SNMPCommunity.id == profile_id).first()
+        if profile:
+            db.delete(profile)
     db.commit()
     return RedirectResponse(url="/admin/snmp", status_code=302)

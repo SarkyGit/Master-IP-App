@@ -121,3 +121,17 @@ async def delete_vlan(
     db.delete(vlan)
     db.commit()
     return RedirectResponse(url="/vlans", status_code=302)
+
+
+@router.post("/vlans/bulk-delete")
+async def bulk_delete_vlans(
+    selected: list[int] = Form(...),
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("editor")),
+):
+    for vlan_id in selected:
+        vlan = db.query(VLAN).filter(VLAN.id == vlan_id).first()
+        if vlan:
+            db.delete(vlan)
+    db.commit()
+    return RedirectResponse(url="/vlans", status_code=302)
