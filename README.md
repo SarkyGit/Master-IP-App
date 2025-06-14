@@ -34,6 +34,10 @@ This application manages network devices, VLANs and configuration backups using 
    ```
    After setting the URL, run the seed scripts above to populate the PostgreSQL database.
 
+   Alternatively, execute `./init_db.sh` to automatically create the PostgreSQL
+   database (if needed), install dependencies and run all seed scripts in one
+   step.
+
    **Note:** The sample devices created by `seed_data.py` use example IP
    addresses in the `192.168.10.0/24` range. Adjust these addresses in
    `seed_data.py` or modify the devices through the UI if they do not match your
