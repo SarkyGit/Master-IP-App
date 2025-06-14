@@ -21,6 +21,7 @@ from .ssh_tasks import router as ssh_tasks_router
 from .ip_bans import router as ip_bans_router
 from .user_ssh import router as user_ssh_router
 from .login_events import router as login_events_router
+from .inventory import router as inventory_router
 
 __all__ = [
     "auth_router",
@@ -46,4 +47,5 @@ __all__ = [
     "ip_bans_router",
     "user_ssh_router",
     "login_events_router",
+    "inventory_router",
 ]
