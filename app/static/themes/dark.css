@@ -13,7 +13,8 @@ textarea {
 }
 
 .card,
-.table {
+.table,
+table {
   background-color: #222034;
   color: #f8f9fa;
   border-radius: 0.5rem;

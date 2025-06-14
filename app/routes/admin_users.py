@@ -39,6 +39,8 @@ async def new_user_form(request: Request, current_user=Depends(require_role("sup
         "show_active": True,
         "require_password": True,
         "cancel_url": "/admin/users",
+        "themes": ["dark", "light", "blue"],
+        "fonts": ["sans", "serif", "mono"],
     }
     return templates.TemplateResponse("user_form.html", context)
 
@@ -50,6 +52,8 @@ async def create_user(
     password: str = Form(...),
     role: str = Form(...),
     is_active: bool = Form(False),
+    theme: str = Form("dark"),
+    font: str = Form("sans"),
     db: Session = Depends(get_db),
     current_user=Depends(require_role("superadmin")),
 ):
@@ -64,6 +68,8 @@ async def create_user(
             "show_active": True,
             "require_password": True,
             "cancel_url": "/admin/users",
+            "themes": ["dark", "light", "blue"],
+            "fonts": ["sans", "serif", "mono"],
         }
         return templates.TemplateResponse("user_form.html", context)
 
@@ -75,6 +81,8 @@ async def create_user(
         hashed_password=get_password_hash(password),
         role=role,
         is_active=is_active,
+        theme=theme,
+        font=font,
     )
     db.add(user)
     db.commit()
@@ -101,6 +109,8 @@ async def edit_user_form(
         "show_active": True,
         "email_readonly": True,
         "cancel_url": "/admin/users",
+        "themes": ["dark", "light", "blue"],
+        "fonts": ["sans", "serif", "mono"],
     }
     return templates.TemplateResponse("user_form.html", context)
 
@@ -111,6 +121,8 @@ async def update_user(
     request: Request,
     role: str = Form(...),
     is_active: bool = Form(False),
+    theme: str = Form("dark"),
+    font: str = Form("sans"),
     password: str | None = Form(None),
     db: Session = Depends(get_db),
     current_user=Depends(require_role("superadmin")),
@@ -122,6 +134,8 @@ async def update_user(
         role = user.role
     user.role = role
     user.is_active = is_active
+    user.theme = theme
+    user.font = font
     if password:
         user.hashed_password = get_password_hash(password)
     db.commit()

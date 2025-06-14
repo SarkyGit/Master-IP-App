@@ -22,6 +22,8 @@ def main():
             hashed_password=hashed_pw,
             role="superadmin",
             is_active=True,
+            theme="dark",
+            font="sans",
         )
         db.add(user)
         db.commit()
