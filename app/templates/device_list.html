@@ -103,19 +103,19 @@
     {% if current_user and current_user.role in ['editor','admin','superadmin'] %}
     <tr class="border-b border-gray-700">
       <td colspan="{{ column_count }}" class="px-4 py-2 text-right">
-        <a href="/devices/{{ device.id }}/edit" class="btn btn-sm btn-secondary me-2">Edit</a>
+        <a href="/devices/{{ device.id }}/edit" class="text-blue-400 underline mr-2">Edit</a>
         <form method="post" action="/devices/{{ device.id }}/delete" class="d-inline">
           <button type="submit" class="btn btn-sm btn-danger me-2" onclick="return confirm('Delete device?')">Delete</button>
         </form>
         <form method="post" action="/devices/{{ device.id }}/pull-config" class="d-inline">
           <button type="submit" class="btn btn-sm btn-success me-2">Pull Config</button>
         </form>
-        <a href="/devices/{{ device.id }}/push-config" class="btn btn-sm btn-warning me-2">Push Config</a>
-        <a href="/devices/{{ device.id }}/configs" class="btn btn-sm btn-info me-2">Configs</a>
+        <a href="/devices/{{ device.id }}/push-config" class="text-blue-400 underline mr-2">Push Config</a>
+        <a href="/devices/{{ device.id }}/configs" class="text-blue-400 underline mr-2">Configs</a>
         {% if device.snmp_community %}
-        <a href="/devices/{{ device.id }}/ports" class="btn btn-sm btn-primary me-2">Port Status</a>
-        <a href="/devices/{{ device.id }}/port-map" class="btn btn-sm btn-secondary me-2">Port Map</a>
-        <a href="/devices/{{ device.id }}/ports/edit" class="btn btn-sm btn-secondary">Port Editor</a>
+        <a href="/devices/{{ device.id }}/ports" class="text-blue-400 underline mr-2">Port Status</a>
+        <a href="/devices/{{ device.id }}/port-map" class="text-blue-400 underline mr-2">Port Map</a>
+        <a href="/devices/{{ device.id }}/ports/edit" class="text-blue-400 underline">Port Editor</a>
         {% endif %}
       </td>
     </tr>
