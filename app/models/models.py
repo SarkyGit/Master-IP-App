@@ -9,6 +9,7 @@ from sqlalchemy import (
     Boolean,
 )
 from sqlalchemy.orm import relationship
+from sqlalchemy import Table
 
 from app.utils.database import Base
 
@@ -64,6 +65,23 @@ class DeviceType(Base):
     devices = relationship("Device", back_populates="device_type")
 
 
+device_tags = Table(
+    "device_tags",
+    Base.metadata,
+    Column("device_id", Integer, ForeignKey("devices.id"), primary_key=True),
+    Column("tag_id", Integer, ForeignKey("tags.id"), primary_key=True),
+)
+
+
+class Tag(Base):
+    __tablename__ = "tags"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String, unique=True, nullable=False)
+
+    devices = relationship("Device", secondary=device_tags, back_populates="tags")
+
+
 class Device(Base):
     __tablename__ = "devices"
 
@@ -84,14 +102,24 @@ class Device(Base):
     ssh_credential_id = Column(Integer, ForeignKey("ssh_credentials.id"))
     snmp_community_id = Column(Integer, ForeignKey("snmp_communities.id"))
     created_at = Column(DateTime, default=datetime.utcnow)
+    created_by_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    updated_at = Column(DateTime, default=datetime.utcnow)
+    last_seen = Column(DateTime, nullable=True)
 
     vlan = relationship("VLAN", back_populates="devices")
     ssh_credential = relationship("SSHCredential", back_populates="devices")
     snmp_community = relationship("SNMPCommunity", back_populates="devices")
     device_type = relationship("DeviceType", back_populates="devices")
     location_ref = relationship("Location", back_populates="devices")
+    created_by = relationship("User", foreign_keys=[created_by_id])
     backups = relationship(
         "ConfigBackup",
+        back_populates="device",
+        cascade="all, delete-orphan",
+    )
+    tags = relationship("Tag", secondary="device_tags", back_populates="devices")
+    edit_logs = relationship(
+        "DeviceEditLog",
         back_populates="device",
         cascade="all, delete-orphan",
     )
@@ -168,3 +196,16 @@ class PortConfigTemplate(Base):
     edited_by_id = Column(Integer, ForeignKey("users.id"), nullable=True)
 
     edited_by = relationship("User")
+
+
+class DeviceEditLog(Base):
+    __tablename__ = "device_edit_logs"
+
+    id = Column(Integer, primary_key=True)
+    device_id = Column(Integer, ForeignKey("devices.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    timestamp = Column(DateTime, default=datetime.utcnow)
+    changes = Column(Text, nullable=True)
+
+    device = relationship("Device", back_populates="edit_logs")
+    user = relationship("User")

@@ -30,6 +30,7 @@
       <th class="px-4 py-2 text-left">VLAN</th>
       <th class="px-4 py-2 text-left">SSH Profile</th>
       <th class="px-4 py-2 text-left">SNMP Profile</th>
+      <th class="px-4 py-2 text-left">Tags</th>
     </tr>
   </thead>
   <tbody>
@@ -51,10 +52,11 @@
       <td class="px-4 py-2">{{ device.vlan.tag if device.vlan else '' }}</td>
       <td class="px-4 py-2">{{ device.ssh_credential.name if device.ssh_credential else '' }}</td>
       <td class="px-4 py-2">{{ device.snmp_community.name if device.snmp_community else '' }}</td>
+      <td class="px-4 py-2">{{ ', '.join([t.name for t in device.tags]) }}</td>
     </tr>
     {% if current_user and current_user.role in ['editor','admin','superadmin'] %}
     <tr class="border-b border-gray-700">
-      <td colspan="16" class="px-4 py-2 text-right">
+      <td colspan="17" class="px-4 py-2 text-right">
         <a href="/devices/{{ device.id }}/edit" class="btn btn-sm btn-secondary me-2">Edit</a>
         <form method="post" action="/devices/{{ device.id }}/delete" class="d-inline">
           <button type="submit" class="btn btn-sm btn-danger me-2" onclick="return confirm('Delete device?')">Delete</button>

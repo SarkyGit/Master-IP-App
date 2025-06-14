@@ -15,12 +15,14 @@ from app.models.models import (
     SNMPCommunity,
     PortConfigTemplate,
     SystemTunable,
+    Tag,
 )
 import csv
 import io
 import urllib.parse
 import gspread
 from google.oauth2.service_account import Credentials
+from app.utils.tags import update_device_complete_tag
 
 
 
@@ -236,6 +238,45 @@ async def export_google(
         msg = f"Export failed: {exc}"
     msg = urllib.parse.quote(msg)
     return RedirectResponse(url=f"/tasks/google-sheets?message={msg}", status_code=302)
+
+
+@router.get("/tasks/edit-tags")
+async def edit_tags_page(
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("admin")),
+):
+    devices = db.query(Device).all()
+    context = {"request": request, "devices": devices, "current_user": current_user}
+    return templates.TemplateResponse("tag_edit.html", context)
+
+
+@router.post("/tasks/edit-tags")
+async def save_tags(
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("admin")),
+):
+    form = await request.form()
+    devices = db.query(Device).all()
+    for dev in devices:
+        names = form.get(f"tags_{dev.id}", "")
+        tag_objs = []
+        for name in [n.strip() for n in names.split(",") if n.strip()]:
+            tag = db.query(Tag).filter(Tag.name == name).first()
+            if not tag:
+                tag = Tag(name=name)
+                db.add(tag)
+                db.flush()
+            tag_objs.append(tag)
+        manual = tag_objs
+        for t in list(dev.tags):
+            if t.name not in ("complete", "incomplete"):
+                dev.tags.remove(t)
+        dev.tags.extend(manual)
+        update_device_complete_tag(db, dev)
+    db.commit()
+    return RedirectResponse(url="/tasks/edit-tags", status_code=302)
 
 
 @router.post("/tasks/import-google")

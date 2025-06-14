@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-xl mb-4">Edit Tags</h1>
+<form method="post">
+<table class="min-w-full bg-black mt-4">
+  <thead>
+    <tr>
+      <th class="px-4 py-2 text-left">Device</th>
+      <th class="px-4 py-2 text-left">Tags (comma separated)</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for dev in devices %}
+    <tr class="border-t border-gray-700">
+      <td class="px-4 py-2">{{ dev.hostname }}</td>
+      <td class="px-4 py-2">
+        <input type="text" name="tags_{{ dev.id }}" value="{{ ', '.join([t.name for t in dev.tags if t.name not in ['complete','incomplete']]) }}" class="w-full p-2 text-black" />
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+<button type="submit" class="mt-2 bg-blue-600 px-4 py-1">Save</button>
+</form>
+<p class="mt-2">Automatic tags <em>complete</em> and <em>incomplete</em> cannot be removed.</p>
+{% endblock %}
