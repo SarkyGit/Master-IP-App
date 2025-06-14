@@ -82,9 +82,9 @@
             </ul>
             <div class="d-flex align-items-center">
               {% if current_user %}
-                <a class="btn btn-sm btn-outline-light me-2" href="/dashboard">Dashboard</a>
-                <a class="btn btn-sm btn-outline-light me-2" href="/users/me">My Profile</a>
-                <a class="btn btn-sm btn-outline-light me-2" href="/user/ssh">SSH Profiles</a>
+                <a class="text-blue-400 underline mr-2" href="/dashboard">Dashboard</a>
+                <a class="text-blue-400 underline mr-2" href="/users/me">My Profile</a>
+                <a class="text-blue-400 underline mr-2" href="/user/ssh">SSH Profiles</a>
                 {% if current_user.role in ['admin','superadmin'] %}
                 <div class="btn-group me-2">
                   <button type="button" class="btn btn-sm btn-outline-light dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
@@ -113,9 +113,9 @@
                   </ul>
                 </div>
                 {% endif %}
-                <a href="/auth/logout" class="btn btn-sm btn-outline-warning">Logout</a>
+                <a href="/auth/logout" class="text-blue-400 underline">Logout</a>
               {% else %}
-                <a href="/auth/login" class="btn btn-sm btn-outline-light">Login</a>
+                <a href="/auth/login" class="text-blue-400 underline">Login</a>
               {% endif %}
             </div>
           </div>
