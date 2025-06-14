@@ -13,6 +13,7 @@
       <th class="px-4 py-2 text-left">Admin State</th>
       <th class="px-4 py-2 text-left">Speed</th>
       <th class="px-4 py-2 text-left">Description</th>
+      <th class="px-4 py-2 text-left">Actions</th>
     </tr>
   </thead>
   <tbody>
@@ -27,8 +28,11 @@
         {% endif %}
       </td>
       <td class="px-4 py-2">{{ port.admin_status }}</td>
-      <td class="px-4 py-2">{{ port.speed }}</td>
+      <td class="px-4 py-2">{{ port.speed or '' }} Mbps</td>
       <td class="px-4 py-2">{{ port.alias or '' }}</td>
+      <td class="px-4 py-2">
+        <a href="/devices/{{ device.id }}/ports/{{ port.name }}/config" class="text-blue-400 underline">Config</a>
+      </td>
     </tr>
   {% endfor %}
   </tbody>
