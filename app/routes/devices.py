@@ -543,66 +543,23 @@ async def _gather_snmp_table(client: PyWrapper, oid: str) -> dict:
     return data
 
 
-def _layout_ports(ports: list[dict]) -> list[list[dict]]:
-    """Return port rows for switch view based on port count."""
+def _layout_ports(ports: list[dict]) -> list[list[list[dict]]]:
+    """Return port panes with odd/even rows for switch view."""
+    panes: list[list[list[dict]]] = []
+    idx = 0
     n = len(ports)
-
-    # 8 ports - two blocks of four on one line
-    if n == 8:
-        return [ports]
-
-    # 10 ports - 4/4 on first line, 2 on second
-    if n == 10:
-        return [ports[:8], ports[8:]]
-
-    # 12-23 ports - blocks of 6 with extras handled specially
-    if 12 <= n < 24:
-        rows: list[list[dict]] = []
-        idx = 0
-        while idx + 6 <= n:
-            rows.append(ports[idx : idx + 6])
-            idx += 6
-
-        remainder = n - idx
-        extras = ports[idx:]
-
-        if remainder == 2:
-            if rows:
-                rows[-1].extend(extras)
+    while idx < n:
+        chunk = ports[idx : idx + 6]
+        odd_row: list[dict] = []
+        even_row: list[dict] = []
+        for pos, port in enumerate(chunk):
+            if pos % 2 == 0:
+                odd_row.append(port)
             else:
-                rows.append(extras)
-        elif remainder == 4:
-            # split two ports between the last two rows
-            if len(rows) >= 2:
-                rows[-2].extend(extras[:2])
-                rows[-1].extend(extras[2:])
-            elif len(rows) == 1:
-                rows.append(extras[:2])
-                rows[0].extend(extras[2:])
-        elif remainder:
-            rows.append(extras)
-        return rows
-
-    # 24 or more ports - two lines of 12 with limited extras
-    if n >= 24:
-        row1 = ports[:12]
-        row2 = ports[12:24]
-        rows = [row1, row2]
-
-        extras = ports[24:]
-        if len(extras) == 2:
-            rows.append(extras)
-        elif len(extras) == 4:
-            rows[0].extend(extras[:2])
-            rows[1].extend(extras[2:])
-        elif extras:
-            # generic handling for larger counts
-            for i in range(0, len(extras), 12):
-                rows.append(extras[i : i + 12])
-        return rows
-
-    # default fallback
-    return [ports]
+                even_row.append(port)
+        panes.append([odd_row, even_row])
+        idx += 6
+    return panes
 
 
 @router.get("/devices/{device_id}/ports")
@@ -623,7 +580,7 @@ async def port_status(
             "device": device,
             "error": "SNMP profile not set",
             "ports": [],
-            "port_rows": [],
+            "port_panes": [],
             "virtual_ports": [],
             "current_user": current_user,
         }
@@ -644,7 +601,7 @@ async def port_status(
             "device": device,
             "error": f"SNMP error: {exc}",
             "ports": [],
-            "port_rows": [],
+            "port_panes": [],
             "virtual_ports": [],
             "current_user": current_user,
         }
@@ -656,7 +613,7 @@ async def port_status(
             "device": device,
             "error": f"Error contacting device: {exc}",
             "ports": [],
-            "port_rows": [],
+            "port_panes": [],
             "virtual_ports": [],
             "current_user": current_user,
         }
@@ -701,7 +658,7 @@ async def port_status(
         "request": request,
         "device": device,
         "ports": ports,
-        "port_rows": _layout_ports(physical_ports),
+        "port_panes": _layout_ports(physical_ports),
         "virtual_ports": virtual_ports,
         "error": None,
         "current_user": current_user,
