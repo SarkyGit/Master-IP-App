@@ -1,5 +1,6 @@
-from fastapi import FastAPI, Request, WebSocket, Depends
+from fastapi import FastAPI, Request, WebSocket, Depends, HTTPException
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import JSONResponse
 
 from starlette.middleware.sessions import SessionMiddleware
 import os
@@ -62,6 +63,17 @@ app.include_router(task_views_router)
 app.include_router(user_management_router)
 app.include_router(user_pages_router)
 app.include_router(locations_router)
+
+
+@app.exception_handler(HTTPException)
+async def unauthorized_handler(request: Request, exc: HTTPException):
+    """Show a friendly page when authentication is required."""
+    if exc.status_code == 401:
+        context = {"request": request}
+        return templates.TemplateResponse(
+            "not_authorised.html", context, status_code=exc.status_code
+        )
+    return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
 
 
 @app.get("/")
