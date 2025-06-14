@@ -29,7 +29,6 @@ from puresnmp import Client, PyWrapper, V2C
 from puresnmp.exc import SnmpError
 
 
-
 router = APIRouter()
 
 # Basic status options for dropdown menus
@@ -333,7 +332,12 @@ async def push_config_form(
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
 
-    context = {"request": request, "device": device, "error": None, "current_user": current_user}
+    context = {
+        "request": request,
+        "device": device,
+        "error": None,
+        "current_user": current_user,
+    }
     return templates.TemplateResponse("config_push_form.html", context)
 
 
@@ -618,6 +622,8 @@ async def port_status(
             "device": device,
             "error": "SNMP profile not set",
             "ports": [],
+            "port_rows": [],
+            "virtual_ports": [],
             "current_user": current_user,
         }
         return templates.TemplateResponse("port_status.html", context)
@@ -637,6 +643,8 @@ async def port_status(
             "device": device,
             "error": f"SNMP error: {exc}",
             "ports": [],
+            "port_rows": [],
+            "virtual_ports": [],
             "current_user": current_user,
         }
         return templates.TemplateResponse("port_status.html", context)
@@ -647,6 +655,8 @@ async def port_status(
             "device": device,
             "error": f"Error contacting device: {exc}",
             "ports": [],
+            "port_rows": [],
+            "virtual_ports": [],
             "current_user": current_user,
         }
         return templates.TemplateResponse("port_status.html", context)
@@ -668,11 +678,22 @@ async def port_status(
         }
         ports.append(port)
 
+    prefixes = ("Fa", "Gi", "Te", "Tw", "Fo", "Hu")
+    physical_ports = []
+    virtual_ports = []
+    for port in ports:
+        name = (port.get("name") or "").strip()
+        if any(name.startswith(p) for p in prefixes):
+            physical_ports.append(port)
+        else:
+            virtual_ports.append(port)
+
     context = {
         "request": request,
         "device": device,
         "ports": ports,
-        "port_rows": _layout_ports(ports),
+        "port_rows": _layout_ports(physical_ports),
+        "virtual_ports": virtual_ports,
         "error": None,
         "current_user": current_user,
     }
@@ -709,7 +730,9 @@ async def port_config(
     output = ""
     try:
         async with asyncssh.connect(device.ip, **conn_kwargs) as conn:
-            result = await conn.run(f"show running-config interface {port_name}", check=False)
+            result = await conn.run(
+                f"show running-config interface {port_name}", check=False
+            )
             output = result.stdout
     except Exception as exc:
         log_audit(db, current_user, "debug", device, f"Port config error: {exc}")
