@@ -43,7 +43,7 @@ async def terminal_ws(websocket: WebSocket, device_id: int):
 
         try:
             async with asyncssh.connect(device.ip, **conn_kwargs) as conn:
-                session = await conn.create_session(asyncssh.SSHClientProcess)
+                _, session = await conn.create_session(asyncssh.SSHClientProcess)
 
                 async def ws_to_ssh():
                     nonlocal last_msg
