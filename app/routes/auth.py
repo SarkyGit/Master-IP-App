@@ -22,7 +22,7 @@ async def login_form(request: Request):
 @router.post("/login")
 async def login(request: Request, email: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
     """Process login form and create a session."""
-    user = db.query(User).filter(User.email == email, User.is_active == True).first()
+    user = db.query(User).filter(User.email == email, User.is_active.is_(True)).first()
     if not user or not auth_utils.verify_password(password, user.hashed_password):
         context = {"request": request, "error": "Invalid credentials"}
         return templates.TemplateResponse("login.html", context)

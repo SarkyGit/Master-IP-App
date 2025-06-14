@@ -102,7 +102,7 @@ async def list_tasks(
 ):
     if not current_user:
         raise HTTPException(status_code=401, detail="Not authenticated")
-    queued = db.query(ConfigBackup).filter(ConfigBackup.queued == True).all()
+    queued = db.query(ConfigBackup).filter(ConfigBackup.queued.is_(True)).all()
     devices = db.query(Device).all()
     message = request.query_params.get("message")
     context = {

@@ -4,7 +4,7 @@ from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 
 from app.utils.db_session import get_db
-from app.utils.auth import get_current_user, require_role
+from app.utils.auth import require_role
 from app.utils.templates import templates
 from app.models.models import PortConfigTemplate
 

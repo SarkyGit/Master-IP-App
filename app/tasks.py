@@ -12,7 +12,7 @@ QUEUE_INTERVAL = 60  # seconds
 
 async def run_push_queue_once():
     db = SessionLocal()
-    queued = db.query(ConfigBackup).filter(ConfigBackup.queued == True).all()
+    queued = db.query(ConfigBackup).filter(ConfigBackup.queued.is_(True)).all()
     for backup in queued:
         device = backup.device
         cred = device.ssh_credential
