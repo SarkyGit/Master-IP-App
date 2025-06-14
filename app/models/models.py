@@ -283,3 +283,18 @@ class LoginEvent(Base):
     location = Column(String, nullable=True)
 
     user = relationship("User")
+
+
+class EmailLog(Base):
+    """Record summary emails sent for site configuration changes."""
+
+    __tablename__ = "email_logs"
+
+    id = Column(Integer, primary_key=True)
+    site_id = Column(Integer, ForeignKey("sites.id"), nullable=False)
+    date_sent = Column(DateTime, default=datetime.utcnow)
+    recipient_count = Column(Integer, nullable=False)
+    success = Column(Boolean, default=True)
+    details = Column(Text, nullable=True)
+
+    site = relationship("Site")

@@ -1,12 +1,15 @@
 import asyncio
-from datetime import datetime
+from datetime import datetime, timedelta
+from collections import defaultdict
 import asyncssh
 
 from app.utils.ssh import build_conn_kwargs
 
 from app.utils.db_session import SessionLocal
-from app.models.models import ConfigBackup, Device
+from app.models.models import ConfigBackup, Device, Site, SiteMembership, User, AuditLog, EmailLog
 from app.utils.audit import log_audit
+from app.utils.email_utils import send_email
+from app.utils.templates import templates
 import os
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
@@ -145,6 +148,90 @@ def unschedule_device_config_pull(device_id: int):
         pass
 
 
+async def send_site_summaries():
+    """Compile and email daily configuration change summaries by site."""
+    db = SessionLocal()
+    since = datetime.utcnow() - timedelta(days=1)
+    sites = db.query(Site).all()
+    template = templates.env.get_template("email_summary.txt")
+
+    for site in sites:
+        backups = (
+            db.query(ConfigBackup)
+            .join(Device)
+            .filter(Device.site_id == site.id, ConfigBackup.created_at >= since)
+            .order_by(ConfigBackup.created_at)
+            .all()
+        )
+        if not backups:
+            continue
+
+        grouped = defaultdict(list)
+        for b in backups:
+            grouped[b.device_id].append(b)
+
+        rows = []
+        for dev_id, items in grouped.items():
+            device = items[0].device
+            for b in items:
+                log = (
+                    db.query(AuditLog)
+                    .filter(
+                        AuditLog.device_id == dev_id,
+                        AuditLog.timestamp >= b.created_at - timedelta(minutes=1),
+                        AuditLog.timestamp <= b.created_at + timedelta(minutes=1),
+                    )
+                    .order_by(AuditLog.timestamp.desc())
+                    .first()
+                )
+                rows.append(
+                    {
+                        "device": device,
+                        "time": b.created_at,
+                        "source": b.source,
+                        "user": log.user.email if log and log.user else None,
+                    }
+                )
+
+        recipients_query = (
+            db.query(User.email)
+            .filter(User.is_active.is_(True))
+            .filter(
+                (User.role == "superadmin")
+                | (
+                    User.role.in_(["admin", "editor"])
+                    & (
+                        User.id.in_(
+                            db.query(SiteMembership.user_id).filter(
+                                SiteMembership.site_id == site.id
+                            )
+                        )
+                    )
+                )
+            )
+        )
+        recipients = [r[0] for r in recipients_query.all()]
+
+        if not recipients:
+            continue
+
+        body = template.render(site=site, rows=rows, date_sent=datetime.utcnow())
+        success, error = send_email(
+            recipients, f"Config Changes for {site.name}", body
+        )
+
+        log_entry = EmailLog(
+            site_id=site.id,
+            recipient_count=len(recipients),
+            success=success,
+            details=error,
+        )
+        db.add(log_entry)
+        db.commit()
+
+    db.close()
+
+
 def start_config_scheduler(app):
     @app.on_event("startup")
     async def start_sched():
@@ -161,4 +248,12 @@ def start_config_scheduler(app):
         for dev in devices:
             schedule_device_config_pull(dev)
         db.close()
+
+        scheduler.add_job(
+            send_site_summaries,
+            trigger="cron",
+            hour=0,
+            id="daily_site_summary",
+            replace_existing=True,
+        )
 
