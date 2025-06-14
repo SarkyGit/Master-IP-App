@@ -7,17 +7,14 @@ from app.utils.database import Base
 # Import models so that Base.metadata is aware of them before creating tables
 from app import models  # noqa: F401
 
-DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///ces_inventory.db")
+DATABASE_URL = os.environ.get("DATABASE_URL")
+if not DATABASE_URL:
+    raise RuntimeError("DATABASE_URL environment variable is required and must point to a PostgreSQL database")
 
-# Use special connection args only for SQLite
-connect_args = {}
-if DATABASE_URL.startswith("sqlite"):
-    connect_args["check_same_thread"] = False
+if not DATABASE_URL.startswith("postgresql"):
+    raise RuntimeError("Only PostgreSQL is supported. DATABASE_URL must begin with 'postgresql'.")
 
-engine = create_engine(
-    DATABASE_URL,
-    connect_args=connect_args,
-)
+engine = create_engine(DATABASE_URL)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
