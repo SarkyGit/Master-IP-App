@@ -8,10 +8,10 @@
 {% endif %}
 <div class="grid grid-cols-2 gap-8 mb-8 mx-auto">
   {% for pane in port_panes %}
-  <div class="space-y-0.5 flex {% if loop.index == 1 %}justify-end{% else %}justify-start{% endif %}" style="width: 100%;">
-    <div class="space-y-0.5" style="width: 43%;">
-      {% for row in pane %}
-      <div class="grid grid-cols-3 gap-0.5 justify-center">
+  <div class="space-y-0.5" style="width: 100%;">
+    {% for row in pane %}
+    <div class="flex {% if loop.parent.index == 1 %}justify-end{% else %}justify-start{% endif %}">
+      <div class="grid grid-cols-3 gap-0.5">
         {% for port in row %}
           <div
             id="port-{{ port.name|replace('/', '-') }}"
@@ -29,8 +29,8 @@
           </div>
         {% endfor %}
       </div>
-      {% endfor %}
     </div>
+    {% endfor %}
   </div>
   {% endfor %}
 </div>
