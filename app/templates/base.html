@@ -22,6 +22,7 @@
               <li class="py-1">
                 <a class="block px-4 py-2 text-blue-400 rounded hover:underline" href="/">Home</a>
               </li>
+              {% if current_user %}
               <li class="relative py-1" x-data="{open:false}">
                 <button @click="open = !open" class="block px-4 py-2 text-blue-400 rounded hover:underline">Inventory</button>
                 <ul x-show="open" @click.away="open = false" class="absolute mt-2 bg-gray-800 text-white py-2 w-48 hidden" x-cloak>
@@ -47,7 +48,7 @@
                 <ul x-show="open" @click.away="open = false" class="absolute mt-2 bg-gray-800 text-white py-2 w-48 hidden" x-cloak>
                   <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/tasks">Task Queue</a></li>
                   <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/devices/duplicates">Duplicate Checker</a></li>
-                  {% if current_user and current_user.role in ['admin','superadmin'] %}
+                  {% if current_user.role in ['admin','superadmin'] %}
                   <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/tasks/edit-tags">Edit Tags</a></li>
                   <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/tasks/google-sheets">Google Sheets</a></li>
                   {% endif %}
@@ -68,13 +69,14 @@
                   <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/ssh/port-search">Port Search</a></li>
                   <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/ssh/bulk-port-update">Bulk Port Update</a></li>
                   <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/bulk/vlan-push">VLAN Bulk Push</a></li>
-                <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/ssh/netbird-connect">Initiate Netbird Connection</a></li>
+                  <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/ssh/netbird-connect">Initiate Netbird Connection</a></li>
                 </ul>
               </li>
-              {% if current_user and current_user.role in ['editor','admin','superadmin'] %}
+              {% if current_user.role in ['editor','admin','superadmin'] %}
               <li class="py-1">
                 <a class="block px-4 py-2 text-blue-400 rounded hover:underline" href="/bulk/device-import">Bulk Add Devices</a>
               </li>
+              {% endif %}
               {% endif %}
             </ul>
             <div class="flex items-center">
