@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-xl mb-4">Edit Ports on {{ device.hostname }}</h1>
+{% if message %}<p class="text-green-400 mb-2">{{ message }}</p>{% endif %}
+<form method="post" class="space-y-4">
+  <table class="min-w-full text-sm bg-black">
+    <thead>
+      <tr>
+        <th class="px-2 py-1 text-left">Name</th>
+        <th class="px-2 py-1 text-left">Description</th>
+        <th class="px-2 py-1 text-left">VLAN</th>
+        <th class="px-2 py-1 text-left">Quick View</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for intf in interfaces %}
+      <tr class="border-t border-gray-700">
+        <td class="px-2 py-1">
+          <input type="text" name="name_{{ intf.id }}" value="{{ intf.name }}" class="w-24 p-1 text-black" />
+        </td>
+        <td class="px-2 py-1">
+          <div class="flex items-center">
+            <input type="text" name="desc_{{ intf.id }}" value="{{ intf.description or '' }}" class="w-full p-1 text-black" />
+            {% if mismatch.get(intf.id) %}
+            <span class="ml-1 text-yellow-400" title="Mismatch with device">&#9888;</span>
+            {% endif %}
+          </div>
+        </td>
+        <td class="px-2 py-1">
+          <select name="vlan_{{ intf.id }}" class="p-1 text-black">
+            <option value=""></option>
+            {% for v in vlans %}
+            <option value="{{ v.id }}" {% if intf.vlan_id==v.id %}selected{% endif %}>{{ v.tag }}</option>
+            {% endfor %}
+          </select>
+        </td>
+        <td class="px-2 py-1">
+          <pre class="bg-gray-800 p-1 whitespace-pre-wrap overflow-auto">{{ live_configs[intf.name] }}</pre>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <button type="submit" class="bg-blue-600 px-4 py-2">Save Changes</button>
+  <a href="/devices/{{ device.id }}/port-map" class="ml-2 underline">Back</a>
+</form>
+{% endblock %}

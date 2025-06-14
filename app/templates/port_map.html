@@ -1,7 +1,10 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1 class="text-xl mb-4">Port Map for {{ device.hostname }}</h1>
+<h1 class="text-xl mb-4 flex items-center">
+  Port Map for {{ device.hostname }}
+  <a href="/devices/{{ device.id }}/ports/edit" class="ml-4 text-sm underline">Edit Ports</a>
+</h1>
 {% if error %}<p class="text-red-500 mb-2">{{ error }}</p>{% endif %}
 <div class="space-y-1 mb-4">
   {% for row in rows %}

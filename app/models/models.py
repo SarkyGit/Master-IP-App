@@ -354,3 +354,33 @@ class SyslogEntry(Base):
     device = relationship("Device")
     site = relationship("Site")
 
+
+class Interface(Base):
+    __tablename__ = "interfaces"
+
+    id = Column(Integer, primary_key=True)
+    device_id = Column(Integer, ForeignKey("devices.id"), nullable=False)
+    name = Column(String, nullable=False)
+    description = Column(String, nullable=True)
+    vlan_id = Column(Integer, ForeignKey("vlans.id"), nullable=True)
+
+    device = relationship("Device")
+    vlan = relationship("VLAN")
+
+
+class InterfaceChangeLog(Base):
+    __tablename__ = "interface_change_logs"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    device_id = Column(Integer, ForeignKey("devices.id"))
+    interface_name = Column(String, nullable=False)
+    old_desc = Column(String, nullable=True)
+    new_desc = Column(String, nullable=True)
+    old_vlan = Column(Integer, nullable=True)
+    new_vlan = Column(Integer, nullable=True)
+    timestamp = Column(DateTime, default=datetime.utcnow)
+
+    user = relationship("User")
+    device = relationship("Device")
+
