@@ -23,6 +23,7 @@ from app.routes import (
     user_pages_router,
     locations_router,
     ssh_tasks_router,
+    ip_bans_router,
     user_ssh_router,
 )
 from app.routes.tunables import router as tunables_router
@@ -66,6 +67,7 @@ app.include_router(user_management_router)
 app.include_router(user_pages_router)
 app.include_router(locations_router)
 app.include_router(ssh_tasks_router)
+app.include_router(ip_bans_router)
 app.include_router(user_ssh_router)
 
 

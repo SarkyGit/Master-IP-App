@@ -2,9 +2,12 @@ from fastapi import APIRouter, Request, Depends, Form, HTTPException
 from fastapi.responses import RedirectResponse
 from app.utils.templates import templates
 from sqlalchemy.orm import Session
+from datetime import datetime
 
 from app.utils.db_session import get_db
 from app.utils import auth as auth_utils
+from app.utils.audit import log_audit
+from app.utils.ip_banning import check_ban, record_failure, clear_attempts
 from app.models.models import User
 
 
@@ -20,14 +23,32 @@ async def login_form(request: Request):
 
 
 @router.post("/login")
-async def login(request: Request, email: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
+async def login(
+    request: Request,
+    email: str = Form(...),
+    password: str = Form(...),
+    db: Session = Depends(get_db),
+):
     """Process login form and create a session."""
-    user = db.query(User).filter(User.email == email, User.is_active.is_(True)).first()
-    if not user or not auth_utils.verify_password(password, user.hashed_password):
+    ip = request.client.host
+
+    if check_ban(db, ip):
+        log_audit(db, None, "failed_login", details=f"IP={ip} banned")
         context = {"request": request, "error": "Invalid credentials"}
         return templates.TemplateResponse("login.html", context)
 
+    user = db.query(User).filter(User.email == email, User.is_active.is_(True)).first()
+    if not user or not auth_utils.verify_password(password, user.hashed_password):
+        banned_now = record_failure(db, ip)
+        log_audit(db, user, "failed_login", details=f"IP={ip}")
+        if banned_now:
+            log_audit(db, None, "auto_ban_ip", details=f"{ip}")
+        context = {"request": request, "error": "Invalid credentials"}
+        return templates.TemplateResponse("login.html", context)
+
+    clear_attempts(ip)
     request.session["user_id"] = user.id
+    log_audit(db, user, "login", details=f"IP={ip}")
     response = RedirectResponse(url="/", status_code=302)
     return response
 

@@ -12,6 +12,7 @@ from .models import (
     PortConfigTemplate,
     Tag,
     DeviceEditLog,
+    BannedIP,
 )
 
 __all__ = [
@@ -28,4 +29,5 @@ __all__ = [
     "PortConfigTemplate",
     "Tag",
     "DeviceEditLog",
+    "BannedIP",
 ]
