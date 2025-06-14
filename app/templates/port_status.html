@@ -11,11 +11,12 @@
   <div class="grid grid-cols-{{ row|length }} gap-1 justify-center">
     {% for port in row %}
       <div
+        id="port-{{ port.name|replace('/', '-') }}"
         class="w-20 h-12 flex flex-col items-center justify-center text-xs text-white {% if port.oper_status == 'up' %}bg-green-600{% else %}bg-red-600{% endif %}"
         title="{{ port.descr or port.name }}"
       >
         <span>{{ port.name }}</span>
-        <span>{{ port.speed }}{% if port.speed %}M{% endif %}</span>
+        <span class="port-rate">--</span>
       </div>
     {% endfor %}
   </div>
@@ -27,11 +28,12 @@
 <div class="flex flex-wrap gap-1 mb-4">
   {% for port in virtual_ports %}
     <div
+      id="port-{{ port.name|replace('/', '-') }}"
       class="w-20 h-12 flex flex-col items-center justify-center text-xs text-white {% if port.oper_status == 'up' %}bg-green-600{% else %}bg-red-600{% endif %}"
       title="{{ port.descr or port.name }}"
     >
       <span>{{ port.name }}</span>
-      <span>{{ port.speed }}{% if port.speed %}M{% endif %}</span>
+      <span class="port-rate">--</span>
     </div>
   {% endfor %}
 </div>
@@ -68,4 +70,9 @@
   {% endfor %}
   </tbody>
 </table>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>window.deviceId = {{ device.id }};</script>
+<script src="/static/js/port_status.js"></script>
 {% endblock %}
