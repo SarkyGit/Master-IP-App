@@ -19,6 +19,7 @@ from app.models.models import (
     ConfigBackup,
     AuditLog,
     DeviceType,
+    PortConfigTemplate,
 )
 from app.utils.audit import log_audit
 
@@ -829,6 +830,91 @@ async def stage_port_config(
         url=f"/devices/{device_id}/ports/{port_name}/config?message=Change+staged",
         status_code=302,
     )
+
+
+@router.get("/devices/{device_id}/ports/{port_name:path}/apply-template")
+async def apply_port_template_form(
+    device_id: int,
+    port_name: str,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("editor")),
+):
+    device = db.query(Device).filter(Device.id == device_id).first()
+    if not device:
+        raise HTTPException(status_code=404, detail="Device not found")
+    templates_db = db.query(PortConfigTemplate).all()
+    context = {
+        "request": request,
+        "device": device,
+        "port_name": port_name,
+        "templates": templates_db,
+        "snippet": None,
+        "message": None,
+        "error": None,
+        "current_user": current_user,
+    }
+    return templates.TemplateResponse("apply_port_template.html", context)
+
+
+@router.post("/devices/{device_id}/ports/{port_name:path}/apply-template")
+async def apply_port_template(
+    device_id: int,
+    port_name: str,
+    request: Request,
+    template_id: int = Form(...),
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("editor")),
+):
+    device = db.query(Device).filter(Device.id == device_id).first()
+    if not device:
+        raise HTTPException(status_code=404, detail="Device not found")
+    tpl = db.query(PortConfigTemplate).filter(PortConfigTemplate.id == template_id).first()
+    if not tpl:
+        raise HTTPException(status_code=404, detail="Template not found")
+    snippet = tpl.config_text.replace("{interface}", port_name)
+    cred = device.ssh_credential
+    error = None
+    success = False
+    if cred:
+        conn_kwargs = build_conn_kwargs(cred)
+        try:
+            async with asyncssh.connect(device.ip, **conn_kwargs) as conn:
+                session = await conn.create_session(asyncssh.SSHClientProcess)
+                for line in snippet.splitlines():
+                    session.stdin.write(line + "\n")
+                session.stdin.write("exit\n")
+                await session.wait_closed()
+                success = True
+        except Exception as exc:
+            log_audit(db, current_user, "debug", device, f"Port template error: {exc}")
+            error = str(exc)
+    else:
+        error = "No SSH credentials"
+
+    backup = ConfigBackup(
+        device_id=device.id,
+        source="port_template",
+        config_text=snippet,
+        queued=not success,
+        status="pushed" if success else "pending",
+        port_name=port_name,
+    )
+    db.add(backup)
+    db.commit()
+
+    message = "Config pushed" if success else "Config queued"
+    context = {
+        "request": request,
+        "device": device,
+        "port_name": port_name,
+        "templates": db.query(PortConfigTemplate).all(),
+        "snippet": snippet,
+        "message": message,
+        "error": error,
+        "current_user": current_user,
+    }
+    return templates.TemplateResponse("apply_port_template.html", context)
 
 
 @router.get("/devices/{device_id}/terminal")

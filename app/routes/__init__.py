@@ -12,6 +12,7 @@ from .admin_debug import router as admin_debug_router
 from .welcome import router as welcome_router
 from .device_types import router as device_types_router
 from .network import router as network_router
+from .port_config_templates import router as port_config_templates_router
 from .task_views import router as task_views_router
 from .user_management import router as user_management_router
 
@@ -30,6 +31,7 @@ __all__ = [
     "welcome_router",
     "device_types_router",
     "network_router",
+    "port_config_templates_router",
     "task_views_router",
     "user_management_router",
 ]

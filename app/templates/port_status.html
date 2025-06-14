@@ -89,6 +89,7 @@
       <td class="px-4 py-2">{{ port.alias or '' }}</td>
       <td class="px-4 py-2">
         <a href="/devices/{{ device.id }}/ports/{{ port.name }}/config" class="text-blue-400 underline">Config</a>
+        <a href="/devices/{{ device.id }}/ports/{{ port.name }}/apply-template" class="text-blue-400 underline ml-2">Template</a>
       </td>
     </tr>
   {% endfor %}
