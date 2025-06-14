@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-xl mb-4">Port History for {{ device.hostname }}</h1>
+<a href="/devices/{{ device.id }}/ports" class="underline">Back to Ports</a>
+<form method="get" class="my-4">
+  <label class="mr-2">Interface:
+    <select name="interface" onchange="this.form.submit()">
+      <option value="">All</option>
+      {% for intf in interfaces %}
+      <option value="{{ intf }}" {% if interface == intf %}selected{% endif %}>{{ intf }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <label class="mr-2">Start:
+    <input type="date" name="start" value="{{ start or '' }}" onchange="this.form.submit()">
+  </label>
+  <label class="mr-2">End:
+    <input type="date" name="end" value="{{ end or '' }}" onchange="this.form.submit()">
+  </label>
+  <label>
+    <input type="checkbox" name="changes_only" value="1" {% if changes_only %}checked{% endif %} onchange="this.form.submit()">
+    Changes only
+  </label>
+</form>
+<table class="min-w-full bg-black">
+  <thead>
+    <tr>
+      <th class="px-4 py-2 text-left">Timestamp</th>
+      <th class="px-4 py-2 text-left">Interface</th>
+      <th class="px-4 py-2 text-left">Oper Status</th>
+      <th class="px-4 py-2 text-left">Admin Status</th>
+      <th class="px-4 py-2 text-left">Speed</th>
+      <th class="px-4 py-2 text-left">PoE Draw</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for entry in entries %}
+    <tr class="border-t border-gray-700">
+      <td class="px-4 py-2">{{ entry.timestamp }}</td>
+      <td class="px-4 py-2">{{ entry.interface_name }}</td>
+      <td class="px-4 py-2">{{ entry.oper_status }}</td>
+      <td class="px-4 py-2">{{ entry.admin_status }}</td>
+      <td class="px-4 py-2">{{ entry.speed or '' }} Mbps</td>
+      <td class="px-4 py-2">{{ entry.poe_draw or '' }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

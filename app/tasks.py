@@ -7,7 +7,16 @@ from app.utils.ssh import build_conn_kwargs
 from app.utils.device_detect import detect_ssh_platform
 
 from app.utils.db_session import SessionLocal
-from app.models.models import ConfigBackup, Device, Site, SiteMembership, User, AuditLog, EmailLog
+from app.models.models import (
+    ConfigBackup,
+    Device,
+    Site,
+    SiteMembership,
+    User,
+    AuditLog,
+    EmailLog,
+    PortStatusHistory,
+)
 from app.utils.audit import log_audit
 from app.utils.email_utils import send_email
 from app.utils.templates import templates
@@ -15,6 +24,7 @@ import os
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 QUEUE_INTERVAL = int(os.environ.get("QUEUE_INTERVAL", "60"))
+PORT_HISTORY_RETENTION_DAYS = int(os.environ.get("PORT_HISTORY_RETENTION_DAYS", "60"))
 
 async def run_push_queue_once():
     db = SessionLocal()
@@ -44,6 +54,14 @@ async def run_push_queue_once():
             backup.status = "pending"
             log_audit(db, None, "debug", device, f"Queue push error: {exc}")
         db.commit()
+    db.close()
+
+
+def cleanup_port_history():
+    db = SessionLocal()
+    cutoff = datetime.utcnow() - timedelta(days=PORT_HISTORY_RETENTION_DAYS)
+    db.query(PortStatusHistory).filter(PortStatusHistory.timestamp < cutoff).delete()
+    db.commit()
     db.close()
 
 async def queue_worker():
@@ -257,6 +275,14 @@ def start_config_scheduler(app):
             trigger="cron",
             hour=0,
             id="daily_site_summary",
+            replace_existing=True,
+        )
+
+        scheduler.add_job(
+            cleanup_port_history,
+            trigger="cron",
+            hour=3,
+            id="cleanup_port_history",
             replace_existing=True,
         )
 
