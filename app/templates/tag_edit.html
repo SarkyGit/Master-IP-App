@@ -15,7 +15,7 @@
     <tr class="border-t border-gray-700">
       <td class="px-4 py-2">{{ dev.hostname }}</td>
       <td class="px-4 py-2">
-        <input type="text" name="tags_{{ dev.id }}" value="{{ ', '.join([t.name for t in dev.tags if t.name not in ['complete','incomplete']]) }}" class="w-full p-2 text-black" />
+        <input type="text" name="tags_{{ dev.id }}" value="{{ dev.tags | rejectattr('name', 'in', ['complete','incomplete']) | map(attribute='name') | join(', ') }}" class="w-full p-2 text-black" />
       </td>
     </tr>
   {% endfor %}
