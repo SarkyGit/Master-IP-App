@@ -2,6 +2,7 @@
 
 {% block content %}
 <h1 class="text-xl mb-4">System Tunables</h1>
+<p class="mb-3">Current Version: <span class="fw-bold">{{ version }}</span></p>
 
 <ul class="nav nav-tabs" id="tunableTabs" role="tablist">
   {% for function in groups.keys() %}

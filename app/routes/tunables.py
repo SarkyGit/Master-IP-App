@@ -48,7 +48,16 @@ async def list_tunables(
     db: Session = Depends(get_db),
     current_user=Depends(require_role("admin")),
 ):
-    context = {"request": request, "groups": grouped_tunables(db)}
+    version_row = (
+        db.query(SystemTunable)
+        .filter(SystemTunable.name == "App Version")
+        .first()
+    )
+    context = {
+        "request": request,
+        "groups": grouped_tunables(db),
+        "version": version_row.value if version_row else "unknown",
+    }
     return templates.TemplateResponse("tunables.html", context)
 
 
