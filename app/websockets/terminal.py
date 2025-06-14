@@ -1,4 +1,5 @@
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from starlette.websockets import WebSocketState
 from sqlalchemy.orm import Session
 import asyncssh
 import asyncio
@@ -96,8 +97,12 @@ async def terminal_ws(websocket: WebSocket, device_id: int):
                 done, pending = await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
                 for task in pending:
                     task.cancel()
+        except WebSocketDisconnect:
+            pass
         except Exception as exc:
-            await websocket.send_text(f"Connection error: {exc}")
+            if websocket.application_state == WebSocketState.CONNECTED:
+                await websocket.send_text(f"Connection error: {exc}")
     finally:
         db.close()
-        await websocket.close()
+        if websocket.application_state != WebSocketState.DISCONNECTED:
+            await websocket.close()
