@@ -9,3 +9,5 @@ itsdangerous
 bcrypt
 puresnmp
 websockets
+gspread
+google-auth

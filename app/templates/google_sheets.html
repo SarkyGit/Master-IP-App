@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-xl mb-4">Google Sheets Integration</h1>
+
+<form method="post" action="/tasks/google-sheets-config" class="space-y-2 mb-4">
+  <div>
+    <label class="block">Service Account JSON Path</label>
+    <input type="text" name="service_account_json" value="{{ config.creds }}" class="text-black w-96">
+  </div>
+  <div>
+    <label class="block">Spreadsheet ID</label>
+    <input type="text" name="spreadsheet_id" value="{{ config.sheet_id }}" class="text-black w-96">
+  </div>
+  <button type="submit" class="bg-blue-600 px-3 py-1">Save</button>
+</form>
+
+<hr class="my-4">
+<h2 class="text-lg mb-2">Export Table to Sheets</h2>
+<form method="post" action="/tasks/export-google" class="space-y-2 mb-4">
+  <select name="table_name" class="p-1 text-black">
+    <option value="devices">Devices</option>
+    <option value="vlans">VLANs</option>
+    <option value="device_types">Device Types</option>
+    <option value="ssh_credentials">SSH Credentials</option>
+    <option value="snmp_communities">SNMP Communities</option>
+    <option value="port_config_templates">Port Config Templates</option>
+  </select>
+  <button type="submit" class="bg-blue-600 px-3 py-1">Export</button>
+</form>
+
+<hr class="my-4">
+<h2 class="text-lg mb-2">Import Table from Sheets</h2>
+<form method="post" action="/tasks/import-google" class="space-y-2 mb-4">
+  <select name="table_name" class="p-1 text-black">
+    <option value="devices">Devices</option>
+    <option value="vlans">VLANs</option>
+    <option value="device_types">Device Types</option>
+    <option value="ssh_credentials">SSH Credentials</option>
+    <option value="snmp_communities">SNMP Communities</option>
+    <option value="port_config_templates">Port Config Templates</option>
+  </select>
+  <button type="submit" class="bg-blue-600 px-3 py-1">Import</button>
+</form>
+{% endblock %}

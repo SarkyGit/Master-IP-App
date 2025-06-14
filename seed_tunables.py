@@ -34,6 +34,22 @@ def main():
                 options="v1,v2c,v3",
                 description="SNMP protocol version used for device queries",
             ),
+            SystemTunable(
+                name="Google Service Account JSON",
+                value="service_account.json",
+                function="Google Sheets",
+                file_type="application",
+                data_type="text",
+                description="Path to service account credentials",
+            ),
+            SystemTunable(
+                name="Google Spreadsheet ID",
+                value="",
+                function="Google Sheets",
+                file_type="application",
+                data_type="text",
+                description="Target spreadsheet ID",
+            ),
         ]
         db.add_all(samples)
         db.commit()
