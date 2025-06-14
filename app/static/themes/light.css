@@ -22,6 +22,7 @@ table {
   border-collapse: separate;
   border-spacing: 0;
   border: 1px solid #ced4da;
+  width: 100%;
 }
 
 table thead th {
