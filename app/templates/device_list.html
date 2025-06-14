@@ -2,6 +2,7 @@
 
 {% block content %}
 <h1 class="text-xl mb-4">Devices</h1>
+<a href="/devices/column-prefs" class="underline block mb-2">Customize Columns</a>
 {% if current_user and current_user.role in ['editor','admin','superadmin'] %}
   <a href="/devices/new" class="underline">Add Device</a>
 {% endif %}
@@ -43,65 +44,65 @@
   <thead>
     <tr>
       <th class="px-2"><input type="checkbox" id="select-all"></th>
-      <th class="px-4 py-2 text-left">Hostname</th>
-      <th class="px-4 py-2 text-left">IP</th>
-      <th class="px-4 py-2 text-left">MAC</th>
-      <th class="px-4 py-2 text-left">Asset Tag</th>
-      <th class="px-4 py-2 text-left">Model</th>
-      <th class="px-4 py-2 text-left">Manufacturer</th>
-      <th class="px-4 py-2 text-left">Platform</th>
-      <th class="px-4 py-2 text-left">Serial</th>
-      <th class="px-4 py-2 text-left">Location</th>
-      <th class="px-4 py-2 text-left">On Lasso</th>
-      <th class="px-4 py-2 text-left">On R1</th>
-      <th class="px-4 py-2 text-left">Type</th>
-      <th class="px-4 py-2 text-left">State</th>
-      <th class="px-4 py-2 text-left">VLAN</th>
-      <th class="px-4 py-2 text-left">SSH Profile</th>
-      <th class="px-4 py-2 text-left">SNMP Profile</th>
-      <th class="px-4 py-2 text-left">Status</th>
-      <th class="px-4 py-2 text-left">Tags</th>
+      {% if column_prefs.hostname %}<th class="px-4 py-2 text-left">{{ column_labels['hostname'] }}</th>{% endif %}
+      {% if column_prefs.ip %}<th class="px-4 py-2 text-left">{{ column_labels['ip'] }}</th>{% endif %}
+      {% if column_prefs.mac %}<th class="px-4 py-2 text-left">{{ column_labels['mac'] }}</th>{% endif %}
+      {% if column_prefs.asset_tag %}<th class="px-4 py-2 text-left">{{ column_labels['asset_tag'] }}</th>{% endif %}
+      {% if column_prefs.model %}<th class="px-4 py-2 text-left">{{ column_labels['model'] }}</th>{% endif %}
+      {% if column_prefs.manufacturer %}<th class="px-4 py-2 text-left">{{ column_labels['manufacturer'] }}</th>{% endif %}
+      {% if column_prefs.platform %}<th class="px-4 py-2 text-left">{{ column_labels['platform'] }}</th>{% endif %}
+      {% if column_prefs.serial %}<th class="px-4 py-2 text-left">{{ column_labels['serial'] }}</th>{% endif %}
+      {% if column_prefs.location %}<th class="px-4 py-2 text-left">{{ column_labels['location'] }}</th>{% endif %}
+      {% if column_prefs.on_lasso %}<th class="px-4 py-2 text-left">{{ column_labels['on_lasso'] }}</th>{% endif %}
+      {% if column_prefs.on_r1 %}<th class="px-4 py-2 text-left">{{ column_labels['on_r1'] }}</th>{% endif %}
+      {% if column_prefs.type %}<th class="px-4 py-2 text-left">{{ column_labels['type'] }}</th>{% endif %}
+      {% if column_prefs.state %}<th class="px-4 py-2 text-left">{{ column_labels['state'] }}</th>{% endif %}
+      {% if column_prefs.vlan %}<th class="px-4 py-2 text-left">{{ column_labels['vlan'] }}</th>{% endif %}
+      {% if column_prefs.ssh_profile %}<th class="px-4 py-2 text-left">{{ column_labels['ssh_profile'] }}</th>{% endif %}
+      {% if column_prefs.snmp_profile %}<th class="px-4 py-2 text-left">{{ column_labels['snmp_profile'] }}</th>{% endif %}
+      {% if column_prefs.status %}<th class="px-4 py-2 text-left">{{ column_labels['status'] }}</th>{% endif %}
+      {% if column_prefs.tags %}<th class="px-4 py-2 text-left">{{ column_labels['tags'] }}</th>{% endif %}
     </tr>
   </thead>
   <tbody>
   {% for device in devices %}
     <tr class="border-t border-gray-700">
       <td class="px-2"><input type="checkbox" name="selected" value="{{ device.id }}"></td>
-      <td class="px-4 py-2">{{ device.hostname }}</td>
-      <td class="px-4 py-2 {% if device.ip and duplicate_ips.get(device.ip) %}duplicate{% endif %}" title="{{ duplicate_ips.get(device.ip)|join(', ') if duplicate_ips.get(device.ip) }}">{{ device.ip }}</td>
-      <td class="px-4 py-2 {% if device.mac and duplicate_macs.get(device.mac) %}duplicate{% endif %}" title="{{ duplicate_macs.get(device.mac)|join(', ') if duplicate_macs.get(device.mac) }}">{{ device.mac or '' }}</td>
-      <td class="px-4 py-2 {% if device.asset_tag and duplicate_tags.get(device.asset_tag) %}duplicate{% endif %}" title="{{ duplicate_tags.get(device.asset_tag)|join(', ') if duplicate_tags.get(device.asset_tag) }}">{{ device.asset_tag or '' }}</td>
-      <td class="px-4 py-2">{{ device.model or '' }}</td>
-      <td class="px-4 py-2">{{ device.manufacturer }}</td>
-      <td class="px-4 py-2">{{ device.detected_platform or '' }}</td>
-      <td class="px-4 py-2">{{ device.serial_number or '' }}</td>
-      <td class="px-4 py-2">{{ device.location_ref.name if device.location_ref else '' }}</td>
-      <td class="px-4 py-2">{{ '✔' if device.on_lasso else '' }}</td>
-      <td class="px-4 py-2">{{ '✔' if device.on_r1 else '' }}</td>
-      <td class="px-4 py-2">{{ device.device_type.name if device.device_type else '' }}</td>
-      <td class="px-4 py-2">{{ device.status or '' }}</td>
-      <td class="px-4 py-2">{{ device.vlan.tag if device.vlan else '' }}</td>
-      <td class="px-4 py-2">
+      {% if column_prefs.hostname %}<td class="px-4 py-2">{{ device.hostname }}</td>{% endif %}
+      {% if column_prefs.ip %}<td class="px-4 py-2 {% if device.ip and duplicate_ips.get(device.ip) %}duplicate{% endif %}" title="{{ duplicate_ips.get(device.ip)|join(', ') if duplicate_ips.get(device.ip) }}">{{ device.ip }}</td>{% endif %}
+      {% if column_prefs.mac %}<td class="px-4 py-2 {% if device.mac and duplicate_macs.get(device.mac) %}duplicate{% endif %}" title="{{ duplicate_macs.get(device.mac)|join(', ') if duplicate_macs.get(device.mac) }}">{{ device.mac or '' }}</td>{% endif %}
+      {% if column_prefs.asset_tag %}<td class="px-4 py-2 {% if device.asset_tag and duplicate_tags.get(device.asset_tag) %}duplicate{% endif %}" title="{{ duplicate_tags.get(device.asset_tag)|join(', ') if duplicate_tags.get(device.asset_tag) }}">{{ device.asset_tag or '' }}</td>{% endif %}
+      {% if column_prefs.model %}<td class="px-4 py-2">{{ device.model or '' }}</td>{% endif %}
+      {% if column_prefs.manufacturer %}<td class="px-4 py-2">{{ device.manufacturer }}</td>{% endif %}
+      {% if column_prefs.platform %}<td class="px-4 py-2">{{ device.detected_platform or '' }}</td>{% endif %}
+      {% if column_prefs.serial %}<td class="px-4 py-2">{{ device.serial_number or '' }}</td>{% endif %}
+      {% if column_prefs.location %}<td class="px-4 py-2">{{ device.location_ref.name if device.location_ref else '' }}</td>{% endif %}
+      {% if column_prefs.on_lasso %}<td class="px-4 py-2">{{ '✔' if device.on_lasso else '' }}</td>{% endif %}
+      {% if column_prefs.on_r1 %}<td class="px-4 py-2">{{ '✔' if device.on_r1 else '' }}</td>{% endif %}
+      {% if column_prefs.type %}<td class="px-4 py-2">{{ device.device_type.name if device.device_type else '' }}</td>{% endif %}
+      {% if column_prefs.state %}<td class="px-4 py-2">{{ device.status or '' }}</td>{% endif %}
+      {% if column_prefs.vlan %}<td class="px-4 py-2">{{ device.vlan.tag if device.vlan else '' }}</td>{% endif %}
+      {% if column_prefs.ssh_profile %}<td class="px-4 py-2">
         {{ device.ssh_credential.name if device.ssh_credential else '' }}
         {% if device.ssh_credential %}
           {% if device.ssh_profile_is_default %}(default){% else %}(manual){% endif %}
         {% endif %}
         {% if personal_creds.get(device.id) %}(personal){% endif %}
-      </td>
-      <td class="px-4 py-2">{{ device.snmp_community.name if device.snmp_community else '' }}</td>
-      <td class="px-4 py-2">
+      </td>{% endif %}
+      {% if column_prefs.snmp_profile %}<td class="px-4 py-2">{{ device.snmp_community.name if device.snmp_community else '' }}</td>{% endif %}
+      {% if column_prefs.status %}<td class="px-4 py-2">
         {% if device.snmp_reachable %}
           <span class="text-green-400">●</span>
         {% else %}
           <span class="text-red-400">●</span>
         {% endif %}
         {{ device.uptime_seconds | format_uptime }}
-      </td>
-      <td class="px-4 py-2">{{ device.tags | map(attribute='name') | join(', ') }}</td>
+      </td>{% endif %}
+      {% if column_prefs.tags %}<td class="px-4 py-2">{{ device.tags | map(attribute='name') | join(', ') }}</td>{% endif %}
     </tr>
     {% if current_user and current_user.role in ['editor','admin','superadmin'] %}
     <tr class="border-b border-gray-700">
-      <td colspan="18" class="px-4 py-2 text-right">
+      <td colspan="{{ column_count }}" class="px-4 py-2 text-right">
         <a href="/devices/{{ device.id }}/edit" class="btn btn-sm btn-secondary me-2">Edit</a>
         <form method="post" action="/devices/{{ device.id }}/delete" class="d-inline">
           <button type="submit" class="btn btn-sm btn-danger me-2" onclick="return confirm('Delete device?')">Delete</button>

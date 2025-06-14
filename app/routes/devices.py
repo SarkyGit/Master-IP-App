@@ -26,6 +26,7 @@ from app.models.models import (
     Interface,
     InterfaceChangeLog,
     UserSSHCredential,
+    ColumnPreference,
 )
 from app.utils.audit import log_audit
 from app.utils.tags import (
@@ -34,6 +35,11 @@ from app.utils.tags import (
     get_or_create_tag,
     add_tag_to_device,
     remove_tag_from_device,
+)
+from app.utils.columns import (
+    load_column_preferences,
+    DEFAULT_DEVICE_COLUMNS,
+    DEVICE_COLUMN_LABELS,
 )
 from app.models.models import DeviceEditLog
 
@@ -112,6 +118,8 @@ async def list_devices(
             )
             if personal:
                 personal_map[d.id] = True
+    column_prefs = load_column_preferences(db, current_user.id, "device_list")
+    column_count = 1 + sum(1 for v in column_prefs.values() if v)
     message = request.query_params.get("message")
     context = {
         "request": request,
@@ -124,8 +132,53 @@ async def list_devices(
         "message": message,
         "sort": sort,
         "snmp": snmp,
+        "column_prefs": column_prefs,
+        "column_labels": DEVICE_COLUMN_LABELS,
+        "column_count": column_count,
     }
     return templates.TemplateResponse("device_list.html", context)
+
+
+@router.get("/devices/column-prefs")
+async def device_column_prefs(
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    if not current_user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    prefs = load_column_preferences(db, current_user.id, "device_list")
+    context = {
+        "request": request,
+        "prefs": prefs,
+        "column_labels": DEVICE_COLUMN_LABELS,
+        "current_user": current_user,
+    }
+    return templates.TemplateResponse("device_column_prefs.html", context)
+
+
+@router.post("/devices/column-prefs")
+async def save_device_column_prefs(
+    request: Request,
+    columns: list[str] = Form([]),
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    if not current_user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    db.query(ColumnPreference).filter_by(user_id=current_user.id, view="device_list").delete()
+    for idx, name in enumerate(DEFAULT_DEVICE_COLUMNS):
+        db.add(
+            ColumnPreference(
+                user_id=current_user.id,
+                view="device_list",
+                name=name,
+                enabled=name in columns,
+                position=idx,
+            )
+        )
+    db.commit()
+    return RedirectResponse(url="/devices", status_code=302)
 
 
 @router.get("/devices/duplicates")

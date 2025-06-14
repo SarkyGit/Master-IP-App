@@ -411,6 +411,19 @@ class SiteDashboardWidget(Base):
     site = relationship("Site")
 
 
+class ColumnPreference(Base):
+    __tablename__ = "column_preferences"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    view = Column(String, nullable=False)
+    name = Column(String, nullable=False)
+    position = Column(Integer, default=0)
+    enabled = Column(Boolean, default=True)
+
+    user = relationship("User")
+
+
 class ImportLog(Base):
     __tablename__ = "import_logs"
 
