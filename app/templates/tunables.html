@@ -1,29 +1,51 @@
 {% extends "base.html" %}
+
 {% block content %}
 <h1 class="text-xl mb-4">System Tunables</h1>
-{% for function, files in groups.items() %}
-  <h2 class="text-lg mt-4">{{ function }}</h2>
-  {% for file, tunables in files.items() %}
+
+<ul class="nav nav-tabs" id="tunableTabs" role="tablist">
+  {% for function in groups.keys() %}
+  <li class="nav-item" role="presentation">
+    <button class="nav-link {% if loop.first %}active{% endif %}" id="tab-{{ function|replace(' ','_') }}" data-bs-toggle="tab" data-bs-target="#content-{{ function|replace(' ','_') }}" type="button" role="tab" aria-controls="content-{{ function|replace(' ','_') }}" aria-selected="{{ 'true' if loop.first else 'false' }}">{{ function }}</button>
+  </li>
+  {% endfor %}
+</ul>
+
+<div class="tab-content mt-3" id="tunableTabsContent">
+  {% for function, files in groups.items() %}
+  <div class="tab-pane fade {% if loop.first %}show active{% endif %}" id="content-{{ function|replace(' ','_') }}" role="tabpanel" aria-labelledby="tab-{{ function|replace(' ','_') }}">
+    {% for file, tunables in files.items() %}
     <h3 class="mt-2">{{ file }}</h3>
-    {% for tunable in tunables %}
-    <form method="post" action="/tunables/{{ tunable.id }}">
-      <div class="mb-2">
-        <label class="block">{{ tunable.name }}</label>
-        {% if tunable.data_type == 'bool' %}
+      {% for tunable in tunables %}
+      <form method="post" action="/tunables/{{ tunable.id }}" class="mb-3 p-3 border rounded">
+        <div class="mb-2">
+          <label class="block fw-bold">{{ tunable.name }}</label>
+          {% if tunable.description %}
+          <p class="text-sm text-gray-400">{{ tunable.description }}</p>
+          {% endif %}
+          {% if tunable.options and tunable.data_type == 'choice' %}
+          <p class="text-sm text-gray-400">Options: {{ tunable.options }}</p>
+          {% endif %}
+        </div>
+        <div class="mb-2">
+          {% if tunable.data_type == 'bool' %}
           <input type="checkbox" name="value" value="true" {% if tunable.value == 'true' %}checked{% endif %}>
-        {% elif tunable.data_type == 'choice' %}
-          <select name="value">
+          {% elif tunable.data_type == 'choice' %}
+          <select name="value" class="text-black">
             {% for opt in tunable.options.split(',') %}
-              <option value="{{ opt }}" {% if tunable.value == opt %}selected{% endif %}>{{ opt }}</option>
+            <option value="{{ opt }}" {% if tunable.value == opt %}selected{% endif %}>{{ opt }}</option>
             {% endfor %}
           </select>
-        {% else %}
+          {% else %}
           <input type="text" name="value" value="{{ tunable.value }}" class="text-black">
-        {% endif %}
-        <button type="submit" class="bg-blue-600 px-2 py-1 ml-2">Save</button>
-      </div>
-    </form>
+          {% endif %}
+          <button type="submit" class="bg-blue-600 px-2 py-1 ml-2">Save</button>
+        </div>
+      </form>
+      {% endfor %}
     {% endfor %}
+  </div>
   {% endfor %}
-{% endfor %}
+</div>
+
 {% endblock %}

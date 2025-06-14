@@ -122,6 +122,7 @@ class SystemTunable(Base):
     file_type = Column(String, nullable=False)
     data_type = Column(String, nullable=False, default="text")
     options = Column(String, nullable=True)
+    description = Column(String, nullable=True)
 
 
 class AuditLog(Base):
