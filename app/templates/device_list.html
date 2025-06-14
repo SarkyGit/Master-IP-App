@@ -50,7 +50,10 @@
       <td class="px-4 py-2">{{ device.device_type.name if device.device_type else '' }}</td>
       <td class="px-4 py-2">{{ device.status or '' }}</td>
       <td class="px-4 py-2">{{ device.vlan.tag if device.vlan else '' }}</td>
-      <td class="px-4 py-2">{{ device.ssh_credential.name if device.ssh_credential else '' }}</td>
+      <td class="px-4 py-2">
+        {{ device.ssh_credential.name if device.ssh_credential else '' }}
+        {% if personal_creds.get(device.id) %}(personal){% endif %}
+      </td>
       <td class="px-4 py-2">{{ device.snmp_community.name if device.snmp_community else '' }}</td>
       <td class="px-4 py-2">{{ device.tags | map(attribute='name') | join(', ') }}</td>
     </tr>

@@ -9,7 +9,7 @@ from datetime import datetime
 from app.utils.db_session import get_db
 from app.utils.auth import require_role
 from app.models.models import Device, ConfigBackup, SystemTunable
-from app.utils.ssh import build_conn_kwargs
+from app.utils.ssh import build_conn_kwargs, resolve_ssh_credential
 from app.utils.templates import templates
 
 router = APIRouter()
@@ -127,7 +127,7 @@ async def port_config_action(device_id: int = Form(...), port_name: str = Form(.
     device = db.query(Device).filter(Device.id == device_id).first()
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
-    cred = device.ssh_credential
+    cred, source = resolve_ssh_credential(db, device, current_user)
     output = ""
     error = None
     if cred:
@@ -142,7 +142,16 @@ async def port_config_action(device_id: int = Form(...), port_name: str = Form(.
     else:
         error = "No SSH credentials"
     db.commit()
-    context = {"request": request, "devices": db.query(Device).all(), "selected": device.id, "port_name": port_name, "output": output, "error": error, "current_user": current_user}
+    context = {
+        "request": request,
+        "devices": db.query(Device).all(),
+        "selected": device.id,
+        "port_name": port_name,
+        "output": output,
+        "error": error,
+        "cred_source": source,
+        "current_user": current_user,
+    }
     return templates.TemplateResponse("ssh_port_config.html", context)
 
 
@@ -158,7 +167,7 @@ async def port_check_action(device_id: int = Form(...), port_name: str = Form(..
     device = db.query(Device).filter(Device.id == device_id).first()
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
-    cred = device.ssh_credential
+    cred, source = resolve_ssh_credential(db, device, current_user)
     output = ""
     error = None
     if cred:
@@ -173,7 +182,16 @@ async def port_check_action(device_id: int = Form(...), port_name: str = Form(..
     else:
         error = "No SSH credentials"
     db.commit()
-    context = {"request": request, "devices": db.query(Device).all(), "selected": device.id, "port_name": port_name, "output": output, "error": error, "current_user": current_user}
+    context = {
+        "request": request,
+        "devices": db.query(Device).all(),
+        "selected": device.id,
+        "port_name": port_name,
+        "output": output,
+        "error": error,
+        "cred_source": source,
+        "current_user": current_user,
+    }
     return templates.TemplateResponse("ssh_port_check.html", context)
 
 
@@ -189,7 +207,7 @@ async def config_check_action(device_id: int = Form(...), request: Request=None,
     device = db.query(Device).filter(Device.id == device_id).first()
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
-    cred = device.ssh_credential
+    cred, source = resolve_ssh_credential(db, device, current_user)
     output = ""
     error = None
     if cred:
@@ -204,7 +222,15 @@ async def config_check_action(device_id: int = Form(...), request: Request=None,
     else:
         error = "No SSH credentials"
     db.commit()
-    context = {"request": request, "devices": db.query(Device).all(), "selected": device.id, "output": output, "error": error, "current_user": current_user}
+    context = {
+        "request": request,
+        "devices": db.query(Device).all(),
+        "selected": device.id,
+        "output": output,
+        "error": error,
+        "cred_source": source,
+        "current_user": current_user,
+    }
     return templates.TemplateResponse("ssh_config_check.html", context)
 
 
@@ -220,7 +246,7 @@ async def port_search_action(search: str = Form(...), device_ids: list[int] = Fo
     results = []
     devices = db.query(Device).filter(Device.id.in_(device_ids)).all()
     for device in devices:
-        cred = device.ssh_credential
+        cred, source = resolve_ssh_credential(db, device, current_user)
         output = ""
         error = None
         if cred:
@@ -234,9 +260,16 @@ async def port_search_action(search: str = Form(...), device_ids: list[int] = Fo
                 error = str(exc)
         else:
             error = "No SSH credentials"
-        results.append({"device": device, "output": output, "error": error})
+        results.append({"device": device, "output": output, "error": error, "cred_source": source})
     db.commit()
-    context = {"request": request, "devices": db.query(Device).all(), "results": results, "search": search, "selected": device_ids, "current_user": current_user}
+    context = {
+        "request": request,
+        "devices": db.query(Device).all(),
+        "results": results,
+        "search": search,
+        "selected": device_ids,
+        "current_user": current_user,
+    }
     return templates.TemplateResponse("ssh_port_search.html", context)
 
 
@@ -253,7 +286,7 @@ async def bulk_port_update_action(device_ids: list[int] = Form(...), ports: str 
     ports_list = [p.strip() for p in ports.splitlines() if p.strip()]
     message_parts = []
     for device in devices:
-        cred = device.ssh_credential
+        cred, _ = resolve_ssh_credential(db, device, current_user)
         if not cred:
             message_parts.append(f"{device.hostname}: no credentials")
             continue

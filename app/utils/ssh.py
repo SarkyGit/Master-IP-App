@@ -42,3 +42,21 @@ def build_conn_kwargs(cred):
             pass
     conn_kwargs.update(SSH_OPTIONS)
     return conn_kwargs
+
+
+def resolve_ssh_credential(db, device, user=None):
+    """Return the credential to use for a device and the source."""
+    cred = device.ssh_credential
+    source = "device"
+    if user and cred:
+        from app.models.models import UserSSHCredential
+
+        user_cred = (
+            db.query(UserSSHCredential)
+            .filter(UserSSHCredential.user_id == user.id, UserSSHCredential.name == cred.name)
+            .first()
+        )
+        if user_cred:
+            cred = user_cred
+            source = "user"
+    return cred, source
