@@ -15,6 +15,7 @@ def main():
                 function="SSH",
                 file_type="sshd_config",
                 data_type="bool",
+                description="Toggle the SSH service on or off",
             ),
             SystemTunable(
                 name="Config Backup Count",
@@ -22,6 +23,7 @@ def main():
                 function="Backup",
                 file_type="application",
                 data_type="text",
+                description="Number of configuration backups to keep",
             ),
             SystemTunable(
                 name="SNMP Version",
@@ -30,6 +32,7 @@ def main():
                 file_type="snmpd.conf",
                 data_type="choice",
                 options="v1,v2c,v3",
+                description="SNMP protocol version used for device queries",
             ),
         ]
         db.add_all(samples)
