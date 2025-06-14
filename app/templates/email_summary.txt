@@ -1,0 +1,11 @@
+Site: {{ site.name }}
+Date: {{ date_sent.strftime('%Y-%m-%d') }}
+
+{% if rows %}
+Device | User | Time | Type
+{% for r in rows %}
+{{ r.device.hostname }} ({{ r.device.ip }}) | {{ r.user or 'System' }} | {{ r.time.strftime('%H:%M:%S') }} | {{ r.source }}
+{% endfor %}
+{% else %}
+No configuration changes in the last 24 hours.
+{% endif %}
