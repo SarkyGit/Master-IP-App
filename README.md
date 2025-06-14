@@ -67,6 +67,16 @@ If the browser shows a *connection refused* error when visiting
 Start it with `uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload` and
 ensure the port is allowed through any firewall.
 
+### "*** Disconnected ***" when opening a Live Session
+The interactive terminal uses WebSockets. If the required library isn't installed,
+the WebSocket connection immediately closes and the terminal displays only
+`Connecting...` followed by `*** Disconnected ***`. Ensure the `websockets`
+package is installed:
+
+```bash
+pip install websockets
+```
+
 ### "No such file or directory" during `pip install`
 If you see an error like:
 

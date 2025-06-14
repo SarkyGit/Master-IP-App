@@ -8,3 +8,4 @@ python-multipart
 itsdangerous
 bcrypt
 puresnmp
+websockets
