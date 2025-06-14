@@ -19,7 +19,7 @@ This application manages network devices, VLANs and configuration backups using 
    ```bash
    pip install -r requirements.txt
    ```
-4. **Seed the database** with default values. This will create a superuser, system settings, and some sample devices:
+4. **Seed the database** with default values. This will create a superuser, system settings, and some sample devices. The `start.sh` script will automatically run these seed commands unless `AUTO_SEED` is disabled, but you can also run them manually:
    ```bash
    python seed_tunables.py
    python seed_superuser.py
@@ -79,7 +79,7 @@ Start the server with reasonable defaults using the provided `start.sh` script:
 ./start.sh
 ```
 
-This script loads variables from `.env` if present and executes:
+This script loads variables from `.env` if present, automatically runs the seed scripts (unless `AUTO_SEED=0` or `false`) and then executes:
 
 ```bash
 gunicorn app.main:app \
@@ -88,6 +88,8 @@ gunicorn app.main:app \
     --timeout ${TIMEOUT:-120} \
     --bind 0.0.0.0:${PORT:-8000}
 ```
+
+Set the `AUTO_SEED` environment variable to `0` or `false` to skip the automatic seeding step if the database is already populated.
 
 Adjust `WORKERS`, `TIMEOUT` and `PORT` as needed. The server listens on
 `0.0.0.0` so it can be proxied by a web server such as Nginx.
