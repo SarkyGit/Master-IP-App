@@ -10,7 +10,7 @@
 <h2 class="text-lg mb-2">Results for '{{ ip }}'</h2>
 <ul class="list-disc list-inside ml-4">
   {% for device in results %}
-  <li>{{ device.hostname }} ({{ device.ip }})</li>
+  <li><a href="/devices/{{ device.id }}/edit" class="underline">{{ device.hostname }} ({{ device.ip }})</a></li>
   {% else %}
   <li>No devices found.</li>
   {% endfor %}
