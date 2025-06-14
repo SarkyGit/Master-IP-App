@@ -10,6 +10,7 @@
   </head>
   <body>
     <header>
+      {% block nav %}
       <nav class="navbar navbar-dark navbar-expand-lg bg-dark">
         <div class="container">
           <a class="navbar-brand" href="/">CES Inventory</a>
@@ -91,6 +92,7 @@
           </div>
         </div>
       </nav>
+      {% endblock %}
     </header>
     <div class="container mt-4">
       <a href="javascript:history.back()" class="text-blue-400 underline">&laquo; Back</a>
