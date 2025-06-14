@@ -9,6 +9,7 @@
     <tr>
       <th class="px-2"><input type="checkbox" id="select-all"></th>
       <th class="px-4 py-2 text-left">Name</th>
+      <th class="px-4 py-2 text-left">Type</th>
       <th></th>
     </tr>
   </thead>
@@ -17,6 +18,7 @@
     <tr class="border-t border-gray-700">
       <td class="px-2"><input type="checkbox" name="selected" value="{{ loc.id }}"></td>
       <td class="px-4 py-2">{{ loc.name }}</td>
+      <td class="px-4 py-2">{{ loc.location_type }}</td>
       <td class="px-4 py-2">
         <a href="/admin/locations/{{ loc.id }}/edit" class="text-blue-400 underline mr-2">Edit</a>
         <form method="post" action="/admin/locations/{{ loc.id }}/delete" style="display:inline">

@@ -7,6 +7,14 @@
     <label class="block">Name</label>
     <input type="text" name="name" value="{{ location.name if location else '' }}" class="w-full p-2 text-black" required />
   </div>
+  <div>
+    <label class="block">Type</label>
+    <select name="location_type" class="w-full p-2 text-black" required>
+      {% for lt in location_types %}
+      <option value="{{ lt }}" {% if location and location.location_type == lt %}selected{% endif %}>{{ lt }}</option>
+      {% endfor %}
+    </select>
+  </div>
   {% if error %}
   <p class="text-red-500">{{ error }}</p>
   {% endif %}

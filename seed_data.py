@@ -28,7 +28,7 @@ def main():
         # Seed default location
         loc = db.query(Location).filter_by(name="Main Site").first()
         if not loc:
-            loc = Location(name="Main Site")
+            loc = Location(name="Main Site", location_type="Fixed")
             db.add(loc)
             db.commit()
 

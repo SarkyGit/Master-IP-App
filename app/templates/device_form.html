@@ -50,7 +50,7 @@
     <select name="location_id" class="w-full p-2 text-black">
       <option value="">---</option>
       {% for loc in locations %}
-      <option value="{{ loc.id }}" {% if device and device.location_id == loc.id %}selected{% endif %}>{{ loc.name }}</option>
+      <option value="{{ loc.id }}" {% if device and device.location_id == loc.id %}selected{% endif %}>{{ loc.name }} ({{ loc.location_type }})</option>
       {% endfor %}
     </select>
   </div>

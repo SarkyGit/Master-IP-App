@@ -51,6 +51,7 @@ class Location(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True, nullable=False)
+    location_type = Column(String, nullable=False, default="Fixed")
 
     devices = relationship("Device", back_populates="location_ref")
 
