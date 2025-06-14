@@ -679,11 +679,19 @@ async def port_status(
         ports.append(port)
 
     prefixes = ("Fa", "Gi", "Te", "Tw", "Fo", "Hu")
+    # Ports that should be treated as virtual even though they start with a
+    # physical prefix. These are typically internal router interfaces like
+    # "Gi0/0" or "Gi 0/0/0" which users expect to see under the "Virtual Ports"
+    # section.
+    virtual_overrides = ("Gi0/0", "Gi 0/0/0")
+
     physical_ports = []
     virtual_ports = []
     for port in ports:
         name = (port.get("name") or "").strip()
-        if any(name.startswith(p) for p in prefixes):
+        if any(name.startswith(v) for v in virtual_overrides):
+            virtual_ports.append(port)
+        elif any(name.startswith(p) for p in prefixes):
             physical_ports.append(port)
         else:
             virtual_ports.append(port)
