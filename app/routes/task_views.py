@@ -14,9 +14,13 @@ from app.models.models import (
     SSHCredential,
     SNMPCommunity,
     PortConfigTemplate,
+    SystemTunable,
 )
 import csv
 import io
+import urllib.parse
+import gspread
+from google.oauth2.service_account import Credentials
 
 
 
@@ -55,6 +59,37 @@ CSV_TABLES = {
         "fields": ["name", "config_text"],
     },
 }
+
+# OAuth scopes for Google Sheets access
+GSHEETS_SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
+
+
+def _get_gsheets_config(db: Session):
+    """Return service account path and spreadsheet ID from SystemTunables."""
+    cred = (
+        db.query(SystemTunable)
+        .filter(SystemTunable.name == "Google Service Account JSON")
+        .first()
+    )
+    sheet = (
+        db.query(SystemTunable)
+        .filter(SystemTunable.name == "Google Spreadsheet ID")
+        .first()
+    )
+    return (cred.value if cred else None, sheet.value if sheet else None)
+
+
+def _open_sheet(db: Session):
+    """Return an open gspread Spreadsheet object or None."""
+    cred_path, sheet_id = _get_gsheets_config(db)
+    if not cred_path or not sheet_id:
+        return None
+    try:
+        creds = Credentials.from_service_account_file(cred_path, scopes=GSHEETS_SCOPES)
+        client = gspread.authorize(creds)
+        return client.open_by_key(sheet_id)
+    except Exception:
+        return None
 
 
 @router.get("/tasks")
@@ -124,3 +159,109 @@ async def upload_csv(
         db.add(record)
     db.commit()
     return RedirectResponse(url="/tasks?message=CSV+uploaded", status_code=302)
+
+
+@router.get("/tasks/google-sheets")
+async def google_sheets_page(
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("admin")),
+):
+    creds, sheet_id = _get_gsheets_config(db)
+    message = request.query_params.get("message")
+    context = {
+        "request": request,
+        "config": {"creds": creds or "", "sheet_id": sheet_id or ""},
+        "current_user": current_user,
+        "message": message,
+    }
+    return templates.TemplateResponse("google_sheets.html", context)
+
+
+@router.post("/tasks/google-sheets-config")
+async def save_google_config(
+    service_account_json: str = Form(...),
+    spreadsheet_id: str = Form(...),
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("admin")),
+):
+    entries = [
+        ("Google Service Account JSON", service_account_json),
+        ("Google Spreadsheet ID", spreadsheet_id),
+    ]
+    for name, value in entries:
+        t = db.query(SystemTunable).filter(SystemTunable.name == name).first()
+        if t:
+            t.value = value
+        else:
+            db.add(
+                SystemTunable(
+                    name=name,
+                    value=value,
+                    function="Google Sheets",
+                    file_type="application",
+                    data_type="text",
+                )
+            )
+    db.commit()
+    msg = urllib.parse.quote("Configuration saved")
+    return RedirectResponse(url=f"/tasks/google-sheets?message={msg}", status_code=302)
+
+
+@router.post("/tasks/export-google")
+async def export_google(
+    table_name: str = Form(...),
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("admin")),
+):
+    table = CSV_TABLES.get(table_name)
+    if not table:
+        raise HTTPException(status_code=400, detail="Invalid table")
+    sheet = _open_sheet(db)
+    if not sheet:
+        raise HTTPException(status_code=400, detail="Google Sheets not configured")
+    model = table["model"]
+    fields = table["fields"]
+    records = db.query(model).all()
+    try:
+        try:
+            ws = sheet.worksheet(table_name)
+        except gspread.WorksheetNotFound:
+            ws = sheet.add_worksheet(title=table_name, rows=str(len(records) + 1), cols=str(len(fields)))
+        data = [fields] + [[getattr(r, f) or "" for f in fields] for r in records]
+        ws.clear()
+        ws.update("A1", data)
+        msg = "Exported"
+    except Exception as exc:
+        msg = f"Export failed: {exc}"
+    msg = urllib.parse.quote(msg)
+    return RedirectResponse(url=f"/tasks/google-sheets?message={msg}", status_code=302)
+
+
+@router.post("/tasks/import-google")
+async def import_google(
+    table_name: str = Form(...),
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("admin")),
+):
+    table = CSV_TABLES.get(table_name)
+    if not table:
+        raise HTTPException(status_code=400, detail="Invalid table")
+    sheet = _open_sheet(db)
+    if not sheet:
+        raise HTTPException(status_code=400, detail="Google Sheets not configured")
+    model = table["model"]
+    fields = table["fields"]
+    try:
+        ws = sheet.worksheet(table_name)
+        rows = ws.get_all_values()
+        for row in rows[1:]:
+            data = {fields[i]: row[i] if i < len(row) and row[i] != "" else None for i in range(len(fields))}
+            record = model(**data)
+            db.add(record)
+        db.commit()
+        msg = "Imported"
+    except Exception as exc:
+        msg = f"Import failed: {exc}"
+    msg = urllib.parse.quote(msg)
+    return RedirectResponse(url=f"/tasks/google-sheets?message={msg}", status_code=302)
