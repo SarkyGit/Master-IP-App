@@ -172,6 +172,14 @@ def main():
                 data_type="text",
                 description="Default sender address for outgoing mail",
             ),
+            SystemTunable(
+                name="App Version",
+                value="1.0.0",
+                function="General",
+                file_type="application",
+                data_type="text",
+                description="Deployed application version",
+            ),
         ]
         db.add_all(samples)
         db.commit()
