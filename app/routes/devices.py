@@ -58,6 +58,8 @@ TEMPLATE_OPTIONS = [
 @router.get("/devices")
 async def list_devices(
     request: Request,
+    sort: str | None = None,
+    snmp: str | None = None,
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user),
 ):
@@ -65,7 +67,15 @@ async def list_devices(
     if not current_user:
         raise HTTPException(status_code=401, detail="Not authenticated")
 
-    devices = db.query(Device).all()
+    query = db.query(Device)
+    if snmp == "reachable":
+        query = query.filter(Device.snmp_reachable.is_(True))
+    elif snmp == "unreachable":
+        query = query.filter(Device.snmp_reachable.is_(False))
+    if sort in {"uptime", "-uptime"}:
+        order = Device.uptime_seconds.asc() if sort == "uptime" else Device.uptime_seconds.desc()
+        query = query.order_by(order)
+    devices = query.all()
     dup_ips = {}
     dup_macs = {}
     dup_tags = {}
@@ -102,6 +112,8 @@ async def list_devices(
         "personal_creds": personal_map,
         "current_user": current_user,
         "message": message,
+        "sort": sort,
+        "snmp": snmp,
     }
     return templates.TemplateResponse("device_list.html", context)
 

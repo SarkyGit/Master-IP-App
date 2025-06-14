@@ -2,6 +2,7 @@ import asyncio
 from datetime import datetime, timedelta
 from collections import defaultdict
 import asyncssh
+from puresnmp import Client, PyWrapper, V2C
 
 from app.utils.ssh import build_conn_kwargs
 from app.utils.device_detect import detect_ssh_platform
@@ -169,6 +170,32 @@ def unschedule_device_config_pull(device_id: int):
         pass
 
 
+async def _poll_device_snmp_status(db, device: Device) -> None:
+    """Poll a single device for uptime via SNMP."""
+    profile = device.snmp_community
+    if not profile:
+        return
+    client = PyWrapper(Client(device.ip, V2C(profile.community_string)))
+    try:
+        val = await client.get("1.3.6.1.2.1.1.3.0")
+        device.uptime_seconds = int(val) // 100
+        device.snmp_reachable = True
+    except Exception:
+        device.snmp_reachable = False
+        device.uptime_seconds = None
+    device.last_snmp_check = datetime.utcnow()
+    db.commit()
+
+
+async def poll_all_device_status() -> None:
+    """Poll SNMP status for all devices with profiles."""
+    db = SessionLocal()
+    devices = db.query(Device).filter(Device.snmp_community_id.is_not(None)).all()
+    for dev in devices:
+        await _poll_device_snmp_status(db, dev)
+    db.close()
+
+
 async def send_site_summaries():
     """Compile and email daily configuration change summaries by site."""
     db = SessionLocal()
@@ -283,6 +310,14 @@ def start_config_scheduler(app):
             trigger="cron",
             hour=3,
             id="cleanup_port_history",
+            replace_existing=True,
+        )
+
+        scheduler.add_job(
+            poll_all_device_status,
+            trigger="interval",
+            minutes=30,
+            id="snmp_status_poll",
             replace_existing=True,
         )
 

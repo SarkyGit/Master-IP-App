@@ -133,6 +133,11 @@ class Device(Base):
     updated_at = Column(DateTime, default=datetime.utcnow)
     last_seen = Column(DateTime, nullable=True)
 
+    # SNMP status polling
+    uptime_seconds = Column(Integer, nullable=True)
+    last_snmp_check = Column(DateTime, nullable=True)
+    snmp_reachable = Column(Boolean, nullable=True)
+
     # Auto-detection metadata
     detected_platform = Column(String, nullable=True)
     detected_via = Column(String, nullable=True)
