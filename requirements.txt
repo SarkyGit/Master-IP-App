@@ -8,7 +8,7 @@ python-multipart
 itsdangerous
 bcrypt
 puresnmp
-aiosnmp
+aiosnmp>=0.7
 websockets
 gspread
 google-auth
