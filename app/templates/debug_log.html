@@ -39,7 +39,7 @@
   </thead>
   <tbody>
   {% for entry in logs %}
-    <tr class="border-t border-white">
+    <tr class="border-t border-gray-700">
       <td class="px-4 py-2">{{ entry.timestamp }}</td>
       <td class="px-4 py-2">{{ entry.device.hostname if entry.device else '' }}</td>
       <td class="px-4 py-2">{{ entry.user.email if entry.user else 'System' }}</td>
