@@ -17,6 +17,7 @@ from .task_views import router as task_views_router
 from .user_management import router as user_management_router
 from .user_pages import router as user_pages_router
 from .locations import router as locations_router
+from .ssh_tasks import router as ssh_tasks_router
 
 __all__ = [
     "auth_router",
@@ -38,4 +39,5 @@ __all__ = [
     "user_management_router",
     "user_pages_router",
     "locations_router",
+    "ssh_tasks_router",
 ]

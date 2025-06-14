@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-xl mb-4">Port Check</h1>
+<form method="post" class="space-y-4">
+  <div>
+    <label class="block">Switch</label>
+    <select name="device_id" class="p-2 text-black">
+      {% for dev in devices %}
+      <option value="{{ dev.id }}" {% if selected==dev.id %}selected{% endif %}>{{ dev.hostname }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label class="block">Port</label>
+    <input type="text" name="port_name" value="{{ port_name or '' }}" class="p-2 text-black" required />
+  </div>
+  <button type="submit" class="bg-blue-600 px-4 py-2">Check</button>
+</form>
+{% if error %}<p class="text-red-500 mt-2">{{ error }}</p>{% endif %}
+{% if output %}
+<h2 class="text-lg mt-4">Output</h2>
+<pre class="bg-black p-2 whitespace-pre-wrap overflow-auto">{{ output }}</pre>
+{% endif %}
+{% endblock %}

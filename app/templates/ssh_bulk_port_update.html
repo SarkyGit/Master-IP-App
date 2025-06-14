@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-xl mb-4">Bulk Port Update</h1>
+<form method="post" class="space-y-4">
+  <div>
+    <label class="block">Switches</label>
+    {% for dev in devices %}
+    <label class="block">
+      <input type="checkbox" name="device_ids" value="{{ dev.id }}" /> {{ dev.hostname }}
+    </label>
+    {% endfor %}
+  </div>
+  <div>
+    <label class="block">Ports (one per line)</label>
+    <textarea name="ports" rows="4" class="w-full p-2 text-black"></textarea>
+  </div>
+  <div>
+    <label class="block">Config Snippet (use {port} for port name)</label>
+    <textarea name="config_text" rows="5" class="w-full p-2 text-black"></textarea>
+  </div>
+  <button type="submit" class="bg-blue-600 px-4 py-2">Apply</button>
+</form>
+{% if message %}<p class="mt-4 text-green-400">{{ message }}</p>{% endif %}
+{% endblock %}

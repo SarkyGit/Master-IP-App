@@ -22,6 +22,7 @@ from app.routes import (
     user_management_router,
     user_pages_router,
     locations_router,
+    ssh_tasks_router,
 )
 from app.routes.tunables import router as tunables_router
 from app.routes.editor import router as editor_router
@@ -63,6 +64,7 @@ app.include_router(task_views_router)
 app.include_router(user_management_router)
 app.include_router(user_pages_router)
 app.include_router(locations_router)
+app.include_router(ssh_tasks_router)
 
 
 @app.exception_handler(HTTPException)
