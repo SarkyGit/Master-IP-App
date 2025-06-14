@@ -7,8 +7,8 @@ body {
   background-color: #7f1d1d;
 }
 
-/* Match navbar background to dark theme */
-.navbar-dark.bg-dark {
+/* Match navigation background to dark theme */
+nav.bg-gray-800 {
   background-color: #222034 !important;
 }
 
