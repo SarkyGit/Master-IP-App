@@ -6,7 +6,7 @@
 {% if error %}
   <p class="text-red-500 mb-4">{{ error }}</p>
 {% endif %}
-<div class="flex flex-wrap gap-4 mb-4">
+<div class="grid grid-cols-2 gap-4 mb-4">
   {% for pane in port_panes %}
   <div class="space-y-0.5">
     {% for row in pane %}
@@ -14,11 +14,16 @@
       {% for port in row %}
         <div
           id="port-{{ port.name|replace('/', '-') }}"
-          class="w-20 h-12 flex flex-col items-center justify-center text-xs text-white rounded-md {% if port.oper_status == 'up' %}bg-green-600{% else %}bg-red-600{% endif %}"
+          class="w-40 h-24 flex flex-col items-center justify-center text-xs text-white rounded-md {% if port.oper_status == 'up' %}bg-green-600{% else %}bg-red-600{% endif %}"
           title="{{ port.descr or port.name }}"
         >
           <span>{{ port.name }}</span>
           <span class="port-rate">--</span>
+          {% if port.mode %}
+          <span>{{ port.mode }}</span>
+          {% elif port.vlan %}
+          <span>VLAN {{ port.vlan }}</span>
+          {% endif %}
         </div>
       {% endfor %}
     </div>
@@ -33,11 +38,16 @@
   {% for port in virtual_ports %}
     <div
       id="port-{{ port.name|replace('/', '-') }}"
-      class="w-20 h-12 flex flex-col items-center justify-center text-xs text-white {% if port.oper_status == 'up' %}bg-green-600{% else %}bg-red-600{% endif %}"
+      class="w-40 h-24 flex flex-col items-center justify-center text-xs text-white {% if port.oper_status == 'up' %}bg-green-600{% else %}bg-red-600{% endif %}"
       title="{{ port.descr or port.name }}"
     >
       <span>{{ port.name }}</span>
       <span class="port-rate">--</span>
+      {% if port.mode %}
+      <span>{{ port.mode }}</span>
+      {% elif port.vlan %}
+      <span>VLAN {{ port.vlan }}</span>
+      {% endif %}
     </div>
   {% endfor %}
 </div>
@@ -49,6 +59,7 @@
       <th class="px-4 py-2 text-left">Status</th>
       <th class="px-4 py-2 text-left">Admin State</th>
       <th class="px-4 py-2 text-left">Speed</th>
+      <th class="px-4 py-2 text-left">VLAN/Trunk</th>
       <th class="px-4 py-2 text-left">Description</th>
       <th class="px-4 py-2 text-left">Actions</th>
     </tr>
@@ -66,6 +77,15 @@
       </td>
       <td class="px-4 py-2">{{ port.admin_status }}</td>
       <td class="px-4 py-2">{{ port.speed or '' }} Mbps</td>
+      <td class="px-4 py-2">
+        {% if port.mode %}
+          {{ port.mode }}
+        {% elif port.vlan %}
+          {{ port.vlan }}
+        {% else %}
+          --
+        {% endif %}
+      </td>
       <td class="px-4 py-2">{{ port.alias or '' }}</td>
       <td class="px-4 py-2">
         <a href="/devices/{{ device.id }}/ports/{{ port.name }}/config" class="text-blue-400 underline">Config</a>

@@ -594,6 +594,8 @@ async def port_status(
         admin = await _gather_snmp_table(client, "1.3.6.1.2.1.2.2.1.7")
         speed = await _gather_snmp_table(client, "1.3.6.1.2.1.2.2.1.5")
         alias = await _gather_snmp_table(client, "1.3.6.1.2.1.31.1.1.1.18")
+        bridge_ifindex = await _gather_snmp_table(client, "1.3.6.1.2.1.17.1.4.1.2")
+        pvids = await _gather_snmp_table(client, "1.3.6.1.2.1.17.7.1.4.5.1.1")
     except SnmpError as exc:
         log_audit(db, current_user, "debug", device, f"SNMP error: {exc}")
         context = {
@@ -619,6 +621,13 @@ async def port_status(
         }
         return templates.TemplateResponse("port_status.html", context)
 
+    vlan_map: dict[int, int] = {}
+    for b_idx, ifidx in bridge_ifindex.items():
+        try:
+            vlan_map[int(ifidx)] = int(pvids.get(b_idx, 0))
+        except Exception:
+            continue
+
     ports = []
     for idx in sorted(set(names) | set(descr)):
         spd = speed.get(idx)
@@ -626,6 +635,8 @@ async def port_status(
             spd = int(spd) // 1_000_000
         else:
             spd = None
+        desc_text = f"{descr.get(idx) or ''} {alias.get(idx) or ''}".lower()
+        mode = "Trunk" if "trunk" in desc_text else None
         port = {
             "name": names.get(idx),
             "descr": descr.get(idx),
@@ -633,6 +644,8 @@ async def port_status(
             "admin_status": "up" if admin.get(idx) == 1 else "down",
             "speed": spd,
             "alias": alias.get(idx),
+            "vlan": vlan_map.get(idx),
+            "mode": mode,
         }
         ports.append(port)
 
