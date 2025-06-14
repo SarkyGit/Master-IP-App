@@ -17,11 +17,9 @@ from app.models.models import (
     SSHCredential,
     SNMPCommunity,
     ConfigBackup,
-    AuditLog,
     DeviceType,
     Location,
     PortConfigTemplate,
-    Tag,
 )
 from app.utils.audit import log_audit
 from app.utils.tags import update_device_complete_tag
@@ -171,7 +169,10 @@ def _load_form_options(db: Session):
     ssh_credentials = db.query(SSHCredential).all()
     snmp_communities = db.query(SNMPCommunity).all()
     locations = db.query(Location).all()
-    models = [m[0] for m in db.query(Device.model).filter(Device.model != None).distinct()]
+    models = [
+        m[0]
+        for m in db.query(Device.model).filter(Device.model.is_not(None)).distinct()
+    ]
     return device_types, vlans, ssh_credentials, snmp_communities, locations, models
 
 

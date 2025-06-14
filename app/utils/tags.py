@@ -1,6 +1,4 @@
 from sqlalchemy.orm import Session
-from datetime import datetime
-from typing import List
 
 from app.models.models import Device, Tag
 

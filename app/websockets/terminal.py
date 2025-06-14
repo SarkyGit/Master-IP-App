@@ -29,7 +29,11 @@ async def terminal_ws(websocket: WebSocket, device_id: int):
             await websocket.close(code=1008)
             return
 
-        user = db.query(User).filter(User.id == user_id, User.is_active == True).first()
+        user = (
+            db.query(User)
+            .filter(User.id == user_id, User.is_active.is_(True))
+            .first()
+        )
         if not user or ROLE_HIERARCHY.index(user.role) < ROLE_HIERARCHY.index("editor"):
             await websocket.close(code=1008)
             return

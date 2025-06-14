@@ -32,7 +32,7 @@ def get_current_user(
 
     return (
         db.query(User)
-        .filter(User.id == user_id, User.is_active == True)
+        .filter(User.id == user_id, User.is_active.is_(True))
         .first()
     )
 
