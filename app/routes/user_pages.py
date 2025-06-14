@@ -19,7 +19,14 @@ async def my_profile(request: Request, current_user: User = Depends(require_role
 @router.get('/users/me/edit')
 async def edit_my_profile_form(request: Request, current_user: User = Depends(require_role("viewer"))):
     """Render a form for the logged-in user to edit their details."""
-    context = {"request": request, "user": current_user, "current_user": current_user, "error": None}
+    context = {
+        "request": request,
+        "user": current_user,
+        "current_user": current_user,
+        "error": None,
+        "themes": ["dark", "light", "blue"],
+        "fonts": ["sans", "serif", "mono"],
+    }
     return templates.TemplateResponse("user_form.html", context)
 
 
@@ -28,16 +35,27 @@ async def update_my_profile(
     request: Request,
     email: str = Form(...),
     password: str | None = Form(None),
+    theme: str = Form("dark"),
+    font: str = Form("sans"),
     db: Session = Depends(get_db),
     current_user: User = Depends(require_role("viewer")),
 ):
     """Update the logged-in user's email and optionally their password."""
     existing = db.query(User).filter(User.email == email, User.id != current_user.id).first()
     if existing:
-        context = {"request": request, "user": current_user, "current_user": current_user, "error": "Email already in use"}
+        context = {
+            "request": request,
+            "user": current_user,
+            "current_user": current_user,
+            "error": "Email already in use",
+            "themes": ["dark", "light", "blue"],
+            "fonts": ["sans", "serif", "mono"],
+        }
         return templates.TemplateResponse("user_form.html", context)
 
     current_user.email = email
+    current_user.theme = theme
+    current_user.font = font
     if password:
         current_user.hashed_password = get_password_hash(password)
     db.commit()

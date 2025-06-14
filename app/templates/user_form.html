@@ -21,6 +21,26 @@
     </select>
   </div>
   {% endif %}
+  {% if themes %}
+  <div>
+    <label class="block">Theme</label>
+    <select name="theme" class="w-full p-2 text-black">
+      {% for t in themes %}
+      <option value="{{ t }}" {% if user and user.theme == t %}selected{% endif %}>{{ t }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  {% endif %}
+  {% if fonts %}
+  <div>
+    <label class="block">Font</label>
+    <select name="font" class="w-full p-2 text-black">
+      {% for f in fonts %}
+      <option value="{{ f }}" {% if user and user.font == f %}selected{% endif %}>{{ f }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  {% endif %}
   {% if show_active %}
   <div>
     <label class="inline-flex items-center">
