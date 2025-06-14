@@ -5,6 +5,16 @@
 {% if error %}
   <p class="text-red-500 mb-4">{{ error }}</p>
 {% endif %}
+<div class="grid grid-cols-8 gap-1 mb-4">
+  {% for port in ports %}
+    <div
+      class="w-8 h-8 flex items-center justify-center text-xs text-white {% if port.oper_status == 'up' %}bg-green-600{% else %}bg-red-600{% endif %}"
+      title="{{ port.name or port.descr }}"
+    >
+      {{ loop.index }}
+    </div>
+  {% endfor %}
+</div>
 <table class="min-w-full bg-black">
   <thead>
     <tr>
