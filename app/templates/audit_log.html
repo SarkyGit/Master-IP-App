@@ -10,6 +10,7 @@
       <th class="px-4 py-2 text-left">Device</th>
       <th class="px-4 py-2 text-left">Action</th>
       <th class="px-4 py-2 text-left">Details</th>
+      <th class="px-4 py-2 text-left">Compare</th>
     </tr>
   </thead>
   <tbody>
@@ -20,6 +21,11 @@
       <td class="px-4 py-2">{{ entry.device.hostname if entry.device else '' }}</td>
       <td class="px-4 py-2">{{ entry.action_type }}</td>
       <td class="px-4 py-2">{{ entry.details }}</td>
+      <td class="px-4 py-2">
+        {% if entry.device %}
+        <a href="/compare-configs?device_id={{ entry.device.id }}" class="underline text-blue-400">Diff</a>
+        {% endif %}
+      </td>
     </tr>
   {% endfor %}
   </tbody>

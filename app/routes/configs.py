@@ -68,8 +68,8 @@ async def diff_config(
     if prev_backup:
         diff_lines = list(
             difflib.unified_diff(
-                prev_backup.config_text.splitlines(),
-                backup.config_text.splitlines(),
+                (prev_backup.config_text or "").splitlines(),
+                (backup.config_text or "").splitlines(),
                 fromfile=str(prev_backup.created_at),
                 tofile=str(backup.created_at),
                 lineterm="",
@@ -87,3 +87,62 @@ async def diff_config(
     }
     log_audit(db, current_user, "debug", backup.device, f"Viewed config diff {backup.id}")
     return templates.TemplateResponse("config_diff.html", context)
+
+
+@router.get("/compare-configs")
+async def compare_configs(
+    request: Request,
+    device_id: int | None = None,
+    backup_a: int | None = None,
+    backup_b: int | None = None,
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    """Manually compare two config backups from any device."""
+    if not current_user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+
+    devices = (
+        db.query(Device)
+        .join(ConfigBackup)
+        .group_by(Device.id)
+        .order_by(Device.hostname)
+        .all()
+    )
+
+    device = None
+    backups: list[ConfigBackup] = []
+    diff_table = None
+
+    if device_id:
+        device = db.query(Device).filter(Device.id == device_id).first()
+        if device:
+            backups = (
+                db.query(ConfigBackup)
+                .filter(ConfigBackup.device_id == device_id)
+                .order_by(ConfigBackup.created_at.desc())
+                .all()
+            )
+            if backup_a and backup_b:
+                b1 = db.query(ConfigBackup).filter(ConfigBackup.id == backup_a, ConfigBackup.device_id == device_id).first()
+                b2 = db.query(ConfigBackup).filter(ConfigBackup.id == backup_b, ConfigBackup.device_id == device_id).first()
+                if b1 and b2:
+                    hd = difflib.HtmlDiff()
+                    diff_table = hd.make_table(
+                        (b1.config_text or "").splitlines(),
+                        (b2.config_text or "").splitlines(),
+                        fromdesc=str(b1.created_at),
+                        todesc=str(b2.created_at),
+                        context=True,
+                    )
+    context = {
+        "request": request,
+        "devices": devices,
+        "device": device,
+        "backups": backups,
+        "diff_table": diff_table,
+        "backup_a": backup_a,
+        "backup_b": backup_b,
+        "current_user": current_user,
+    }
+    return templates.TemplateResponse("compare_configs.html", context)

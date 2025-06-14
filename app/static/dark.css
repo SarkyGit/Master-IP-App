@@ -46,3 +46,7 @@ textarea {
 .navbar .dropdown:hover .dropdown-menu {
   display: block;
 }
+.diff_add { background-color: #14532d; }
+.diff_chg { background-color: #78350f; }
+.diff_sub { background-color: #7f1d1d; }
+table.diff { width: 100%; }

@@ -2,6 +2,7 @@
 
 {% block content %}
 <h1 class="text-xl mb-4">Config Backups for {{ device.hostname }}</h1>
+<p><a href="/compare-configs?device_id={{ device.id }}" class="text-blue-400 underline">Compare</a></p>
 {% if device.last_snmp_check %}
 <p class="mb-4">
   {% if device.snmp_reachable %}
