@@ -13,6 +13,7 @@ from .models import (
     Tag,
     DeviceEditLog,
     BannedIP,
+    LoginEvent,
 )
 
 __all__ = [
@@ -30,4 +31,5 @@ __all__ = [
     "Tag",
     "DeviceEditLog",
     "BannedIP",
+    "LoginEvent",
 ]

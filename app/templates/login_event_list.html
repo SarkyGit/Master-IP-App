@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-xl mb-4">Login Events</h1>
+<form method="get" class="mb-4">
+  <label class="mr-2">User:
+    <select name="user_id" onchange="this.form.submit()">
+      <option value="">All</option>
+      {% for u in users %}
+      <option value="{{ u.id }}" {% if user_id and u.id == user_id %}selected{% endif %}>{{ u.email }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <label class="mr-2">IP:
+    <input type="text" name="ip" value="{{ ip or '' }}" onchange="this.form.submit()">
+  </label>
+  <label class="mr-2">Start:
+    <input type="date" name="start" value="{{ start or '' }}" onchange="this.form.submit()">
+  </label>
+  <label>End:
+    <input type="date" name="end" value="{{ end or '' }}" onchange="this.form.submit()">
+  </label>
+</form>
+<table class="min-w-full bg-black">
+  <thead>
+    <tr>
+      <th class="px-4 py-2 text-left">Timestamp</th>
+      <th class="px-4 py-2 text-left">User</th>
+      <th class="px-4 py-2 text-left">IP</th>
+      <th class="px-4 py-2 text-left">Agent</th>
+      <th class="px-4 py-2 text-left">Location</th>
+      <th class="px-4 py-2 text-left">Success</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for event in events %}
+    <tr class="border-t border-gray-700">
+      <td class="px-4 py-2">{{ event.timestamp }}</td>
+      <td class="px-4 py-2">{{ event.user.email if event.user else '' }}</td>
+      <td class="px-4 py-2">{{ event.ip_address }}</td>
+      <td class="px-4 py-2">{{ event.user_agent }}</td>
+      <td class="px-4 py-2">{{ event.location or '' }}</td>
+      <td class="px-4 py-2">{{ 'Yes' if event.success else 'No' }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

@@ -20,6 +20,7 @@ from .locations import router as locations_router
 from .ssh_tasks import router as ssh_tasks_router
 from .ip_bans import router as ip_bans_router
 from .user_ssh import router as user_ssh_router
+from .login_events import router as login_events_router
 
 __all__ = [
     "auth_router",
@@ -44,4 +45,5 @@ __all__ = [
     "ssh_tasks_router",
     "ip_bans_router",
     "user_ssh_router",
+    "login_events_router",
 ]
