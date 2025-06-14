@@ -69,6 +69,12 @@ After logging in you can add devices, VLANs and manage configuration backups thr
 The **Devices** menu also includes a *Duplicate Checker* page to locate records sharing the same IP, MAC or asset tag and to list devices missing these values.
 If the login form reports **Invalid credentials**, run `python seed_superuser.py` again to ensure the password is stored correctly.
 
+## Interface Themes
+
+Several visual themes are bundled under `app/static/themes`.  The available options are `dark_colourful`, `dark`, `light`, `blue`, `bw` and `homebrew`.  New users are created with the **dark_colourful** theme by default.
+
+To switch themes, open **My Profile** from the user menu (or visit `/users/me`) and click **Edit Profile**.  Select a theme from the **Theme** drop‑down and submit the form to save the preference.
+
 ## System Tunables
 
 The application stores various settings in the `system_tunables` table. These are seeded with default values by `seed_tunables.py` and can be adjusted from the **System Tunables** page in the web UI (admin role required). Recent additions include options for queue processing, SNMP trap and syslog listeners, web terminal timeouts and SMTP credentials.
