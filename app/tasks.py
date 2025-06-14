@@ -24,7 +24,7 @@ async def run_push_queue_once():
         conn_kwargs = build_conn_kwargs(cred)
         try:
             async with asyncssh.connect(device.ip, **conn_kwargs) as conn:
-                session = await conn.create_session(asyncssh.SSHClientProcess)
+                _, session = await conn.create_session(asyncssh.SSHClientProcess)
                 for line in backup.config_text.splitlines():
                     session.stdin.write(line + "\n")
                 session.stdin.write("exit\n")

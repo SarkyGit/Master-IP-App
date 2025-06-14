@@ -371,7 +371,7 @@ async def push_device_config(
     success = False
     try:
         async with asyncssh.connect(device.ip, **conn_kwargs) as conn:
-            session = await conn.create_session(asyncssh.SSHClientProcess)
+            _, session = await conn.create_session(asyncssh.SSHClientProcess)
             for line in config_text.splitlines():
                 session.stdin.write(line + "\n")
             session.stdin.write("exit\n")
@@ -482,7 +482,7 @@ async def push_template_config(
     success = False
     try:
         async with asyncssh.connect(device.ip, **conn_kwargs) as conn:
-            session = await conn.create_session(asyncssh.SSHClientProcess)
+            _, session = await conn.create_session(asyncssh.SSHClientProcess)
             for line in snippet.splitlines():
                 session.stdin.write(line + "\n")
             session.stdin.write("exit\n")
@@ -880,7 +880,7 @@ async def apply_port_template(
         conn_kwargs = build_conn_kwargs(cred)
         try:
             async with asyncssh.connect(device.ip, **conn_kwargs) as conn:
-                session = await conn.create_session(asyncssh.SSHClientProcess)
+                _, session = await conn.create_session(asyncssh.SSHClientProcess)
                 for line in snippet.splitlines():
                     session.stdin.write(line + "\n")
                 session.stdin.write("exit\n")
