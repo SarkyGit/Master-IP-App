@@ -93,6 +93,7 @@ class ConfigBackup(Base):
     source = Column(String, nullable=False)
     queued = Column(Boolean, default=False)
     status = Column(String, nullable=True)
+    port_name = Column(String, nullable=True)
 
     device = relationship("Device", back_populates="backups")
 

@@ -528,7 +528,13 @@ async def _gather_snmp_table(client: PyWrapper, oid: str) -> dict:
     data = {}
     async for vb in client.walk(oid):
         idx = int(vb.oid.rsplit(".", 1)[-1])
-        data[idx] = vb.value
+        val = vb.value
+        if isinstance(val, bytes):
+            try:
+                val = val.decode()
+            except Exception:
+                val = val.decode(errors="ignore")
+        data[idx] = val
     return data
 
 
@@ -585,12 +591,17 @@ async def port_status(
 
     ports = []
     for idx in sorted(set(names) | set(descr)):
+        spd = speed.get(idx)
+        if isinstance(spd, (int, float)):
+            spd = int(spd) // 1_000_000
+        else:
+            spd = None
         port = {
             "name": names.get(idx),
             "descr": descr.get(idx),
             "oper_status": "up" if oper.get(idx) == 1 else "down",
             "admin_status": "up" if admin.get(idx) == 1 else "down",
-            "speed": speed.get(idx),
+            "speed": spd,
             "alias": alias.get(idx),
         }
         ports.append(port)
@@ -603,6 +614,116 @@ async def port_status(
         "current_user": current_user,
     }
     return templates.TemplateResponse("port_status.html", context)
+
+
+@router.get("/devices/{device_id}/ports/{port_name:path}/config")
+async def port_config(
+    device_id: int,
+    port_name: str,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("editor")),
+):
+    device = db.query(Device).filter(Device.id == device_id).first()
+    if not device:
+        raise HTTPException(status_code=404, detail="Device not found")
+
+    cred = device.ssh_credential
+    if not cred:
+        context = {
+            "request": request,
+            "device": device,
+            "port_name": port_name,
+            "config": None,
+            "prev_config": None,
+            "message": "No SSH credentials",
+            "error": None,
+            "current_user": current_user,
+        }
+        return templates.TemplateResponse("port_config.html", context)
+
+    conn_kwargs = build_conn_kwargs(cred)
+    output = ""
+    try:
+        async with asyncssh.connect(device.ip, **conn_kwargs) as conn:
+            result = await conn.run(f"show running-config interface {port_name}", check=False)
+            output = result.stdout
+    except Exception as exc:
+        log_audit(db, current_user, "debug", device, f"Port config error: {exc}")
+        context = {
+            "request": request,
+            "device": device,
+            "port_name": port_name,
+            "config": None,
+            "prev_config": None,
+            "error": str(exc),
+            "message": None,
+            "current_user": current_user,
+        }
+        return templates.TemplateResponse("port_config.html", context)
+
+    backup = ConfigBackup(
+        device_id=device.id,
+        source="port_pull",
+        config_text=output,
+        port_name=port_name,
+    )
+    db.add(backup)
+    db.commit()
+
+    prev = (
+        db.query(ConfigBackup)
+        .filter(
+            ConfigBackup.device_id == device.id,
+            ConfigBackup.port_name == port_name,
+            ConfigBackup.id != backup.id,
+        )
+        .order_by(ConfigBackup.created_at.desc())
+        .first()
+    )
+
+    context = {
+        "request": request,
+        "device": device,
+        "port_name": port_name,
+        "config": output,
+        "prev_config": prev.config_text if prev else None,
+        "message": None,
+        "error": None,
+        "current_user": current_user,
+    }
+    return templates.TemplateResponse("port_config.html", context)
+
+
+@router.post("/devices/{device_id}/ports/{port_name:path}/config")
+async def stage_port_config(
+    device_id: int,
+    port_name: str,
+    request: Request,
+    config_text: str = Form(...),
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("editor")),
+):
+    device = db.query(Device).filter(Device.id == device_id).first()
+    if not device:
+        raise HTTPException(status_code=404, detail="Device not found")
+
+    backup = ConfigBackup(
+        device_id=device.id,
+        source="port_stage",
+        config_text=config_text,
+        queued=True,
+        status="pending",
+        port_name=port_name,
+    )
+    db.add(backup)
+    db.commit()
+    log_audit(db, current_user, "queue", device, f"Queued port {port_name} config")
+
+    return RedirectResponse(
+        url=f"/devices/{device_id}/ports/{port_name}/config?message=Change+staged",
+        status_code=302,
+    )
 
 
 @router.get("/devices/{device_id}/terminal")
