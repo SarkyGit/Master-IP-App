@@ -5,12 +5,13 @@ import os
 from typing import Optional
 
 from fastapi import APIRouter, Depends
-from fastapi.responses import Response
+from fastapi.responses import Response, StreamingResponse
 from sqlalchemy.orm import Session
 
 from app.utils.db_session import get_db
 from app.utils.auth import require_role, get_user_site_ids
-from app.models.models import Device, VLAN
+from app.models.models import Device, VLAN, ConfigBackup
+import zipfile
 from app.utils.audit import log_audit
 
 try:
@@ -145,4 +146,38 @@ async def export_inventory_pdf(
         pdf_value,
         media_type="application/pdf",
         headers={"Content-Disposition": "attachment; filename=inventory.pdf"},
+    )
+
+
+@router.get("/config-snapshot.zip")
+async def export_config_snapshot(
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("editor")),
+):
+    """Return a ZIP archive of the latest config for each device in the user's sites."""
+    site_ids = get_user_site_ids(db, current_user)
+    devices = db.query(Device).filter(Device.site_id.in_(site_ids)).all()
+
+    zip_buffer = io.BytesIO()
+    count = 0
+    with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zf:
+        for device in devices:
+            backup = (
+                db.query(ConfigBackup)
+                .filter(ConfigBackup.device_id == device.id)
+                .order_by(ConfigBackup.created_at.desc())
+                .first()
+            )
+            if not backup:
+                continue
+            filename = f"{device.hostname}_{device.id}.txt"
+            zf.writestr(filename, backup.config_text)
+            count += 1
+
+    zip_buffer.seek(0)
+    log_audit(db, current_user, "export_config_snapshot", details=f"{count} configs")
+    return StreamingResponse(
+        zip_buffer,
+        media_type="application/zip",
+        headers={"Content-Disposition": "attachment; filename=config-snapshot.zip"},
     )
