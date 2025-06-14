@@ -24,6 +24,7 @@ from app.routes import (
     ssh_tasks_router,
     ip_bans_router,
     user_ssh_router,
+    login_events_router,
 )
 from app.routes.tunables import router as tunables_router
 from app.routes.editor import router as editor_router
@@ -67,6 +68,7 @@ app.include_router(locations_router)
 app.include_router(ssh_tasks_router)
 app.include_router(ip_bans_router)
 app.include_router(user_ssh_router)
+app.include_router(login_events_router)
 
 
 @app.exception_handler(HTTPException)

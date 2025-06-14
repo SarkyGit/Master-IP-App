@@ -234,3 +234,17 @@ class BannedIP(Base):
     banned_until = Column(DateTime, nullable=False)
     attempt_count = Column(Integer, default=0)
 
+
+class LoginEvent(Base):
+    __tablename__ = "login_events"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    ip_address = Column(String, nullable=False)
+    user_agent = Column(String, nullable=True)
+    timestamp = Column(DateTime, default=datetime.utcnow)
+    success = Column(Boolean, default=False)
+    location = Column(String, nullable=True)
+
+    user = relationship("User")
+
