@@ -4,17 +4,17 @@
 <h1 class="text-xl mb-4">System Tunables</h1>
 <p class="mb-3">Current Version: <span class="fw-bold">{{ version }}</span></p>
 
-<ul class="nav nav-tabs" id="tunableTabs" role="tablist">
-  {% for function in groups.keys() %}
-  <li class="nav-item" role="presentation">
-    <button class="nav-link {% if loop.first %}active{% endif %}" id="tab-{{ function|replace(' ','_') }}" data-bs-toggle="tab" data-bs-target="#content-{{ function|replace(' ','_') }}" type="button" role="tab" aria-controls="content-{{ function|replace(' ','_') }}" aria-selected="{{ 'true' if loop.first else 'false' }}">{{ function }}</button>
-  </li>
-  {% endfor %}
-</ul>
+<div x-data="{tab:0}">
+  <ul class="flex border-b" >
+    {% for function in groups.keys() %}
+    <li class="mr-2">
+      <button @click="tab={{ loop.index0 }}" :class="{'border-b-2': tab==={{ loop.index0 }} }" class="px-3 py-2">{{ function }}</button>
+    </li>
+    {% endfor %}
+  </ul>
 
-<div class="tab-content mt-3" id="tunableTabsContent">
   {% for function, files in groups.items() %}
-  <div class="tab-pane fade {% if loop.first %}show active{% endif %}" id="content-{{ function|replace(' ','_') }}" role="tabpanel" aria-labelledby="tab-{{ function|replace(' ','_') }}">
+  <div x-show="tab==={{ loop.index0 }}" class="mt-3" x-cloak>
     {% for file, tunables in files.items() %}
     <h3 class="mt-2">{{ file }}</h3>
       {% for tunable in tunables %}

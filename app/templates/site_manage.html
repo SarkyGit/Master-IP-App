@@ -6,7 +6,7 @@
 <ul>
   {% for u in users %}
   <li>{{ u.email }} ({{ u.role }})
-    <form method="post" action="/sites/{{ site.id }}/remove-user" class="d-inline">
+    <form method="post" action="/sites/{{ site.id }}/remove-user" class="inline">
       <input type="hidden" name="user_id" value="{{ u.id }}">
       <button type="submit" class="text-red-400 underline">Remove</button>
     </form>
@@ -25,7 +25,7 @@
 <ul>
   {% for d in devices %}
   <li>{{ d.hostname }} - {{ d.config_pull_interval }}
-    <form method="post" action="/sites/{{ site.id }}/device/{{ d.id }}/interval" class="d-inline">
+    <form method="post" action="/sites/{{ site.id }}/device/{{ d.id }}/interval" class="inline">
       <select name="interval" class="text-black">
         {% for opt in ['none','hourly','daily','weekly'] %}
         <option value="{{ opt }}" {% if d.config_pull_interval==opt %}selected{% endif %}>{{ opt }}</option>
@@ -33,7 +33,7 @@
       </select>
       <button type="submit" class="underline">Update</button>
     </form>
-    <form method="post" action="/sites/{{ site.id }}/remove-device" class="d-inline">
+    <form method="post" action="/sites/{{ site.id }}/remove-device" class="inline">
       <input type="hidden" name="device_id" value="{{ d.id }}">
       <button type="submit" class="text-red-400 underline">Remove</button>
     </form>
