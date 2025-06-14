@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Request, Depends, HTTPException, Form
+from datetime import datetime
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 
@@ -43,7 +44,12 @@ async def create_port_config(request: Request, name: str = Form(...), config_tex
     if existing:
         context = {"request": request, "template": {"name": name, "config_text": config_text}, "form_title": "New Port Config", "error": "Name already exists", "current_user": current_user}
         return templates.TemplateResponse("port_config_template_form.html", context)
-    tpl = PortConfigTemplate(name=name, config_text=config_text)
+    tpl = PortConfigTemplate(
+        name=name,
+        config_text=config_text,
+        last_edited=datetime.utcnow(),
+        edited_by_id=current_user.id,
+    )
     db.add(tpl)
     db.commit()
     return RedirectResponse(url="/network/port-configs", status_code=302)
@@ -71,6 +77,8 @@ async def update_port_config(tpl_id: int, request: Request, name: str = Form(...
         return templates.TemplateResponse("port_config_template_form.html", context)
     tpl.name = name
     tpl.config_text = config_text
+    tpl.last_edited = datetime.utcnow()
+    tpl.edited_by_id = current_user.id
     db.commit()
     return RedirectResponse(url="/network/port-configs", status_code=302)
 

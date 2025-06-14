@@ -150,3 +150,7 @@ class PortConfigTemplate(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True, nullable=False)
     config_text = Column(Text, nullable=False)
+    last_edited = Column(DateTime, default=datetime.utcnow)
+    edited_by_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+
+    edited_by = relationship("User")

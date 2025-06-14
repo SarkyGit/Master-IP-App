@@ -7,6 +7,8 @@
   <thead>
     <tr>
       <th class="px-4 py-2 text-left">Name</th>
+      <th class="px-4 py-2 text-left">Last Edited</th>
+      <th class="px-4 py-2 text-left">Edited By</th>
       <th></th>
     </tr>
   </thead>
@@ -14,6 +16,8 @@
   {% for tpl in templates %}
     <tr class="border-t border-white">
       <td class="px-4 py-2">{{ tpl.name }}</td>
+      <td class="px-4 py-2">{{ tpl.last_edited.strftime('%Y-%m-%d %H:%M:%S') if tpl.last_edited else '' }}</td>
+      <td class="px-4 py-2">{{ tpl.edited_by.email if tpl.edited_by else '' }}</td>
       <td class="px-4 py-2">
         <a href="/network/port-configs/{{ tpl.id }}/edit" class="text-blue-400 underline mr-2">Edit</a>
         <form method="post" action="/network/port-configs/{{ tpl.id }}/delete" style="display:inline">

@@ -11,6 +11,9 @@
     <label class="block">Config Text</label>
     <textarea name="config_text" rows="5" class="w-full p-2 text-black" required>{{ template.config_text if template else '' }}</textarea>
   </div>
+  {% if template and template.last_edited %}
+  <p class="text-sm">Last Edited {{ template.last_edited.strftime('%Y-%m-%d %H:%M:%S') }}{% if template.edited_by %} by {{ template.edited_by.email }}{% endif %}</p>
+  {% endif %}
   {% if error %}<p class="text-red-500">{{ error }}</p>{% endif %}
   <div>
     <button type="submit" class="bg-blue-600 px-4 py-2">Submit</button>
