@@ -97,6 +97,55 @@ Set the `AUTO_SEED` environment variable to `0` or `false` to skip the automatic
 Adjust `WORKERS`, `TIMEOUT` and `PORT` as needed. The server listens on
 `0.0.0.0` so it can be proxied by a web server such as Nginx.
 
+## Nginx reverse proxy with SSL
+
+Install Nginx on the host and create a server block that proxies requests to
+the Gunicorn/Uvicorn backend. A minimal configuration looks like this:
+
+```nginx
+server {
+    listen 80;
+    server_name example.com;
+
+    location /static/ {
+        alias /path/to/Master-IP-App/app/static/;
+    }
+
+    location / {
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+Enable the configuration and reload Nginx:
+
+```bash
+sudo ln -s /etc/nginx/sites-available/master-ip-app \
+    /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+To serve HTTPS traffic obtain a certificate with Certbot and let it configure
+Nginx automatically:
+
+```bash
+sudo certbot --nginx -d example.com
+```
+
+Certbot will update the file to listen on port 443, use the generated
+certificates and redirect HTTP requests to HTTPS. After the certificate is
+installed visit the application via `https://example.com` and ensure that all
+static files load correctly. Finally make sure Nginx starts on boot:
+
+```bash
+sudo systemctl enable nginx
+```
+
 
 ## Troubleshooting
 
