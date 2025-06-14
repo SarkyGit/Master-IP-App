@@ -55,7 +55,8 @@ start_config_scheduler(app)
 setup_trap_listener(app)
 setup_syslog_listener(app)
 
-app.mount("/static", StaticFiles(directory="app/static"), name="static")
+static_dir = os.path.join(os.path.dirname(__file__), "static")
+app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 # Store login information in signed cookies
 app.add_middleware(
