@@ -14,7 +14,7 @@ from .device_types import router as device_types_router
 from .network import router as network_router
 from .port_config_templates import router as port_config_templates_router
 from .task_views import router as task_views_router
-from .user_management import router as user_management_router
+from .admin_users import router as admin_users_router
 from .user_pages import router as user_pages_router
 from .locations import router as locations_router
 from .ssh_tasks import router as ssh_tasks_router
@@ -36,7 +36,7 @@ __all__ = [
     "network_router",
     "port_config_templates_router",
     "task_views_router",
-    "user_management_router",
+    "admin_users_router",
     "user_pages_router",
     "locations_router",
     "ssh_tasks_router",

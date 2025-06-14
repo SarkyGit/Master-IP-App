@@ -1,22 +1,40 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1 class="text-xl mb-4">Edit Profile</h1>
+<h1 class="text-xl mb-4">{{ form_title or 'Edit Profile' }}</h1>
 <form method="post" class="space-y-4">
   <div>
     <label class="block">Email</label>
-    <input type="email" name="email" value="{{ user.email if user else '' }}" class="w-full p-2 text-black" required />
+    <input type="email" name="email" value="{{ user.email if user else '' }}" class="w-full p-2 text-black" {% if email_readonly %}readonly{% endif %} required />
   </div>
   <div>
-    <label class="block">Password</label>
-    <input type="password" name="password" class="w-full p-2 text-black" />
+    <label class="block">Password{% if not require_password %} (leave blank to keep current){% endif %}</label>
+    <input type="password" name="password" class="w-full p-2 text-black" {% if require_password %}required{% endif %} />
   </div>
+  {% if roles %}
+  <div>
+    <label class="block">Role</label>
+    <select name="role" class="w-full p-2 text-black">
+      {% for r in roles %}
+      <option value="{{ r }}" {% if user and user.role == r %}selected{% endif %}>{{ r }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  {% endif %}
+  {% if show_active %}
+  <div>
+    <label class="inline-flex items-center">
+      <input type="checkbox" name="is_active" value="1" class="mr-2" {% if user and user.is_active %}checked{% endif %}>
+      Active
+    </label>
+  </div>
+  {% endif %}
   {% if error %}
   <p class="text-red-500">{{ error }}</p>
   {% endif %}
   <div>
     <button type="submit" class="bg-blue-600 px-4 py-2">Submit</button>
-    <a href="/users/me" class="ml-2 underline">Cancel</a>
+    <a href="{{ cancel_url or '/users/me' }}" class="ml-2 underline">Cancel</a>
   </div>
 </form>
 {% endblock %}
