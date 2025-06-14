@@ -2,18 +2,35 @@
 
 {% block content %}
 <h1 class="text-xl mb-4">Users</h1>
-<table class="min-w-full bg-black">
+<a href="/admin/users/new" class="underline">Add User</a>
+<table class="min-w-full bg-black mt-4">
   <thead>
     <tr>
       <th class="px-4 py-2 text-left">Email</th>
       <th class="px-4 py-2 text-left">Role</th>
+      <th class="px-4 py-2 text-left">Status</th>
+      <th class="px-4 py-2 text-left">Created</th>
+      <th></th>
     </tr>
   </thead>
   <tbody>
     {% for user in users %}
-    <tr class="border-t border-gray-700">
+    <tr class="border-t border-gray-700 {% if not user.is_active %}opacity-50{% endif %}">
       <td class="px-4 py-2">{{ user.email }}</td>
       <td class="px-4 py-2">{{ user.role }}</td>
+      <td class="px-4 py-2">{{ 'active' if user.is_active else 'inactive' }}</td>
+      <td class="px-4 py-2">{{ user.created_at }}</td>
+      <td class="px-4 py-2">
+        <a href="/admin/users/{{ user.id }}/edit" class="text-blue-400 underline mr-2">Edit</a>
+        {% if user.is_active %}
+        <form method="post" action="/admin/users/{{ user.id }}/deactivate" class="d-inline">
+          <button type="submit" class="text-red-400 underline me-2" onclick="return confirm('Deactivate user?')">Disable</button>
+        </form>
+        {% endif %}
+        <form method="post" action="/admin/users/{{ user.id }}/reset-password" class="d-inline">
+          <button type="submit" class="text-yellow-400 underline" onclick="return confirm('Reset password?')">Reset Password</button>
+        </form>
+      </td>
     </tr>
     {% endfor %}
   </tbody>
