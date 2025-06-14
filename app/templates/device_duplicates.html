@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="text-xl mb-4">Duplicate Report</h1>
+<h2 class="text-lg mt-4">Duplicate IP Addresses</h2>
+<ul class="list-disc ml-6">
+  {% for ip, devs in ip_dupes.items() %}
+  <li>{{ ip }}:
+    {% for d in devs %}
+    <a href="/devices/{{ d.id }}/edit" class="underline">{{ d.hostname }}</a>{% if not loop.last %}, {% endif %}
+    {% endfor %}
+  </li>
+  {% else %}
+  <li>No duplicates</li>
+  {% endfor %}
+</ul>
+<h2 class="text-lg mt-4">Duplicate MAC Addresses</h2>
+<ul class="list-disc ml-6">
+  {% for mac, devs in mac_dupes.items() %}
+  <li>{{ mac }}:
+    {% for d in devs %}
+    <a href="/devices/{{ d.id }}/edit" class="underline">{{ d.hostname }}</a>{% if not loop.last %}, {% endif %}
+    {% endfor %}
+  </li>
+  {% else %}
+  <li>No duplicates</li>
+  {% endfor %}
+</ul>
+<h2 class="text-lg mt-4">Duplicate Asset Tags</h2>
+<ul class="list-disc ml-6">
+  {% for tag, devs in tag_dupes.items() %}
+  <li>{{ tag }}:
+    {% for d in devs %}
+    <a href="/devices/{{ d.id }}/edit" class="underline">{{ d.hostname }}</a>{% if not loop.last %}, {% endif %}
+    {% endfor %}
+  </li>
+  {% else %}
+  <li>No duplicates</li>
+  {% endfor %}
+</ul>
+<h2 class="text-lg mt-4">Missing Fields</h2>
+<ul class="list-disc ml-6">
+  <li>Missing IP:
+    {% for d in missing.ip %}<a href="/devices/{{ d.id }}/edit" class="underline">{{ d.hostname }}</a>{% if not loop.last %}, {% endif %}{% endfor %}
+    {% if not missing.ip %}None{% endif %}
+  </li>
+  <li>Missing MAC:
+    {% for d in missing.mac %}<a href="/devices/{{ d.id }}/edit" class="underline">{{ d.hostname }}</a>{% if not loop.last %}, {% endif %}{% endfor %}
+    {% if not missing.mac %}None{% endif %}
+  </li>
+  <li>Missing Asset Tag:
+    {% for d in missing.asset_tag %}<a href="/devices/{{ d.id }}/edit" class="underline">{{ d.hostname }}</a>{% if not loop.last %}, {% endif %}{% endfor %}
+    {% if not missing.asset_tag %}None{% endif %}
+  </li>
+</ul>
+{% endblock %}
