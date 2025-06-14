@@ -25,7 +25,6 @@
                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Devices</a>
                 <ul class="dropdown-menu">
                   <li><a class="dropdown-item" href="/devices">All Devices</a></li>
-                  <li><a class="dropdown-item" href="/devices/duplicates">Duplicate Checker</a></li>
                   {% for dtype in get_device_types() %}
                   <li><a class="dropdown-item" href="/devices/type/{{ dtype.id }}">{{ dtype.name }}</a></li>
                   {% endfor %}
@@ -42,17 +41,16 @@
                   <li><a class="dropdown-item" href="/network/port-configs">Port Configs</a></li>
                 </ul>
               </li>
-              {% if current_user and current_user.role in ['admin','superadmin'] %}
               <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Tags</a>
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Tasks</a>
                 <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="/tasks">Task Queue</a></li>
+                  <li><a class="dropdown-item" href="/devices/duplicates">Duplicate Checker</a></li>
+                  {% if current_user and current_user.role in ['admin','superadmin'] %}
                   <li><a class="dropdown-item" href="/tasks/edit-tags">Edit Tags</a></li>
                   <li><a class="dropdown-item" href="/tasks/google-sheets">Google Sheets</a></li>
+                  {% endif %}
                 </ul>
-              </li>
-              {% endif %}
-              <li class="nav-item">
-                <a class="nav-link" href="/tasks">Tasks</a>
               </li>
             </ul>
             <div class="d-flex align-items-center">
