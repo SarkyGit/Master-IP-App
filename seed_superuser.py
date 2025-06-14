@@ -1,6 +1,6 @@
 from app.utils.db_session import SessionLocal
 from app.models.models import User, Site, SiteMembership
-from app.utils.auth import get_password_hash
+from app.utils.auth import get_password_hash, verify_password
 
 
 def main():
@@ -8,7 +8,7 @@ def main():
     try:
         existing = db.query(User).filter_by(email="Barny@CESTechnologies.com").first()
         if existing:
-            if existing.hashed_password != get_password_hash("C0pperpa!r"):
+            if not verify_password("C0pperpa!r", existing.hashed_password):
                 existing.hashed_password = get_password_hash("C0pperpa!r")
                 db.commit()
                 print("Superuser password updated.")

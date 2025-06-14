@@ -1,4 +1,4 @@
-import hashlib
+import bcrypt
 from typing import Optional, Callable
 
 from fastapi import Request, Depends, HTTPException
@@ -13,13 +13,13 @@ ROLE_HIERARCHY = ["viewer", "user", "editor", "admin", "superadmin"]
 
 
 def get_password_hash(password: str) -> str:
-    """Return a SHA256 hash of the given password."""
-    return hashlib.sha256(password.encode()).hexdigest()
+    """Return a bcrypt hash of the given password."""
+    return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
 
 
 def verify_password(password: str, hashed_password: str) -> bool:
     """Compare plain password with its hashed version."""
-    return get_password_hash(password) == hashed_password
+    return bcrypt.checkpw(password.encode(), hashed_password.encode())
 
 
 def get_current_user(request: Request, db: Session = Depends(get_db)) -> Optional[User]:
