@@ -5,6 +5,7 @@ import asyncssh
 import asyncio
 import time
 import logging
+import os
 
 from app.utils.ssh import build_conn_kwargs
 
@@ -13,6 +14,7 @@ from app.models.models import Device, User
 from app.utils.auth import ROLE_HIERARCHY
 
 router = APIRouter()
+INACTIVITY_TIMEOUT = int(os.environ.get("SSH_TIMEOUT", "900"))
 
 
 @router.websocket("/ws/terminal/{device_id}")
@@ -79,7 +81,7 @@ async def terminal_ws(websocket: WebSocket, device_id: int):
                     try:
                         while True:
                             await asyncio.sleep(30)
-                            if time.monotonic() - last_msg > 900:
+                            if time.monotonic() - last_msg > INACTIVITY_TIMEOUT:
                                 try:
                                     await websocket.send_text("\u26A0\uFE0F Session expired due to inactivity")
                                 except Exception:

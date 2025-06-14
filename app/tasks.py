@@ -7,8 +7,9 @@ from app.utils.ssh import build_conn_kwargs
 from app.utils.db_session import SessionLocal
 from app.models.models import ConfigBackup
 from app.utils.audit import log_audit
+import os
 
-QUEUE_INTERVAL = 60  # seconds
+QUEUE_INTERVAL = int(os.environ.get("QUEUE_INTERVAL", "60"))
 
 async def run_push_queue_once():
     db = SessionLocal()

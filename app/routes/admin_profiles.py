@@ -6,6 +6,9 @@ from sqlalchemy.orm import Session
 from app.utils.db_session import get_db
 from app.utils.auth import require_role
 from app.models.models import SSHCredential, SNMPCommunity
+import os
+
+DEFAULT_SNMP_VERSION = os.environ.get("DEFAULT_SNMP_VERSION", "2c")
 
 
 
@@ -162,7 +165,7 @@ async def create_snmp_profile(
     request: Request,
     name: str = Form(...),
     community_string: str = Form(...),
-    version: str = Form("2c"),
+    version: str = Form(DEFAULT_SNMP_VERSION),
     db: Session = Depends(get_db),
     current_user=Depends(require_role("superadmin")),
 ):
@@ -176,7 +179,7 @@ async def create_snmp_profile(
         }
         return templates.TemplateResponse("snmp_form.html", context)
 
-    profile = SNMPCommunity(name=name, community_string=community_string, version=version or "2c")
+    profile = SNMPCommunity(name=name, community_string=community_string, version=version or DEFAULT_SNMP_VERSION)
     db.add(profile)
     db.commit()
     return RedirectResponse(url="/admin/snmp", status_code=302)
@@ -202,7 +205,7 @@ async def update_snmp_profile(
     request: Request,
     name: str = Form(...),
     community_string: str = Form(...),
-    version: str = Form("2c"),
+    version: str = Form(DEFAULT_SNMP_VERSION),
     db: Session = Depends(get_db),
     current_user=Depends(require_role("superadmin")),
 ):
@@ -225,7 +228,7 @@ async def update_snmp_profile(
 
     profile.name = name
     profile.community_string = community_string
-    profile.version = version or "2c"
+    profile.version = version or DEFAULT_SNMP_VERSION
     db.commit()
     return RedirectResponse(url="/admin/snmp", status_code=302)
 

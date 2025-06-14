@@ -1,3 +1,5 @@
 **/__pycache__/
 *.pyc
 ces_inventory.db
+
+.env

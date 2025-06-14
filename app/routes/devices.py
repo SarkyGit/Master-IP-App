@@ -38,7 +38,8 @@ router = APIRouter()
 
 # Basic status options for dropdown menus
 STATUS_OPTIONS = ["active", "inactive", "maintenance"]
-MAX_BACKUPS = 10
+import os
+MAX_BACKUPS = int(os.environ.get("MAX_BACKUPS", "10"))
 # Available configuration templates for push-config form
 TEMPLATE_OPTIONS = [
     "Trunk Port",
