@@ -16,6 +16,8 @@ from .models import (
     DeviceEditLog,
     BannedIP,
     LoginEvent,
+    EmailLog,
+    PortStatusHistory,
 )
 
 __all__ = [
@@ -36,4 +38,6 @@ __all__ = [
     "DeviceEditLog",
     "BannedIP",
     "LoginEvent",
+    "EmailLog",
+    "PortStatusHistory",
 ]

@@ -303,3 +303,18 @@ class EmailLog(Base):
     details = Column(Text, nullable=True)
 
     site = relationship("Site")
+
+class PortStatusHistory(Base):
+    __tablename__ = "port_status_history"
+
+    id = Column(Integer, primary_key=True)
+    device_id = Column(Integer, ForeignKey("devices.id"), nullable=False)
+    interface_name = Column(String, nullable=False)
+    oper_status = Column(String, nullable=True)
+    admin_status = Column(String, nullable=True)
+    speed = Column(Integer, nullable=True)
+    poe_draw = Column(Integer, nullable=True)
+    timestamp = Column(DateTime, default=datetime.utcnow)
+
+    device = relationship("Device")
+

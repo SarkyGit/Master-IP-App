@@ -21,6 +21,7 @@ from app.models.models import (
     Location,
     Site,
     PortConfigTemplate,
+    PortStatusHistory,
     UserSSHCredential,
 )
 from app.utils.audit import log_audit
@@ -918,6 +919,39 @@ async def port_status(
         }
         ports.append(port)
 
+    now = datetime.utcnow()
+    for port in ports:
+        name = (port.get("name") or "").strip()
+        if not name:
+            continue
+        admin_state = "enabled" if port["admin_status"] == "up" else "disabled"
+        last = (
+            db.query(PortStatusHistory)
+            .filter(
+                PortStatusHistory.device_id == device.id,
+                PortStatusHistory.interface_name == name,
+            )
+            .order_by(PortStatusHistory.timestamp.desc())
+            .first()
+        )
+        if (
+            last
+            and last.oper_status == port["oper_status"]
+            and last.admin_status == admin_state
+            and last.speed == port["speed"]
+        ):
+            continue
+        entry = PortStatusHistory(
+            device_id=device.id,
+            interface_name=name,
+            oper_status=port["oper_status"],
+            admin_status=admin_state,
+            speed=port["speed"],
+            poe_draw=None,
+            timestamp=now,
+        )
+        db.add(entry)
+
     prefixes = ("Fa", "Gi", "Te", "Tw", "Fo", "Hu")
     # Ports that should be treated as virtual even though they start with a
     # physical prefix. These are typically internal router interfaces like
@@ -985,6 +1019,72 @@ async def port_rates(
             rates[name.strip()] = {"rx_bps": rx_bps, "tx_bps": tx_bps}
     db.commit()
     return rates
+
+
+@router.get("/devices/{device_id}/ports/history")
+async def port_history(
+    device_id: int,
+    request: Request,
+    interface: str | None = None,
+    start: str | None = None,
+    end: str | None = None,
+    changes_only: bool = False,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("user")),
+):
+    device = db.query(Device).filter(Device.id == device_id).first()
+    if not device:
+        raise HTTPException(status_code=404, detail="Device not found")
+
+    query = db.query(PortStatusHistory).filter(PortStatusHistory.device_id == device_id)
+    if interface:
+        query = query.filter(PortStatusHistory.interface_name == interface)
+    if start:
+        try:
+            start_dt = datetime.strptime(start, "%Y-%m-%d")
+            query = query.filter(PortStatusHistory.timestamp >= start_dt)
+        except ValueError:
+            pass
+    if end:
+        try:
+            end_dt = datetime.strptime(end, "%Y-%m-%d")
+            query = query.filter(PortStatusHistory.timestamp <= end_dt)
+        except ValueError:
+            pass
+    entries = query.order_by(PortStatusHistory.timestamp.desc()).all()
+
+    if changes_only:
+        filtered: list[PortStatusHistory] = []
+        last_state: dict[str, tuple[str, str]] = {}
+        for entry in reversed(entries):
+            key = entry.interface_name
+            prev = last_state.get(key)
+            cur = (entry.oper_status, entry.admin_status)
+            if prev != cur:
+                filtered.append(entry)
+                last_state[key] = cur
+        entries = list(reversed(filtered))
+
+    interfaces = (
+        db.query(PortStatusHistory.interface_name)
+        .filter(PortStatusHistory.device_id == device_id)
+        .distinct()
+        .all()
+    )
+    interface_names = [i[0] for i in interfaces]
+
+    context = {
+        "request": request,
+        "device": device,
+        "entries": entries,
+        "interfaces": interface_names,
+        "interface": interface,
+        "start": start,
+        "end": end,
+        "changes_only": changes_only,
+        "current_user": current_user,
+    }
+    return templates.TemplateResponse("port_history.html", context)
 
 
 @router.get("/devices/{device_id}/ports/{port_name:path}/config")
