@@ -60,9 +60,9 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
 The `--reload` flag automatically restarts the server on code changes.
 
-Visit [http://localhost:8000](http://localhost:8000) in your browser. Log in with the credentials created by `seed_superuser.py`:
+-Visit [http://localhost:8000](http://localhost:8000) in your browser. Log in with the credentials created by `seed_superuser.py`:
 
-- **Email:** `barny@ces.net`
+- **Email:** `Barny@CESTechnologies.com`
 - **Password:** `C0pperpa!r`
 
 After logging in you can add devices, VLANs and manage configuration backups through the web interface.
