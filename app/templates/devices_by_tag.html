@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-xl mb-4">Devices tagged '{{ tag.name }}'</h1>
+<table class="min-w-full bg-black">
+  <thead>
+    <tr>
+      <th class="px-4 py-2 text-left">Hostname</th>
+      <th class="px-4 py-2 text-left">IP</th>
+      <th class="px-4 py-2 text-left">Tags</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for dev in devices %}
+    <tr class="border-t border-gray-700">
+      <td class="px-4 py-2"><a href="/devices/{{ dev.id }}/edit" class="underline">{{ dev.hostname }}</a></td>
+      <td class="px-4 py-2">{{ dev.ip }}</td>
+      <td class="px-4 py-2">{{ dev.tags | map(attribute='name') | join(', ') }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

@@ -25,6 +25,9 @@ from google.oauth2.service_account import Credentials
 from app.utils.tags import (
     update_device_complete_tag,
     update_device_attribute_tags,
+    get_or_create_tag,
+    add_tag_to_device,
+    remove_tag_from_device,
 )
 
 
@@ -263,22 +266,18 @@ async def save_tags(
     form = await request.form()
     devices = db.query(Device).all()
     for dev in devices:
-        names = form.get(f"tags_{dev.id}", "")
-        tag_objs = []
-        for name in [n.strip() for n in names.split(",") if n.strip()]:
-            tag = db.query(Tag).filter(Tag.name == name).first()
-            if not tag:
-                tag = Tag(name=name)
-                db.add(tag)
-                db.flush()
-            tag_objs.append(tag)
-        manual = tag_objs
+        names = {n.strip().lower() for n in form.get(f"tags_{dev.id}", "").split(",") if n.strip()}
         for t in list(dev.tags):
-            if t.name not in ("complete", "incomplete"):
-                dev.tags.remove(t)
-        dev.tags.extend(manual)
-        update_device_complete_tag(db, dev)
-        update_device_attribute_tags(db, dev)
+            if t.name not in ("complete", "incomplete", dev.manufacturer.lower(),
+                             dev.device_type.name.lower() if dev.device_type else None,
+                             dev.location_ref.name.lower() if dev.location_ref else None):
+                if t.name.lower() not in names:
+                    remove_tag_from_device(db, dev, t, current_user)
+        for name in names:
+            tag = get_or_create_tag(db, name)
+            add_tag_to_device(db, dev, tag, current_user)
+        update_device_complete_tag(db, dev, current_user)
+        update_device_attribute_tags(db, dev, user=current_user)
     db.commit()
     return RedirectResponse(url="/tasks/edit-tags", status_code=302)
 

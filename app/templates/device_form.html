@@ -126,6 +126,15 @@
     </select>
   </div>
   <div class="md:col-span-2">
+    <label class="block">Tags</label>
+    <input type="text" name="tag_names" list="tag-list" value="{{ device.tags | rejectattr('name', 'in', ['complete','incomplete']) | map(attribute='name') | join(', ') if device else '' }}" class="w-full p-2 text-black" />
+    <datalist id="tag-list">
+      {% for t in get_tags() %}
+      <option value="{{ t.name }}">{{ t.name }}</option>
+      {% endfor %}
+    </datalist>
+  </div>
+  <div class="md:col-span-2">
     <button type="submit" class="bg-blue-600 px-4 py-2">Submit</button>
     <a href="/devices" class="ml-2 underline">Cancel</a>
   </div>

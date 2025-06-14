@@ -1,6 +1,6 @@
 from fastapi.templating import Jinja2Templates
 from app.utils.db_session import SessionLocal
-from app.models.models import DeviceType
+from app.models.models import DeviceType, Tag
 
 templates = Jinja2Templates(directory="app/templates")
 
@@ -32,3 +32,12 @@ def get_device_types():
 # Make function available in Jinja templates
 templates.env.globals["get_device_types"] = get_device_types
 templates.env.filters["format_uptime"] = format_uptime
+
+
+def get_tags():
+    db = SessionLocal()
+    tags = db.query(Tag).order_by(Tag.name).all()
+    db.close()
+    return tags
+
+templates.env.globals["get_tags"] = get_tags

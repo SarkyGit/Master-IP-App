@@ -28,7 +28,13 @@ from app.models.models import (
     UserSSHCredential,
 )
 from app.utils.audit import log_audit
-from app.utils.tags import update_device_complete_tag, update_device_attribute_tags
+from app.utils.tags import (
+    update_device_complete_tag,
+    update_device_attribute_tags,
+    get_or_create_tag,
+    add_tag_to_device,
+    remove_tag_from_device,
+)
 from app.models.models import DeviceEditLog
 
 import asyncssh
@@ -315,6 +321,7 @@ async def create_device(
     ssh_credential_id: str = Form(None),
     snmp_community_id: str = Form(None),
     detected_platform: str = Form(None),
+    tag_names: str = Form(""),
     db: Session = Depends(get_db),
     current_user=Depends(require_role("editor")),
 ):
@@ -340,8 +347,12 @@ async def create_device(
         ssh_profile_is_default=False,
     )
     db.add(device)
-    update_device_complete_tag(db, device)
-    update_device_attribute_tags(db, device)
+    update_device_complete_tag(db, device, current_user)
+    update_device_attribute_tags(db, device, user=current_user)
+    names = {n.strip().lower() for n in tag_names.split(',') if n.strip()}
+    for name in names:
+        tag = get_or_create_tag(db, name)
+        add_tag_to_device(db, device, tag, current_user)
     db.commit()
     db.add(
         DeviceEditLog(device_id=device.id, user_id=current_user.id, changes="created")
@@ -421,6 +432,7 @@ async def update_device(
     vlan_id: str = Form(None),
     ssh_credential_id: str = Form(None),
     snmp_community_id: str = Form(None),
+    tag_names: str = Form(""),
     db: Session = Depends(get_db),
     current_user=Depends(require_role("editor")),
 ):
@@ -476,8 +488,21 @@ async def update_device(
         device.detected_via = "manual override"
 
     device.updated_at = datetime.utcnow()
-    update_device_complete_tag(db, device)
-    update_device_attribute_tags(db, device, old)
+    update_device_complete_tag(db, device, current_user)
+    update_device_attribute_tags(db, device, old, user=current_user)
+    names = {n.strip().lower() for n in tag_names.split(',') if n.strip()}
+    auto_names = {device.manufacturer}
+    if device.device_type:
+        auto_names.add(device.device_type.name.lower())
+    if device.location_ref:
+        auto_names.add(device.location_ref.name.lower())
+    auto_names.update({"complete", "incomplete"})
+    for t in list(device.tags):
+        if t.name.lower() not in auto_names and t.name.lower() not in names:
+            remove_tag_from_device(db, device, t, current_user)
+    for name in names:
+        tag = get_or_create_tag(db, name)
+        add_tag_to_device(db, device, tag, current_user)
     db.commit()
 
     if device.site_id is not None and device.config_pull_interval != "none":
