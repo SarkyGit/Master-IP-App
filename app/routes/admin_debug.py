@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Request, Depends, HTTPException
+from fastapi import APIRouter, Request, Depends, HTTPException, Form
+from fastapi.responses import RedirectResponse
 from app.utils.templates import templates
 from sqlalchemy.orm import Session
 from typing import Optional
@@ -6,6 +7,12 @@ from typing import Optional
 from app.utils.db_session import get_db
 from app.utils.auth import require_role
 from app.models.models import AuditLog, User, Device
+from app.tasks import (
+    start_trap_listener,
+    stop_trap_listener,
+    trap_listener_running,
+    TRAP_PORT,
+)
 
 
 
@@ -39,6 +46,8 @@ async def debug_logs(
         "user_id": user_id,
         "devices": devices,
         "users": users,
+        "trap_running": trap_listener_running(),
+        "trap_port": TRAP_PORT,
         "current_user": current_user,
     }
     return templates.TemplateResponse("debug_log.html", context)
@@ -56,3 +65,15 @@ async def debug_detail(
         raise HTTPException(status_code=404, detail="Log entry not found")
     context = {"request": request, "log": log, "current_user": current_user}
     return templates.TemplateResponse("debug_detail.html", context)
+
+
+@router.post("/admin/debug/trap-listener")
+async def toggle_trap_listener(
+    action: str = Form(...),
+    current_user=Depends(require_role("superadmin")),
+):
+    if action == "start":
+        await start_trap_listener()
+    else:
+        await stop_trap_listener()
+    return RedirectResponse(url="/admin/debug", status_code=302)
