@@ -46,6 +46,14 @@ textarea {
 .navbar .dropdown:hover .dropdown-menu {
   display: block;
 }
+
+/* Show nested dropdown menus on hover */
+.navbar .dropdown-menu .dropend:hover > .dropdown-menu {
+  display: block;
+  top: 0;
+  left: 100%;
+  margin-left: 0.1rem;
+}
 .diff_add { background-color: #14532d; }
 .diff_chg { background-color: #78350f; }
 .diff_sub { background-color: #7f1d1d; }
