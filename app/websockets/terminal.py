@@ -22,6 +22,7 @@ async def terminal_ws(websocket: WebSocket, device_id: int):
     db: Session = SessionLocal()
     last_msg = time.monotonic()
     log = logging.getLogger(__name__)
+    log.info("WebSocket terminal connection opened for device %s", device_id)
     try:
         user_id = websocket.session.get("user_id") if hasattr(websocket, "session") else None
         if not user_id:
@@ -98,11 +99,20 @@ async def terminal_ws(websocket: WebSocket, device_id: int):
                 for task in pending:
                     task.cancel()
         except WebSocketDisconnect:
-            pass
+            log.info("WebSocket connection closed by client")
         except Exception as exc:
+            log.exception("Terminal session error")
             if websocket.application_state == WebSocketState.CONNECTED:
-                await websocket.send_text(f"Connection error: {exc}")
+                try:
+                    await websocket.send_text(f"Connection error: {exc}")
+                except Exception:
+                    # Ignore failures when notifying the client
+                    pass
     finally:
         db.close()
         if websocket.application_state != WebSocketState.DISCONNECTED:
-            await websocket.close()
+            try:
+                await websocket.close()
+            except Exception:
+                log.exception("Error closing WebSocket")
+        log.info("WebSocket terminal connection closed for device %s", device_id)
