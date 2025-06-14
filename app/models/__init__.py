@@ -22,6 +22,7 @@ from .models import (
     InterfaceChangeLog,
     DashboardWidget,
     SiteDashboardWidget,
+    ColumnPreference,
 )
 
 __all__ = [
@@ -48,4 +49,5 @@ __all__ = [
     "InterfaceChangeLog",
     "DashboardWidget",
     "SiteDashboardWidget",
+    "ColumnPreference",
 ]
