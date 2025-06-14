@@ -199,7 +199,7 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
     role = Column(String, nullable=False, default="viewer")
     is_active = Column(Boolean, default=True)
-    theme = Column(String, nullable=False, default="dark")
+    theme = Column(String, nullable=False, default="dark_colourful")
     font = Column(String, nullable=False, default="sans")
     created_at = Column(DateTime, default=datetime.utcnow)
 
