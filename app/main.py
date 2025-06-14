@@ -33,6 +33,7 @@ from app.routes import (
     export_router,
     snmp_traps_router,
     syslog_router,
+    tag_manager_router,
 )
 from app.routes.tunables import router as tunables_router
 from app.routes.editor import router as editor_router
@@ -93,6 +94,7 @@ app.include_router(reports_router)
 app.include_router(export_router)
 app.include_router(snmp_traps_router)
 app.include_router(syslog_router)
+app.include_router(tag_manager_router)
 
 
 @app.exception_handler(HTTPException)

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-xl mb-4">Tag Manager</h1>
+<table class="min-w-full bg-black mt-4">
+  <thead>
+    <tr>
+      <th class="px-4 py-2 text-left">Tag</th>
+      <th class="px-4 py-2 text-left">Count</th>
+      <th class="px-4 py-2 text-left">Rename</th>
+      <th class="px-4 py-2 text-left">Merge Into</th>
+      <th class="px-4 py-2"></th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for tag in tags %}
+    <tr class="border-t border-gray-700">
+      <td class="px-4 py-2">{{ tag.name }}</td>
+      <td class="px-4 py-2">{{ counts.get(tag.id, 0) }}</td>
+      <td class="px-4 py-2">
+        <form method="post" action="/admin/tags/{{ tag.id }}/rename" class="d-inline">
+          <input type="text" name="new_name" class="w-32 p-1 text-black" />
+          <button type="submit" class="btn btn-sm btn-secondary">Rename</button>
+        </form>
+      </td>
+      <td class="px-4 py-2">
+        <form method="post" action="/admin/tags/{{ tag.id }}/merge" class="d-inline">
+          <select name="target_id" class="text-black">
+            {% for t in tags %}
+              {% if t.id != tag.id %}
+              <option value="{{ t.id }}">{{ t.name }}</option>
+              {% endif %}
+            {% endfor %}
+          </select>
+          <button type="submit" class="btn btn-sm btn-warning">Merge</button>
+        </form>
+      </td>
+      <td class="px-4 py-2">
+        <form method="post" action="/admin/tags/{{ tag.id }}/delete" class="d-inline">
+          <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete tag?')">Delete</button>
+        </form>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
