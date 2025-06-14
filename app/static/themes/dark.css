@@ -3,57 +3,8 @@ body {
   color: #f8f9fa;
 }
 
-.form-control,
-.form-select,
-textarea {
-  background-color: #212033;
-  color: #f8f9fa;
-  border: 1px solid #6c757d;
-  border-radius: 0.375rem;
-}
-
-.card,
-.table,
-table {
-  background-color: #292b40;
-  color: #f8f9fa;
-  border-radius: 1rem;
-  overflow: hidden;
-  border-collapse: separate;
-  border-spacing: 0;
-  border: 1px solid #444;
-  width: 100%;
-}
-
-.table thead th {
-  color: #ffffff;
-  background-color: #332f45;
-}
-
-.alert {
-  border: 1px solid #6c757d;
-}
-
-.dropdown-menu {
-  background-color: #212033;
-  color: #f8f9fa;
-  border-radius: 0.375rem;
-}
-
-.dropdown-item {
-  color: #f8f9fa;
-}
-
-.dropdown-item:hover {
-  background-color: #332f45;
-}
-
 .duplicate {
   background-color: #7f1d1d;
-}
-
-.navbar .dropdown:hover .dropdown-menu {
-  display: block;
 }
 
 /* Match navbar background to dark theme */
@@ -61,19 +12,6 @@ table {
   background-color: #222034 !important;
 }
 
-/* Show nested dropdown menus on hover */
-.navbar .dropdown-menu .dropend:hover > .dropdown-menu {
-  display: block;
-  top: 0;
-  left: 100%;
-  margin-left: 0.1rem;
-}
-.diff_add { background-color: #065f46; }
-.diff_chg { background-color: #6b21a8; }
-.diff_sub { background-color: #7f1d1d; }
-table.diff { width: 100%; }
-
-/* Override default Tailwind black background */
 .bg-black {
   background-color: #1f1f1f !important;
 }
@@ -82,7 +20,6 @@ table.diff { width: 100%; }
   border-color: #444 !important;
 }
 
-/* Style plain links as softer buttons */
 a.underline,
 a.text-blue-400 {
   color: #ffffff;
@@ -96,3 +33,8 @@ a.underline:hover,
 a.text-blue-400:hover {
   background-color: #5b21b6;
 }
+
+.diff_add { background-color: #065f46; }
+.diff_chg { background-color: #6b21a8; }
+.diff_sub { background-color: #7f1d1d; }
+table.diff { width: 100%; }
