@@ -52,11 +52,11 @@ def main():
         # Seed sample switches if none exist
         if not db.query(Device).first():
             devices = [
-                ("SW10.1", "192.168.10.1", "WS-C3560CX-12PC-S", "AT-1001"),
-                ("SW10.2", "192.168.10.2", "WS-C2960G-8TC-L", "AT-1002"),
-                ("SW10.6", "192.168.10.6", "WS-C2960C-12PC-L", "AT-1003"),
-                ("SW10.10", "192.168.10.10", "WS-C3850-48P-E", "AT-1004"),
-                ("SW10.11", "192.168.10.11", "WS-C3560CX-12PC-S", "AT-1005"),
+                ("SW10.1", "10.1.10.1", "WS-C3560CX-12PC-S", "AT-1001"),
+                ("SW10.2", "10.1.01.2", "WS-C2960G-8TC-L", "AT-1002"),
+                ("SW10.6", "10.1.0.6", "WS-C2960C-12PC-L", "AT-1003"),
+                ("SW10.10", "10.1.10.10", "WS-C3850-48P-E", "AT-1004"),
+                ("SW10.11", "10.1.10.11", "WS-C3560CX-12PC-S", "AT-1005"),
             ]
             for hostname, ip_address, model, atag in devices:
                 device = Device(
