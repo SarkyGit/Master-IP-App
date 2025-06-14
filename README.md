@@ -67,6 +67,32 @@ The **Devices** menu also includes a *Duplicate Checker* page to locate records 
 If the login form reports **Invalid credentials**, run `python seed_superuser.py` again to ensure the password is stored correctly.
 
 
+## Production deployment
+
+For production environments it is recommended to run the app under
+[Gunicorn](https://gunicorn.org/) using Uvicorn workers. Gunicorn manages
+multiple worker processes while Uvicorn handles the ASGI interface.
+
+Start the server with reasonable defaults using the provided `start.sh` script:
+
+```bash
+./start.sh
+```
+
+This script loads variables from `.env` if present and executes:
+
+```bash
+gunicorn app.main:app \
+    --worker-class uvicorn.workers.UvicornWorker \
+    --workers ${WORKERS:-4} \
+    --timeout ${TIMEOUT:-120} \
+    --bind 0.0.0.0:${PORT:-8000}
+```
+
+Adjust `WORKERS`, `TIMEOUT` and `PORT` as needed. The server listens on
+`0.0.0.0` so it can be proxied by a web server such as Nginx.
+
+
 ## Troubleshooting
 
 ### Can't access the app from another machine
