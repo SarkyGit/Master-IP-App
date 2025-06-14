@@ -42,6 +42,15 @@
                   <li><a class="dropdown-item" href="/network/port-configs">Port Configs</a></li>
                 </ul>
               </li>
+              {% if current_user and current_user.role in ['admin','superadmin'] %}
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Tags</a>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="/tasks/edit-tags">Edit Tags</a></li>
+                  <li><a class="dropdown-item" href="/tasks/google-sheets">Google Sheets</a></li>
+                </ul>
+              </li>
+              {% endif %}
               <li class="nav-item">
                 <a class="nav-link" href="/tasks">Tasks</a>
               </li>
@@ -85,6 +94,7 @@
       </nav>
     </header>
     <div class="container mt-4">
+      <a href="javascript:history.back()" class="text-blue-400 underline">&laquo; Back</a>
       <p>{{ message }}</p>
       {% block content %}{% endblock %}
     </div>
