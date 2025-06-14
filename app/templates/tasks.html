@@ -32,4 +32,36 @@
   </select>
   <button type="submit" class="bg-blue-600 px-3 py-1">Connect</button>
 </form>
+
+<hr class="my-4">
+<h2 class="text-lg mb-2">Upload CSV</h2>
+<form method="post" action="/tasks/upload-csv" enctype="multipart/form-data" class="space-y-2">
+  <div>
+    <label class="block">Table</label>
+    <select name="table_name" class="p-1 text-black">
+      <option value="devices">Devices</option>
+      <option value="vlans">VLANs</option>
+      <option value="device_types">Device Types</option>
+      <option value="ssh_credentials">SSH Credentials</option>
+      <option value="snmp_communities">SNMP Communities</option>
+      <option value="port_config_templates">Port Config Templates</option>
+    </select>
+    <a href="#" id="download-template" class="ml-2 underline text-blue-400">Download CSV template</a>
+  </div>
+  <div>
+    <input type="file" name="csv_file" accept=".csv" class="text-black" required />
+  </div>
+  <button type="submit" class="bg-blue-600 px-3 py-1">Upload</button>
+</form>
+{% endblock %}
+
+{% block extra_scripts %}
+{{ super() }}
+<script>
+document.getElementById('download-template').addEventListener('click', function(e) {
+  e.preventDefault();
+  const table = document.querySelector('select[name="table_name"]').value;
+  window.location.href = `/tasks/download-template/${table}`;
+});
+</script>
 {% endblock %}
