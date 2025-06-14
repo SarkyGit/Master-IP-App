@@ -33,7 +33,6 @@ async def new_device_type_form(request: Request, current_user=Depends(require_ro
 async def create_device_type(
     request: Request,
     name: str = Form(...),
-    manufacturer: str = Form(...),
     db: Session = Depends(get_db),
     current_user=Depends(require_role("superadmin")),
 ):
@@ -41,13 +40,13 @@ async def create_device_type(
     if existing:
         context = {
             "request": request,
-            "dtype": {"name": name, "manufacturer": manufacturer},
+            "dtype": {"name": name},
             "form_title": "New Device Type",
             "error": "Name already exists",
         }
         return templates.TemplateResponse("device_type_form.html", context)
 
-    dtype = DeviceType(name=name, manufacturer=manufacturer)
+    dtype = DeviceType(name=name)
     db.add(dtype)
     db.commit()
     return RedirectResponse(url="/device-types", status_code=302)
@@ -72,7 +71,6 @@ async def update_device_type(
     type_id: int,
     request: Request,
     name: str = Form(...),
-    manufacturer: str = Form(...),
     db: Session = Depends(get_db),
     current_user=Depends(require_role("superadmin")),
 ):
@@ -84,11 +82,9 @@ async def update_device_type(
     if existing:
         context = {"request": request, "dtype": dtype, "form_title": "Edit Device Type", "error": "Name already exists"}
         dtype.name = name
-        dtype.manufacturer = manufacturer
         return templates.TemplateResponse("device_type_form.html", context)
 
     dtype.name = name
-    dtype.manufacturer = manufacturer
     db.commit()
     return RedirectResponse(url="/device-types", status_code=302)
 

@@ -44,17 +44,17 @@ def main():
         # Seed device types
         switch_type = db.query(DeviceType).filter_by(name="Switch").first()
         if not switch_type:
-            switch_type = DeviceType(name="Switch", manufacturer="Cisco")
+            switch_type = DeviceType(name="Switch")
             db.add(switch_type)
 
         ap_type = db.query(DeviceType).filter_by(name="AP").first()
         if not ap_type:
-            ap_type = DeviceType(name="AP", manufacturer="Cisco")
+            ap_type = DeviceType(name="AP")
             db.add(ap_type)
 
         camera_type = db.query(DeviceType).filter_by(name="IP Camera").first()
         if not camera_type:
-            camera_type = DeviceType(name="IP Camera", manufacturer="Generic")
+            camera_type = DeviceType(name="IP Camera")
             db.add(camera_type)
         db.commit()
 

@@ -53,7 +53,7 @@ CSV_TABLES = {
         ],
     },
     "vlans": {"model": VLAN, "fields": ["tag", "description"]},
-    "device_types": {"model": DeviceType, "fields": ["name", "manufacturer"]},
+    "device_types": {"model": DeviceType, "fields": ["name"]},
     "ssh_credentials": {
         "model": SSHCredential,
         "fields": ["name", "username", "password", "private_key"],

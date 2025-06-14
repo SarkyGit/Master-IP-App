@@ -62,7 +62,6 @@ class DeviceType(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True, nullable=False)
-    manufacturer = Column(String, nullable=False)
 
     devices = relationship("Device", back_populates="device_type")
 
