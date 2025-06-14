@@ -20,6 +20,7 @@ from app.models.models import (
     DeviceType,
     Location,
     PortConfigTemplate,
+    UserSSHCredential,
 )
 from app.utils.audit import log_audit
 from app.utils.tags import update_device_complete_tag, update_device_attribute_tags
@@ -28,7 +29,7 @@ from app.models.models import DeviceEditLog
 import asyncssh
 import asyncio
 
-from app.utils.ssh import build_conn_kwargs
+from app.utils.ssh import build_conn_kwargs, resolve_ssh_credential
 from datetime import datetime
 from puresnmp import Client, PyWrapper, V2C
 from puresnmp.exc import SnmpError
@@ -73,6 +74,19 @@ async def list_devices(
     duplicate_ips = {k: v for k, v in dup_ips.items() if len(v) > 1}
     duplicate_macs = {k: v for k, v in dup_macs.items() if len(v) > 1}
     duplicate_tags = {k: v for k, v in dup_tags.items() if len(v) > 1}
+    personal_map = {}
+    for d in devices:
+        if d.ssh_credential:
+            personal = (
+                db.query(UserSSHCredential)
+                .filter(
+                    UserSSHCredential.user_id == current_user.id,
+                    UserSSHCredential.name == d.ssh_credential.name,
+                )
+                .first()
+            )
+            if personal:
+                personal_map[d.id] = True
     message = request.query_params.get("message")
     context = {
         "request": request,
@@ -80,6 +94,7 @@ async def list_devices(
         "duplicate_ips": duplicate_ips,
         "duplicate_macs": duplicate_macs,
         "duplicate_tags": duplicate_tags,
+        "personal_creds": personal_map,
         "current_user": current_user,
         "message": message,
     }
@@ -150,6 +165,19 @@ async def list_devices_by_type(
     duplicate_ips = {k: v for k, v in dup_ips.items() if len(v) > 1}
     duplicate_macs = {k: v for k, v in dup_macs.items() if len(v) > 1}
     duplicate_tags = {k: v for k, v in dup_tags.items() if len(v) > 1}
+    personal_map = {}
+    for d in devices:
+        if d.ssh_credential:
+            personal = (
+                db.query(UserSSHCredential)
+                .filter(
+                    UserSSHCredential.user_id == current_user.id,
+                    UserSSHCredential.name == d.ssh_credential.name,
+                )
+                .first()
+            )
+            if personal:
+                personal_map[d.id] = True
     context = {
         "request": request,
         "devices": devices,
@@ -158,6 +186,7 @@ async def list_devices_by_type(
         "duplicate_ips": duplicate_ips,
         "duplicate_macs": duplicate_macs,
         "duplicate_tags": duplicate_tags,
+        "personal_creds": personal_map,
         "message": None,
     }
     return templates.TemplateResponse("device_list.html", context)
@@ -422,7 +451,7 @@ async def pull_device_config(
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
 
-    cred = device.ssh_credential
+    cred, _ = resolve_ssh_credential(db, device, current_user)
     if not cred:
         return RedirectResponse(
             url="/devices?message=No+SSH+credentials", status_code=302
@@ -481,10 +510,13 @@ async def push_config_form(
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
 
+    cred, source = resolve_ssh_credential(db, device, current_user)
     context = {
         "request": request,
         "device": device,
         "error": None,
+        "cred_source": source,
+        "cred_name": cred.name if cred else None,
         "current_user": current_user,
     }
     return templates.TemplateResponse("config_push_form.html", context)
@@ -503,12 +535,14 @@ async def push_device_config(
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
 
-    cred = device.ssh_credential
+    cred, source = resolve_ssh_credential(db, device, current_user)
     if not cred:
         context = {
             "request": request,
             "device": device,
             "error": "No SSH credentials",
+            "cred_source": source,
+            "cred_name": None,
             "current_user": current_user,
         }
         return templates.TemplateResponse("config_push_form.html", context)
@@ -571,12 +605,15 @@ async def template_config_form(
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
 
+    cred, source = resolve_ssh_credential(db, device, current_user)
     context = {
         "request": request,
         "device": device,
         "templates": TEMPLATE_OPTIONS,
         "snippet": None,
         "message": None,
+        "cred_source": source,
+        "cred_name": cred.name if cred else None,
         "current_user": current_user,
     }
     return templates.TemplateResponse("template_config_form.html", context)
@@ -613,7 +650,7 @@ async def push_template_config(
     elif template_name == "Set Description":
         snippet = f"interface {interface}\n description {description}"
 
-    cred = device.ssh_credential
+    cred, source = resolve_ssh_credential(db, device, current_user)
     if not cred:
         context = {
             "request": request,
@@ -621,6 +658,8 @@ async def push_template_config(
             "templates": TEMPLATE_OPTIONS,
             "snippet": snippet,
             "message": "No SSH credentials",
+            "cred_source": source,
+            "cred_name": None,
             "current_user": current_user,
         }
         return templates.TemplateResponse("template_config_form.html", context)
@@ -674,6 +713,8 @@ async def push_template_config(
         "templates": TEMPLATE_OPTIONS,
         "snippet": snippet,
         "message": message,
+        "cred_source": source,
+        "cred_name": cred.name if cred else None,
         "current_user": current_user,
     }
     return templates.TemplateResponse("template_config_form.html", context)
@@ -885,7 +926,7 @@ async def port_config(
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
 
-    cred = device.ssh_credential
+    cred, source = resolve_ssh_credential(db, device, current_user)
     if not cred:
         context = {
             "request": request,
@@ -894,6 +935,8 @@ async def port_config(
             "config": None,
             "prev_config": None,
             "message": "No SSH credentials",
+            "cred_source": source,
+            "cred_name": None,
             "error": None,
             "current_user": current_user,
         }
@@ -950,6 +993,8 @@ async def port_config(
         "prev_config": prev.config_text if prev else None,
         "message": None,
         "error": None,
+        "cred_source": source,
+        "cred_name": cred.name if cred else None,
         "current_user": current_user,
     }
     db.commit()
@@ -999,6 +1044,7 @@ async def apply_port_template_form(
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
     templates_db = db.query(PortConfigTemplate).all()
+    cred, source = resolve_ssh_credential(db, device, current_user)
     context = {
         "request": request,
         "device": device,
@@ -1007,6 +1053,8 @@ async def apply_port_template_form(
         "snippet": None,
         "message": None,
         "error": None,
+        "cred_source": source,
+        "cred_name": cred.name if cred else None,
         "current_user": current_user,
     }
     return templates.TemplateResponse("apply_port_template.html", context)
@@ -1028,7 +1076,7 @@ async def apply_port_template(
     if not tpl:
         raise HTTPException(status_code=404, detail="Template not found")
     snippet = tpl.config_text.replace("{interface}", port_name)
-    cred = device.ssh_credential
+    cred, source = resolve_ssh_credential(db, device, current_user)
     error = None
     success = False
     if cred:
@@ -1068,6 +1116,8 @@ async def apply_port_template(
         "snippet": snippet,
         "message": message,
         "error": error,
+        "cred_source": source,
+        "cred_name": cred.name if cred else None,
         "current_user": current_user,
     }
     db.commit()

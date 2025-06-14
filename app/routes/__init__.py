@@ -18,6 +18,7 @@ from .admin_users import router as admin_users_router
 from .user_pages import router as user_pages_router
 from .locations import router as locations_router
 from .ssh_tasks import router as ssh_tasks_router
+from .user_ssh import router as user_ssh_router
 
 __all__ = [
     "auth_router",
@@ -40,4 +41,5 @@ __all__ = [
     "user_pages_router",
     "locations_router",
     "ssh_tasks_router",
+    "user_ssh_router",
 ]

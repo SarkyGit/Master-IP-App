@@ -70,6 +70,7 @@
                 <span class="navbar-text me-2">Logged in as {{ current_user.email }}</span>
                 <a class="btn btn-sm btn-outline-light me-2" href="/dashboard">Dashboard</a>
                 <a class="btn btn-sm btn-outline-light me-2" href="/users/me">My Profile</a>
+                <a class="btn btn-sm btn-outline-light me-2" href="/user/ssh">SSH Profiles</a>
                 {% if current_user.role in ['admin','superadmin'] %}
                 <div class="btn-group me-2">
                   <button type="button" class="btn btn-sm btn-outline-light dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">

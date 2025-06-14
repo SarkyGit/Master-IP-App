@@ -41,12 +41,17 @@ async def terminal_ws(websocket: WebSocket, device_id: int):
             return
 
         device = db.query(Device).filter(Device.id == device_id).first()
-        if not device or not device.ssh_credential:
-            await websocket.send_text("Device or SSH credentials not found")
+        if not device:
+            await websocket.send_text("Device not found")
             await websocket.close()
             return
 
-        cred = device.ssh_credential
+        cred, _ = resolve_ssh_credential(db, device, user)
+        if not cred:
+            await websocket.send_text("SSH credentials not found")
+            await websocket.close()
+            return
+
         conn_kwargs = build_conn_kwargs(cred)
 
         try:
