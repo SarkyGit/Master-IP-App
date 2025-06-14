@@ -10,6 +10,7 @@ from app.utils.db_session import get_db
 from app.utils.auth import require_role, user_in_site
 from app.models.models import Device, ConfigBackup, SystemTunable
 from app.utils.ssh import build_conn_kwargs, resolve_ssh_credential
+from app.utils.device_detect import detect_ssh_platform
 from app.utils.templates import templates
 
 router = APIRouter()
@@ -152,6 +153,7 @@ async def port_config_action(
         conn_kwargs = build_conn_kwargs(cred)
         try:
             async with asyncssh.connect(device.ip, **conn_kwargs) as conn:
+                await detect_ssh_platform(db, device, conn, current_user)
                 result = await conn.run(
                     f"show running-config interface {port_name}", check=False
                 )
@@ -209,6 +211,7 @@ async def port_check_action(
         conn_kwargs = build_conn_kwargs(cred)
         try:
             async with asyncssh.connect(device.ip, **conn_kwargs) as conn:
+                await detect_ssh_platform(db, device, conn, current_user)
                 result = await conn.run(f"show interface {port_name}", check=False)
                 output = result.stdout
                 device.last_seen = datetime.utcnow()
@@ -263,6 +266,7 @@ async def config_check_action(
         conn_kwargs = build_conn_kwargs(cred)
         try:
             async with asyncssh.connect(device.ip, **conn_kwargs) as conn:
+                await detect_ssh_platform(db, device, conn, current_user)
                 result = await conn.run("show running-config", check=False)
                 output = result.stdout
                 device.last_seen = datetime.utcnow()
@@ -327,6 +331,7 @@ async def port_search_action(
             conn_kwargs = build_conn_kwargs(cred)
             try:
                 async with asyncssh.connect(device.ip, **conn_kwargs) as conn:
+                    await detect_ssh_platform(db, device, conn, current_user)
                     result = await conn.run(
                         f"show running-config | inc {search}", check=False
                     )
@@ -393,6 +398,7 @@ async def bulk_port_update_action(
             success = False
             try:
                 async with asyncssh.connect(device.ip, **conn_kwargs) as conn:
+                    await detect_ssh_platform(db, device, conn, current_user)
                     _, session = await conn.create_session(asyncssh.SSHClientProcess)
                     for line in snippet.splitlines():
                         session.stdin.write(line + "\n")

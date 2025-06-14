@@ -8,6 +8,7 @@ import logging
 import os
 
 from app.utils.ssh import build_conn_kwargs
+from app.utils.device_detect import detect_ssh_platform
 
 from app.utils.db_session import SessionLocal
 from app.models.models import Device, User
@@ -60,6 +61,7 @@ async def terminal_ws(websocket: WebSocket, device_id: int):
 
         try:
             async with asyncssh.connect(device.ip, **conn_kwargs) as conn:
+                await detect_ssh_platform(db, device, conn, user)
                 _, session = await conn.create_session(asyncssh.SSHClientProcess)
 
                 async def ws_to_ssh():

@@ -21,6 +21,7 @@
       <th class="px-4 py-2 text-left">Asset Tag</th>
       <th class="px-4 py-2 text-left">Model</th>
       <th class="px-4 py-2 text-left">Manufacturer</th>
+      <th class="px-4 py-2 text-left">Platform</th>
       <th class="px-4 py-2 text-left">Serial</th>
       <th class="px-4 py-2 text-left">Location</th>
       <th class="px-4 py-2 text-left">On Lasso</th>
@@ -43,6 +44,7 @@
       <td class="px-4 py-2 {% if device.asset_tag and duplicate_tags.get(device.asset_tag) %}duplicate{% endif %}" title="{{ duplicate_tags.get(device.asset_tag)|join(', ') if duplicate_tags.get(device.asset_tag) }}">{{ device.asset_tag or '' }}</td>
       <td class="px-4 py-2">{{ device.model or '' }}</td>
       <td class="px-4 py-2">{{ device.manufacturer }}</td>
+      <td class="px-4 py-2">{{ device.detected_platform or '' }}</td>
       <td class="px-4 py-2">{{ device.serial_number or '' }}</td>
       <td class="px-4 py-2">{{ device.location_ref.name if device.location_ref else '' }}</td>
       <td class="px-4 py-2">{{ '✔' if device.on_lasso else '' }}</td>
@@ -52,6 +54,9 @@
       <td class="px-4 py-2">{{ device.vlan.tag if device.vlan else '' }}</td>
       <td class="px-4 py-2">
         {{ device.ssh_credential.name if device.ssh_credential else '' }}
+        {% if device.ssh_credential %}
+          {% if device.ssh_profile_is_default %}(default){% else %}(manual){% endif %}
+        {% endif %}
         {% if personal_creds.get(device.id) %}(personal){% endif %}
       </td>
       <td class="px-4 py-2">{{ device.snmp_community.name if device.snmp_community else '' }}</td>
