@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="text-xl mb-4">VLAN Usage Report</h1>
+<a href="?format=csv" class="underline">Download CSV</a>
+{% for row in report %}
+  <details class="mb-3">
+    <summary class="px-2 py-1 cursor-pointer {% if row.count == 0 %}bg-red-700{% elif row.count > 10 %}bg-yellow-700{% else %}bg-gray-800{% endif %}">
+      VLAN {{ row.vlan.tag }} - {{ row.vlan.description or '' }} ({{ row.count }} devices)
+    </summary>
+    {% if row.devices %}
+    <table class="min-w-full bg-black mt-2">
+      <thead>
+        <tr>
+          <th class="px-4 py-2 text-left">Hostname</th>
+          <th class="px-4 py-2 text-left">IP</th>
+          <th class="px-4 py-2 text-left">Model</th>
+          <th class="px-4 py-2 text-left">Config Pull</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for d in row.devices %}
+        <tr class="border-t border-gray-700">
+          <td class="px-4 py-2">{{ d.hostname }}</td>
+          <td class="px-4 py-2">{{ d.ip }}</td>
+          <td class="px-4 py-2">{{ d.model or '' }}</td>
+          <td class="px-4 py-2">{{ d.config_pull_interval }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+  </details>
+{% else %}
+  <p>No VLANs found.</p>
+{% endfor %}
+{% endblock %}
