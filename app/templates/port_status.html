@@ -6,27 +6,28 @@
 {% if error %}
   <p class="text-red-500 mb-4">{{ error }}</p>
 {% endif %}
+
 <div class="grid grid-cols-2 gap-8 mb-8 mx-auto">
   {% for pane in port_panes %}
-  <div class="flex {% if loop.index == 1 %}justify-end{% else %}justify-start{% endif %} w-full">
-    <div class="space-y-0.5">
+  <div class="w-full flex {% if loop.index == 1 %}justify-end{% else %}justify-start{% endif %}">
+    <div class="space-y-0.5 w-[21.5rem]">  {# 3 ports * 6.5rem + 2 gaps * 0.25rem = 19.5 + spacing fudge #}
       {% for row in pane %}
-      <div class="grid grid-cols-3 gap-0.5">
+      <div class="flex {% if loop.index0 == 0 %}first:mt-0{% endif %} space-x-0.5">
         {% for port in row %}
-          <div
-            id="port-{{ port.name|replace('/', '-') }}"
-            class="flex flex-col items-center justify-center text-xs text-white rounded-md {% if port.oper_status == 'up' %}bg-green-600{% else %}bg-red-600{% endif %}"
-            style="width:6.5rem;height:3.9rem;"
-            title="{{ port.descr or port.name }}"
-          >
-            <span>{{ port.name }}</span>
-            <span class="port-rate">--</span>
-            {% if port.mode %}
-            <span>{{ port.mode }}</span>
-            {% elif port.vlan %}
-            <span>VLAN {{ port.vlan }}</span>
-            {% endif %}
-          </div>
+        <div
+          id="port-{{ port.name|replace('/', '-') }}"
+          class="flex flex-col items-center justify-center text-xs text-white rounded-md {% if port.oper_status == 'up' %}bg-green-600{% else %}bg-red-600{% endif %}"
+          style="width:6.5rem;height:3.9rem;"
+          title="{{ port.descr or port.name }}"
+        >
+          <span>{{ port.name }}</span>
+          <span class="port-rate">--</span>
+          {% if port.mode %}
+          <span>{{ port.mode }}</span>
+          {% elif port.vlan %}
+          <span>VLAN {{ port.vlan }}</span>
+          {% endif %}
+        </div>
         {% endfor %}
       </div>
       {% endfor %}
