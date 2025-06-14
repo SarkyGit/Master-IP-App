@@ -1,6 +1,6 @@
 # Master IP App
 
-This application manages network devices, VLANs and configuration backups using [FastAPI](https://fastapi.tiangolo.com/). It stores data in a local SQLite database and provides a simple web interface.
+This application manages network devices, VLANs and configuration backups using [FastAPI](https://fastapi.tiangolo.com/). By default it stores data in a local SQLite database and provides a simple web interface. Production deployments can point SQLAlchemy at a PostgreSQL server by setting a `DATABASE_URL` environment variable.
 
 ## Prerequisites
 
@@ -25,7 +25,14 @@ This application manages network devices, VLANs and configuration backups using 
    python seed_superuser.py
    python seed_data.py
    ```
-   These commands create a SQLite database file named `ces_inventory.db` in the project directory.
+   These commands create a SQLite database file named `ces_inventory.db` in the project directory unless a `DATABASE_URL` is provided.
+
+   If you want to use PostgreSQL, create a `.env` file and set a connection string, for example:
+
+   ```bash
+   echo "DATABASE_URL=postgresql://postgres:postgres@localhost:5432/master_ip_db" > .env
+   ```
+   After setting the URL, run the seed scripts above to populate the PostgreSQL database.
 
    **Note:** The sample devices created by `seed_data.py` use example IP
    addresses in the `192.168.10.0/24` range. Adjust these addresses in
