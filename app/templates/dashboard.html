@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="text-xl mb-4">Dashboard{% if site %} - {{ site.name }}{% endif %}</h1>
+{% if no_site %}
+<p>You are not assigned to a site. Please contact an administrator.</p>
+{% endif %}
+{% if selectable_sites %}
+<form method="get" class="mb-4">
+  <label>Site:
+    <select name="site_id" onchange="this.form.submit()" class="text-black">
+      <option value="">All</option>
+      {% for s in selectable_sites %}
+      <option value="{{ s.id }}" {% if site and s.id == site.id %}selected{% endif %}>{{ s.name }}</option>
+      {% endfor %}
+    </select>
+  </label>
+</form>
+{% endif %}
+<div class="grid gap-4 md:grid-cols-2">
+  {% if widgets.device_summary %}
+  <div class="p-3 bg-gray-800 rounded">
+    <h2 class="text-lg mb-2">Device Summary</h2>
+    <ul>
+      {% for row in device_summary %}
+      <li>{{ row[0] }}: {{ row[1] }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+  {% if widgets.config_changes %}
+  <div class="p-3 bg-gray-800 rounded">
+    <h2 class="text-lg mb-2">Latest Config Changes</h2>
+    <ul>
+      {% for c in config_changes %}
+      <li>{{ c.created_at }} - {{ c.device.hostname }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+  {% if widgets.online_status %}
+  <div class="p-3 bg-gray-800 rounded">
+    <h2 class="text-lg mb-2">Recently Online/Offline</h2>
+    <ul>
+      {% for d in recent_devices %}
+      <li>{{ d.hostname }} - {{ d.last_seen }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+  {% if widgets.port_issues %}
+  <div class="p-3 bg-gray-800 rounded">
+    <h2 class="text-lg mb-2">Port Issues</h2>
+    <ul>
+      {% for p in port_issues %}
+      <li>{{ p.device.hostname }} {{ p.interface_name }} {{ p.oper_status }}/{{ p.admin_status }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+  {% if widgets.snmp_traps %}
+  <div class="p-3 bg-gray-800 rounded">
+    <h2 class="text-lg mb-2">Recent SNMP Traps</h2>
+    <ul>
+      {% for t in snmp_traps %}
+      <li>{{ t.timestamp }} - {{ t.message[:60] }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+  {% if widgets.syslog %}
+  <div class="p-3 bg-gray-800 rounded">
+    <h2 class="text-lg mb-2">Recent Syslog</h2>
+    <ul>
+      {% for l in syslog_logs %}
+      <li>{{ l.timestamp }} - {{ l.message[:60] }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+  {% if widgets.config_rollbacks %}
+  <div class="p-3 bg-gray-800 rounded">
+    <h2 class="text-lg mb-2">Pending Config Tasks</h2>
+    <ul>
+      {% for r in rollbacks %}
+      <li>{{ r.device.hostname }} - {{ r.status }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+  {% if widgets.live_status %}
+  <div class="p-3 bg-gray-800 rounded">
+    <h2 class="text-lg mb-2">Priority Device Status</h2>
+    <ul>
+      {% for dev in priority_devices %}
+      <li>{{ dev.hostname }} - {% if dev.snmp_reachable %}<span class="text-green-400">up{% else %}<span class="text-red-400">down{% endif %}</span></li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+</div>
+<a href="/dashboard/preferences" class="underline block mt-4">Customize Dashboard</a>
+{% endblock %}

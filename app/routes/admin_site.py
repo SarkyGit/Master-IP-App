@@ -7,6 +7,8 @@ from app.utils.auth import require_role, user_in_site, ROLE_HIERARCHY
 from app.models.models import Site, User, Device, SiteMembership
 from app.utils.templates import templates
 from app.tasks import schedule_device_config_pull, unschedule_device_config_pull
+from app.utils.dashboard import DEFAULT_WIDGETS, WIDGET_LABELS
+from app.models.models import SiteDashboardWidget
 
 router = APIRouter()
 
@@ -191,3 +193,52 @@ async def update_interval(
     else:
         schedule_device_config_pull(device)
     return RedirectResponse(url=f"/sites/{site_id}/manage", status_code=302)
+
+
+@router.get("/sites/{site_id}/settings")
+async def site_settings(
+    site_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("editor")),
+):
+    site = db.query(Site).filter(Site.id == site_id).first()
+    if not site:
+        raise HTTPException(status_code=404, detail="Site not found")
+    defaults = {
+        w.name: w.enabled
+        for w in db.query(SiteDashboardWidget).filter_by(site_id=site.id).all()
+    }
+    context = {
+        "request": request,
+        "site": site,
+        "defaults": defaults,
+        "widget_labels": WIDGET_LABELS,
+        "current_user": current_user,
+    }
+    return templates.TemplateResponse("site_settings.html", context)
+
+
+@router.post("/sites/{site_id}/settings")
+async def save_site_settings(
+    site_id: int,
+    request: Request,
+    widgets: list[str] = Form([]),
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("editor")),
+):
+    site = db.query(Site).filter(Site.id == site_id).first()
+    if not site:
+        raise HTTPException(status_code=404, detail="Site not found")
+    db.query(SiteDashboardWidget).filter_by(site_id=site.id).delete()
+    for idx, name in enumerate(DEFAULT_WIDGETS):
+        db.add(
+            SiteDashboardWidget(
+                site_id=site.id,
+                name=name,
+                enabled=name in widgets,
+                position=idx,
+            )
+        )
+    db.commit()
+    return RedirectResponse(url=f"/sites/{site_id}/settings", status_code=302)

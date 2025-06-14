@@ -316,6 +316,7 @@ async def create_device(
     serial_number: str = Form(None),
     on_lasso: str = Form(None),
     on_r1: str = Form(None),
+    priority: str = Form(None),
     site_id: str = Form(None),
     config_pull_interval: str = Form("none"),
     ssh_credential_id: str = Form(None),
@@ -339,6 +340,7 @@ async def create_device(
         location_id=int(location_id) if location_id else None,
         on_lasso=bool(on_lasso),
         on_r1=bool(on_r1) if manufacturer.lower() == "ruckus" else False,
+        priority=bool(priority),
         site_id=int(site_id) if site_id else None,
         config_pull_interval=config_pull_interval,
         ssh_credential_id=int(ssh_credential_id) if ssh_credential_id else None,
@@ -426,6 +428,7 @@ async def update_device(
     serial_number: str = Form(None),
     on_lasso: str = Form(None),
     on_r1: str = Form(None),
+    priority: str = Form(None),
     site_id: str = Form(None),
     config_pull_interval: str = Form("none"),
     status: str = Form(None),
@@ -453,6 +456,7 @@ async def update_device(
         "serial_number": device.serial_number,
         "on_lasso": device.on_lasso,
         "on_r1": device.on_r1,
+        "priority": device.priority,
         "site_id": device.site_id,
         "config_pull_interval": device.config_pull_interval,
         "status": device.status,
@@ -474,6 +478,7 @@ async def update_device(
     device.location_id = int(location_id) if location_id else None
     device.on_lasso = bool(on_lasso)
     device.on_r1 = bool(on_r1) if manufacturer.lower() == "ruckus" else False
+    device.priority = bool(priority)
     device.site_id = int(site_id) if site_id else None
     device.config_pull_interval = config_pull_interval
     device.status = status or None
