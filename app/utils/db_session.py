@@ -9,8 +9,14 @@ from app import models  # noqa: F401
 
 DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///ces_inventory.db")
 
+# Use special connection args only for SQLite
+connect_args = {}
+if DATABASE_URL.startswith("sqlite"):
+    connect_args["check_same_thread"] = False
+
 engine = create_engine(
-    DATABASE_URL, connect_args={"check_same_thread": False}
+    DATABASE_URL,
+    connect_args=connect_args,
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
