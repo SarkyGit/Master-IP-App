@@ -112,7 +112,8 @@
         <a href="/devices/{{ device.id }}/push-config" class="btn btn-sm btn-warning me-2">Push Config</a>
         <a href="/devices/{{ device.id }}/configs" class="btn btn-sm btn-info me-2">Configs</a>
         {% if device.snmp_community %}
-        <a href="/devices/{{ device.id }}/ports" class="btn btn-sm btn-primary">Port Status</a>
+        <a href="/devices/{{ device.id }}/ports" class="btn btn-sm btn-primary me-2">Port Status</a>
+        <a href="/devices/{{ device.id }}/port-map" class="btn btn-sm btn-secondary">Port Map</a>
         {% endif %}
       </td>
     </tr>
