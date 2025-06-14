@@ -6,7 +6,7 @@ from app.utils.auth import get_password_hash
 def main():
     db = SessionLocal()
     try:
-        existing = db.query(User).filter_by(email="barny@ces.net").first()
+        existing = db.query(User).filter_by(email="Barny@CESTechnologies.com").first()
         if existing:
             if existing.hashed_password != get_password_hash("C0pperpa!r"):
                 existing.hashed_password = get_password_hash("C0pperpa!r")
@@ -18,7 +18,7 @@ def main():
 
         hashed_pw = get_password_hash("C0pperpa!r")
         user = User(
-            email="barny@ces.net",
+            email="Barny@CESTechnologies.com",
             hashed_password=hashed_pw,
             role="superadmin",
             is_active=True,
