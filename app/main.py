@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request, WebSocket, Depends
 from fastapi.staticfiles import StaticFiles
 
 from starlette.middleware.sessions import SessionMiddleware
+import os
 
 from app.routes import (
     auth_router,
@@ -35,7 +36,10 @@ start_queue_worker(app)
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 # Store login information in signed cookies
-app.add_middleware(SessionMiddleware, secret_key="change-me")
+app.add_middleware(
+    SessionMiddleware,
+    secret_key=os.environ.get("SECRET_KEY", "change-me"),
+)
 
 app.include_router(auth_router, prefix="/auth")
 app.include_router(devices_router)

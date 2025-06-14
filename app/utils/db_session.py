@@ -1,12 +1,13 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+import os
 
 from app.utils.database import Base
 
 # Import models so that Base.metadata is aware of them before creating tables
 from app import models  # noqa: F401
 
-DATABASE_URL = "sqlite:///ces_inventory.db"
+DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///ces_inventory.db")
 
 engine = create_engine(
     DATABASE_URL, connect_args={"check_same_thread": False}
