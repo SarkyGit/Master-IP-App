@@ -210,3 +210,13 @@ class DeviceEditLog(Base):
 
     device = relationship("Device", back_populates="edit_logs")
     user = relationship("User")
+
+class BannedIP(Base):
+    __tablename__ = "banned_ips"
+
+    id = Column(Integer, primary_key=True)
+    ip_address = Column(String, unique=True, nullable=False)
+    ban_reason = Column(String, nullable=False)
+    banned_until = Column(DateTime, nullable=False)
+    attempt_count = Column(Integer, default=0)
+

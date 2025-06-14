@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-xl mb-4">Banned IPs</h1>
+<table class="min-w-full bg-black">
+  <thead>
+    <tr>
+      <th class="px-4 py-2 text-left">IP Address</th>
+      <th class="px-4 py-2 text-left">Banned Until</th>
+      <th class="px-4 py-2 text-left">Attempts</th>
+      <th class="px-4 py-2 text-left">Reason</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for ban in bans %}
+    <tr class="border-t border-gray-700">
+      <td class="px-4 py-2">{{ ban.ip_address }}</td>
+      <td class="px-4 py-2">{{ ban.banned_until }}</td>
+      <td class="px-4 py-2">{{ ban.attempt_count }}</td>
+      <td class="px-4 py-2">{{ ban.ban_reason }}</td>
+      <td class="px-4 py-2">
+        <form method="post" action="/admin/ip-bans/{{ ban.id }}/unban">
+          <button type="submit" class="text-red-400 underline" onclick="return confirm('Unban this IP?')">Unban</button>
+        </form>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+<h2 class="text-xl mt-8 mb-4">Recent Login Attempts</h2>
+<table class="min-w-full bg-black">
+  <thead>
+    <tr>
+      <th class="px-4 py-2 text-left">Timestamp</th>
+      <th class="px-4 py-2 text-left">User</th>
+      <th class="px-4 py-2 text-left">Action</th>
+      <th class="px-4 py-2 text-left">Details</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for entry in logs %}
+    <tr class="border-t border-gray-700">
+      <td class="px-4 py-2">{{ entry.timestamp }}</td>
+      <td class="px-4 py-2">{{ entry.user.email if entry.user else 'System' }}</td>
+      <td class="px-4 py-2">{{ entry.action_type }}</td>
+      <td class="px-4 py-2">{{ entry.details }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
