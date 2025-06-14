@@ -20,7 +20,7 @@ async def list_vlans(
 ):
     """List all VLANs."""
     vlans = db.query(VLAN).all()
-    context = {"request": request, "vlans": vlans}
+    context = {"request": request, "vlans": vlans, "current_user": current_user}
     return templates.TemplateResponse("vlan_list.html", context)
 
 
@@ -30,7 +30,7 @@ async def new_vlan_form(
     current_user=Depends(require_role("editor")),
 ):
     """Render form for creating a VLAN."""
-    context = {"request": request, "vlan": None, "form_title": "New VLAN", "error": None}
+    context = {"request": request, "vlan": None, "form_title": "New VLAN", "error": None, "current_user": current_user}
     return templates.TemplateResponse("vlan_form.html", context)
 
 
@@ -50,6 +50,7 @@ async def create_vlan(
             "vlan": {"tag": tag, "description": description},
             "form_title": "New VLAN",
             "error": "VLAN tag already exists",
+            "current_user": current_user,
         }
         return templates.TemplateResponse("vlan_form.html", context)
 
@@ -70,7 +71,7 @@ async def edit_vlan_form(
     vlan = db.query(VLAN).filter(VLAN.id == vlan_id).first()
     if not vlan:
         raise HTTPException(status_code=404, detail="VLAN not found")
-    context = {"request": request, "vlan": vlan, "form_title": "Edit VLAN", "error": None}
+    context = {"request": request, "vlan": vlan, "form_title": "Edit VLAN", "error": None, "current_user": current_user}
     return templates.TemplateResponse("vlan_form.html", context)
 
 
@@ -95,6 +96,7 @@ async def update_vlan(
             "vlan": vlan,
             "form_title": "Edit VLAN",
             "error": "VLAN tag already exists",
+            "current_user": current_user,
         }
         # Update in-memory to preserve user input
         vlan.tag = tag
