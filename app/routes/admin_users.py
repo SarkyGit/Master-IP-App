@@ -39,7 +39,7 @@ async def new_user_form(request: Request, current_user=Depends(require_role("sup
         "show_active": True,
         "require_password": True,
         "cancel_url": "/admin/users",
-        "themes": ["dark", "light", "blue"],
+        "themes": ["dark", "light", "blue", "bw", "homebrew"],
         "fonts": ["sans", "serif", "mono"],
     }
     return templates.TemplateResponse("user_form.html", context)
@@ -68,7 +68,7 @@ async def create_user(
             "show_active": True,
             "require_password": True,
             "cancel_url": "/admin/users",
-            "themes": ["dark", "light", "blue"],
+            "themes": ["dark", "light", "blue", "bw", "homebrew"],
             "fonts": ["sans", "serif", "mono"],
         }
         return templates.TemplateResponse("user_form.html", context)
@@ -109,7 +109,7 @@ async def edit_user_form(
         "show_active": True,
         "email_readonly": True,
         "cancel_url": "/admin/users",
-        "themes": ["dark", "light", "blue"],
+        "themes": ["dark", "light", "blue", "bw", "homebrew"],
         "fonts": ["sans", "serif", "mono"],
     }
     return templates.TemplateResponse("user_form.html", context)

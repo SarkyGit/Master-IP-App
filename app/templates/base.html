@@ -20,60 +20,60 @@
           <div :class="{'block': open, 'hidden': !open}" class="w-full lg:block lg:w-auto">
             <ul class="lg:flex lg:space-x-4">
               <li class="py-1">
-                <a class="block px-4 py-2 hover:underline" href="/">Home</a>
+                <a class="block px-4 py-2 text-blue-400 rounded hover:underline" href="/">Home</a>
               </li>
               <li class="relative py-1" x-data="{open:false}">
-                <button @click="open = !open" class="block px-4 py-2 hover:underline">Inventory</button>
+                <button @click="open = !open" class="block px-4 py-2 text-blue-400 rounded hover:underline">Inventory</button>
                 <ul x-show="open" @click.away="open = false" class="absolute mt-2 bg-gray-800 text-white py-2 w-48 hidden" x-cloak>
-                  <li><a class="block px-4 py-2 hover:bg-gray-700" href="/devices">All Devices</a></li>
+                  <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/devices">All Devices</a></li>
                   {% for dtype in get_device_types() %}
-                  <li><a class="block px-4 py-2 hover:bg-gray-700" href="/devices/type/{{ dtype.id }}">{{ dtype.name }}</a></li>
+                  <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/devices/type/{{ dtype.id }}">{{ dtype.name }}</a></li>
                   {% endfor %}
-                  <li><a class="block px-4 py-2 hover:bg-gray-700" href="/inventory/audit">Audit</a></li>
-                  <li><a class="block px-4 py-2 hover:bg-gray-700" href="/inventory/trailers">Trailer Inventory</a></li>
-                  <li><a class="block px-4 py-2 hover:bg-gray-700" href="/inventory/sites">Site Inventory</a></li>
+                  <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/inventory/audit">Audit</a></li>
+                  <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/inventory/trailers">Trailer Inventory</a></li>
+                  <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/inventory/sites">Site Inventory</a></li>
                 </ul>
               </li>
               <li class="relative py-1" x-data="{open:false}">
-                <button @click="open = !open" class="block px-4 py-2 hover:underline">Network</button>
+                <button @click="open = !open" class="block px-4 py-2 text-blue-400 rounded hover:underline">Network</button>
                 <ul x-show="open" @click.away="open = false" class="absolute mt-2 bg-gray-800 text-white py-2 w-48 hidden" x-cloak>
-                  <li><a class="block px-4 py-2 hover:bg-gray-700" href="/network/ip-search">IP Search</a></li>
-                  <li><a class="block px-4 py-2 hover:bg-gray-700" href="/vlans">VLAN MGMT</a></li>
-                  <li><a class="block px-4 py-2 hover:bg-gray-700" href="/network/port-configs">Port Configs</a></li>
+                  <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/network/ip-search">IP Search</a></li>
+                  <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/vlans">VLAN MGMT</a></li>
+                  <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/network/port-configs">Port Configs</a></li>
                 </ul>
               </li>
               <li class="relative py-1" x-data="{open:false}">
-                <button @click="open = !open" class="block px-4 py-2 hover:underline">Tasks</button>
+                <button @click="open = !open" class="block px-4 py-2 text-blue-400 rounded hover:underline">Tasks</button>
                 <ul x-show="open" @click.away="open = false" class="absolute mt-2 bg-gray-800 text-white py-2 w-48 hidden" x-cloak>
-                  <li><a class="block px-4 py-2 hover:bg-gray-700" href="/tasks">Task Queue</a></li>
-                  <li><a class="block px-4 py-2 hover:bg-gray-700" href="/devices/duplicates">Duplicate Checker</a></li>
+                  <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/tasks">Task Queue</a></li>
+                  <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/devices/duplicates">Duplicate Checker</a></li>
                   {% if current_user and current_user.role in ['admin','superadmin'] %}
-                  <li><a class="block px-4 py-2 hover:bg-gray-700" href="/tasks/edit-tags">Edit Tags</a></li>
-                  <li><a class="block px-4 py-2 hover:bg-gray-700" href="/tasks/google-sheets">Google Sheets</a></li>
+                  <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/tasks/edit-tags">Edit Tags</a></li>
+                  <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/tasks/google-sheets">Google Sheets</a></li>
                   {% endif %}
                 </ul>
               </li>
               <li class="relative py-1" x-data="{open:false}">
-                <button @click="open = !open" class="block px-4 py-2 hover:underline">Reports</button>
+                <button @click="open = !open" class="block px-4 py-2 text-blue-400 rounded hover:underline">Reports</button>
                 <ul x-show="open" @click.away="open = false" class="absolute mt-2 bg-gray-800 text-white py-2 w-48 hidden" x-cloak>
-                  <li><a class="block px-4 py-2 hover:bg-gray-700" href="/reports/vlan-usage">VLAN Usage</a></li>
+                  <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/reports/vlan-usage">VLAN Usage</a></li>
                 </ul>
               </li>
               <li class="relative py-1" x-data="{open:false}">
-                <button @click="open = !open" class="block px-4 py-2 hover:underline">SSH</button>
+                <button @click="open = !open" class="block px-4 py-2 text-blue-400 rounded hover:underline">SSH</button>
                 <ul x-show="open" @click.away="open = false" class="absolute mt-2 bg-gray-800 text-white py-2 w-48 hidden" x-cloak>
-                  <li><a class="block px-4 py-2 hover:bg-gray-700" href="/ssh/port-config">Port Config</a></li>
-                  <li><a class="block px-4 py-2 hover:bg-gray-700" href="/ssh/port-check">Port Check</a></li>
-                  <li><a class="block px-4 py-2 hover:bg-gray-700" href="/ssh/config-check">Config Check</a></li>
-                  <li><a class="block px-4 py-2 hover:bg-gray-700" href="/ssh/port-search">Port Search</a></li>
-                  <li><a class="block px-4 py-2 hover:bg-gray-700" href="/ssh/bulk-port-update">Bulk Port Update</a></li>
-                  <li><a class="block px-4 py-2 hover:bg-gray-700" href="/bulk/vlan-push">VLAN Bulk Push</a></li>
-                <li><a class="block px-4 py-2 hover:bg-gray-700" href="/ssh/netbird-connect">Initiate Netbird Connection</a></li>
+                  <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/ssh/port-config">Port Config</a></li>
+                  <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/ssh/port-check">Port Check</a></li>
+                  <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/ssh/config-check">Config Check</a></li>
+                  <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/ssh/port-search">Port Search</a></li>
+                  <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/ssh/bulk-port-update">Bulk Port Update</a></li>
+                  <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/bulk/vlan-push">VLAN Bulk Push</a></li>
+                <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/ssh/netbird-connect">Initiate Netbird Connection</a></li>
                 </ul>
               </li>
               {% if current_user and current_user.role in ['editor','admin','superadmin'] %}
               <li class="py-1">
-                <a class="block px-4 py-2 hover:underline" href="/bulk/device-import">Bulk Add Devices</a>
+                <a class="block px-4 py-2 text-blue-400 rounded hover:underline" href="/bulk/device-import">Bulk Add Devices</a>
               </li>
               {% endif %}
             </ul>
@@ -84,28 +84,28 @@
                 <a class="text-blue-400 underline mr-2" href="/user/ssh">SSH Profiles</a>
                 {% if current_user.role in ['admin','superadmin'] %}
                 <div class="relative py-1 mr-2" x-data="{open:false}">
-                  <button @click="open = !open" class="px-4 py-2 border rounded hover:bg-gray-700">
+                  <button @click="open = !open" class="px-4 py-2 text-blue-400 border rounded hover:bg-gray-700">
                     {{ 'Super Admin' if current_user.role == 'superadmin' else 'Admin' }}
                   </button>
                   <ul x-show="open" @click.away="open = false" class="absolute right-0 mt-2 bg-gray-800 text-white py-2 w-48 hidden" x-cloak>
                     {% if current_user.role == 'superadmin' %}
-                    <li><a class="block px-4 py-2 hover:bg-gray-700" href="/tunables">Tunables</a></li>
-                    <li><a class="block px-4 py-2 hover:bg-gray-700" href="/admin/ssh">SSH Credentials</a></li>
-                    <li><a class="block px-4 py-2 hover:bg-gray-700" href="/admin/snmp">SNMP Credentials</a></li>
-                    <li><a class="block px-4 py-2 hover:bg-gray-700" href="/device-types">Device Types</a></li>
-                    <li><a class="block px-4 py-2 hover:bg-gray-700" href="/admin/tags">Tag Manager</a></li>
-                    <li><a class="block px-4 py-2 hover:bg-gray-700" href="/admin/locations">Locations</a></li>
-                    <li><a class="block px-4 py-2 hover:bg-gray-700" href="/bulk/device-import">Device Import</a></li>
-                    <li><a class="block px-4 py-2 hover:bg-gray-700" href="/admin/audit">Audit Log</a></li>
-                    <li><a class="block px-4 py-2 hover:bg-gray-700" href="/admin/ip-bans">IP Bans</a></li>
-                    <li><a class="block px-4 py-2 hover:bg-gray-700" href="/admin/users">User Management</a></li>
-                    <li><a class="block px-4 py-2 hover:bg-gray-700" href="/admin/debug">Debug Logs</a></li>
+                    <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/tunables">Tunables</a></li>
+                    <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/admin/ssh">SSH Credentials</a></li>
+                    <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/admin/snmp">SNMP Credentials</a></li>
+                    <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/device-types">Device Types</a></li>
+                    <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/admin/tags">Tag Manager</a></li>
+                    <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/admin/locations">Locations</a></li>
+                    <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/bulk/device-import">Device Import</a></li>
+                    <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/admin/audit">Audit Log</a></li>
+                    <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/admin/ip-bans">IP Bans</a></li>
+                    <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/admin/users">User Management</a></li>
+                    <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/admin/debug">Debug Logs</a></li>
                     {% else %}
-                    <li><a class="block px-4 py-2 hover:bg-gray-700" href="/admin/ssh">SSH Credentials</a></li>
-                    <li><a class="block px-4 py-2 hover:bg-gray-700" href="/admin/snmp">SNMP Credentials</a></li>
-                    <li><a class="block px-4 py-2 hover:bg-gray-700" href="/device-types">Device Types</a></li>
-                    <li><a class="block px-4 py-2 hover:bg-gray-700" href="/admin/locations">Locations</a></li>
-                    <li><a class="block px-4 py-2 hover:bg-gray-700" href="/bulk/device-import">Device Import</a></li>
+                    <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/admin/ssh">SSH Credentials</a></li>
+                    <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/admin/snmp">SNMP Credentials</a></li>
+                    <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/device-types">Device Types</a></li>
+                    <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/admin/locations">Locations</a></li>
+                    <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/bulk/device-import">Device Import</a></li>
                     {% endif %}
                   </ul>
                 </div>
@@ -121,7 +121,7 @@
       {% endblock %}
     </header>
     <div class="container mt-4">
-      <a href="javascript:history.back()" class="underline">&laquo; Back</a>
+      <a href="javascript:history.back()" class="text-blue-400 underline">&laquo; Back</a>
       <p>{{ message }}</p>
       {% block content %}{% endblock %}
     </div>

@@ -24,7 +24,7 @@ async def edit_my_profile_form(request: Request, current_user: User = Depends(re
         "user": current_user,
         "current_user": current_user,
         "error": None,
-        "themes": ["dark", "light", "blue"],
+        "themes": ["dark", "light", "blue", "bw", "homebrew"],
         "fonts": ["sans", "serif", "mono"],
     }
     return templates.TemplateResponse("user_form.html", context)
@@ -48,7 +48,7 @@ async def update_my_profile(
             "user": current_user,
             "current_user": current_user,
             "error": "Email already in use",
-            "themes": ["dark", "light", "blue"],
+            "themes": ["dark", "light", "blue", "bw", "homebrew"],
             "fonts": ["sans", "serif", "mono"],
         }
         return templates.TemplateResponse("user_form.html", context)
