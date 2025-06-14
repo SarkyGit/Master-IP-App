@@ -7,10 +7,6 @@
     <label class="block">Name</label>
     <input type="text" name="name" value="{{ dtype.name if dtype else '' }}" class="w-full p-2 text-black" required />
   </div>
-  <div>
-    <label class="block">Manufacturer</label>
-    <input type="text" name="manufacturer" value="{{ dtype.manufacturer if dtype else '' }}" class="w-full p-2 text-black" required />
-  </div>
   {% if error %}
   <p class="text-red-500">{{ error }}</p>
   {% endif %}

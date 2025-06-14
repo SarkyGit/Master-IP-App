@@ -25,15 +25,10 @@
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Inventory</a>
                 <ul class="dropdown-menu">
-                  <li class="dropend">
-                    <a class="dropdown-item dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">Devices</a>
-                    <ul class="dropdown-menu">
-                      <li><a class="dropdown-item" href="/devices">All Devices</a></li>
-                      {% for dtype in get_device_types() %}
-                      <li><a class="dropdown-item" href="/devices/type/{{ dtype.id }}">{{ dtype.name }}</a></li>
-                      {% endfor %}
-                    </ul>
-                  </li>
+                  <li><a class="dropdown-item" href="/devices">All Devices</a></li>
+                  {% for dtype in get_device_types() %}
+                  <li><a class="dropdown-item" href="/devices/type/{{ dtype.id }}">{{ dtype.name }}</a></li>
+                  {% endfor %}
                   <li><a class="dropdown-item" href="/inventory/audit">Audit</a></li>
                   <li><a class="dropdown-item" href="/inventory/trailers">Trailer Inventory</a></li>
                   <li><a class="dropdown-item" href="/inventory/sites">Site Inventory</a></li>
