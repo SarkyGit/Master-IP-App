@@ -1,0 +1,39 @@
+body {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+.duplicate {
+  background-color: #cccccc;
+}
+
+nav.bg-gray-800 {
+  background-color: #000000 !important;
+}
+
+.bg-black {
+  background-color: #000000 !important;
+}
+
+.border-gray-700 {
+  border-color: #000000 !important;
+}
+
+a.underline,
+a.text-blue-400 {
+  color: #ffffff;
+  background-color: #000000;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  text-decoration: none;
+  display: inline-block;
+}
+a.underline:hover,
+a.text-blue-400:hover {
+  background-color: #444444;
+}
+
+.diff_add { background-color: #e0e0e0; }
+.diff_chg { background-color: #bbbbbb; }
+.diff_sub { background-color: #888888; }
+table.diff { width: 100%; }
