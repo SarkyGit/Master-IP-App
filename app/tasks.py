@@ -113,7 +113,7 @@ def schedule_device_config_pull(device: Device):
     """Register or update a scheduled config pull job for the device."""
     job_id = f"config_pull_{device.id}"
     if (
-        not device.is_active_site_member
+        device.site_id is None
         or device.config_pull_interval == "none"
     ):
         try:
@@ -153,7 +153,7 @@ def start_config_scheduler(app):
         devices = (
             db.query(Device)
             .filter(
-                Device.is_active_site_member.is_(True),
+                Device.site_id.is_not(None),
                 Device.config_pull_interval != "none",
             )
             .all()

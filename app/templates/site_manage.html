@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="text-xl mb-2">{{ site.name }}</h1>
+<p>{{ site.description }}</p>
+<h2 class="mt-4 font-bold">Users</h2>
+<ul>
+  {% for u in users %}
+  <li>{{ u.email }} ({{ u.role }})
+    <form method="post" action="/sites/{{ site.id }}/remove-user" class="d-inline">
+      <input type="hidden" name="user_id" value="{{ u.id }}">
+      <button type="submit" class="text-red-400 underline">Remove</button>
+    </form>
+  </li>
+  {% endfor %}
+</ul>
+<form method="post" action="/sites/{{ site.id }}/add-user" class="mt-2">
+  <select name="user_id" class="text-black">
+    {% for u in all_users %}
+    <option value="{{ u.id }}">{{ u.email }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit" class="underline">Add User</button>
+</form>
+<h2 class="mt-4 font-bold">Devices</h2>
+<ul>
+  {% for d in devices %}
+  <li>{{ d.hostname }} - {{ d.config_pull_interval }}
+    <form method="post" action="/sites/{{ site.id }}/device/{{ d.id }}/interval" class="d-inline">
+      <select name="interval" class="text-black">
+        {% for opt in ['none','hourly','daily','weekly'] %}
+        <option value="{{ opt }}" {% if d.config_pull_interval==opt %}selected{% endif %}>{{ opt }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="underline">Update</button>
+    </form>
+    <form method="post" action="/sites/{{ site.id }}/remove-device" class="d-inline">
+      <input type="hidden" name="device_id" value="{{ d.id }}">
+      <button type="submit" class="text-red-400 underline">Remove</button>
+    </form>
+  </li>
+  {% endfor %}
+</ul>
+<form method="post" action="/sites/{{ site.id }}/add-device" class="mt-2">
+  <select name="device_id" class="text-black">
+    {% for d in all_devices %}
+    <option value="{{ d.id }}">{{ d.hostname }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit" class="underline">Add Device</button>
+</form>
+{% endblock %}

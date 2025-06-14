@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="text-xl mb-4">Sites</h1>
+<ul>
+  {% for site in sites %}
+  <li><a class="underline" href="/sites/{{ site.id }}/manage">{{ site.name }}</a></li>
+  {% endfor %}
+</ul>
+{% if current_user.role in ['admin','superadmin'] %}
+<a href="/sites/new" class="underline">Create Site</a>
+{% endif %}
+{% endblock %}

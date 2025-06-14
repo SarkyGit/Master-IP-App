@@ -1,5 +1,5 @@
 from app.utils.db_session import SessionLocal
-from app.models.models import User
+from app.models.models import User, Site, SiteMembership
 from app.utils.auth import get_password_hash
 
 
@@ -25,6 +25,10 @@ def main():
         )
         db.add(user)
         db.commit()
+        site = db.query(Site).first()
+        if site:
+            db.add(SiteMembership(user_id=user.id, site_id=site.id))
+            db.commit()
         print("Superuser created.")
     finally:
         db.close()
@@ -32,4 +36,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
