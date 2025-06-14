@@ -2,21 +2,117 @@ from fastapi import APIRouter, Request, Depends, Form, HTTPException
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 import asyncssh
+import requests
+import asyncio
 from datetime import datetime
 
 from app.utils.db_session import get_db
 from app.utils.auth import require_role
-from app.models.models import Device, ConfigBackup
+from app.models.models import Device, ConfigBackup, SystemTunable
 from app.utils.ssh import build_conn_kwargs
 from app.utils.templates import templates
 
 router = APIRouter()
+
+
+def _get_netbird_config(db: Session):
+    """Return Netbird API URL and token from SystemTunables."""
+    url_t = (
+        db.query(SystemTunable)
+        .filter(SystemTunable.name == "Netbird API URL")
+        .first()
+    )
+    token_t = (
+        db.query(SystemTunable)
+        .filter(SystemTunable.name == "Netbird API Token")
+        .first()
+    )
+    url = url_t.value if url_t else None
+    token = token_t.value if token_t else None
+    return url, token
+
+
+async def _netbird_request(method: str, url: str, token: str, **kwargs):
+    """Perform a Netbird API request in a thread and return JSON or error."""
+    headers = kwargs.pop("headers", {})
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+
+    def _do_request():
+        resp = requests.request(method, url, headers=headers, timeout=10, **kwargs)
+        resp.raise_for_status()
+        if resp.content:
+            return resp.json()
+        return {}
+
+    try:
+        return await asyncio.to_thread(_do_request)
+    except Exception as exc:
+        return {"error": str(exc)}
 
 @router.get('/ssh')
 async def ssh_menu(request: Request, current_user=Depends(require_role("editor"))):
     """Landing page for SSH tasks."""
     context = {"request": request, "current_user": current_user}
     return templates.TemplateResponse("ssh_menu.html", context)
+
+
+@router.get('/ssh/netbird-connect')
+async def netbird_connect_form(
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("editor")),
+):
+    url, token = _get_netbird_config(db)
+    peers = []
+    error = None
+    if url and token:
+        data = await _netbird_request('get', f"{url}/peers", token)
+        if isinstance(data, dict) and data.get('error'):
+            error = data['error']
+        else:
+            peers = data
+    else:
+        error = "Netbird configuration missing"
+    context = {
+        "request": request,
+        "peers": peers,
+        "error": error,
+        "message": None,
+        "current_user": current_user,
+    }
+    return templates.TemplateResponse("ssh_netbird.html", context)
+
+
+@router.post('/ssh/netbird-connect')
+async def netbird_connect_action(
+    peer_id: str = Form(...),
+    request: Request = None,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("editor")),
+):
+    url, token = _get_netbird_config(db)
+    peers = []
+    if not url or not token:
+        error = "Netbird configuration missing"
+        msg = None
+    else:
+        connect = await _netbird_request('post', f"{url}/peers/{peer_id}/connect", token)
+        msg = "Connection initiated" if not connect.get('error') else None
+        error = connect.get('error')
+        data = await _netbird_request('get', f"{url}/peers", token)
+        if isinstance(data, dict) and data.get('error'):
+            error = data['error']
+        else:
+            peers = data
+    context = {
+        "request": request,
+        "peers": peers,
+        "error": error,
+        "message": msg,
+        "current_user": current_user,
+    }
+    return templates.TemplateResponse("ssh_netbird.html", context)
 
 
 @router.get('/ssh/port-config')

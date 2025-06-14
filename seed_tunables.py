@@ -50,6 +50,22 @@ def main():
                 data_type="text",
                 description="Target spreadsheet ID",
             ),
+            SystemTunable(
+                name="Netbird API URL",
+                value="https://api.netbird.io/api",
+                function="Netbird",
+                file_type="application",
+                data_type="text",
+                description="Base URL of the Netbird API",
+            ),
+            SystemTunable(
+                name="Netbird API Token",
+                value="",
+                function="Netbird",
+                file_type="application",
+                data_type="text",
+                description="Bearer token for Netbird API access",
+            ),
         ]
         db.add_all(samples)
         db.commit()
