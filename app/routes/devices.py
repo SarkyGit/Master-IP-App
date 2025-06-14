@@ -23,6 +23,8 @@ from app.models.models import (
     Site,
     PortConfigTemplate,
     PortStatusHistory,
+    Interface,
+    InterfaceChangeLog,
     UserSSHCredential,
 )
 from app.utils.audit import log_audit
@@ -1110,6 +1112,171 @@ async def port_map(
     }
     db.commit()
     return templates.TemplateResponse("port_map.html", context)
+
+
+@router.get("/devices/{device_id}/ports/edit")
+async def edit_ports_form(
+    device_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("editor")),
+):
+    device = db.query(Device).filter(Device.id == device_id).first()
+    if not device:
+        raise HTTPException(status_code=404, detail="Device not found")
+    if not user_in_site(db, current_user, device.site_id):
+        raise HTTPException(status_code=403, detail="Device not assigned to your site")
+
+    interfaces = (
+        db.query(Interface).filter(Interface.device_id == device.id).order_by(Interface.name).all()
+    )
+    vlans = db.query(VLAN).all()
+
+    cred, source = resolve_ssh_credential(db, device, current_user)
+    live_configs: dict[str, str] = {}
+    mismatch: dict[int, bool] = {}
+    if cred:
+        conn_kwargs = build_conn_kwargs(cred)
+        try:
+            async with asyncssh.connect(device.ip, **conn_kwargs) as conn:
+                await detect_ssh_platform(db, device, conn, current_user)
+                for intf in interfaces:
+                    result = await conn.run(
+                        f"show running-config interface {intf.name}", check=False
+                    )
+                    text = result.stdout.strip()
+                    live_configs[intf.name] = text
+                    m = re.search(r"^\s*description\s+(.*)$", text, re.MULTILINE)
+                    live_desc = m.group(1).strip() if m else ""
+                    if (intf.description or "") != live_desc:
+                        mismatch[intf.id] = True
+                device.last_seen = datetime.utcnow()
+        except Exception:
+            cred = None
+    if not cred:
+        for intf in interfaces:
+            backup = (
+                db.query(ConfigBackup)
+                .filter(
+                    ConfigBackup.device_id == device.id,
+                    ConfigBackup.port_name == intf.name,
+                )
+                .order_by(ConfigBackup.created_at.desc())
+                .first()
+            )
+            live_configs[intf.name] = backup.config_text if backup else ""
+
+    context = {
+        "request": request,
+        "device": device,
+        "interfaces": interfaces,
+        "vlans": vlans,
+        "live_configs": live_configs,
+        "mismatch": mismatch,
+        "cred_source": source,
+        "cred_name": cred.name if cred else None,
+        "message": request.query_params.get("message"),
+        "current_user": current_user,
+    }
+    db.commit()
+    return templates.TemplateResponse("port_edit.html", context)
+
+
+@router.post("/devices/{device_id}/ports/edit")
+async def save_ports(
+    device_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("editor")),
+):
+    device = db.query(Device).filter(Device.id == device_id).first()
+    if not device:
+        raise HTTPException(status_code=404, detail="Device not found")
+    if not user_in_site(db, current_user, device.site_id):
+        raise HTTPException(status_code=403, detail="Device not assigned to your site")
+
+    form = await request.form()
+    interfaces = db.query(Interface).filter(Interface.device_id == device.id).all()
+    cred, source = resolve_ssh_credential(db, device, current_user)
+    conn = None
+    if cred:
+        conn_kwargs = build_conn_kwargs(cred)
+        try:
+            conn = await asyncssh.connect(device.ip, **conn_kwargs)
+            await detect_ssh_platform(db, device, conn, current_user)
+        except Exception:
+            conn = None
+
+    for intf in interfaces:
+        new_name = form.get(f"name_{intf.id}", intf.name)
+        new_desc = form.get(f"desc_{intf.id}", "")
+        vlan_val = form.get(f"vlan_{intf.id}")
+        new_vlan = int(vlan_val) if vlan_val else None
+
+        changed = (
+            new_name != intf.name
+            or new_desc != (intf.description or "")
+            or new_vlan != intf.vlan_id
+        )
+        if not changed:
+            continue
+
+        snippet = f"interface {intf.name}\n"
+        if new_desc != (intf.description or ""):
+            snippet += f" description {new_desc}\n"
+        if new_vlan:
+            vlan = db.query(VLAN).filter(VLAN.id == new_vlan).first()
+            if vlan:
+                snippet += f" switchport access vlan {vlan.tag}\n"
+        snippet += "exit"
+
+        success = False
+        if conn:
+            try:
+                _, session = await conn.create_session(asyncssh.SSHClientProcess)
+                for line in snippet.splitlines():
+                    session.stdin.write(line + "\n")
+                session.stdin.write("exit\n")
+                await session.wait_closed()
+                success = True
+                device.last_seen = datetime.utcnow()
+            except Exception:
+                success = False
+
+        if not success:
+            backup = ConfigBackup(
+                device_id=device.id,
+                source="port_edit",
+                config_text=snippet,
+                queued=True,
+                status="pending",
+                port_name=intf.name,
+            )
+            db.add(backup)
+
+        log = InterfaceChangeLog(
+            user_id=current_user.id,
+            device_id=device.id,
+            interface_name=new_name,
+            old_desc=intf.description,
+            new_desc=new_desc,
+            old_vlan=intf.vlan_id,
+            new_vlan=new_vlan,
+        )
+        db.add(log)
+
+        intf.name = new_name
+        intf.description = new_desc
+        intf.vlan_id = new_vlan
+
+    if conn:
+        conn.close()
+    db.commit()
+    msg = "Changes+applied" if conn else "Changes+queued"
+    return RedirectResponse(
+        url=f"/devices/{device_id}/ports/edit?message={msg}",
+        status_code=302,
+    )
 
 
 @router.get("/api/devices/{device_id}/port-rates")

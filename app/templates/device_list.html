@@ -113,7 +113,8 @@
         <a href="/devices/{{ device.id }}/configs" class="btn btn-sm btn-info me-2">Configs</a>
         {% if device.snmp_community %}
         <a href="/devices/{{ device.id }}/ports" class="btn btn-sm btn-primary me-2">Port Status</a>
-        <a href="/devices/{{ device.id }}/port-map" class="btn btn-sm btn-secondary">Port Map</a>
+        <a href="/devices/{{ device.id }}/port-map" class="btn btn-sm btn-secondary me-2">Port Map</a>
+        <a href="/devices/{{ device.id }}/ports/edit" class="btn btn-sm btn-secondary">Port Editor</a>
         {% endif %}
       </td>
     </tr>

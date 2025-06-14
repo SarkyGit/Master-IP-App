@@ -18,6 +18,8 @@ from .models import (
     LoginEvent,
     EmailLog,
     PortStatusHistory,
+    Interface,
+    InterfaceChangeLog,
 )
 
 __all__ = [
@@ -40,4 +42,6 @@ __all__ = [
     "LoginEvent",
     "EmailLog",
     "PortStatusHistory",
+    "Interface",
+    "InterfaceChangeLog",
 ]
