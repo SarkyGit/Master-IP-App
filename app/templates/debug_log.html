@@ -2,6 +2,19 @@
 
 {% block content %}
 <h1 class="text-xl mb-4">Debug Logs</h1>
+<div class="mb-4">
+  <h2 class="text-lg">SNMP Trap Listener</h2>
+  <p>Status: {{ 'running' if trap_running else 'stopped' }} on port {{ trap_port }}</p>
+  <form method="post" action="/admin/debug/trap-listener">
+    {% if trap_running %}
+    <input type="hidden" name="action" value="stop">
+    <button type="submit" class="bg-red-600 px-3 py-1">Stop Listener</button>
+    {% else %}
+    <input type="hidden" name="action" value="start">
+    <button type="submit" class="bg-green-600 px-3 py-1">Start Listener</button>
+    {% endif %}
+  </form>
+</div>
 <form method="get" class="mb-4">
   <label class="mr-2">Show:
     <select name="show" onchange="this.form.submit()">

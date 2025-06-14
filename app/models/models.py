@@ -323,3 +323,18 @@ class PortStatusHistory(Base):
 
     device = relationship("Device")
 
+
+class SNMPTrapLog(Base):
+    __tablename__ = "snmp_trap_logs"
+
+    id = Column(Integer, primary_key=True)
+    timestamp = Column(DateTime, default=datetime.utcnow)
+    source_ip = Column(String, nullable=False)
+    trap_oid = Column(String, nullable=True)
+    message = Column(Text, nullable=True)
+    device_id = Column(Integer, ForeignKey("devices.id"), nullable=True)
+    site_id = Column(Integer, ForeignKey("sites.id"), nullable=True)
+
+    device = relationship("Device")
+    site = relationship("Site")
+
