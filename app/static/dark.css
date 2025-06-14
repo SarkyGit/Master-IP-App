@@ -1,12 +1,12 @@
 body {
-  background-color: #181a1b;
+  background-color: #1a1a2e;
   color: #f8f9fa;
 }
 
 .form-control,
 .form-select,
 textarea {
-  background-color: #26292b;
+  background-color: #212033;
   color: #f8f9fa;
   border: 1px solid #6c757d;
   border-radius: 0.375rem;
@@ -14,7 +14,7 @@ textarea {
 
 .card,
 .table {
-  background-color: #26292b;
+  background-color: #222034;
   color: #f8f9fa;
   border-radius: 0.5rem;
   overflow: hidden;
@@ -22,7 +22,7 @@ textarea {
 
 .table thead th {
   color: #ffffff;
-  background-color: #3b4147;
+  background-color: #332f45;
 }
 
 .alert {
@@ -30,7 +30,7 @@ textarea {
 }
 
 .dropdown-menu {
-  background-color: #26292b;
+  background-color: #212033;
   color: #f8f9fa;
   border-radius: 0.375rem;
 }
@@ -40,7 +40,7 @@ textarea {
 }
 
 .dropdown-item:hover {
-  background-color: #3b4147;
+  background-color: #332f45;
 }
 
 .duplicate {
@@ -51,6 +51,11 @@ textarea {
   display: block;
 }
 
+/* Match navbar background to dark theme */
+.navbar-dark.bg-dark {
+  background-color: #222034 !important;
+}
+
 /* Show nested dropdown menus on hover */
 .navbar .dropdown-menu .dropend:hover > .dropdown-menu {
   display: block;
@@ -58,8 +63,8 @@ textarea {
   left: 100%;
   margin-left: 0.1rem;
 }
-.diff_add { background-color: #14532d; }
-.diff_chg { background-color: #78350f; }
+.diff_add { background-color: #065f46; }
+.diff_chg { background-color: #6b21a8; }
 .diff_sub { background-color: #7f1d1d; }
 table.diff { width: 100%; }
 
@@ -76,12 +81,12 @@ table.diff { width: 100%; }
 a.underline,
 a.text-blue-400 {
   color: #ffffff;
-  background-color: #3b82f6;
+  background-color: #6d28d9;
   padding: 0.25rem 0.5rem;
   border-radius: 0.375rem;
   text-decoration: none;
 }
 a.underline:hover,
 a.text-blue-400:hover {
-  background-color: #2563eb;
+  background-color: #5b21b6;
 }
