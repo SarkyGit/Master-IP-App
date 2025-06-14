@@ -17,6 +17,8 @@
       <th class="px-2"><input type="checkbox" id="select-all"></th>
       <th class="px-4 py-2 text-left">Hostname</th>
       <th class="px-4 py-2 text-left">IP</th>
+      <th class="px-4 py-2 text-left">MAC</th>
+      <th class="px-4 py-2 text-left">Asset Tag</th>
       <th class="px-4 py-2 text-left">Model</th>
       <th class="px-4 py-2 text-left">Manufacturer</th>
       <th class="px-4 py-2 text-left">Type</th>
@@ -34,7 +36,9 @@
     <tr class="border-t border-white">
       <td class="px-2"><input type="checkbox" name="selected" value="{{ device.id }}"></td>
       <td class="px-4 py-2">{{ device.hostname }}</td>
-      <td class="px-4 py-2">{{ device.ip }}</td>
+      <td class="px-4 py-2 {% if device.ip and duplicate_ips.get(device.ip) %}duplicate{% endif %}" title="{{ duplicate_ips.get(device.ip)|join(', ') if duplicate_ips.get(device.ip) }}">{{ device.ip }}</td>
+      <td class="px-4 py-2 {% if device.mac and duplicate_macs.get(device.mac) %}duplicate{% endif %}" title="{{ duplicate_macs.get(device.mac)|join(', ') if duplicate_macs.get(device.mac) }}">{{ device.mac or '' }}</td>
+      <td class="px-4 py-2 {% if device.asset_tag and duplicate_tags.get(device.asset_tag) %}duplicate{% endif %}" title="{{ duplicate_tags.get(device.asset_tag)|join(', ') if duplicate_tags.get(device.asset_tag) }}">{{ device.asset_tag or '' }}</td>
       <td class="px-4 py-2">{{ device.model or '' }}</td>
       <td class="px-4 py-2">{{ device.manufacturer }}</td>
       <td class="px-4 py-2">{{ device.device_type.name if device.device_type else '' }}</td>

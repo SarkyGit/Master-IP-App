@@ -60,8 +60,9 @@ class Device(Base):
 
     id = Column(Integer, primary_key=True)
     hostname = Column(String, unique=True, nullable=False)
-    ip = Column(String, unique=True, nullable=False)
+    ip = Column(String, nullable=False)
     mac = Column(String, nullable=True)
+    asset_tag = Column(String, nullable=True)
     model = Column(String, nullable=True)
     manufacturer = Column(String, nullable=False)
     device_type_id = Column(Integer, ForeignKey("device_types.id"), nullable=False)

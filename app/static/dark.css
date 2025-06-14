@@ -39,6 +39,10 @@ textarea {
   background-color: #343a40;
 }
 
+.duplicate {
+  background-color: #7f1d1d;
+}
+
 .navbar .dropdown:hover .dropdown-menu {
   display: block;
 }

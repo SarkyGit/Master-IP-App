@@ -16,6 +16,10 @@
     <input type="text" name="mac" value="{{ device.mac if device else '' }}" class="w-full p-2 text-black" />
   </div>
   <div>
+    <label class="block">Asset Tag</label>
+    <input type="text" name="asset_tag" value="{{ device.asset_tag if device else '' }}" class="w-full p-2 text-black" />
+  </div>
+  <div>
     <label class="block">Model</label>
     <input type="text" name="model" value="{{ device.model if device else '' }}" class="w-full p-2 text-black" />
   </div>

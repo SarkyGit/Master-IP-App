@@ -56,14 +56,70 @@ async def list_devices(
         raise HTTPException(status_code=401, detail="Not authenticated")
 
     devices = db.query(Device).all()
+    dup_ips = {}
+    dup_macs = {}
+    dup_tags = {}
+    for d in devices:
+        if d.ip:
+            dup_ips.setdefault(d.ip, []).append(d.hostname)
+        if d.mac:
+            dup_macs.setdefault(d.mac, []).append(d.hostname)
+        if d.asset_tag:
+            dup_tags.setdefault(d.asset_tag, []).append(d.hostname)
+    duplicate_ips = {k: v for k, v in dup_ips.items() if len(v) > 1}
+    duplicate_macs = {k: v for k, v in dup_macs.items() if len(v) > 1}
+    duplicate_tags = {k: v for k, v in dup_tags.items() if len(v) > 1}
     message = request.query_params.get("message")
     context = {
         "request": request,
         "devices": devices,
+        "duplicate_ips": duplicate_ips,
+        "duplicate_macs": duplicate_macs,
+        "duplicate_tags": duplicate_tags,
         "current_user": current_user,
         "message": message,
     }
     return templates.TemplateResponse("device_list.html", context)
+
+
+@router.get("/devices/duplicates")
+async def duplicate_report(
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    if not current_user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    devices = db.query(Device).all()
+    dup_ips = {}
+    dup_macs = {}
+    dup_tags = {}
+    missing = {"ip": [], "mac": [], "asset_tag": []}
+    for d in devices:
+        if d.ip:
+            dup_ips.setdefault(d.ip, []).append(d)
+        else:
+            missing["ip"].append(d)
+        if d.mac:
+            dup_macs.setdefault(d.mac, []).append(d)
+        else:
+            missing["mac"].append(d)
+        if d.asset_tag:
+            dup_tags.setdefault(d.asset_tag, []).append(d)
+        else:
+            missing["asset_tag"].append(d)
+    ip_dupes = {k: v for k, v in dup_ips.items() if len(v) > 1}
+    mac_dupes = {k: v for k, v in dup_macs.items() if len(v) > 1}
+    tag_dupes = {k: v for k, v in dup_tags.items() if len(v) > 1}
+    context = {
+        "request": request,
+        "ip_dupes": ip_dupes,
+        "mac_dupes": mac_dupes,
+        "tag_dupes": tag_dupes,
+        "missing": missing,
+        "current_user": current_user,
+    }
+    return templates.TemplateResponse("device_duplicates.html", context)
 
 
 @router.get("/devices/type/{type_id}")
@@ -77,11 +133,27 @@ async def list_devices_by_type(
         raise HTTPException(status_code=401, detail="Not authenticated")
     devices = db.query(Device).filter(Device.device_type_id == type_id).all()
     dtype = db.query(DeviceType).filter(DeviceType.id == type_id).first()
+    dup_ips = {}
+    dup_macs = {}
+    dup_tags = {}
+    for d in devices:
+        if d.ip:
+            dup_ips.setdefault(d.ip, []).append(d.hostname)
+        if d.mac:
+            dup_macs.setdefault(d.mac, []).append(d.hostname)
+        if d.asset_tag:
+            dup_tags.setdefault(d.asset_tag, []).append(d.hostname)
+    duplicate_ips = {k: v for k, v in dup_ips.items() if len(v) > 1}
+    duplicate_macs = {k: v for k, v in dup_macs.items() if len(v) > 1}
+    duplicate_tags = {k: v for k, v in dup_tags.items() if len(v) > 1}
     context = {
         "request": request,
         "devices": devices,
         "current_user": current_user,
         "device_type": dtype,
+        "duplicate_ips": duplicate_ips,
+        "duplicate_macs": duplicate_macs,
+        "duplicate_tags": duplicate_tags,
         "message": None,
     }
     return templates.TemplateResponse("device_list.html", context)
@@ -143,6 +215,7 @@ async def create_device(
     hostname: str = Form(...),
     ip: str = Form(...),
     mac: str = Form(None),
+    asset_tag: str = Form(None),
     model: str = Form(None),
     manufacturer: str = Form(...),
     device_type_id: int = Form(...),
@@ -157,6 +230,7 @@ async def create_device(
         hostname=hostname,
         ip=ip,
         mac=mac or None,
+        asset_tag=asset_tag or None,
         model=model or None,
         manufacturer=manufacturer,
         device_type_id=device_type_id,
@@ -202,6 +276,7 @@ async def update_device(
     hostname: str = Form(...),
     ip: str = Form(...),
     mac: str = Form(None),
+    asset_tag: str = Form(None),
     model: str = Form(None),
     manufacturer: str = Form(...),
     device_type_id: int = Form(...),
@@ -221,6 +296,7 @@ async def update_device(
     device.hostname = hostname
     device.ip = ip
     device.mac = mac or None
+    device.asset_tag = asset_tag or None
     device.model = model or None
     device.manufacturer = manufacturer
     device.device_type_id = device_type_id
