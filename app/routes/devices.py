@@ -4,6 +4,8 @@ from fastapi import (
     Depends,
     HTTPException,
     Form,
+    UploadFile,
+    File,
 )
 from fastapi.responses import RedirectResponse
 from app.utils.templates import templates
@@ -27,6 +29,7 @@ from app.models.models import (
     InterfaceChangeLog,
     UserSSHCredential,
     ColumnPreference,
+    DeviceDamage,
 )
 from app.utils.audit import log_audit
 from app.utils.tags import (
@@ -449,6 +452,12 @@ async def edit_device_form(
         .limit(10)
         .all()
     )
+    photos = (
+        db.query(DeviceDamage)
+        .filter(DeviceDamage.device_id == device.id)
+        .order_by(DeviceDamage.uploaded_at.desc())
+        .all()
+    )
     context = {
         "request": request,
         "device": device,
@@ -462,6 +471,7 @@ async def edit_device_form(
         "status_options": STATUS_OPTIONS,
         "form_title": "Edit Device",
         "syslog_logs": logs,
+        "damage_photos": photos,
     }
     return templates.TemplateResponse("device_form.html", context)
 
@@ -582,6 +592,31 @@ async def update_device(
         db.commit()
 
     return RedirectResponse(url="/devices", status_code=302)
+
+
+@router.post("/devices/{device_id}/damage")
+async def upload_damage_photo(
+    device_id: int,
+    photo: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("editor")),
+):
+    device = db.query(Device).filter(Device.id == device_id).first()
+    if not device:
+        raise HTTPException(status_code=404, detail="Device not found")
+    if not user_in_site(db, current_user, device.site_id):
+        raise HTTPException(status_code=403, detail="Device not assigned to your site")
+    if not photo.content_type.startswith("image/"):
+        raise HTTPException(status_code=400, detail="Invalid file type")
+    os.makedirs("app/static/damage", exist_ok=True)
+    filename = f"{device_id}_{int(datetime.utcnow().timestamp())}_{photo.filename}"
+    path = os.path.join("app/static/damage", filename)
+    with open(path, "wb") as f:
+        f.write(await photo.read())
+    record = DeviceDamage(device_id=device.id, filename=filename)
+    db.add(record)
+    db.commit()
+    return RedirectResponse(url=f"/devices/{device_id}/edit", status_code=302)
 
 
 @router.post("/devices/{device_id}/delete")

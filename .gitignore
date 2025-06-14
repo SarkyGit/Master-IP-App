@@ -1,4 +1,8 @@
 **/__pycache__/
 *.pyc
 
+# Uploaded damage photos
+app/static/damage/*
+!app/static/damage/.gitkeep
+
 .env
