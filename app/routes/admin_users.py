@@ -39,7 +39,7 @@ async def new_user_form(request: Request, current_user=Depends(require_role("sup
         "show_active": True,
         "require_password": True,
         "cancel_url": "/admin/users",
-        "themes": ["dark", "light", "blue", "bw", "homebrew"],
+        "themes": ["dark_colourful", "dark", "light", "blue", "bw", "homebrew"],
         "fonts": ["sans", "serif", "mono"],
     }
     return templates.TemplateResponse("user_form.html", context)
@@ -52,7 +52,7 @@ async def create_user(
     password: str = Form(...),
     role: str = Form(...),
     is_active: bool = Form(False),
-    theme: str = Form("dark"),
+    theme: str = Form("dark_colourful"),
     font: str = Form("sans"),
     db: Session = Depends(get_db),
     current_user=Depends(require_role("superadmin")),
@@ -68,7 +68,7 @@ async def create_user(
             "show_active": True,
             "require_password": True,
             "cancel_url": "/admin/users",
-            "themes": ["dark", "light", "blue", "bw", "homebrew"],
+            "themes": ["dark_colourful", "dark", "light", "blue", "bw", "homebrew"],
             "fonts": ["sans", "serif", "mono"],
         }
         return templates.TemplateResponse("user_form.html", context)
@@ -109,7 +109,7 @@ async def edit_user_form(
         "show_active": True,
         "email_readonly": True,
         "cancel_url": "/admin/users",
-        "themes": ["dark", "light", "blue", "bw", "homebrew"],
+        "themes": ["dark_colourful", "dark", "light", "blue", "bw", "homebrew"],
         "fonts": ["sans", "serif", "mono"],
     }
     return templates.TemplateResponse("user_form.html", context)
@@ -121,7 +121,7 @@ async def update_user(
     request: Request,
     role: str = Form(...),
     is_active: bool = Form(False),
-    theme: str = Form("dark"),
+    theme: str = Form("dark_colourful"),
     font: str = Form("sans"),
     password: str | None = Form(None),
     db: Session = Depends(get_db),

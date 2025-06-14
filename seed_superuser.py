@@ -22,7 +22,7 @@ def main():
             hashed_password=hashed_pw,
             role="superadmin",
             is_active=True,
-            theme="dark",
+            theme="dark_colourful",
             font="sans",
         )
         db.add(user)
