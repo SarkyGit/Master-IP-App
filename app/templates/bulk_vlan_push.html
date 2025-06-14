@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-xl mb-4">Bulk VLAN Config Push</h1>
+<form method="post" class="space-y-4">
+  <div>
+    <label class="block">VLAN</label>
+    <select name="vlan_id" class="w-full p-2 text-black">
+      {% for vlan in vlans %}
+      <option value="{{ vlan.id }}" {% if selected_vlan == vlan.id %}selected{% endif %}>{{ vlan.tag }} - {{ vlan.description or '' }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label class="block">Config Template (optional)</label>
+    <select name="template_id" class="w-full p-2 text-black">
+      <option value="">-- Manual Config --</option>
+      {% for tpl in templates %}
+      <option value="{{ tpl.id }}" {% if template_id == tpl.id %}selected{% endif %}>{{ tpl.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label class="block">Manual Config</label>
+    <textarea name="config_text" rows="5" class="w-full p-2 text-black">{{ config_text or '' }}</textarea>
+  </div>
+  <div>
+    <label class="block">Device Model Filter (optional)</label>
+    <input type="text" name="model_filter" class="w-full p-2 text-black" value="{{ model_filter }}" />
+  </div>
+  {% if device_count is not none %}
+  <p class="text-yellow-400">{{ device_count }} devices will receive this configuration.</p>
+  {% endif %}
+  <p class="text-red-400">Warning: configuration will be pushed to all matching devices.</p>
+  {% if confirm %}
+  <input type="hidden" name="confirm" value="yes" />
+  <input type="hidden" name="vlan_id" value="{{ selected_vlan }}" />
+  <input type="hidden" name="template_id" value="{{ template_id or '' }}" />
+  <input type="hidden" name="config_text" value="{{ config_text }}" />
+  <input type="hidden" name="model_filter" value="{{ model_filter }}" />
+  <button type="submit" class="bg-blue-600 px-4 py-2">Confirm Push</button>
+  {% else %}
+  <button type="submit" class="bg-blue-600 px-4 py-2">Preview Device Count</button>
+  {% endif %}
+</form>
+{% endblock %}

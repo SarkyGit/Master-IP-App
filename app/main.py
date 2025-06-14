@@ -27,6 +27,7 @@ from app.routes import (
     login_events_router,
     inventory_router,
     admin_site_router,
+    bulk_router,
 )
 from app.routes.tunables import router as tunables_router
 from app.routes.editor import router as editor_router
@@ -74,6 +75,7 @@ app.include_router(user_ssh_router)
 app.include_router(login_events_router)
 app.include_router(inventory_router)
 app.include_router(admin_site_router)
+app.include_router(bulk_router)
 
 
 @app.exception_handler(HTTPException)

@@ -23,6 +23,7 @@ from .user_ssh import router as user_ssh_router
 from .login_events import router as login_events_router
 from .inventory import router as inventory_router
 from .admin_site import router as admin_site_router
+from .bulk import router as bulk_router
 
 __all__ = [
     "auth_router",
@@ -50,4 +51,5 @@ __all__ = [
     "login_events_router",
     "inventory_router",
     "admin_site_router",
+    "bulk_router",
 ]
