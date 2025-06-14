@@ -7,7 +7,7 @@ body {
   background-color: #f8d7da;
 }
 
-.navbar-dark.bg-dark {
+nav.bg-gray-800 {
   background-color: #343a40 !important;
 }
 
