@@ -20,6 +20,7 @@ This application manages network devices, VLANs and configuration backups using 
    ```bash
    pip install -r requirements.txt
    ```
+   This installs all required packages, including `httpx<0.28`.
 4. **Seed the database** with default values. This will create a superuser, system settings, and some sample devices. The `start.sh` script will automatically run these seed commands unless `AUTO_SEED` is disabled, but you can also run them manually:
    ```bash
    python seed_tunables.py
