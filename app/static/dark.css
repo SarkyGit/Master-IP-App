@@ -1,25 +1,28 @@
 body {
-  background-color: #121212;
+  background-color: #181a1b;
   color: #f8f9fa;
 }
 
 .form-control,
 .form-select,
 textarea {
-  background-color: #212529;
+  background-color: #26292b;
   color: #f8f9fa;
   border: 1px solid #6c757d;
+  border-radius: 0.375rem;
 }
 
 .card,
 .table {
-  background-color: #212529;
+  background-color: #26292b;
   color: #f8f9fa;
+  border-radius: 0.5rem;
+  overflow: hidden;
 }
 
 .table thead th {
   color: #ffffff;
-  background-color: #343a40;
+  background-color: #3b4147;
 }
 
 .alert {
@@ -27,8 +30,9 @@ textarea {
 }
 
 .dropdown-menu {
-  background-color: #212529;
+  background-color: #26292b;
   color: #f8f9fa;
+  border-radius: 0.375rem;
 }
 
 .dropdown-item {
@@ -36,7 +40,7 @@ textarea {
 }
 
 .dropdown-item:hover {
-  background-color: #343a40;
+  background-color: #3b4147;
 }
 
 .duplicate {
@@ -58,3 +62,26 @@ textarea {
 .diff_chg { background-color: #78350f; }
 .diff_sub { background-color: #7f1d1d; }
 table.diff { width: 100%; }
+
+/* Override default Tailwind black background */
+.bg-black {
+  background-color: #1f1f1f !important;
+}
+
+.border-gray-700 {
+  border-color: #444 !important;
+}
+
+/* Style plain links as softer buttons */
+a.underline,
+a.text-blue-400 {
+  color: #ffffff;
+  background-color: #3b82f6;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  text-decoration: none;
+}
+a.underline:hover,
+a.text-blue-400:hover {
+  background-color: #2563eb;
+}
