@@ -19,6 +19,7 @@ from app.routes import (
     network_router,
     port_config_templates_router,
     task_views_router,
+    admin_users_router,
     user_pages_router,
     locations_router,
     ssh_tasks_router,
@@ -67,6 +68,7 @@ app.include_router(device_types_router)
 app.include_router(network_router)
 app.include_router(port_config_templates_router)
 app.include_router(task_views_router)
+app.include_router(admin_users_router)
 app.include_router(user_pages_router)
 app.include_router(locations_router)
 app.include_router(ssh_tasks_router)
