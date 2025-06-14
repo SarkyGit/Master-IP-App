@@ -9,6 +9,8 @@ from .models import (
     SystemTunable,
     AuditLog,
     PortConfigTemplate,
+    Tag,
+    DeviceEditLog,
 )
 
 __all__ = [
@@ -22,4 +24,6 @@ __all__ = [
     "SystemTunable",
     "AuditLog",
     "PortConfigTemplate",
+    "Tag",
+    "DeviceEditLog",
 ]

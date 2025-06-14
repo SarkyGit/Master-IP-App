@@ -21,13 +21,17 @@ from app.models.models import (
     DeviceType,
     Location,
     PortConfigTemplate,
+    Tag,
 )
 from app.utils.audit import log_audit
+from app.utils.tags import update_device_complete_tag
+from app.models.models import DeviceEditLog
 
 import asyncssh
 import asyncio
 
 from app.utils.ssh import build_conn_kwargs
+from datetime import datetime
 from puresnmp import Client, PyWrapper, V2C
 from puresnmp.exc import SnmpError
 
@@ -257,8 +261,12 @@ async def create_device(
         on_r1=bool(on_r1) if manufacturer.lower() == "ruckus" else False,
         ssh_credential_id=int(ssh_credential_id) if ssh_credential_id else None,
         snmp_community_id=int(snmp_community_id) if snmp_community_id else None,
+        created_by_id=current_user.id,
     )
     db.add(device)
+    update_device_complete_tag(db, device)
+    db.commit()
+    db.add(DeviceEditLog(device_id=device.id, user_id=current_user.id, changes="created"))
     db.commit()
     return RedirectResponse(url="/devices", status_code=302)
 
@@ -318,6 +326,24 @@ async def update_device(
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
 
+    old = {
+        "hostname": device.hostname,
+        "ip": device.ip,
+        "mac": device.mac,
+        "asset_tag": device.asset_tag,
+        "model": device.model,
+        "manufacturer": device.manufacturer,
+        "device_type_id": device.device_type_id,
+        "location_id": device.location_id,
+        "serial_number": device.serial_number,
+        "on_lasso": device.on_lasso,
+        "on_r1": device.on_r1,
+        "status": device.status,
+        "vlan_id": device.vlan_id,
+        "ssh_credential_id": device.ssh_credential_id,
+        "snmp_community_id": device.snmp_community_id,
+    }
+
     device.hostname = hostname
     device.ip = _format_ip(ip)
     device.mac = mac or None
@@ -334,7 +360,19 @@ async def update_device(
     device.ssh_credential_id = int(ssh_credential_id) if ssh_credential_id else None
     device.snmp_community_id = int(snmp_community_id) if snmp_community_id else None
 
+    device.updated_at = datetime.utcnow()
+    update_device_complete_tag(db, device)
     db.commit()
+
+    changes = []
+    for k, v in old.items():
+        new = getattr(device, k)
+        if v != new:
+            changes.append(f"{k}:{v}->{new}")
+    if changes:
+        db.add(DeviceEditLog(device_id=device.id, user_id=current_user.id, changes="; ".join(changes)))
+        db.commit()
+
     return RedirectResponse(url="/devices", status_code=302)
 
 
@@ -394,6 +432,7 @@ async def pull_device_config(
             # Retrieve the device's running configuration
             result = await conn.run("show running-config", check=False)
             output = result.stdout
+            device.last_seen = datetime.utcnow()
     except Exception as exc:
         log_audit(db, current_user, "debug", device, f"SSH pull error: {exc}")
         return RedirectResponse(
@@ -481,6 +520,7 @@ async def push_device_config(
             session.stdin.write("exit\n")
             await session.wait_closed()
             success = True
+            device.last_seen = datetime.utcnow()
     except Exception as exc:
         success = False
         log_audit(db, current_user, "debug", device, f"SSH push error: {exc}")
@@ -592,6 +632,7 @@ async def push_template_config(
             session.stdin.write("exit\n")
             await session.wait_closed()
             success = True
+            device.last_seen = datetime.utcnow()
     except Exception as exc:
         success = False
         log_audit(db, current_user, "debug", device, f"SSH template push error: {exc}")
@@ -706,6 +747,7 @@ async def port_status(
         alias = await _gather_snmp_table(client, "1.3.6.1.2.1.31.1.1.1.18")
         bridge_ifindex = await _gather_snmp_table(client, "1.3.6.1.2.1.17.1.4.1.2")
         pvids = await _gather_snmp_table(client, "1.3.6.1.2.1.17.7.1.4.5.1.1")
+        device.last_seen = datetime.utcnow()
     except SnmpError as exc:
         log_audit(db, current_user, "debug", device, f"SNMP error: {exc}")
         context = {
@@ -786,6 +828,7 @@ async def port_status(
         "error": None,
         "current_user": current_user,
     }
+    db.commit()
     return templates.TemplateResponse("port_status.html", context)
 
 
@@ -812,6 +855,7 @@ async def port_rates(
         await asyncio.sleep(1)
         in2 = await _gather_snmp_table(client, "1.3.6.1.2.1.31.1.1.1.6")
         out2 = await _gather_snmp_table(client, "1.3.6.1.2.1.31.1.1.1.10")
+        device.last_seen = datetime.utcnow()
     except SnmpError as exc:
         raise HTTPException(status_code=502, detail=f"SNMP error: {exc}")
 
@@ -821,6 +865,7 @@ async def port_rates(
         tx_bps = max(0, out2.get(idx, 0) - out1.get(idx, 0)) * 8
         if name:
             rates[name.strip()] = {"rx_bps": rx_bps, "tx_bps": tx_bps}
+    db.commit()
     return rates
 
 
@@ -858,6 +903,7 @@ async def port_config(
                 f"show running-config interface {port_name}", check=False
             )
             output = result.stdout
+            device.last_seen = datetime.utcnow()
     except Exception as exc:
         log_audit(db, current_user, "debug", device, f"Port config error: {exc}")
         context = {
@@ -902,6 +948,7 @@ async def port_config(
         "error": None,
         "current_user": current_user,
     }
+    db.commit()
     return templates.TemplateResponse("port_config.html", context)
 
 
@@ -990,6 +1037,7 @@ async def apply_port_template(
                 session.stdin.write("exit\n")
                 await session.wait_closed()
                 success = True
+                device.last_seen = datetime.utcnow()
         except Exception as exc:
             log_audit(db, current_user, "debug", device, f"Port template error: {exc}")
             error = str(exc)
@@ -1018,6 +1066,7 @@ async def apply_port_template(
         "error": error,
         "current_user": current_user,
     }
+    db.commit()
     return templates.TemplateResponse("apply_port_template.html", context)
 
 
