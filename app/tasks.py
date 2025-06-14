@@ -29,6 +29,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 QUEUE_INTERVAL = int(os.environ.get("QUEUE_INTERVAL", "60"))
 PORT_HISTORY_RETENTION_DAYS = int(os.environ.get("PORT_HISTORY_RETENTION_DAYS", "60"))
 
+
 async def run_push_queue_once():
     db = SessionLocal()
     queued = db.query(ConfigBackup).filter(ConfigBackup.queued.is_(True)).all()
@@ -67,6 +68,10 @@ def cleanup_port_history():
     db.commit()
     db.close()
 
+
+_queue_worker_task: asyncio.Task | None = None
+
+
 async def queue_worker():
     while True:
         await run_push_queue_once()
@@ -76,7 +81,19 @@ async def queue_worker():
 def start_queue_worker(app):
     @app.on_event("startup")
     async def start_worker():
-        asyncio.create_task(queue_worker())
+        global _queue_worker_task
+        _queue_worker_task = asyncio.create_task(queue_worker())
+
+
+async def stop_queue_worker():
+    global _queue_worker_task
+    if _queue_worker_task:
+        _queue_worker_task.cancel()
+        try:
+            await _queue_worker_task
+        except asyncio.CancelledError:
+            pass
+        _queue_worker_task = None
 
 
 # -------------------- Scheduled Config Pulls --------------------
@@ -139,10 +156,7 @@ async def run_config_pull(device_id: int):
 def schedule_device_config_pull(device: Device):
     """Register or update a scheduled config pull job for the device."""
     job_id = f"config_pull_{device.id}"
-    if (
-        device.site_id is None
-        or device.config_pull_interval == "none"
-    ):
+    if device.site_id is None or device.config_pull_interval == "none":
         try:
             scheduler.remove_job(job_id)
         except Exception:
@@ -266,9 +280,7 @@ async def send_site_summaries():
             continue
 
         body = template.render(site=site, rows=rows, date_sent=datetime.utcnow())
-        success, error = send_email(
-            recipients, f"Config Changes for {site.name}", body
-        )
+        success, error = send_email(recipients, f"Config Changes for {site.name}", body)
 
         log_entry = EmailLog(
             site_id=site.id,
@@ -322,6 +334,11 @@ def start_config_scheduler(app):
             id="snmp_status_poll",
             replace_existing=True,
         )
+
+
+def stop_config_scheduler() -> None:
+    if scheduler.running:
+        scheduler.shutdown(wait=False)
 
 
 # -------------------- SNMP Trap Listener --------------------
@@ -481,4 +498,3 @@ def setup_syslog_listener(app):
     async def _start_syslog():
         if os.environ.get("ENABLE_SYSLOG_LISTENER") == "1":
             await start_syslog_listener()
-

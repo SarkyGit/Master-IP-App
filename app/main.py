@@ -44,6 +44,8 @@ from app.utils.auth import get_current_user
 from app.tasks import (
     start_queue_worker,
     start_config_scheduler,
+    stop_queue_worker,
+    stop_config_scheduler,
     setup_trap_listener,
     setup_syslog_listener,
 )
@@ -54,6 +56,13 @@ start_queue_worker(app)
 start_config_scheduler(app)
 setup_trap_listener(app)
 setup_syslog_listener(app)
+
+
+@app.on_event("shutdown")
+async def shutdown_cleanup():
+    await stop_queue_worker()
+    stop_config_scheduler()
+
 
 static_dir = os.path.join(os.path.dirname(__file__), "static")
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
