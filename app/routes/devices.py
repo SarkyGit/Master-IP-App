@@ -544,17 +544,26 @@ async def _gather_snmp_table(client: PyWrapper, oid: str) -> dict:
 
 
 def _layout_ports(ports: list[dict]) -> list[list[list[dict]]]:
-    """Return port panes of six interfaces arranged two per row."""
+    """Return port panes of six interfaces with odd/even layout.
+
+    Each pane contains up to six interfaces displayed across two rows.  The
+    first row shows the odd-numbered ports from the chunk of six while the
+    second row shows the even-numbered ports.  This mirrors the typical switch
+    layout where ports increment left to right and odd numbers appear above the
+    corresponding even numbers.
+    """
+
     panes: list[list[list[dict]]] = []
     idx = 0
     n = len(ports)
     while idx < n:
         chunk = ports[idx : idx + 6]
-        rows: list[list[dict]] = []
-        for i in range(0, len(chunk), 2):
-            rows.append(chunk[i : i + 2])
-        panes.append(rows)
+        # Arrange odd numbered interfaces on the top row and even on the bottom
+        odd_row = chunk[0::2]
+        even_row = chunk[1::2]
+        panes.append([odd_row, even_row])
         idx += 6
+
     return panes
 
 
