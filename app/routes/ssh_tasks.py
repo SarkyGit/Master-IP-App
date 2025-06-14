@@ -127,6 +127,12 @@ async def port_config_action(device_id: int = Form(...), port_name: str = Form(.
     device = db.query(Device).filter(Device.id == device_id).first()
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
+    if not device.is_active_site_member:
+        raise HTTPException(status_code=403, detail="Device not assigned to My Site")
+    if not device.is_active_site_member:
+        raise HTTPException(status_code=403, detail="Device not assigned to My Site")
+    if not device.is_active_site_member:
+        raise HTTPException(status_code=403, detail="Device not assigned to My Site")
     cred, source = resolve_ssh_credential(db, device, current_user)
     output = ""
     error = None
@@ -246,6 +252,9 @@ async def port_search_action(search: str = Form(...), device_ids: list[int] = Fo
     results = []
     devices = db.query(Device).filter(Device.id.in_(device_ids)).all()
     for device in devices:
+        if not device.is_active_site_member:
+            results.append({"device": device, "output": "", "error": "Not part of My Site", "cred_source": None})
+            continue
         cred, source = resolve_ssh_credential(db, device, current_user)
         output = ""
         error = None
@@ -286,6 +295,9 @@ async def bulk_port_update_action(device_ids: list[int] = Form(...), ports: str 
     ports_list = [p.strip() for p in ports.splitlines() if p.strip()]
     message_parts = []
     for device in devices:
+        if not device.is_active_site_member:
+            message_parts.append(f"{device.hostname}: not in site")
+            continue
         cred, _ = resolve_ssh_credential(db, device, current_user)
         if not cred:
             message_parts.append(f"{device.hostname}: no credentials")

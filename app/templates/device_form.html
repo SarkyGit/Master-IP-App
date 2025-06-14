@@ -104,6 +104,20 @@
       On R1
     </label>
   </div>
+  <div>
+    <label class="inline-flex items-center">
+      <input type="checkbox" name="is_active_site_member" value="1" class="mr-2" {% if device and device.is_active_site_member %}checked{% endif %}>
+      Part of My Site
+    </label>
+  </div>
+  <div>
+    <label class="block">Config Pull Interval</label>
+    <select name="config_pull_interval" class="w-full p-2 text-black">
+      {% for opt in ['none','hourly','daily','weekly'] %}
+      <option value="{{ opt }}" {% if device and device.config_pull_interval == opt %}selected{% endif %}>{{ opt.title() }}</option>
+      {% endfor %}
+    </select>
+  </div>
   <div class="md:col-span-2">
     <button type="submit" class="bg-blue-600 px-4 py-2">Submit</button>
     <a href="/devices" class="ml-2 underline">Cancel</a>

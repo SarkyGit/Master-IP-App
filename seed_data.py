@@ -69,6 +69,8 @@ def main():
                     ssh_credential_id=cred.id,
                     snmp_community_id=snmp.id,
                     location_id=loc.id,
+                    is_active_site_member=True,
+                    config_pull_interval="none",
                 )
                 db.add(device)
             db.commit()

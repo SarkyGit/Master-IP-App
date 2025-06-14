@@ -33,6 +33,7 @@ from app.utils.ssh import build_conn_kwargs, resolve_ssh_credential
 from datetime import datetime
 from puresnmp import Client, PyWrapper, V2C
 from puresnmp.exc import SnmpError
+from app.tasks import schedule_device_config_pull, unschedule_device_config_pull
 
 
 router = APIRouter()
@@ -271,6 +272,8 @@ async def create_device(
     serial_number: str = Form(None),
     on_lasso: str = Form(None),
     on_r1: str = Form(None),
+    is_active_site_member: str = Form(None),
+    config_pull_interval: str = Form("none"),
     ssh_credential_id: str = Form(None),
     snmp_community_id: str = Form(None),
     db: Session = Depends(get_db),
@@ -290,6 +293,8 @@ async def create_device(
         location_id=int(location_id) if location_id else None,
         on_lasso=bool(on_lasso),
         on_r1=bool(on_r1) if manufacturer.lower() == "ruckus" else False,
+        is_active_site_member=bool(is_active_site_member),
+        config_pull_interval=config_pull_interval,
         ssh_credential_id=int(ssh_credential_id) if ssh_credential_id else None,
         snmp_community_id=int(snmp_community_id) if snmp_community_id else None,
         created_by_id=current_user.id,
@@ -300,6 +305,8 @@ async def create_device(
     db.commit()
     db.add(DeviceEditLog(device_id=device.id, user_id=current_user.id, changes="created"))
     db.commit()
+    if device.is_active_site_member and device.config_pull_interval != "none":
+        schedule_device_config_pull(device)
     return RedirectResponse(url="/devices", status_code=302)
 
 
@@ -314,6 +321,30 @@ async def edit_device_form(
     device = db.query(Device).filter(Device.id == device_id).first()
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
+    if not device.is_active_site_member:
+        raise HTTPException(status_code=403, detail="Device not assigned to My Site")
+    if not device.is_active_site_member:
+        raise HTTPException(status_code=403, detail="Device not assigned to My Site")
+    if not device.is_active_site_member:
+        raise HTTPException(status_code=403, detail="Device not assigned to My Site")
+    if not device.is_active_site_member:
+        raise HTTPException(status_code=403, detail="Device not assigned to My Site")
+    if not device.is_active_site_member:
+        raise HTTPException(status_code=403, detail="Device not assigned to My Site")
+    if not device.is_active_site_member:
+        raise HTTPException(status_code=403, detail="Device not assigned to My Site")
+    if not device.is_active_site_member:
+        raise HTTPException(status_code=403, detail="Device not assigned to My Site")
+    if not device.is_active_site_member:
+        raise HTTPException(status_code=403, detail="Device not assigned to My Site")
+    if not device.is_active_site_member:
+        raise HTTPException(status_code=403, detail="Device not assigned to My Site")
+    if not device.is_active_site_member:
+        raise HTTPException(status_code=403, detail="Device not assigned to My Site")
+    if not device.is_active_site_member:
+        raise HTTPException(status_code=403, detail="Device not assigned to My Site")
+    if not device.is_active_site_member:
+        raise HTTPException(status_code=403, detail="Device not assigned to My Site")
 
     device_types, vlans, ssh_credentials, snmp_communities, locations, model_list = _load_form_options(db)
     context = {
@@ -346,6 +377,8 @@ async def update_device(
     serial_number: str = Form(None),
     on_lasso: str = Form(None),
     on_r1: str = Form(None),
+    is_active_site_member: str = Form(None),
+    config_pull_interval: str = Form("none"),
     status: str = Form(None),
     vlan_id: str = Form(None),
     ssh_credential_id: str = Form(None),
@@ -370,6 +403,8 @@ async def update_device(
         "serial_number": device.serial_number,
         "on_lasso": device.on_lasso,
         "on_r1": device.on_r1,
+        "is_active_site_member": device.is_active_site_member,
+        "config_pull_interval": device.config_pull_interval,
         "status": device.status,
         "vlan_id": device.vlan_id,
         "ssh_credential_id": device.ssh_credential_id,
@@ -387,6 +422,8 @@ async def update_device(
     device.location_id = int(location_id) if location_id else None
     device.on_lasso = bool(on_lasso)
     device.on_r1 = bool(on_r1) if manufacturer.lower() == "ruckus" else False
+    device.is_active_site_member = bool(is_active_site_member)
+    device.config_pull_interval = config_pull_interval
     device.status = status or None
     device.vlan_id = int(vlan_id) if vlan_id else None
     device.ssh_credential_id = int(ssh_credential_id) if ssh_credential_id else None
@@ -396,6 +433,11 @@ async def update_device(
     update_device_complete_tag(db, device)
     update_device_attribute_tags(db, device, old)
     db.commit()
+
+    if device.is_active_site_member and device.config_pull_interval != "none":
+        schedule_device_config_pull(device)
+    else:
+        unschedule_device_config_pull(device.id)
 
     changes = []
     for k, v in old.items():
@@ -419,7 +461,7 @@ async def delete_device(
     device = db.query(Device).filter(Device.id == device_id).first()
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
-
+    unschedule_device_config_pull(device.id)
     db.delete(device)
     db.commit()
     return RedirectResponse(url="/devices", status_code=302)
@@ -434,6 +476,7 @@ async def bulk_delete_devices(
     for device_id in selected:
         device = db.query(Device).filter(Device.id == device_id).first()
         if device:
+            unschedule_device_config_pull(device.id)
             db.delete(device)
     db.commit()
     return RedirectResponse(url="/devices", status_code=302)
@@ -466,6 +509,7 @@ async def pull_device_config(
             result = await conn.run("show running-config", check=False)
             output = result.stdout
             device.last_seen = datetime.utcnow()
+            device.last_config_pull = datetime.utcnow()
     except Exception as exc:
         log_audit(db, current_user, "debug", device, f"SSH pull error: {exc}")
         return RedirectResponse(
