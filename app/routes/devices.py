@@ -23,6 +23,7 @@ from app.models.models import (
 from app.utils.audit import log_audit
 
 import asyncssh
+import asyncio
 
 from app.utils.ssh import build_conn_kwargs
 from puresnmp import Client, PyWrapper, V2C
