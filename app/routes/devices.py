@@ -373,6 +373,14 @@ async def edit_device_form(
         model_list,
         sites,
     ) = _load_form_options(db)
+    from app.models.models import SyslogEntry
+    logs = (
+        db.query(SyslogEntry)
+        .filter(SyslogEntry.device_id == device.id)
+        .order_by(SyslogEntry.timestamp.desc())
+        .limit(10)
+        .all()
+    )
     context = {
         "request": request,
         "device": device,
@@ -385,6 +393,7 @@ async def edit_device_form(
         "sites": sites,
         "status_options": STATUS_OPTIONS,
         "form_title": "Edit Device",
+        "syslog_logs": logs,
     }
     return templates.TemplateResponse("device_form.html", context)
 

@@ -17,3 +17,5 @@ gunicorn
 requests
 apscheduler
 reportlab
+syslog-rfc5424-parser
+syslogmp

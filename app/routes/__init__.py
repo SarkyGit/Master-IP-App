@@ -27,6 +27,7 @@ from .bulk import router as bulk_router
 from .reports import router as reports_router
 from .export import router as export_router
 from .snmp_traps import router as snmp_traps_router
+from .syslog import router as syslog_router
 
 __all__ = [
     "auth_router",
@@ -58,4 +59,5 @@ __all__ = [
     "reports_router",
     "export_router",
     "snmp_traps_router",
+    "syslog_router",
 ]

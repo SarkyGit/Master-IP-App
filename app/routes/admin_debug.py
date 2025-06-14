@@ -12,6 +12,10 @@ from app.tasks import (
     stop_trap_listener,
     trap_listener_running,
     TRAP_PORT,
+    start_syslog_listener,
+    stop_syslog_listener,
+    syslog_listener_running,
+    SYSLOG_PORT,
 )
 
 
@@ -48,6 +52,8 @@ async def debug_logs(
         "users": users,
         "trap_running": trap_listener_running(),
         "trap_port": TRAP_PORT,
+        "syslog_running": syslog_listener_running(),
+        "syslog_port": SYSLOG_PORT,
         "current_user": current_user,
     }
     return templates.TemplateResponse("debug_log.html", context)
@@ -76,4 +82,16 @@ async def toggle_trap_listener(
         await start_trap_listener()
     else:
         await stop_trap_listener()
+    return RedirectResponse(url="/admin/debug", status_code=302)
+
+
+@router.post("/admin/debug/syslog-listener")
+async def toggle_syslog_listener(
+    action: str = Form(...),
+    current_user=Depends(require_role("superadmin")),
+):
+    if action == "start":
+        await start_syslog_listener()
+    else:
+        await stop_syslog_listener()
     return RedirectResponse(url="/admin/debug", status_code=302)

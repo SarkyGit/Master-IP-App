@@ -32,6 +32,7 @@ from app.routes import (
     reports_router,
     export_router,
     snmp_traps_router,
+    syslog_router,
 )
 from app.routes.tunables import router as tunables_router
 from app.routes.editor import router as editor_router
@@ -39,13 +40,19 @@ from app.websockets.editor import shell_ws
 from app.websockets.terminal import router as terminal_ws_router
 from app.routes.welcome import router as welcome_router, WELCOME_TEXT
 from app.utils.auth import get_current_user
-from app.tasks import start_queue_worker, start_config_scheduler, setup_trap_listener
+from app.tasks import (
+    start_queue_worker,
+    start_config_scheduler,
+    setup_trap_listener,
+    setup_syslog_listener,
+)
 from app.utils.templates import templates
 
 app = FastAPI()
 start_queue_worker(app)
 start_config_scheduler(app)
 setup_trap_listener(app)
+setup_syslog_listener(app)
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
@@ -85,6 +92,7 @@ app.include_router(bulk_router)
 app.include_router(reports_router)
 app.include_router(export_router)
 app.include_router(snmp_traps_router)
+app.include_router(syslog_router)
 
 
 @app.exception_handler(HTTPException)
