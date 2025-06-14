@@ -18,8 +18,22 @@ async def list_port_configs(request: Request, db: Session = Depends(get_db), cur
 
 
 @router.get("/network/port-configs/new")
-async def new_port_config_form(request: Request, current_user=Depends(require_role("editor"))):
-    context = {"request": request, "template": None, "form_title": "New Port Config", "error": None, "current_user": current_user}
+async def new_port_config_form(
+    request: Request,
+    config_text: str | None = None,
+    name: str | None = None,
+    current_user=Depends(require_role("editor")),
+):
+    template_data = None
+    if config_text is not None or name is not None:
+        template_data = {"name": name or "", "config_text": config_text or ""}
+    context = {
+        "request": request,
+        "template": template_data,
+        "form_title": "New Port Config",
+        "error": None,
+        "current_user": current_user,
+    }
     return templates.TemplateResponse("port_config_template_form.html", context)
 
 
