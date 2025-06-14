@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="text-xl mb-4">Dashboard Defaults for {{ site.name }}</h1>
+<form method="post">
+  {% for name, label in widget_labels.items() %}
+  <div class="mb-2">
+    <label class="inline-flex items-center">
+      <input type="checkbox" name="widgets" value="{{ name }}" class="mr-2" {% if defaults.get(name) %}checked{% endif %}>
+      {{ label }}
+    </label>
+  </div>
+  {% endfor %}
+  <button type="submit" class="bg-blue-600 px-4 py-2">Save</button>
+</form>
+{% endblock %}

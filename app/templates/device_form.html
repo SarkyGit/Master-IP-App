@@ -109,6 +109,12 @@
     </label>
   </div>
   <div>
+    <label class="inline-flex items-center">
+      <input type="checkbox" name="priority" value="1" class="mr-2" {% if device and device.priority %}checked{% endif %}>
+      Priority Device
+    </label>
+  </div>
+  <div>
     <label class="block">Site</label>
     <select name="site_id" class="w-full p-2 text-black">
       <option value="">-- None --</option>

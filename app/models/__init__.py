@@ -20,6 +20,8 @@ from .models import (
     PortStatusHistory,
     Interface,
     InterfaceChangeLog,
+    DashboardWidget,
+    SiteDashboardWidget,
 )
 
 __all__ = [
@@ -44,4 +46,6 @@ __all__ = [
     "PortStatusHistory",
     "Interface",
     "InterfaceChangeLog",
+    "DashboardWidget",
+    "SiteDashboardWidget",
 ]

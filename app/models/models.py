@@ -124,6 +124,7 @@ class Device(Base):
     site_id = Column(Integer, ForeignKey("sites.id"), nullable=True)
     on_lasso = Column(Boolean, default=False)
     on_r1 = Column(Boolean, default=False)
+    priority = Column(Boolean, default=False)
     status = Column(String, nullable=True)
     vlan_id = Column(Integer, ForeignKey("vlans.id"))
     ssh_credential_id = Column(Integer, ForeignKey("ssh_credentials.id"))
@@ -384,3 +385,27 @@ class InterfaceChangeLog(Base):
     user = relationship("User")
     device = relationship("Device")
 
+
+class DashboardWidget(Base):
+    __tablename__ = "dashboard_widgets"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    site_id = Column(Integer, ForeignKey("sites.id"), nullable=True)
+    name = Column(String, nullable=False)
+    position = Column(Integer, default=0)
+    enabled = Column(Boolean, default=True)
+
+    user = relationship("User")
+    site = relationship("Site")
+
+
+class SiteDashboardWidget(Base):
+    __tablename__ = "site_dashboard_widgets"
+
+    site_id = Column(Integer, ForeignKey("sites.id"), primary_key=True)
+    name = Column(String, primary_key=True)
+    position = Column(Integer, default=0)
+    enabled = Column(Boolean, default=True)
+
+    site = relationship("Site")
