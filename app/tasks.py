@@ -3,7 +3,8 @@ from datetime import datetime, timedelta
 from collections import defaultdict
 import asyncssh
 from puresnmp import Client, PyWrapper, V2C
-from aiosnmp import SnmpV2TrapServer, SnmpMessage
+from aiosnmp import SnmpV2TrapServer
+from aiosnmp.snmp import SnmpMessage
 
 from app.utils.ssh import build_conn_kwargs
 from app.utils.device_detect import detect_ssh_platform
