@@ -13,13 +13,15 @@ textarea {
 }
 
 .card,
+.table,
 table {
   background-color: #ffffff;
   color: #212529;
-  border-radius: 0.75rem;
+  border-radius: 1rem;
   overflow: hidden;
   border-collapse: separate;
   border-spacing: 0;
+  border: 1px solid #ced4da;
 }
 
 table thead th {
