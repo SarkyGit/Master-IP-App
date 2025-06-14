@@ -45,6 +45,10 @@ async def terminal_ws(websocket: WebSocket, device_id: int):
             await websocket.send_text("Device not found")
             await websocket.close()
             return
+        if not device.is_active_site_member:
+            await websocket.send_text("Device not assigned to My Site")
+            await websocket.close()
+            return
 
         cred, _ = resolve_ssh_credential(db, device, user)
         if not cred:

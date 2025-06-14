@@ -107,6 +107,15 @@ class Device(Base):
     updated_at = Column(DateTime, default=datetime.utcnow)
     last_seen = Column(DateTime, nullable=True)
 
+    # Indicates if device belongs to the active "My Site" group
+    is_active_site_member = Column(Boolean, default=False)
+
+    # Interval for automated config pulls: 'hourly', 'daily', 'weekly', or 'none'
+    config_pull_interval = Column(String, nullable=False, default="none")
+
+    # Timestamp of the last successful scheduled pull
+    last_config_pull = Column(DateTime, nullable=True)
+
     vlan = relationship("VLAN", back_populates="devices")
     ssh_credential = relationship("SSHCredential", back_populates="devices")
     snmp_community = relationship("SNMPCommunity", back_populates="devices")
