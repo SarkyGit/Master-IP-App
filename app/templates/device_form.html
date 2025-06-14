@@ -37,6 +37,10 @@
     <input type="text" name="manufacturer" value="{{ device.manufacturer if device else '' }}" class="w-full p-2 text-black" required />
   </div>
   <div>
+    <label class="block">Detected Platform</label>
+    <input type="text" name="detected_platform" value="{{ device.detected_platform if device else '' }}" class="w-full p-2 text-black" />
+  </div>
+  <div>
     <label class="block">Device Type</label>
     <select name="device_type_id" class="w-full p-2 text-black" required>
       <option value="">---</option>

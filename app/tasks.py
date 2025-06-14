@@ -4,6 +4,7 @@ from collections import defaultdict
 import asyncssh
 
 from app.utils.ssh import build_conn_kwargs
+from app.utils.device_detect import detect_ssh_platform
 
 from app.utils.db_session import SessionLocal
 from app.models.models import ConfigBackup, Device, Site, SiteMembership, User, AuditLog, EmailLog
@@ -29,6 +30,7 @@ async def run_push_queue_once():
         conn_kwargs = build_conn_kwargs(cred)
         try:
             async with asyncssh.connect(device.ip, **conn_kwargs) as conn:
+                await detect_ssh_platform(db, device, conn)
                 _, session = await conn.create_session(asyncssh.SSHClientProcess)
                 for line in backup.config_text.splitlines():
                     session.stdin.write(line + "\n")
@@ -82,6 +84,7 @@ async def run_config_pull(device_id: int):
     output = ""
     try:
         async with asyncssh.connect(device.ip, **conn_kwargs) as conn:
+            await detect_ssh_platform(db, device, conn)
             result = await conn.run("show running-config", check=False)
             output = result.stdout
             device.last_seen = datetime.utcnow()

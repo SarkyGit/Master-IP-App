@@ -133,6 +133,11 @@ class Device(Base):
     updated_at = Column(DateTime, default=datetime.utcnow)
     last_seen = Column(DateTime, nullable=True)
 
+    # Auto-detection metadata
+    detected_platform = Column(String, nullable=True)
+    detected_via = Column(String, nullable=True)
+    ssh_profile_is_default = Column(Boolean, default=False)
+
     # Interval for automated config pulls: 'hourly', 'daily', 'weekly', or 'none'
     config_pull_interval = Column(String, nullable=False, default="none")
 

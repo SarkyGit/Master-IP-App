@@ -10,6 +10,7 @@ from app.models.models import Device, VLAN, ConfigBackup, PortConfigTemplate
 from app.utils.db_session import get_db
 from app.utils.auth import require_role, get_user_site_ids
 from app.utils.ssh import build_conn_kwargs, resolve_ssh_credential
+from app.utils.device_detect import detect_ssh_platform
 from app.utils.templates import templates
 from app.utils.audit import log_audit
 
@@ -106,6 +107,7 @@ async def bulk_vlan_push_action(
         success = False
         try:
             async with asyncssh.connect(device.ip, **conn_kwargs) as conn:
+                await detect_ssh_platform(db, device, conn, current_user)
                 _, session = await conn.create_session(asyncssh.SSHClientProcess)
                 for line in config_text.splitlines():
                     session.stdin.write(line + "\n")

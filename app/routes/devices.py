@@ -31,6 +31,7 @@ import asyncssh
 import asyncio
 
 from app.utils.ssh import build_conn_kwargs, resolve_ssh_credential
+from app.utils.device_detect import detect_ssh_platform, detect_snmp_platform
 from datetime import datetime
 from puresnmp import Client, PyWrapper, V2C
 from puresnmp.exc import SnmpError
@@ -296,6 +297,7 @@ async def create_device(
     config_pull_interval: str = Form("none"),
     ssh_credential_id: str = Form(None),
     snmp_community_id: str = Form(None),
+    detected_platform: str = Form(None),
     db: Session = Depends(get_db),
     current_user=Depends(require_role("editor")),
 ):
@@ -318,6 +320,7 @@ async def create_device(
         ssh_credential_id=int(ssh_credential_id) if ssh_credential_id else None,
         snmp_community_id=int(snmp_community_id) if snmp_community_id else None,
         created_by_id=current_user.id,
+        ssh_profile_is_default=False,
     )
     db.add(device)
     update_device_complete_tag(db, device)
@@ -418,6 +421,8 @@ async def update_device(
         "vlan_id": device.vlan_id,
         "ssh_credential_id": device.ssh_credential_id,
         "snmp_community_id": device.snmp_community_id,
+        "detected_platform": device.detected_platform,
+        "ssh_profile_is_default": device.ssh_profile_is_default,
     }
 
     device.hostname = hostname
@@ -435,8 +440,14 @@ async def update_device(
     device.config_pull_interval = config_pull_interval
     device.status = status or None
     device.vlan_id = int(vlan_id) if vlan_id else None
+    old_cred = device.ssh_credential_id
     device.ssh_credential_id = int(ssh_credential_id) if ssh_credential_id else None
+    if device.ssh_credential_id != old_cred:
+        device.ssh_profile_is_default = False
     device.snmp_community_id = int(snmp_community_id) if snmp_community_id else None
+    if detected_platform is not None:
+        device.detected_platform = detected_platform or None
+        device.detected_via = "manual override"
 
     device.updated_at = datetime.utcnow()
     update_device_complete_tag(db, device)
@@ -518,6 +529,7 @@ async def pull_device_config(
     output = ""
     try:
         async with asyncssh.connect(device.ip, **conn_kwargs) as conn:
+            await detect_ssh_platform(db, device, conn, current_user)
             # Retrieve the device's running configuration
             result = await conn.run("show running-config", check=False)
             output = result.stdout
@@ -609,6 +621,7 @@ async def push_device_config(
     success = False
     try:
         async with asyncssh.connect(device.ip, **conn_kwargs) as conn:
+            await detect_ssh_platform(db, device, conn, current_user)
             _, session = await conn.create_session(asyncssh.SSHClientProcess)
             for line in config_text.splitlines():
                 session.stdin.write(line + "\n")
@@ -726,6 +739,7 @@ async def push_template_config(
     success = False
     try:
         async with asyncssh.connect(device.ip, **conn_kwargs) as conn:
+            await detect_ssh_platform(db, device, conn, current_user)
             _, session = await conn.create_session(asyncssh.SSHClientProcess)
             for line in snippet.splitlines():
                 session.stdin.write(line + "\n")
@@ -840,6 +854,7 @@ async def port_status(
         return templates.TemplateResponse("port_status.html", context)
 
     client = PyWrapper(Client(device.ip, V2C(profile.community_string)))
+    await detect_snmp_platform(db, device, client, current_user)
     try:
         names = await _gather_snmp_table(client, "1.3.6.1.2.1.31.1.1.1.1")
         descr = await _gather_snmp_table(client, "1.3.6.1.2.1.2.2.1.2")
@@ -950,6 +965,7 @@ async def port_rates(
         raise HTTPException(status_code=400, detail="SNMP profile not set")
 
     client = PyWrapper(Client(device.ip, V2C(profile.community_string)))
+    await detect_snmp_platform(db, device, client, current_user)
     try:
         names = await _gather_snmp_table(client, "1.3.6.1.2.1.31.1.1.1.1")
         in1 = await _gather_snmp_table(client, "1.3.6.1.2.1.31.1.1.1.6")
@@ -1003,6 +1019,7 @@ async def port_config(
     output = ""
     try:
         async with asyncssh.connect(device.ip, **conn_kwargs) as conn:
+            await detect_ssh_platform(db, device, conn, current_user)
             result = await conn.run(
                 f"show running-config interface {port_name}", check=False
             )
@@ -1144,6 +1161,7 @@ async def apply_port_template(
         conn_kwargs = build_conn_kwargs(cred)
         try:
             async with asyncssh.connect(device.ip, **conn_kwargs) as conn:
+                await detect_ssh_platform(db, device, conn, current_user)
                 _, session = await conn.create_session(asyncssh.SSHClientProcess)
                 for line in snippet.splitlines():
                     session.stdin.write(line + "\n")
