@@ -19,6 +19,7 @@ from app.models.models import (
     ConfigBackup,
     AuditLog,
     DeviceType,
+    Location,
     PortConfigTemplate,
 )
 from app.utils.audit import log_audit
@@ -165,7 +166,17 @@ def _load_form_options(db: Session):
     vlans = db.query(VLAN).all()
     ssh_credentials = db.query(SSHCredential).all()
     snmp_communities = db.query(SNMPCommunity).all()
-    return device_types, vlans, ssh_credentials, snmp_communities
+    locations = db.query(Location).all()
+    models = [m[0] for m in db.query(Device.model).filter(Device.model != None).distinct()]
+    return device_types, vlans, ssh_credentials, snmp_communities, locations, models
+
+
+def _format_ip(ip: str) -> str:
+    parts = ip.split('.')
+    padded = [p.zfill(3) if p else '000' for p in parts]
+    while len(padded) < 4:
+        padded.append('000')
+    return '.'.join(padded[:4])
 
 
 def suggest_vlan_from_ip(db: Session, ip: str):
@@ -195,7 +206,7 @@ async def new_device_form(
     current_user=Depends(require_role("editor")),
 ):
     """Render a blank device form."""
-    device_types, vlans, ssh_credentials, snmp_communities = _load_form_options(db)
+    device_types, vlans, ssh_credentials, snmp_communities, locations, model_list = _load_form_options(db)
     context = {
         "request": request,
         "device": None,
@@ -203,6 +214,8 @@ async def new_device_form(
         "vlans": vlans,
         "ssh_credentials": ssh_credentials,
         "snmp_communities": snmp_communities,
+        "locations": locations,
+        "model_list": model_list,
         "status_options": STATUS_OPTIONS,
         "form_title": "New Device",
     }
@@ -219,22 +232,29 @@ async def create_device(
     model: str = Form(None),
     manufacturer: str = Form(...),
     device_type_id: int = Form(...),
-    location: str = Form(None),
+    location_id: str = Form(None),
+    serial_number: str = Form(None),
+    on_lasso: str = Form(None),
+    on_r1: str = Form(None),
     ssh_credential_id: str = Form(None),
     snmp_community_id: str = Form(None),
     db: Session = Depends(get_db),
     current_user=Depends(require_role("editor")),
 ):
     """Create a new device from form data."""
+    formatted_ip = _format_ip(ip)
     device = Device(
         hostname=hostname,
-        ip=ip,
+        ip=formatted_ip,
         mac=mac or None,
         asset_tag=asset_tag or None,
         model=model or None,
         manufacturer=manufacturer,
         device_type_id=device_type_id,
-        location=location or None,
+        serial_number=serial_number or None,
+        location_id=int(location_id) if location_id else None,
+        on_lasso=bool(on_lasso),
+        on_r1=bool(on_r1) if manufacturer.lower() == "ruckus" else False,
         ssh_credential_id=int(ssh_credential_id) if ssh_credential_id else None,
         snmp_community_id=int(snmp_community_id) if snmp_community_id else None,
     )
@@ -255,7 +275,7 @@ async def edit_device_form(
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
 
-    device_types, vlans, ssh_credentials, snmp_communities = _load_form_options(db)
+    device_types, vlans, ssh_credentials, snmp_communities, locations, model_list = _load_form_options(db)
     context = {
         "request": request,
         "device": device,
@@ -263,6 +283,8 @@ async def edit_device_form(
         "vlans": vlans,
         "ssh_credentials": ssh_credentials,
         "snmp_communities": snmp_communities,
+        "locations": locations,
+        "model_list": model_list,
         "status_options": STATUS_OPTIONS,
         "form_title": "Edit Device",
     }
@@ -280,7 +302,10 @@ async def update_device(
     model: str = Form(None),
     manufacturer: str = Form(...),
     device_type_id: int = Form(...),
-    location: str = Form(None),
+    location_id: str = Form(None),
+    serial_number: str = Form(None),
+    on_lasso: str = Form(None),
+    on_r1: str = Form(None),
     status: str = Form(None),
     vlan_id: str = Form(None),
     ssh_credential_id: str = Form(None),
@@ -294,13 +319,16 @@ async def update_device(
         raise HTTPException(status_code=404, detail="Device not found")
 
     device.hostname = hostname
-    device.ip = ip
+    device.ip = _format_ip(ip)
     device.mac = mac or None
     device.asset_tag = asset_tag or None
     device.model = model or None
     device.manufacturer = manufacturer
     device.device_type_id = device_type_id
-    device.location = location or None
+    device.serial_number = serial_number or None
+    device.location_id = int(location_id) if location_id else None
+    device.on_lasso = bool(on_lasso)
+    device.on_r1 = bool(on_r1) if manufacturer.lower() == "ruckus" else False
     device.status = status or None
     device.vlan_id = int(vlan_id) if vlan_id else None
     device.ssh_credential_id = int(ssh_credential_id) if ssh_credential_id else None

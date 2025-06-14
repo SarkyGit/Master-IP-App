@@ -21,7 +21,16 @@
   </div>
   <div>
     <label class="block">Model</label>
-    <input type="text" name="model" value="{{ device.model if device else '' }}" class="w-full p-2 text-black" />
+    <input list="model-list" type="text" name="model" value="{{ device.model if device else '' }}" class="w-full p-2 text-black" />
+    <datalist id="model-list">
+      {% for m in model_list %}
+      <option value="{{ m }}">{{ m }}</option>
+      {% endfor %}
+    </datalist>
+  </div>
+  <div>
+    <label class="block">Serial Number</label>
+    <input type="text" name="serial_number" value="{{ device.serial_number if device else '' }}" class="w-full p-2 text-black" />
   </div>
   <div>
     <label class="block">Manufacturer</label>
@@ -38,7 +47,12 @@
   </div>
   <div>
     <label class="block">Location</label>
-    <input type="text" name="location" value="{{ device.location if device else '' }}" class="w-full p-2 text-black" />
+    <select name="location_id" class="w-full p-2 text-black">
+      <option value="">---</option>
+      {% for loc in locations %}
+      <option value="{{ loc.id }}" {% if device and device.location_id == loc.id %}selected{% endif %}>{{ loc.name }}</option>
+      {% endfor %}
+    </select>
   </div>
   {% if device %}
   <div>
@@ -79,6 +93,18 @@
     </select>
   </div>
   <div>
+    <label class="inline-flex items-center">
+      <input type="checkbox" name="on_lasso" value="1" class="mr-2" {% if device and device.on_lasso %}checked{% endif %}>
+      On Lasso
+    </label>
+  </div>
+  <div>
+    <label class="inline-flex items-center">
+      <input type="checkbox" name="on_r1" value="1" class="mr-2" {% if device and device.on_r1 %}checked{% endif %}>
+      On R1
+    </label>
+  </div>
+  <div>
     <button type="submit" class="bg-blue-600 px-4 py-2">Submit</button>
     <a href="/devices" class="ml-2 underline">Cancel</a>
   </div>
@@ -88,6 +114,19 @@ document.addEventListener('DOMContentLoaded', function () {
   const ipField = document.getElementById('ip-field');
   const vlanField = document.getElementById('vlan-field');
   const note = document.getElementById('vlan-suggestion');
+  const manuField = document.querySelector('input[name="manufacturer"]');
+  const r1Box = document.querySelector('input[name="on_r1"]').closest('div');
+
+  function toggleR1() {
+    if (!manuField) return;
+    const show = manuField.value.trim().toLowerCase() === 'ruckus';
+    r1Box.style.display = show ? 'block' : 'none';
+    if (!show) {
+      r1Box.querySelector('input').checked = false;
+    }
+  }
+  toggleR1();
+  manuField.addEventListener('input', toggleR1);
   
   async function fetchSuggestion() {
     const ip = ipField.value.trim();

@@ -1,5 +1,11 @@
 from app.utils.db_session import SessionLocal
-from app.models.models import DeviceType, SSHCredential, SNMPCommunity, Device
+from app.models.models import (
+    DeviceType,
+    SSHCredential,
+    SNMPCommunity,
+    Device,
+    Location,
+)
 
 
 def main():
@@ -17,6 +23,13 @@ def main():
         if not snmp:
             snmp = SNMPCommunity(name="Home", community_string="homeSNMP", version="v2c")
             db.add(snmp)
+            db.commit()
+
+        # Seed default location
+        loc = db.query(Location).filter_by(name="Main Site").first()
+        if not loc:
+            loc = Location(name="Main Site")
+            db.add(loc)
             db.commit()
 
         # Seed device types
@@ -55,6 +68,7 @@ def main():
                     device_type_id=switch_type.id,
                     ssh_credential_id=cred.id,
                     snmp_community_id=snmp.id,
+                    location_id=loc.id,
                 )
                 db.add(device)
             db.commit()
