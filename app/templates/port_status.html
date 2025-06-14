@@ -10,11 +10,11 @@
   {% for pane in port_panes %}
   <div class="space-y-0.5">
     {% for row in pane %}
-    <div class="grid grid-cols-3 gap-0.5 justify-center">
+    <div class="grid grid-cols-2 gap-0.5 justify-center">
       {% for port in row %}
         <div
           id="port-{{ port.name|replace('/', '-') }}"
-          class="w-40 h-24 flex flex-col items-center justify-center text-xs text-white rounded-md {% if port.oper_status == 'up' %}bg-green-600{% else %}bg-red-600{% endif %}"
+          class="w-20 h-12 flex flex-col items-center justify-center text-xs text-white rounded-md {% if port.oper_status == 'up' %}bg-green-600{% else %}bg-red-600{% endif %}"
           title="{{ port.descr or port.name }}"
         >
           <span>{{ port.name }}</span>
@@ -38,7 +38,7 @@
   {% for port in virtual_ports %}
     <div
       id="port-{{ port.name|replace('/', '-') }}"
-      class="w-40 h-24 flex flex-col items-center justify-center text-xs text-white {% if port.oper_status == 'up' %}bg-green-600{% else %}bg-red-600{% endif %}"
+      class="w-20 h-12 flex flex-col items-center justify-center text-xs text-white {% if port.oper_status == 'up' %}bg-green-600{% else %}bg-red-600{% endif %}"
       title="{{ port.descr or port.name }}"
     >
       <span>{{ port.name }}</span>
