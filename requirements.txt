@@ -21,3 +21,4 @@ syslog-rfc5424-parser
 syslogmp
 
 openpyxl
+httpx<0.28
