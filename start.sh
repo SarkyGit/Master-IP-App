@@ -11,6 +11,7 @@ fi
 
 # Wait for the database to become available
 python wait_for_db.py
+sleep 2
 
 if [ "${AUTO_SEED:-1}" != "0" ] && [ "${AUTO_SEED}" != "false" ]; then
     python seed_tunables.py
