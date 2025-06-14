@@ -15,7 +15,7 @@
   </thead>
   <tbody>
   {% for vlan in vlans %}
-    <tr class="border-t border-white">
+    <tr class="border-t border-gray-700">
       <td class="px-2"><input type="checkbox" name="selected" value="{{ vlan.id }}"></td>
       <td class="px-4 py-2">{{ vlan.tag }}</td>
       <td class="px-4 py-2">{{ vlan.description or '' }}</td>

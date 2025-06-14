@@ -14,7 +14,7 @@
   </thead>
   <tbody>
   {% for tpl in templates %}
-    <tr class="border-t border-white">
+    <tr class="border-t border-gray-700">
       <td class="px-4 py-2">{{ tpl.name }}</td>
       <td class="px-4 py-2">{{ tpl.last_edited.strftime('%Y-%m-%d %H:%M:%S') if tpl.last_edited else '' }}</td>
       <td class="px-4 py-2">{{ tpl.edited_by.email if tpl.edited_by else '' }}</td>
