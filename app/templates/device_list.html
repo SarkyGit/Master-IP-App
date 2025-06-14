@@ -5,6 +5,17 @@
 {% if current_user and current_user.role in ['editor','admin','superadmin'] %}
   <a href="/devices/new" class="underline">Add Device</a>
 {% endif %}
+{% if current_user and current_user.role in ['editor','admin','superadmin'] %}
+  <div class="dropdown d-inline-block ms-2">
+    <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Export
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="dropdown-item" href="/export/inventory.csv">Export to CSV</a></li>
+      <li><a class="dropdown-item" href="/export/inventory.pdf">Export to PDF</a></li>
+    </ul>
+  </div>
+{% endif %}
 {% if current_user and current_user.role == 'superadmin' %}
   <form method="post" action="/admin/run-push-queue" style="display:inline">
     <button type="submit" class="ml-2">🔄 Run Push Queue Now</button>

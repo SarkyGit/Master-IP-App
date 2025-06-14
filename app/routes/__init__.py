@@ -25,6 +25,7 @@ from .inventory import router as inventory_router
 from .admin_site import router as admin_site_router
 from .bulk import router as bulk_router
 from .reports import router as reports_router
+from .export import router as export_router
 
 __all__ = [
     "auth_router",
@@ -54,4 +55,5 @@ __all__ = [
     "admin_site_router",
     "bulk_router",
     "reports_router",
+    "export_router",
 ]
