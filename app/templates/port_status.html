@@ -3,6 +3,17 @@
 {% block content %}
 <h1 class="text-xl mb-2">Port Status for {{ device.hostname }}</h1>
 <a href="/devices" class="underline inline-block mb-4">Back to Devices</a>
+{% if device.last_snmp_check %}
+<p class="mb-4">
+  {% if device.snmp_reachable %}
+    <span class="text-green-400">●</span>
+  {% else %}
+    <span class="text-red-400">●</span>
+  {% endif %}
+  Uptime: {{ device.uptime_seconds | format_uptime }}
+  (checked {{ device.last_snmp_check }})
+</p>
+{% endif %}
 {% if error %}
   <p class="text-red-500 mb-4">{{ error }}</p>
 {% endif %}
