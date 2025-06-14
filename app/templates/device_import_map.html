@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="text-xl mb-4">Map Columns</h1>
+<form method="post" class="space-y-4">
+  <input type="hidden" name="file_data" value="{{ file_data }}" />
+  <input type="hidden" name="site_id" value="{{ site_id }}" />
+  <table class="table-auto mb-4 border">
+    <thead>
+      <tr>
+        {% for col in columns %}<th class="border px-2">{{ col }}</th>{% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in preview %}
+      <tr>
+        {% for cell in row %}<td class="border px-2">{{ cell }}</td>{% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <div>
+    <p>Map each column:</p>
+    {% for col in columns %}
+    <label class="block">{{ col }}
+      <select name="map_{{ loop.index0 }}" class="text-black">
+        {% for f in fields %}
+        <option value="{{ f }}">{{ f }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    {% endfor %}
+  </div>
+  <button type="submit" class="bg-blue-600 px-4 py-2">Next</button>
+</form>
+{% endblock %}

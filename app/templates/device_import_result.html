@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="text-xl mb-4">Import Results</h1>
+<ul class="mb-4">
+  <li>Devices added: {{ added }}</li>
+  <li>Devices skipped: {{ skipped }}</li>
+  <li>Devices updated: {{ updated }}</li>
+</ul>
+{% if errors %}
+<p class="text-red-400">Errors:</p>
+<ul>
+  {% for e in errors %}<li>{{ e }}</li>{% endfor %}
+</ul>
+{% endif %}
+<a href="/devices" class="underline">Return to devices</a>
+{% endblock %}
