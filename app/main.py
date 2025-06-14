@@ -19,6 +19,7 @@ from app.routes import (
     port_config_templates_router,
     task_views_router,
     user_management_router,
+    user_pages_router,
     locations_router,
 )
 from app.routes.tunables import router as tunables_router
@@ -59,6 +60,7 @@ app.include_router(network_router)
 app.include_router(port_config_templates_router)
 app.include_router(task_views_router)
 app.include_router(user_management_router)
+app.include_router(user_pages_router)
 app.include_router(locations_router)
 
 
