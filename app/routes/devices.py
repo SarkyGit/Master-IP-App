@@ -8,6 +8,7 @@ from fastapi import (
 from fastapi.responses import RedirectResponse
 from app.utils.templates import templates
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 
 from app.utils.db_session import get_db
 from app.utils.auth import get_current_user, require_role, user_in_site
@@ -36,6 +37,7 @@ from app.utils.device_detect import detect_ssh_platform, detect_snmp_platform
 from datetime import datetime
 from puresnmp import Client, PyWrapper, V2C
 from puresnmp.exc import SnmpError
+import re
 from app.tasks import schedule_device_config_pull, unschedule_device_config_pull
 
 
@@ -993,6 +995,112 @@ async def port_status(
     }
     db.commit()
     return templates.TemplateResponse("port_status.html", context)
+
+
+@router.get("/devices/{device_id}/port-map")
+async def port_map(
+    device_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("user")),
+):
+    """Render a visual port map for the device."""
+    device = db.query(Device).filter(Device.id == device_id).first()
+    if not device:
+        raise HTTPException(status_code=404, detail="Device not found")
+
+    active_site_id = request.session.get("active_site_id")
+    if active_site_id and device.site_id != active_site_id:
+        raise HTTPException(status_code=403, detail="Device not assigned to your site")
+
+    profile = device.snmp_community
+    ports: list[dict] = []
+    error = None
+    if profile:
+        client = PyWrapper(Client(device.ip, V2C(profile.community_string)))
+        await detect_snmp_platform(db, device, client, current_user)
+        try:
+            names = await _gather_snmp_table(client, "1.3.6.1.2.1.31.1.1.1.1")
+            descr = await _gather_snmp_table(client, "1.3.6.1.2.1.2.2.1.2")
+            oper = await _gather_snmp_table(client, "1.3.6.1.2.1.2.2.1.8")
+            bridge_ifindex = await _gather_snmp_table(client, "1.3.6.1.2.1.17.1.4.1.2")
+            pvids = await _gather_snmp_table(client, "1.3.6.1.2.1.17.7.1.4.5.1.1")
+            alias = await _gather_snmp_table(client, "1.3.6.1.2.1.31.1.1.1.18")
+            device.last_seen = datetime.utcnow()
+        except SnmpError as exc:
+            error = f"SNMP error: {exc}"
+            names = {}
+            descr = {}
+            oper = {}
+            bridge_ifindex = {}
+            pvids = {}
+            alias = {}
+        vlan_map: dict[int, int] = {}
+        for b_idx, ifidx in bridge_ifindex.items():
+            try:
+                vlan_map[int(ifidx)] = int(pvids.get(b_idx, 0))
+            except Exception:
+                continue
+        for idx in sorted(names):
+            name = (names.get(idx) or "").strip()
+            if not name:
+                continue
+            ports.append(
+                {
+                    "name": name,
+                    "number": int(re.findall(r"(\d+)$", name)[0]) if re.findall(r"(\d+)$", name) else None,
+                    "status": "up" if oper.get(idx) == 1 else "down",
+                    "vlan": vlan_map.get(idx),
+                    "poe": None,
+                    "descr": alias.get(idx) or descr.get(idx) or name,
+                }
+            )
+    if not ports:
+        # Fallback to latest history entries if SNMP unavailable
+        subq = (
+            db.query(
+                PortStatusHistory.interface_name,
+                func.max(PortStatusHistory.timestamp).label("ts"),
+            )
+            .filter(PortStatusHistory.device_id == device.id)
+            .group_by(PortStatusHistory.interface_name)
+            .subquery()
+        )
+        rows = (
+            db.query(PortStatusHistory)
+            .join(
+                subq,
+                (PortStatusHistory.interface_name == subq.c.interface_name)
+                & (PortStatusHistory.timestamp == subq.c.ts),
+            )
+            .all()
+        )
+        for row in rows:
+            name = row.interface_name
+            ports.append(
+                {
+                    "name": name,
+                    "number": int(re.findall(r"(\d+)$", name)[0]) if re.findall(r"(\d+)$", name) else None,
+                    "status": row.oper_status,
+                    "vlan": None,
+                    "poe": row.poe_draw,
+                    "descr": name,
+                }
+            )
+
+    ports.sort(key=lambda p: (p["number"] if p["number"] is not None else 0))
+    row_size = 12 if len(ports) <= 24 else 24
+    rows = [ports[:row_size], ports[row_size: row_size * 2]]
+
+    context = {
+        "request": request,
+        "device": device,
+        "rows": rows,
+        "error": error,
+        "current_user": current_user,
+    }
+    db.commit()
+    return templates.TemplateResponse("port_map.html", context)
 
 
 @router.get("/api/devices/{device_id}/port-rates")
