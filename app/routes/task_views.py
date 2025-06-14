@@ -22,7 +22,10 @@ import io
 import urllib.parse
 import gspread
 from google.oauth2.service_account import Credentials
-from app.utils.tags import update_device_complete_tag
+from app.utils.tags import (
+    update_device_complete_tag,
+    update_device_attribute_tags,
+)
 
 
 
@@ -275,6 +278,7 @@ async def save_tags(
                 dev.tags.remove(t)
         dev.tags.extend(manual)
         update_device_complete_tag(db, dev)
+        update_device_attribute_tags(db, dev)
     db.commit()
     return RedirectResponse(url="/tasks/edit-tags", status_code=302)
 
