@@ -26,6 +26,7 @@ from app.routes import (
     user_ssh_router,
     login_events_router,
     inventory_router,
+    admin_site_router,
 )
 from app.routes.tunables import router as tunables_router
 from app.routes.editor import router as editor_router
@@ -72,6 +73,7 @@ app.include_router(ip_bans_router)
 app.include_router(user_ssh_router)
 app.include_router(login_events_router)
 app.include_router(inventory_router)
+app.include_router(admin_site_router)
 
 
 @app.exception_handler(HTTPException)
@@ -104,4 +106,3 @@ async def read_root(request: Request, current_user=Depends(get_current_user)):
 @app.websocket("/ws/editor")
 async def editor_ws(websocket: WebSocket, file: str = "/etc/hosts"):
     await shell_ws(websocket, file)
-

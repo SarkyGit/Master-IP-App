@@ -5,7 +5,7 @@ from fastapi import Request, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.utils.db_session import get_db
-from app.models.models import User
+from app.models.models import User, Site, SiteMembership
 
 
 ROLE_CHOICES = {"viewer", "user", "editor", "admin", "superadmin"}
@@ -22,19 +22,13 @@ def verify_password(password: str, hashed_password: str) -> bool:
     return get_password_hash(password) == hashed_password
 
 
-def get_current_user(
-    request: Request, db: Session = Depends(get_db)
-) -> Optional[User]:
+def get_current_user(request: Request, db: Session = Depends(get_db)) -> Optional[User]:
     """Retrieve the currently logged-in user from the session."""
     user_id = request.session.get("user_id")
     if not user_id:
         return None
 
-    return (
-        db.query(User)
-        .filter(User.id == user_id, User.is_active.is_(True))
-        .first()
-    )
+    return db.query(User).filter(User.id == user_id, User.is_active.is_(True)).first()
 
 
 def require_role(minimum_role: str) -> Callable[[User], User]:
@@ -44,12 +38,37 @@ def require_role(minimum_role: str) -> Callable[[User], User]:
         if not current_user:
             raise HTTPException(status_code=401, detail="Not authenticated")
 
-        if ROLE_HIERARCHY.index(current_user.role) < ROLE_HIERARCHY.index(
-            minimum_role
-        ):
+        if ROLE_HIERARCHY.index(current_user.role) < ROLE_HIERARCHY.index(minimum_role):
             raise HTTPException(status_code=403, detail="Insufficient role")
 
         return current_user
 
     return dependency
 
+
+def get_user_site_ids(db: Session, user: User) -> list[int]:
+    """Return site IDs that the user belongs to."""
+    if user.role == "superadmin":
+        return [s.id for s in db.query(Site.id).all()]
+    return [
+        m[0]
+        for m in db.query(SiteMembership.site_id)
+        .filter(SiteMembership.user_id == user.id)
+        .all()
+    ]
+
+
+def user_in_site(db: Session, user: User, site_id: int | None) -> bool:
+    if site_id is None:
+        return False
+    if user.role == "superadmin":
+        return True
+    return (
+        db.query(SiteMembership)
+        .filter(
+            SiteMembership.user_id == user.id,
+            SiteMembership.site_id == site_id,
+        )
+        .first()
+        is not None
+    )

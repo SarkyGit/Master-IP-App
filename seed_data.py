@@ -5,6 +5,7 @@ from app.models.models import (
     SNMPCommunity,
     Device,
     Location,
+    Site,
 )
 
 
@@ -21,7 +22,9 @@ def main():
         # Seed SNMP community
         snmp = db.query(SNMPCommunity).filter_by(name="Home").first()
         if not snmp:
-            snmp = SNMPCommunity(name="Home", community_string="homeSNMP", version="v2c")
+            snmp = SNMPCommunity(
+                name="Home", community_string="homeSNMP", version="v2c"
+            )
             db.add(snmp)
             db.commit()
 
@@ -30,6 +33,12 @@ def main():
         if not loc:
             loc = Location(name="Main Site", location_type="Fixed")
             db.add(loc)
+            db.commit()
+
+        site = db.query(Site).filter_by(name="Main Site").first()
+        if not site:
+            site = Site(name="Main Site", description="Default site")
+            db.add(site)
             db.commit()
 
         # Seed device types
@@ -69,7 +78,7 @@ def main():
                     ssh_credential_id=cred.id,
                     snmp_community_id=snmp.id,
                     location_id=loc.id,
-                    is_active_site_member=True,
+                    site_id=site.id,
                     config_pull_interval="none",
                 )
                 db.add(device)

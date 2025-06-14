@@ -10,7 +10,7 @@ from app.utils.templates import templates
 from sqlalchemy.orm import Session
 
 from app.utils.db_session import get_db
-from app.utils.auth import get_current_user, require_role
+from app.utils.auth import get_current_user, require_role, user_in_site
 from app.models.models import (
     Device,
     VLAN,
@@ -19,6 +19,7 @@ from app.models.models import (
     ConfigBackup,
     DeviceType,
     Location,
+    Site,
     PortConfigTemplate,
     UserSSHCredential,
 )
@@ -41,6 +42,7 @@ router = APIRouter()
 # Basic status options for dropdown menus
 STATUS_OPTIONS = ["active", "inactive", "maintenance"]
 import os
+
 MAX_BACKUPS = int(os.environ.get("MAX_BACKUPS", "10"))
 # Available configuration templates for push-config form
 TEMPLATE_OPTIONS = [
@@ -200,19 +202,28 @@ def _load_form_options(db: Session):
     ssh_credentials = db.query(SSHCredential).all()
     snmp_communities = db.query(SNMPCommunity).all()
     locations = db.query(Location).all()
+    sites = db.query(Site).all()
     models = [
         m[0]
         for m in db.query(Device.model).filter(Device.model.is_not(None)).distinct()
     ]
-    return device_types, vlans, ssh_credentials, snmp_communities, locations, models
+    return (
+        device_types,
+        vlans,
+        ssh_credentials,
+        snmp_communities,
+        locations,
+        models,
+        sites,
+    )
 
 
 def _format_ip(ip: str) -> str:
-    parts = ip.split('.')
-    padded = [p.zfill(3) if p else '000' for p in parts]
+    parts = ip.split(".")
+    padded = [p.zfill(3) if p else "000" for p in parts]
     while len(padded) < 4:
-        padded.append('000')
-    return '.'.join(padded[:4])
+        padded.append("000")
+    return ".".join(padded[:4])
 
 
 def suggest_vlan_from_ip(db: Session, ip: str):
@@ -242,7 +253,15 @@ async def new_device_form(
     current_user=Depends(require_role("editor")),
 ):
     """Render a blank device form."""
-    device_types, vlans, ssh_credentials, snmp_communities, locations, model_list = _load_form_options(db)
+    (
+        device_types,
+        vlans,
+        ssh_credentials,
+        snmp_communities,
+        locations,
+        model_list,
+        sites,
+    ) = _load_form_options(db)
     context = {
         "request": request,
         "device": None,
@@ -252,6 +271,7 @@ async def new_device_form(
         "snmp_communities": snmp_communities,
         "locations": locations,
         "model_list": model_list,
+        "sites": sites,
         "status_options": STATUS_OPTIONS,
         "form_title": "New Device",
     }
@@ -272,7 +292,7 @@ async def create_device(
     serial_number: str = Form(None),
     on_lasso: str = Form(None),
     on_r1: str = Form(None),
-    is_active_site_member: str = Form(None),
+    site_id: str = Form(None),
     config_pull_interval: str = Form("none"),
     ssh_credential_id: str = Form(None),
     snmp_community_id: str = Form(None),
@@ -293,7 +313,7 @@ async def create_device(
         location_id=int(location_id) if location_id else None,
         on_lasso=bool(on_lasso),
         on_r1=bool(on_r1) if manufacturer.lower() == "ruckus" else False,
-        is_active_site_member=bool(is_active_site_member),
+        site_id=int(site_id) if site_id else None,
         config_pull_interval=config_pull_interval,
         ssh_credential_id=int(ssh_credential_id) if ssh_credential_id else None,
         snmp_community_id=int(snmp_community_id) if snmp_community_id else None,
@@ -303,9 +323,11 @@ async def create_device(
     update_device_complete_tag(db, device)
     update_device_attribute_tags(db, device)
     db.commit()
-    db.add(DeviceEditLog(device_id=device.id, user_id=current_user.id, changes="created"))
+    db.add(
+        DeviceEditLog(device_id=device.id, user_id=current_user.id, changes="created")
+    )
     db.commit()
-    if device.is_active_site_member and device.config_pull_interval != "none":
+    if device.site_id is not None and device.config_pull_interval != "none":
         schedule_device_config_pull(device)
     return RedirectResponse(url="/devices", status_code=302)
 
@@ -321,32 +343,18 @@ async def edit_device_form(
     device = db.query(Device).filter(Device.id == device_id).first()
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
-    if not device.is_active_site_member:
-        raise HTTPException(status_code=403, detail="Device not assigned to My Site")
-    if not device.is_active_site_member:
-        raise HTTPException(status_code=403, detail="Device not assigned to My Site")
-    if not device.is_active_site_member:
-        raise HTTPException(status_code=403, detail="Device not assigned to My Site")
-    if not device.is_active_site_member:
-        raise HTTPException(status_code=403, detail="Device not assigned to My Site")
-    if not device.is_active_site_member:
-        raise HTTPException(status_code=403, detail="Device not assigned to My Site")
-    if not device.is_active_site_member:
-        raise HTTPException(status_code=403, detail="Device not assigned to My Site")
-    if not device.is_active_site_member:
-        raise HTTPException(status_code=403, detail="Device not assigned to My Site")
-    if not device.is_active_site_member:
-        raise HTTPException(status_code=403, detail="Device not assigned to My Site")
-    if not device.is_active_site_member:
-        raise HTTPException(status_code=403, detail="Device not assigned to My Site")
-    if not device.is_active_site_member:
-        raise HTTPException(status_code=403, detail="Device not assigned to My Site")
-    if not device.is_active_site_member:
-        raise HTTPException(status_code=403, detail="Device not assigned to My Site")
-    if not device.is_active_site_member:
-        raise HTTPException(status_code=403, detail="Device not assigned to My Site")
+    if not user_in_site(db, current_user, device.site_id):
+        raise HTTPException(status_code=403, detail="Device not assigned to your site")
 
-    device_types, vlans, ssh_credentials, snmp_communities, locations, model_list = _load_form_options(db)
+    (
+        device_types,
+        vlans,
+        ssh_credentials,
+        snmp_communities,
+        locations,
+        model_list,
+        sites,
+    ) = _load_form_options(db)
     context = {
         "request": request,
         "device": device,
@@ -356,6 +364,7 @@ async def edit_device_form(
         "snmp_communities": snmp_communities,
         "locations": locations,
         "model_list": model_list,
+        "sites": sites,
         "status_options": STATUS_OPTIONS,
         "form_title": "Edit Device",
     }
@@ -377,7 +386,7 @@ async def update_device(
     serial_number: str = Form(None),
     on_lasso: str = Form(None),
     on_r1: str = Form(None),
-    is_active_site_member: str = Form(None),
+    site_id: str = Form(None),
     config_pull_interval: str = Form("none"),
     status: str = Form(None),
     vlan_id: str = Form(None),
@@ -403,7 +412,7 @@ async def update_device(
         "serial_number": device.serial_number,
         "on_lasso": device.on_lasso,
         "on_r1": device.on_r1,
-        "is_active_site_member": device.is_active_site_member,
+        "site_id": device.site_id,
         "config_pull_interval": device.config_pull_interval,
         "status": device.status,
         "vlan_id": device.vlan_id,
@@ -422,7 +431,7 @@ async def update_device(
     device.location_id = int(location_id) if location_id else None
     device.on_lasso = bool(on_lasso)
     device.on_r1 = bool(on_r1) if manufacturer.lower() == "ruckus" else False
-    device.is_active_site_member = bool(is_active_site_member)
+    device.site_id = int(site_id) if site_id else None
     device.config_pull_interval = config_pull_interval
     device.status = status or None
     device.vlan_id = int(vlan_id) if vlan_id else None
@@ -434,7 +443,7 @@ async def update_device(
     update_device_attribute_tags(db, device, old)
     db.commit()
 
-    if device.is_active_site_member and device.config_pull_interval != "none":
+    if device.site_id is not None and device.config_pull_interval != "none":
         schedule_device_config_pull(device)
     else:
         unschedule_device_config_pull(device.id)
@@ -445,7 +454,11 @@ async def update_device(
         if v != new:
             changes.append(f"{k}:{v}->{new}")
     if changes:
-        db.add(DeviceEditLog(device_id=device.id, user_id=current_user.id, changes="; ".join(changes)))
+        db.add(
+            DeviceEditLog(
+                device_id=device.id, user_id=current_user.id, changes="; ".join(changes)
+            )
+        )
         db.commit()
 
     return RedirectResponse(url="/devices", status_code=302)
@@ -1116,7 +1129,11 @@ async def apply_port_template(
     device = db.query(Device).filter(Device.id == device_id).first()
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
-    tpl = db.query(PortConfigTemplate).filter(PortConfigTemplate.id == template_id).first()
+    tpl = (
+        db.query(PortConfigTemplate)
+        .filter(PortConfigTemplate.id == template_id)
+        .first()
+    )
     if not tpl:
         raise HTTPException(status_code=404, detail="Template not found")
     snippet = tpl.config_text.replace("{interface}", port_name)

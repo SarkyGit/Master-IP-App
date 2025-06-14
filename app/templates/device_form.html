@@ -105,10 +105,13 @@
     </label>
   </div>
   <div>
-    <label class="inline-flex items-center">
-      <input type="checkbox" name="is_active_site_member" value="1" class="mr-2" {% if device and device.is_active_site_member %}checked{% endif %}>
-      Part of My Site
-    </label>
+    <label class="block">Site</label>
+    <select name="site_id" class="w-full p-2 text-black">
+      <option value="">-- None --</option>
+      {% for site in sites %}
+      <option value="{{ site.id }}" {% if device and device.site_id == site.id %}selected{% endif %}>{{ site.name }}</option>
+      {% endfor %}
+    </select>
   </div>
   <div>
     <label class="block">Config Pull Interval</label>

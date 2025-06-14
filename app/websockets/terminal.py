@@ -11,7 +11,7 @@ from app.utils.ssh import build_conn_kwargs
 
 from app.utils.db_session import SessionLocal
 from app.models.models import Device, User
-from app.utils.auth import ROLE_HIERARCHY
+from app.utils.auth import ROLE_HIERARCHY, user_in_site
 
 router = APIRouter()
 INACTIVITY_TIMEOUT = int(os.environ.get("SSH_TIMEOUT", "900"))
@@ -26,15 +26,15 @@ async def terminal_ws(websocket: WebSocket, device_id: int):
     log = logging.getLogger(__name__)
     log.info("WebSocket terminal connection opened for device %s", device_id)
     try:
-        user_id = websocket.session.get("user_id") if hasattr(websocket, "session") else None
+        user_id = (
+            websocket.session.get("user_id") if hasattr(websocket, "session") else None
+        )
         if not user_id:
             await websocket.close(code=1008)
             return
 
         user = (
-            db.query(User)
-            .filter(User.id == user_id, User.is_active.is_(True))
-            .first()
+            db.query(User).filter(User.id == user_id, User.is_active.is_(True)).first()
         )
         if not user or ROLE_HIERARCHY.index(user.role) < ROLE_HIERARCHY.index("editor"):
             await websocket.close(code=1008)
@@ -45,8 +45,8 @@ async def terminal_ws(websocket: WebSocket, device_id: int):
             await websocket.send_text("Device not found")
             await websocket.close()
             return
-        if not device.is_active_site_member:
-            await websocket.send_text("Device not assigned to My Site")
+        if not user_in_site(db, user, device.site_id):
+            await websocket.send_text("Device not assigned to your site")
             await websocket.close()
             return
 
@@ -92,7 +92,9 @@ async def terminal_ws(websocket: WebSocket, device_id: int):
                             await asyncio.sleep(30)
                             if time.monotonic() - last_msg > INACTIVITY_TIMEOUT:
                                 try:
-                                    await websocket.send_text("\u26A0\uFE0F Session expired due to inactivity")
+                                    await websocket.send_text(
+                                        "\u26a0\ufe0f Session expired due to inactivity"
+                                    )
                                 except Exception:
                                     pass
                                 try:
@@ -110,7 +112,9 @@ async def terminal_ws(websocket: WebSocket, device_id: int):
                     asyncio.create_task(ssh_to_ws()),
                     asyncio.create_task(inactivity_checker()),
                 ]
-                done, pending = await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
+                done, pending = await asyncio.wait(
+                    tasks, return_when=asyncio.FIRST_COMPLETED
+                )
                 for task in pending:
                     task.cancel()
         except WebSocketDisconnect:

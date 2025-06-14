@@ -13,6 +13,7 @@ from sqlalchemy import Table
 
 from app.utils.database import Base
 
+
 class VLAN(Base):
     __tablename__ = "vlans"
 
@@ -66,6 +67,30 @@ class DeviceType(Base):
     devices = relationship("Device", back_populates="device_type")
 
 
+class Site(Base):
+    __tablename__ = "sites"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String, unique=True, nullable=False)
+    description = Column(Text, nullable=True)
+    created_by_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    created_by = relationship("User")
+    devices = relationship("Device", back_populates="site")
+    memberships = relationship("SiteMembership", back_populates="site")
+
+
+class SiteMembership(Base):
+    __tablename__ = "site_memberships"
+
+    user_id = Column(Integer, ForeignKey("users.id"), primary_key=True)
+    site_id = Column(Integer, ForeignKey("sites.id"), primary_key=True)
+
+    user = relationship("User", back_populates="site_memberships")
+    site = relationship("Site", back_populates="memberships")
+
+
 device_tags = Table(
     "device_tags",
     Base.metadata,
@@ -96,6 +121,7 @@ class Device(Base):
     serial_number = Column(String, nullable=True)
     device_type_id = Column(Integer, ForeignKey("device_types.id"), nullable=False)
     location_id = Column(Integer, ForeignKey("locations.id"), nullable=True)
+    site_id = Column(Integer, ForeignKey("sites.id"), nullable=True)
     on_lasso = Column(Boolean, default=False)
     on_r1 = Column(Boolean, default=False)
     status = Column(String, nullable=True)
@@ -106,9 +132,6 @@ class Device(Base):
     created_by_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     updated_at = Column(DateTime, default=datetime.utcnow)
     last_seen = Column(DateTime, nullable=True)
-
-    # Indicates if device belongs to the active "My Site" group
-    is_active_site_member = Column(Boolean, default=False)
 
     # Interval for automated config pulls: 'hourly', 'daily', 'weekly', or 'none'
     config_pull_interval = Column(String, nullable=False, default="none")
@@ -121,6 +144,7 @@ class Device(Base):
     snmp_community = relationship("SNMPCommunity", back_populates="devices")
     device_type = relationship("DeviceType", back_populates="devices")
     location_ref = relationship("Location", back_populates="devices")
+    site = relationship("Site", back_populates="devices")
     created_by = relationship("User", foreign_keys=[created_by_id])
     backups = relationship(
         "ConfigBackup",
@@ -161,6 +185,8 @@ class User(Base):
     role = Column(String, nullable=False, default="viewer")
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
+
+    site_memberships = relationship("SiteMembership", back_populates="user")
 
 
 class UserSSHCredential(Base):
@@ -234,6 +260,7 @@ class DeviceEditLog(Base):
     device = relationship("Device", back_populates="edit_logs")
     user = relationship("User")
 
+
 class BannedIP(Base):
     __tablename__ = "banned_ips"
 
@@ -256,4 +283,3 @@ class LoginEvent(Base):
     location = Column(String, nullable=True)
 
     user = relationship("User")
-
