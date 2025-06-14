@@ -700,6 +700,41 @@ async def port_status(
     return templates.TemplateResponse("port_status.html", context)
 
 
+@router.get("/api/devices/{device_id}/port-rates")
+async def port_rates(
+    device_id: int,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("user")),
+):
+    """Return current RX/TX rates for each interface."""
+    device = db.query(Device).filter(Device.id == device_id).first()
+    if not device:
+        raise HTTPException(status_code=404, detail="Device not found")
+
+    profile = device.snmp_community
+    if not profile:
+        raise HTTPException(status_code=400, detail="SNMP profile not set")
+
+    client = PyWrapper(Client(device.ip, V2C(profile.community_string)))
+    try:
+        names = await _gather_snmp_table(client, "1.3.6.1.2.1.31.1.1.1.1")
+        in1 = await _gather_snmp_table(client, "1.3.6.1.2.1.31.1.1.1.6")
+        out1 = await _gather_snmp_table(client, "1.3.6.1.2.1.31.1.1.1.10")
+        await asyncio.sleep(1)
+        in2 = await _gather_snmp_table(client, "1.3.6.1.2.1.31.1.1.1.6")
+        out2 = await _gather_snmp_table(client, "1.3.6.1.2.1.31.1.1.1.10")
+    except SnmpError as exc:
+        raise HTTPException(status_code=502, detail=f"SNMP error: {exc}")
+
+    rates: dict[str, dict[str, float]] = {}
+    for idx, name in names.items():
+        rx_bps = max(0, in2.get(idx, 0) - in1.get(idx, 0)) * 8
+        tx_bps = max(0, out2.get(idx, 0) - out1.get(idx, 0)) * 8
+        if name:
+            rates[name.strip()] = {"rx_bps": rx_bps, "tx_bps": tx_bps}
+    return rates
+
+
 @router.get("/devices/{device_id}/ports/{port_name:path}/config")
 async def port_config(
     device_id: int,
