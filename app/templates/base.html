@@ -68,9 +68,14 @@
                   <li><a class="dropdown-item" href="/ssh/port-search">Port Search</a></li>
                   <li><a class="dropdown-item" href="/ssh/bulk-port-update">Bulk Port Update</a></li>
                   <li><a class="dropdown-item" href="/bulk/vlan-push">VLAN Bulk Push</a></li>
-                  <li><a class="dropdown-item" href="/ssh/netbird-connect">Initiate Netbird Connection</a></li>
+                <li><a class="dropdown-item" href="/ssh/netbird-connect">Initiate Netbird Connection</a></li>
                 </ul>
               </li>
+              {% if current_user and current_user.role in ['editor','admin','superadmin'] %}
+              <li class="nav-item">
+                <a class="nav-link" href="/bulk/device-import">Bulk Add Devices</a>
+              </li>
+              {% endif %}
             </ul>
             <div class="d-flex align-items-center">
               {% if current_user %}
@@ -91,6 +96,7 @@
                     <li><a class="dropdown-item" href="/device-types">Device Types</a></li>
                     <li><a class="dropdown-item" href="/admin/tags">Tag Manager</a></li>
                     <li><a class="dropdown-item" href="/admin/locations">Locations</a></li>
+                    <li><a class="dropdown-item" href="/bulk/device-import">Device Import</a></li>
                     <li><a class="dropdown-item" href="/admin/audit">Audit Log</a></li>
                     <li><a class="dropdown-item" href="/admin/ip-bans">IP Bans</a></li>
                     <li><a class="dropdown-item" href="/admin/users">User Management</a></li>
@@ -100,6 +106,7 @@
                     <li><a class="dropdown-item" href="/admin/snmp">SNMP Credentials</a></li>
                     <li><a class="dropdown-item" href="/device-types">Device Types</a></li>
                     <li><a class="dropdown-item" href="/admin/locations">Locations</a></li>
+                    <li><a class="dropdown-item" href="/bulk/device-import">Device Import</a></li>
                     {% endif %}
                   </ul>
                 </div>

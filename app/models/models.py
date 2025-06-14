@@ -309,6 +309,7 @@ class EmailLog(Base):
 
     site = relationship("Site")
 
+
 class PortStatusHistory(Base):
     __tablename__ = "port_status_history"
 
@@ -407,4 +408,20 @@ class SiteDashboardWidget(Base):
     position = Column(Integer, default=0)
     enabled = Column(Boolean, default=True)
 
+    site = relationship("Site")
+
+
+class ImportLog(Base):
+    __tablename__ = "import_logs"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    timestamp = Column(DateTime, default=datetime.utcnow)
+    file_name = Column(String, nullable=False)
+    device_count = Column(Integer, default=0)
+    site_id = Column(Integer, ForeignKey("sites.id"), nullable=True)
+    notes = Column(Text, nullable=True)
+    success = Column(Boolean, default=True)
+
+    user = relationship("User")
     site = relationship("Site")
