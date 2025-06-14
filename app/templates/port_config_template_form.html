@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-xl mb-4">{{ form_title }}</h1>
+<form method="post" class="space-y-4">
+  <div>
+    <label class="block">Name</label>
+    <input type="text" name="name" value="{{ template.name if template else '' }}" class="w-full p-2 text-black" required />
+  </div>
+  <div>
+    <label class="block">Config Text</label>
+    <textarea name="config_text" rows="5" class="w-full p-2 text-black" required>{{ template.config_text if template else '' }}</textarea>
+  </div>
+  {% if error %}<p class="text-red-500">{{ error }}</p>{% endif %}
+  <div>
+    <button type="submit" class="bg-blue-600 px-4 py-2">Submit</button>
+    <a href="/network/port-configs" class="ml-2 underline">Cancel</a>
+  </div>
+</form>
+{% endblock %}

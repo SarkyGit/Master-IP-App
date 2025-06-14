@@ -15,6 +15,7 @@ from app.routes import (
     admin_debug_router,
     device_types_router,
     network_router,
+    port_config_templates_router,
     task_views_router,
     user_management_router,
 )
@@ -50,6 +51,7 @@ app.include_router(terminal_ws_router)
 app.include_router(welcome_router)
 app.include_router(device_types_router)
 app.include_router(network_router)
+app.include_router(port_config_templates_router)
 app.include_router(task_views_router)
 app.include_router(user_management_router)
 

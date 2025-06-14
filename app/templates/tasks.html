@@ -22,4 +22,14 @@
 {% else %}
 <p>No queued tasks.</p>
 {% endif %}
+<hr class="my-4">
+<h2 class="text-lg mb-2">Live Session</h2>
+<form method="get" action="/tasks/live-session" class="space-x-2">
+  <select name="device_id" class="p-1 text-black">
+    {% for dev in devices %}
+    <option value="{{ dev.id }}">{{ dev.hostname }} ({{ dev.ip }})</option>
+    {% endfor %}
+  </select>
+  <button type="submit" class="bg-blue-600 px-3 py-1">Connect</button>
+</form>
 {% endblock %}

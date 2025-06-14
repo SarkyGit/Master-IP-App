@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-xl mb-4">Port Config Templates</h1>
+<a href="/network/port-configs/new" class="underline">Add Template</a>
+<table class="min-w-full bg-black mt-4">
+  <thead>
+    <tr>
+      <th class="px-4 py-2 text-left">Name</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for tpl in templates %}
+    <tr class="border-t border-white">
+      <td class="px-4 py-2">{{ tpl.name }}</td>
+      <td class="px-4 py-2">
+        <a href="/network/port-configs/{{ tpl.id }}/edit" class="text-blue-400 underline mr-2">Edit</a>
+        <form method="post" action="/network/port-configs/{{ tpl.id }}/delete" style="display:inline">
+          <button type="submit" class="text-red-400 underline" onclick="return confirm('Delete template?')">Delete</button>
+        </form>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

@@ -140,3 +140,13 @@ class AuditLog(Base):
 
     user = relationship("User")
     device = relationship("Device")
+
+
+class PortConfigTemplate(Base):
+    """Reusable configuration snippets for switch ports."""
+
+    __tablename__ = "port_config_templates"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String, unique=True, nullable=False)
+    config_text = Column(Text, nullable=False)
