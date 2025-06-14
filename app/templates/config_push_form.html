@@ -2,6 +2,9 @@
 
 {% block content %}
 <h1 class="text-xl mb-4">Push Config to {{ device.hostname }}</h1>
+{% if cred_source %}
+<p class="text-sm">Using {{ cred_source == 'user' and 'personal' or 'device' }} credentials{{ ' (' ~ cred_name ~ ')' if cred_name else '' }}</p>
+{% endif %}
 <form method="post" class="space-y-4">
   <div>
     <label class="block">Configuration</label>

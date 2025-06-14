@@ -154,6 +154,20 @@ class User(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
 
+class UserSSHCredential(Base):
+    __tablename__ = "user_ssh_credentials"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    name = Column(String, nullable=False)
+    username = Column(String, nullable=False)
+    password = Column(String, nullable=True)
+    private_key = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    user = relationship("User")
+
+
 class SystemTunable(Base):
     """Key/value settings that control system behavior."""
 
