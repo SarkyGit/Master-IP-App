@@ -140,6 +140,11 @@ sudo nginx -t
 sudo systemctl reload nginx
 ```
 
+When the application runs behind this proxy the FastAPI instance must
+honor `X-Forwarded-Proto` so generated links use HTTPS.  This repository
+includes `ProxyHeadersMiddleware` in `app/main.py`, which reads that
+header. Ensure Nginx forwards it as shown above.
+
 To serve HTTPS traffic obtain a certificate with Certbot and let it configure
 Nginx automatically:
 

@@ -3,6 +3,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
 
 from starlette.middleware.sessions import SessionMiddleware
+from starlette.middleware.proxy_headers import ProxyHeadersMiddleware
 import os
 
 from app.routes import (
@@ -52,6 +53,9 @@ from app.tasks import (
 from app.utils.templates import templates
 
 app = FastAPI()
+# Respect headers like X-Forwarded-Proto so generated URLs use the
+# correct scheme when behind a reverse proxy.
+app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
 start_queue_worker(app)
 start_config_scheduler(app)
 setup_trap_listener(app)
