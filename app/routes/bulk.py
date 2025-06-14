@@ -56,12 +56,12 @@ async def bulk_vlan_push_form(
 
 @router.post("/vlan-push")
 async def bulk_vlan_push_action(
+    request: Request,
     vlan_id: int = Form(...),
     template_id: Optional[int] = Form(None),
     config_text: str = Form(""),
     model_filter: str = Form(""),
     confirm: str | None = Form(None),
-    request: Request | None = None,
     db: Session = Depends(get_db),
     current_user=Depends(require_role("editor")),
 ):
