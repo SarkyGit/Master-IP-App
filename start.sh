@@ -9,6 +9,9 @@ if [ -f .env ]; then
     set +a
 fi
 
+# Wait for the database to become available
+python wait_for_db.py
+
 if [ "${AUTO_SEED:-1}" != "0" ] && [ "${AUTO_SEED}" != "false" ]; then
     python seed_tunables.py
     python seed_superuser.py
