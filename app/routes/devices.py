@@ -22,7 +22,7 @@ from app.models.models import (
     PortConfigTemplate,
 )
 from app.utils.audit import log_audit
-from app.utils.tags import update_device_complete_tag
+from app.utils.tags import update_device_complete_tag, update_device_attribute_tags
 from app.models.models import DeviceEditLog
 
 import asyncssh
@@ -267,6 +267,7 @@ async def create_device(
     )
     db.add(device)
     update_device_complete_tag(db, device)
+    update_device_attribute_tags(db, device)
     db.commit()
     db.add(DeviceEditLog(device_id=device.id, user_id=current_user.id, changes="created"))
     db.commit()
@@ -364,6 +365,7 @@ async def update_device(
 
     device.updated_at = datetime.utcnow()
     update_device_complete_tag(db, device)
+    update_device_attribute_tags(db, device, old)
     db.commit()
 
     changes = []
