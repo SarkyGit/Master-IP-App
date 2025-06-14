@@ -130,6 +130,15 @@
     <a href="/devices" class="ml-2 underline">Cancel</a>
   </div>
 </form>
+{% if device %}
+<h2 class="text-lg mt-4">Recent Syslog</h2>
+<ul class="mb-4">
+  {% for log in syslog_logs %}
+  <li>{{ log.timestamp }} - {{ log.severity }} - {{ log.message }}</li>
+  {% endfor %}
+</ul>
+<a href="/syslog/live?device_id={{ device.id }}" class="underline">View All Logs</a>
+{% endif %}
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   const ipField = document.getElementById('ip-field');

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-xl mb-4">Live Syslog</h1>
+<form method="get" class="mb-4">
+  <label class="mr-2">Device:
+    <select name="device_id" onchange="this.form.submit()">
+      <option value="">All</option>
+      {% for d in devices %}
+      <option value="{{ d.id }}" {% if device_id and d.id == device_id %}selected{% endif %}>{{ d.hostname }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <label class="mr-2">Site:
+    <select name="site_id" onchange="this.form.submit()">
+      <option value="">All</option>
+      {% for s in sites %}
+      <option value="{{ s.id }}" {% if site_id and s.id == site_id %}selected{% endif %}>{{ s.name }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <label class="mr-2">Severity:
+    <input type="text" name="severity" value="{{ severity or '' }}" onchange="this.form.submit()">
+  </label>
+  <label class="mr-2">Keyword:
+    <input type="text" name="q" value="{{ q or '' }}" onchange="this.form.submit()">
+  </label>
+  <label class="mr-2">Start:
+    <input type="datetime-local" name="start" value="{{ start or '' }}" onchange="this.form.submit()">
+  </label>
+  <label>End:
+    <input type="datetime-local" name="end" value="{{ end or '' }}" onchange="this.form.submit()">
+  </label>
+</form>
+<table class="min-w-full bg-black">
+  <thead>
+    <tr>
+      <th class="px-4 py-2 text-left">Timestamp</th>
+      <th class="px-4 py-2 text-left">Source IP</th>
+      <th class="px-4 py-2 text-left">Device</th>
+      <th class="px-4 py-2 text-left">Severity</th>
+      <th class="px-4 py-2 text-left">Message</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for log in logs %}
+    <tr class="border-t border-gray-700">
+      <td class="px-4 py-2">{{ log.timestamp }}</td>
+      <td class="px-4 py-2">{{ log.source_ip }}</td>
+      <td class="px-4 py-2">{{ log.device.hostname if log.device else '' }}</td>
+      <td class="px-4 py-2">{{ log.severity }}</td>
+      <td class="px-4 py-2"><details><summary>View</summary><pre>{{ log.message }}</pre></details></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
+
+{% block extra_scripts %}
+{{ super() }}
+<script>
+setInterval(() => { location.reload(); }, 15000);
+</script>
+{% endblock %}

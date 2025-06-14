@@ -338,3 +338,19 @@ class SNMPTrapLog(Base):
     device = relationship("Device")
     site = relationship("Site")
 
+
+class SyslogEntry(Base):
+    __tablename__ = "syslog_entries"
+
+    id = Column(Integer, primary_key=True)
+    timestamp = Column(DateTime, default=datetime.utcnow)
+    device_id = Column(Integer, ForeignKey("devices.id"), nullable=True)
+    site_id = Column(Integer, ForeignKey("sites.id"), nullable=True)
+    source_ip = Column(String, nullable=False)
+    severity = Column(String, nullable=True)
+    facility = Column(String, nullable=True)
+    message = Column(Text, nullable=True)
+
+    device = relationship("Device")
+    site = relationship("Site")
+
