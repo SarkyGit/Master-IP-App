@@ -167,6 +167,11 @@ class Device(Base):
         back_populates="device",
         cascade="all, delete-orphan",
     )
+    damage_reports = relationship(
+        "DeviceDamage",
+        back_populates="device",
+        cascade="all, delete-orphan",
+    )
 
 
 class ConfigBackup(Base):
@@ -269,6 +274,17 @@ class DeviceEditLog(Base):
 
     device = relationship("Device", back_populates="edit_logs")
     user = relationship("User")
+
+
+class DeviceDamage(Base):
+    __tablename__ = "device_damage"
+
+    id = Column(Integer, primary_key=True)
+    device_id = Column(Integer, ForeignKey("devices.id"), nullable=False)
+    filename = Column(String, nullable=False)
+    uploaded_at = Column(DateTime, default=datetime.utcnow)
+
+    device = relationship("Device", back_populates="damage_reports")
 
 
 class BannedIP(Base):
