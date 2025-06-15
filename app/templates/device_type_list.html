@@ -3,7 +3,7 @@
 {% block content %}
 <h1 class="text-xl mb-4">Device Types</h1>
 <a href="/device-types/new" class="underline">Add Device Type</a>
-<form method="post" action="/device-types/bulk-delete" x-data="tableControls()" class="space-y-2 mt-4">
+<form method="post" action="/device-types/bulk-delete" x-data="tableControls()" class="space-y-2 mt-4 full-width">
 <div class="flex justify-between items-center">
   <label>Show
     <select x-model="perPage" class="rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)] mx-1">
