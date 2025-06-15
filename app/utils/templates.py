@@ -58,15 +58,21 @@ templates.env.globals["logo_url"] = logo_url
 from markupsafe import Markup
 
 
-def include_icon(name: str) -> str:
-    """Return SVG markup for the given icon."""
+def include_icon(name: str, color: str | None = None) -> str:
+    """Return SVG markup for the given icon with optional colour."""
     path = os.path.join(STATIC_DIR, "icons", f"{name}.svg")
     if not os.path.exists(path):
         return ""
     svg = open(path, "r", encoding="utf-8").read()
+    classes = ["w-4", "h-4"]
+    if color:
+        classes.append(color)
+    else:
+        classes.append("text-[var(--btn-text)]")
+    classes.append("transition")
     svg = svg.replace(
         "<svg",
-        '<svg class="w-5 h-5 text-[var(--btn-text)] hover:text-[var(--btn-hover-text)] transition"',
+        f'<svg class="{" ".join(classes)}"',
         1,
     )
     return Markup(svg)
