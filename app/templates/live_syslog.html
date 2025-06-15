@@ -49,7 +49,7 @@
       <td class="px-4 py-2">{{ log.source_ip }}</td>
       <td class="px-4 py-2">{{ log.device.hostname if log.device else '' }}</td>
       <td class="px-4 py-2">{{ log.severity }}</td>
-      <td class="px-4 py-2"><details><summary>View</summary><pre>{{ log.message }}</pre></details></td>
+      <td class="px-4 py-2"><details><summary>View</summary><pre class="bg-[var(--code-bg)] text-[var(--code-text)] rounded px-2 py-1 text-sm whitespace-pre-wrap overflow-auto my-2">{{ log.message }}</pre></details></td>
     </tr>
   {% endfor %}
   </tbody>

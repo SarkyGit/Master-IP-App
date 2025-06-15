@@ -21,7 +21,7 @@
       <td class="px-4 py-2">{{ ban.ban_reason }}</td>
       <td class="px-4 py-2">
         <form method="post" action="/admin/ip-bans/{{ ban.id }}/unban">
-          <button type="submit" class="px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition" onclick="return confirm('Unban this IP?')">Unban</button>
+          <button type='submit' aria-label='Unban' class='px-4 py-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition' onclick="return confirm('Unban this IP?')">{{ include_icon('x-circle') }}</button>
         </form>
       </td>
     </tr>
