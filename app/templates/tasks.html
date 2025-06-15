@@ -37,8 +37,8 @@
 <h2 class="text-lg mb-2">Upload CSV</h2>
 <form method="post" action="/tasks/upload-csv" enctype="multipart/form-data" class="space-y-2">
   <div>
-    <label class="block">Table</label>
-    <select name="table_name" class="p-1 text-black">
+    <label for="table_name" class="block">Table</label>
+    <select id="table_name" name="table_name" class="p-1 text-black">
       <option value="devices">Devices</option>
       <option value="vlans">VLANs</option>
       <option value="device_types">Device Types</option>

@@ -5,12 +5,12 @@
 
 <form method="post" action="/tasks/google-sheets-config" class="space-y-2 mb-4">
   <div>
-    <label class="block">Service Account JSON Path</label>
-    <input type="text" name="service_account_json" value="{{ config.creds }}" class="text-black w-96">
+    <label for="service_account_json" class="block">Service Account JSON Path</label>
+    <input id="service_account_json" type="text" name="service_account_json" value="{{ config.creds }}" class="text-black w-96">
   </div>
   <div>
-    <label class="block">Spreadsheet ID</label>
-    <input type="text" name="spreadsheet_id" value="{{ config.sheet_id }}" class="text-black w-96">
+    <label for="spreadsheet_id" class="block">Spreadsheet ID</label>
+    <input id="spreadsheet_id" type="text" name="spreadsheet_id" value="{{ config.sheet_id }}" class="text-black w-96">
   </div>
   <button type="submit" class="bg-blue-600 px-3 py-1">Save</button>
 </form>

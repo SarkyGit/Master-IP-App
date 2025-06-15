@@ -4,12 +4,12 @@
 <h1 class="text-xl mb-4">{{ form_title }}</h1>
 <form method="post" class="space-y-4">
   <div>
-    <label class="block">Tag</label>
-    <input type="number" name="tag" value="{{ vlan.tag if vlan else '' }}" class="w-full p-2 text-black" required />
+    <label for="tag" class="block">Tag</label>
+    <input id="tag" type="number" name="tag" value="{{ vlan.tag if vlan else '' }}" class="w-full p-2 text-black" required />
   </div>
   <div>
-    <label class="block">Description</label>
-    <input type="text" name="description" value="{{ vlan.description if vlan else '' }}" class="w-full p-2 text-black" />
+    <label for="description" class="block">Description</label>
+    <input id="description" type="text" name="description" value="{{ vlan.description if vlan else '' }}" class="w-full p-2 text-black" />
   </div>
   {% if error %}
   <p class="text-red-500">{{ error }}</p>

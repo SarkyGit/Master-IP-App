@@ -4,7 +4,7 @@
 <h1 class="text-xl mb-4">Login Events</h1>
 <form method="get" class="mb-4">
   <label class="mr-2">User:
-    <select name="user_id" onchange="this.form.submit()">
+    <select id="user_id" name="user_id" onchange="this.form.submit()">
       <option value="">All</option>
       {% for u in users %}
       <option value="{{ u.id }}" {% if user_id and u.id == user_id %}selected{% endif %}>{{ u.email }}</option>
@@ -12,13 +12,13 @@
     </select>
   </label>
   <label class="mr-2">IP:
-    <input type="text" name="ip" value="{{ ip or '' }}" onchange="this.form.submit()">
+    <input id="ip" type="text" name="ip" value="{{ ip or '' }}" onchange="this.form.submit()">
   </label>
   <label class="mr-2">Start:
-    <input type="date" name="start" value="{{ start or '' }}" onchange="this.form.submit()">
+    <input id="start" type="date" name="start" value="{{ start or '' }}" onchange="this.form.submit()">
   </label>
   <label>End:
-    <input type="date" name="end" value="{{ end or '' }}" onchange="this.form.submit()">
+    <input id="end" type="date" name="end" value="{{ end or '' }}" onchange="this.form.submit()">
   </label>
 </form>
 <table class="min-w-full text-left">

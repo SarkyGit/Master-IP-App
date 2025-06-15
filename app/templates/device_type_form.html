@@ -4,8 +4,8 @@
 <h1 class="text-xl mb-4">{{ form_title }}</h1>
 <form method="post" class="space-y-4">
   <div>
-    <label class="block">Name</label>
-    <input type="text" name="name" value="{{ dtype.name if dtype else '' }}" class="w-full p-2 text-black" required />
+    <label for="name" class="block">Name</label>
+    <input id="name" type="text" name="name" value="{{ dtype.name if dtype else '' }}" class="w-full p-2 text-black" required />
   </div>
   {% if error %}
   <p class="text-red-500">{{ error }}</p>

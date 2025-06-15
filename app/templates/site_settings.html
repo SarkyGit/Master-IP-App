@@ -4,8 +4,8 @@
 <form method="post">
   {% for name, label in widget_labels.items() %}
   <div class="mb-2">
-    <label class="inline-flex items-center">
-      <input type="checkbox" name="widgets" value="{{ name }}" class="mr-2" {% if defaults.get(name) %}checked{% endif %}>
+    <label for="widgets" class="inline-flex items-center">
+      <input id="widgets" type="checkbox" name="widgets" value="{{ name }}" class="mr-2" {% if defaults.get(name) %}checked{% endif %}>
       {{ label }}
     </label>
   </div>

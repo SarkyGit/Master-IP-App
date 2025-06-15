@@ -4,8 +4,8 @@
 <h1 class="text-xl mb-4">Config Check</h1>
 <form method="post" class="space-y-4">
   <div>
-    <label class="block">Switch</label>
-    <select name="device_id" class="p-2 text-black">
+    <label for="device_id" class="block">Switch</label>
+    <select id="device_id" name="device_id" class="p-2 text-black">
       {% for dev in devices %}
       <option value="{{ dev.id }}" {% if selected==dev.id %}selected{% endif %}>{{ dev.hostname }}</option>
       {% endfor %}

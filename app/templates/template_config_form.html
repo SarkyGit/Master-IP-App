@@ -4,7 +4,7 @@
 <h1 class="text-xl mb-4">Push Template to {{ device.hostname }}</h1>
 <form method="post" class="space-y-4">
   <div>
-    <label class="block">Template</label>
+    <label for="template-select" class="block">Template</label>
     <select id="template-select" name="template_name" class="w-full p-2 text-black">
       {% for tpl in templates %}
       <option value="{{ tpl }}">{{ tpl }}</option>
@@ -12,16 +12,16 @@
     </select>
   </div>
   <div id="interface-field">
-    <label class="block">Interface</label>
-    <input type="text" name="interface" class="w-full p-2 text-black" />
+    <label for="interface" class="block">Interface</label>
+    <input id="interface" type="text" name="interface" class="w-full p-2 text-black" />
   </div>
   <div id="vlan-field">
-    <label class="block">VLAN</label>
-    <input type="number" name="vlan" class="w-full p-2 text-black" />
+    <label for="vlan" class="block">VLAN</label>
+    <input id="vlan" type="number" name="vlan" class="w-full p-2 text-black" />
   </div>
   <div id="descr-field">
-    <label class="block">Description</label>
-    <input type="text" name="description" class="w-full p-2 text-black" />
+    <label for="description" class="block">Description</label>
+    <input id="description" type="text" name="description" class="w-full p-2 text-black" />
   </div>
   {% if snippet %}
   <div>

@@ -7,8 +7,8 @@
 {% endif %}
 <form method="post" class="space-y-4">
   <div>
-    <label class="block">Configuration</label>
-    <textarea name="config_text" rows="10" class="w-full p-2 text-black" required></textarea>
+    <label for="config_text" class="block">Configuration</label>
+    <textarea id="config_text" name="config_text" rows="10" class="w-full p-2 text-black" required></textarea>
   </div>
   {% if error %}
   <p class="text-red-500">{{ error }}</p>

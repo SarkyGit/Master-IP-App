@@ -6,8 +6,8 @@
 {% if message %}<p class="text-green-600">{{ message }}</p>{% endif %}
 <form method="post" class="space-y-4">
   <div>
-    <label class="block">Peer</label>
-    <select name="peer_id" class="p-2 text-black">
+    <label for="peer_id" class="block">Peer</label>
+    <select id="peer_id" name="peer_id" class="p-2 text-black">
       {% for peer in peers %}
       <option value="{{ peer.id }}">{{ peer.name }}</option>
       {% endfor %}

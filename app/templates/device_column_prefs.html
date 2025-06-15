@@ -4,8 +4,8 @@
 <form method="post">
   {% for name, label in column_labels.items() %}
   <div class="mb-2">
-    <label class="inline-flex items-center">
-      <input type="checkbox" name="columns" value="{{ name }}" class="mr-2" {% if prefs[name] %}checked{% endif %}>
+    <label for="columns" class="inline-flex items-center">
+      <input id="columns" type="checkbox" name="columns" value="{{ name }}" class="mr-2" {% if prefs[name] %}checked{% endif %}>
       {{ label }}
     </label>
   </div>

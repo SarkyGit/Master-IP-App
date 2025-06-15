@@ -4,8 +4,8 @@
 <h1 class="text-xl mb-4">Apply Template to {{ port_name }} on {{ device.hostname }}</h1>
 <form method="post" class="space-y-4">
   <div>
-    <label class="block">Template</label>
-    <select name="template_id" class="w-full p-2 text-black">
+    <label for="template_id" class="block">Template</label>
+    <select id="template_id" name="template_id" class="w-full p-2 text-black">
       {% for tpl in templates %}
       <option value="{{ tpl.id }}">{{ tpl.name }}</option>
       {% endfor %}
