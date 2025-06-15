@@ -19,6 +19,7 @@ services:
       - db
     environment:
       DATABASE_URL: postgresql://masteruser:masterpass@db:5432/master_ip_db
+      ROOT_PATH: ""
     ports:
       - "8000:8000"
     volumes:
