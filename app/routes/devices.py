@@ -261,6 +261,8 @@ async def list_devices_by_type(
             )
             if personal:
                 personal_map[d.id] = True
+    column_prefs = load_column_preferences(db, current_user.id, "device_list")
+    column_count = 1 + sum(1 for v in column_prefs.values() if v)
     context = {
         "request": request,
         "devices": devices,
@@ -271,6 +273,9 @@ async def list_devices_by_type(
         "duplicate_tags": duplicate_tags,
         "personal_creds": personal_map,
         "message": None,
+        "column_prefs": column_prefs,
+        "column_labels": DEVICE_COLUMN_LABELS,
+        "column_count": column_count,
     }
     return templates.TemplateResponse("device_list.html", context)
 
