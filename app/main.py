@@ -55,7 +55,8 @@ from app.tasks import (
 )
 from app.utils.templates import templates
 
-app = FastAPI()
+# Allow deploying the app under a URL prefix by setting ROOT_PATH.
+app = FastAPI(root_path=os.environ.get("ROOT_PATH", ""))
 # Respect headers like X-Forwarded-Proto so generated URLs use the
 # correct scheme when behind a reverse proxy.
 if ProxyHeadersMiddleware:

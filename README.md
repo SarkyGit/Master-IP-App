@@ -162,9 +162,13 @@ Adjust `WORKERS`, `TIMEOUT` and `PORT` as needed. The server listens on
 `0.0.0.0` so it can be proxied by a web server such as Nginx.
 
 By default static assets are served from the `static` directory under the
-repository root.  Deployments may mount this folder elsewhere (for example at
-`/static` inside a Docker container).  Set the `STATIC_DIR` environment variable
+repository root. Deployments may mount this folder elsewhere (for example at
+`/static` inside a Docker container). Set the `STATIC_DIR` environment variable
 to the desired location so the application mounts that directory.
+
+If the app is exposed under a URL prefix (e.g. `/inventory/` instead of `/`),
+set the `ROOT_PATH` environment variable to that prefix so all generated links
+including static asset URLs use the correct path.
 
 ## Nginx reverse proxy with SSL
 
