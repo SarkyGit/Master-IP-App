@@ -608,9 +608,11 @@ async def upload_damage_photo(
         raise HTTPException(status_code=403, detail="Device not assigned to your site")
     if not photo.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="Invalid file type")
-    os.makedirs("app/static/damage", exist_ok=True)
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    damage_dir = os.path.join(base_dir, "static", "damage")
+    os.makedirs(damage_dir, exist_ok=True)
     filename = f"{device_id}_{int(datetime.utcnow().timestamp())}_{photo.filename}"
-    path = os.path.join("app/static/damage", filename)
+    path = os.path.join(damage_dir, filename)
     with open(path, "wb") as f:
         f.write(await photo.read())
     record = DeviceDamage(device_id=device.id, filename=filename)

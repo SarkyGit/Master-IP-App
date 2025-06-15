@@ -94,7 +94,8 @@ async def export_inventory_pdf(
     title = Paragraph("Device Inventory", styles["Title"])
     date = Paragraph(datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC"), styles["Normal"])
 
-    logo_path = os.path.join("app", "static", "logo.png")
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    logo_path = os.path.join(base_dir, "static", "logo.png")
     if os.path.exists(logo_path):
         try:
             elements.append(Image(logo_path, width=100, height=50))
