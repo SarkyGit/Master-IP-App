@@ -29,7 +29,7 @@
             {% if current_user %}
             <div class="relative" x-data="{open:false}">
               <button @click="open = !open" class="logout-btn">My Profile</button>
-              <ul x-show="open" @click.away="open = false" class="absolute right-0 mt-2 bg-gray-800 text-white py-2 w-48 hidden" x-cloak>
+              <ul x-show="open" @click.away="open = false" class="absolute right-0 mt-2 bg-gray-800 text-white py-2 w-48" x-cloak>
                 <li><a class="block px-4 py-2 hover:bg-gray-700" href="/users/me">View Profile</a></li>
                 <li><a class="block px-4 py-2 hover:bg-gray-700" href="/user/ssh">SSH Profiles</a></li>
               </ul>
@@ -76,7 +76,7 @@
               {% if current_user %}
               <li class="relative py-1" x-data="{open:false}">
                 <button @click="open = !open" class="block px-4 py-2 btn btn-blue rounded hover:">SSH</button>
-                <ul x-show="open" @click.away="open = false" class="absolute mt-2 bg-gray-800 text-white py-2 w-48 hidden" x-cloak>
+                <ul x-show="open" @click.away="open = false" class="absolute mt-2 bg-gray-800 text-white py-2 w-48" x-cloak>
                   <li><a class="block px-4 py-2 btn btn-blue rounded hover:bg-gray-700" href="/ssh/port-config">Port Config</a></li>
                   <li><a class="block px-4 py-2 btn btn-blue rounded hover:bg-gray-700" href="/ssh/port-check">Port Check</a></li>
                   <li><a class="block px-4 py-2 btn btn-blue rounded hover:bg-gray-700" href="/ssh/config-check">Config Check</a></li>
@@ -88,7 +88,7 @@
               </li>
               <li class="relative py-1" x-data="{open:false}">
                 <button @click="open = !open" class="block px-4 py-2 btn btn-blue rounded hover:">Inventory</button>
-                <ul x-show="open" @click.away="open = false" class="absolute mt-2 bg-gray-800 text-white py-2 w-48 hidden" x-cloak>
+                <ul x-show="open" @click.away="open = false" class="absolute mt-2 bg-gray-800 text-white py-2 w-48" x-cloak>
                   <li><a class="block px-4 py-2 btn btn-blue rounded hover:bg-gray-700" href="/devices">All Devices</a></li>
                   {% for dtype in get_device_types() %}
                   <li><a class="block px-4 py-2 btn btn-blue rounded hover:bg-gray-700" href="/devices/type/{{ dtype.id }}">{{ dtype.name }}</a></li>
@@ -100,7 +100,7 @@
               </li>
               <li class="relative py-1" x-data="{open:false}">
                 <button @click="open = !open" class="block px-4 py-2 btn btn-blue rounded hover:">Network</button>
-                <ul x-show="open" @click.away="open = false" class="absolute mt-2 bg-gray-800 text-white py-2 w-48 hidden" x-cloak>
+                <ul x-show="open" @click.away="open = false" class="absolute mt-2 bg-gray-800 text-white py-2 w-48" x-cloak>
                   <li><a class="block px-4 py-2 btn btn-blue rounded hover:bg-gray-700" href="/network/ip-search">IP Search</a></li>
                   <li><a class="block px-4 py-2 btn btn-blue rounded hover:bg-gray-700" href="/vlans">VLAN MGMT</a></li>
                   <li><a class="block px-4 py-2 btn btn-blue rounded hover:bg-gray-700" href="/network/port-configs">Port Configs</a></li>
@@ -111,7 +111,7 @@
                 </li>
               <li class="relative py-1" x-data="{open:false}">
                 <button @click="open = !open" class="block px-4 py-2 btn btn-blue rounded hover:">Tasks</button>
-                <ul x-show="open" @click.away="open = false" class="absolute mt-2 bg-gray-800 text-white py-2 w-48 hidden" x-cloak>
+                <ul x-show="open" @click.away="open = false" class="absolute mt-2 bg-gray-800 text-white py-2 w-48" x-cloak>
                   <li><a class="block px-4 py-2 btn btn-blue rounded hover:bg-gray-700" href="/tasks">Task Queue</a></li>
                   <li><a class="block px-4 py-2 btn btn-blue rounded hover:bg-gray-700" href="/devices/duplicates">Duplicate Checker</a></li>
                   {% if current_user.role in ['admin','superadmin'] %}
@@ -122,7 +122,7 @@
               </li>
               <li class="relative py-1" x-data="{open:false}">
                 <button @click="open = !open" class="block px-4 py-2 btn btn-blue rounded hover:">Reports</button>
-                <ul x-show="open" @click.away="open = false" class="absolute mt-2 bg-gray-800 text-white py-2 w-48 hidden" x-cloak>
+                <ul x-show="open" @click.away="open = false" class="absolute mt-2 bg-gray-800 text-white py-2 w-48" x-cloak>
                   <li><a class="block px-4 py-2 btn btn-blue rounded hover:bg-gray-700" href="/reports/vlan-usage">VLAN Usage</a></li>
                 </ul>
               </li>
