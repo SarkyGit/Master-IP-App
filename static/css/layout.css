@@ -88,6 +88,12 @@ form:not(.inline) {
   padding-bottom: 0.5rem;
 }
 
+form.full-width {
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
+}
+
 form:not(.inline) > * + * {
   margin-top: 1rem;
 }
