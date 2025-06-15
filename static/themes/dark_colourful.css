@@ -76,13 +76,24 @@ button.add:hover {
   background-color: #4ade80;
 }
 
-.logout {
+.logged-in {
   border: 1px solid #d97706;
   color: #facc15;
   padding: 0.25rem 0.5rem;
   border-radius: 0.25rem;
   font-size: 0.75rem;
 }
-.logout:hover {
+.logged-in:hover {
   background-color: #78350f;
+}
+
+.logged-out {
+  border: 1px solid #ffffff;
+  color: #ffffff;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+}
+.logged-out:hover {
+  background-color: #333333;
 }
