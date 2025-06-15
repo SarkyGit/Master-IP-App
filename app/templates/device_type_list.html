@@ -2,7 +2,7 @@
 
 {% block content %}
 <h1 class="text-xl mb-4">Device Types</h1>
-<a href="/device-types/new" class="underline">Add Device Type</a>
+<a href="/device-types/new" class="inline-block p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded transition">Add Device Type</a>
 <form method="post" action="/device-types/bulk-delete" x-data="tableControls()" class="space-y-2 mt-4 full-width">
 <div class="flex justify-between items-center">
   <label>Show

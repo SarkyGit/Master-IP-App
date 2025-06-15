@@ -64,7 +64,7 @@ def include_icon(name: str, color: str | None = None) -> str:
     if not os.path.exists(path):
         return ""
     svg = open(path, "r", encoding="utf-8").read()
-    classes = ["w-4", "h-4"]
+    classes = ["w-3", "h-3"]
     if color:
         classes.append(color)
     else:
