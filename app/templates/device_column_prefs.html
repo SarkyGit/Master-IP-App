@@ -10,6 +10,6 @@
     </label>
   </div>
   {% endfor %}
-  <button type="submit" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Save</button>
+  <button type="submit" aria-label="Save" class="px-4 py-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">{{ include_icon("save") }}</button>
 </form>
 {% endblock %}

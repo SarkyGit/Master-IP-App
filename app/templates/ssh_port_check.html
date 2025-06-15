@@ -22,6 +22,6 @@
 {% if error %}<p class="p-2 rounded bg-[var(--alert-bg)] text-[var(--btn-text)] mt-2">{{ error }}</p>{% endif %}
 {% if output %}
 <h2 class="text-lg mt-4">Output</h2>
-<pre class="bg-[var(--card-bg)] p-2 whitespace-pre-wrap overflow-auto">{{ output }}</pre>
+<pre class="bg-[var(--code-bg)] text-[var(--code-text)] rounded px-2 py-1 text-sm whitespace-pre-wrap overflow-auto my-2">{{ output }}</pre>
 {% endif %}
 {% endblock %}

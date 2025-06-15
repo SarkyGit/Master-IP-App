@@ -22,7 +22,7 @@
   {% for r in results %}
   <h2 class="text-lg mt-4">{{ r.device.hostname }}</h2>
   {% if r.error %}<p class="p-2 rounded bg-[var(--alert-bg)] text-[var(--btn-text)]">{{ r.error }}</p>{% endif %}
-  {% if r.output %}<pre class="bg-[var(--card-bg)] p-2 whitespace-pre-wrap overflow-auto">{{ r.output }}</pre>{% endif %}
+  {% if r.output %}<pre class="bg-[var(--code-bg)] text-[var(--code-text)] rounded px-2 py-1 text-sm whitespace-pre-wrap overflow-auto my-2">{{ r.output }}</pre>{% endif %}
   {% endfor %}
 {% endif %}
 {% endblock %}
