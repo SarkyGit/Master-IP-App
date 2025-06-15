@@ -5,8 +5,8 @@ from fastapi.responses import JSONResponse
 from starlette.middleware.sessions import SessionMiddleware
 try:
     from starlette.middleware.proxy_headers import ProxyHeadersMiddleware
-except Exception:  # Module may be unavailable in some Starlette versions
-    ProxyHeadersMiddleware = None
+except ImportError:  # Fallback for older Starlette versions
+    from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 import os
 
 from app.routes import (
@@ -56,11 +56,10 @@ from app.tasks import (
 from app.utils.templates import templates
 
 # Allow deploying the app under a URL prefix by setting ROOT_PATH.
-app = FastAPI(root_path=os.environ.get("ROOT_PATH", ""))
+app = FastAPI()
 # Respect headers like X-Forwarded-Proto so generated URLs use the
 # correct scheme when behind a reverse proxy.
-if ProxyHeadersMiddleware:
-    app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
+app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
 start_queue_worker(app)
 start_config_scheduler(app)
 setup_trap_listener(app)
