@@ -4,17 +4,17 @@
 <h1 class="text-xl mb-4">{{ form_title or 'Edit Profile' }}</h1>
 <form method="post" class="space-y-4">
   <div>
-    <label class="block">Email</label>
-    <input type="email" name="email" value="{{ user.email if user else '' }}" class="w-full p-2 text-black" {% if email_readonly %}readonly{% endif %} required />
+    <label for="email" class="block">Email</label>
+    <input id="email" type="email" name="email" value="{{ user.email if user else '' }}" class="w-full p-2 text-black" {% if email_readonly %}readonly{% endif %} required />
   </div>
   <div>
-    <label class="block">Password{% if not require_password %} (leave blank to keep current){% endif %}</label>
-    <input type="password" name="password" class="w-full p-2 text-black" {% if require_password %}required{% endif %} />
+    <label for="password" class="block">Password{% if not require_password %} (leave blank to keep current){% endif %}</label>
+    <input id="password" type="password" name="password" class="w-full p-2 text-black" {% if require_password %}required{% endif %} />
   </div>
   {% if roles %}
   <div>
-    <label class="block">Role</label>
-    <select name="role" class="w-full p-2 text-black">
+    <label for="role" class="block">Role</label>
+    <select id="role" name="role" class="w-full p-2 text-black">
       {% for r in roles %}
       <option value="{{ r }}" {% if user and user.role == r %}selected{% endif %}>{{ r }}</option>
       {% endfor %}
@@ -23,8 +23,8 @@
   {% endif %}
   {% if themes %}
   <div>
-    <label class="block">Theme</label>
-    <select name="theme" class="w-full p-2 text-black">
+    <label for="theme" class="block">Theme</label>
+    <select id="theme" name="theme" class="w-full p-2 text-black">
       {% for t in themes %}
       <option value="{{ t }}" {% if user and user.theme == t %}selected{% endif %}>{{ t }}</option>
       {% endfor %}
@@ -33,8 +33,8 @@
   {% endif %}
   {% if fonts %}
   <div>
-    <label class="block">Font</label>
-    <select name="font" class="w-full p-2 text-black">
+    <label for="font" class="block">Font</label>
+    <select id="font" name="font" class="w-full p-2 text-black">
       {% for f in fonts %}
       <option value="{{ f }}" {% if user and user.font == f %}selected{% endif %}>{{ f }}</option>
       {% endfor %}
@@ -43,8 +43,8 @@
   {% endif %}
   {% if show_active %}
   <div>
-    <label class="inline-flex items-center">
-      <input type="checkbox" name="is_active" value="1" class="mr-2" {% if user and user.is_active %}checked{% endif %}>
+    <label for="is_active" class="inline-flex items-center">
+      <input id="is_active" type="checkbox" name="is_active" value="1" class="mr-2" {% if user and user.is_active %}checked{% endif %}>
       Active
     </label>
   </div>

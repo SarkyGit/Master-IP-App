@@ -22,7 +22,7 @@
     <p>Map each column:</p>
     {% for col in columns %}
     <label class="block">{{ col }}
-      <select name="map_{{ loop.index0 }}" class="text-black">
+      <select id="map_{{ loop.index0 }}" name="map_{{ loop.index0 }}" class="text-black">
         {% for f in fields %}
         <option value="{{ f }}">{{ f }}</option>
         {% endfor %}

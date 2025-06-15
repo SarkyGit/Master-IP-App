@@ -4,24 +4,24 @@
 <h1 class="text-xl mb-4">{{ form_title }}</h1>
 <form method="post" id="device-form" class="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
   <div>
-    <label class="block">Hostname</label>
-    <input type="text" name="hostname" value="{{ device.hostname if device else '' }}" class="w-full p-2 text-black" required />
+    <label for="hostname" class="block">Hostname</label>
+    <input id="hostname" type="text" name="hostname" value="{{ device.hostname if device else '' }}" class="w-full p-2 text-black" required />
   </div>
   <div>
-    <label class="block">IP Address</label>
+    <label for="ip-field" class="block">IP Address</label>
     <input type="text" name="ip" id="ip-field" value="{{ device.ip if device else '' }}" class="w-full p-2 text-black" />
   </div>
   <div>
-    <label class="block">MAC Address</label>
-    <input type="text" name="mac" value="{{ device.mac if device else '' }}" class="w-full p-2 text-black" />
+    <label for="mac" class="block">MAC Address</label>
+    <input id="mac" type="text" name="mac" value="{{ device.mac if device else '' }}" class="w-full p-2 text-black" />
   </div>
   <div>
-    <label class="block">Asset Tag</label>
-    <input type="text" name="asset_tag" value="{{ device.asset_tag if device else '' }}" class="w-full p-2 text-black" />
+    <label for="asset_tag" class="block">Asset Tag</label>
+    <input id="asset_tag" type="text" name="asset_tag" value="{{ device.asset_tag if device else '' }}" class="w-full p-2 text-black" />
   </div>
   <div>
-    <label class="block">Model</label>
-    <input list="model-list" type="text" name="model" value="{{ device.model if device else '' }}" class="w-full p-2 text-black" />
+    <label for="model" class="block">Model</label>
+    <input id="model" list="model-list" type="text" name="model" value="{{ device.model if device else '' }}" class="w-full p-2 text-black" />
     <datalist id="model-list">
       {% for m in model_list %}
       <option value="{{ m }}">{{ m }}</option>
@@ -29,20 +29,20 @@
     </datalist>
   </div>
   <div>
-    <label class="block">Serial Number</label>
-    <input type="text" name="serial_number" value="{{ device.serial_number if device else '' }}" class="w-full p-2 text-black" />
+    <label for="serial_number" class="block">Serial Number</label>
+    <input id="serial_number" type="text" name="serial_number" value="{{ device.serial_number if device else '' }}" class="w-full p-2 text-black" />
   </div>
   <div>
-    <label class="block">Manufacturer</label>
-    <input type="text" name="manufacturer" value="{{ device.manufacturer if device else '' }}" class="w-full p-2 text-black" required />
+    <label for="manufacturer" class="block">Manufacturer</label>
+    <input id="manufacturer" type="text" name="manufacturer" value="{{ device.manufacturer if device else '' }}" class="w-full p-2 text-black" required />
   </div>
   <div>
-    <label class="block">Detected Platform</label>
-    <input type="text" name="detected_platform" value="{{ device.detected_platform if device else '' }}" class="w-full p-2 text-black" />
+    <label for="detected_platform" class="block">Detected Platform</label>
+    <input id="detected_platform" type="text" name="detected_platform" value="{{ device.detected_platform if device else '' }}" class="w-full p-2 text-black" />
   </div>
   <div>
-    <label class="block">Device Type</label>
-    <select name="device_type_id" class="w-full p-2 text-black" required>
+    <label for="device_type_id" class="block">Device Type</label>
+    <select id="device_type_id" name="device_type_id" class="w-full p-2 text-black" required>
       <option value="">---</option>
       {% for dt in device_types %}
       <option value="{{ dt.id }}" {% if device and device.device_type_id == dt.id %}selected{% endif %}>{{ dt.name }}</option>
@@ -50,8 +50,8 @@
     </select>
   </div>
   <div>
-    <label class="block">Location</label>
-    <select name="location_id" class="w-full p-2 text-black">
+    <label for="location_id" class="block">Location</label>
+    <select id="location_id" name="location_id" class="w-full p-2 text-black">
       <option value="">---</option>
       {% for loc in locations %}
       <option value="{{ loc.id }}" {% if device and device.location_id == loc.id %}selected{% endif %}>{{ loc.name }} ({{ loc.location_type }})</option>
@@ -60,8 +60,8 @@
   </div>
   {% if device %}
   <div>
-    <label class="block">Status</label>
-    <select name="status" class="w-full p-2 text-black">
+    <label for="status" class="block">Status</label>
+    <select id="status" name="status" class="w-full p-2 text-black">
       <option value="">---</option>
       {% for st in status_options %}
       <option value="{{ st }}" {% if device and device.status == st %}selected{% endif %}>{{ st }}</option>
@@ -69,7 +69,7 @@
     </select>
   </div>
   <div>
-    <label class="block">VLAN <span id="vlan-suggestion" class="ml-2 text-sm text-green-400"></span></label>
+    <label for="vlan-field" class="block">VLAN <span id="vlan-suggestion" class="ml-2 text-sm text-green-400"></span></label>
     <select name="vlan_id" id="vlan-field" class="w-full p-2 text-black">
       <option value="">---</option>
       {% for vlan in vlans %}
@@ -79,8 +79,8 @@
   </div>
   {% endif %}
   <div>
-    <label class="block">SSH Profile</label>
-    <select name="ssh_credential_id" class="w-full p-2 text-black">
+    <label for="ssh_credential_id" class="block">SSH Profile</label>
+    <select id="ssh_credential_id" name="ssh_credential_id" class="w-full p-2 text-black">
       <option value="">---</option>
       {% for cred in ssh_credentials %}
       <option value="{{ cred.id }}" {% if device and device.ssh_credential_id == cred.id %}selected{% endif %}>{{ cred.name }}</option>
@@ -88,8 +88,8 @@
     </select>
   </div>
   <div>
-    <label class="block">SNMP Profile</label>
-    <select name="snmp_community_id" class="w-full p-2 text-black">
+    <label for="snmp_community_id" class="block">SNMP Profile</label>
+    <select id="snmp_community_id" name="snmp_community_id" class="w-full p-2 text-black">
       <option value="">---</option>
       {% for snmp in snmp_communities %}
       <option value="{{ snmp.id }}" {% if device and device.snmp_community_id == snmp.id %}selected{% endif %}>{{ snmp.name }}</option>
@@ -97,26 +97,26 @@
     </select>
   </div>
   <div>
-    <label class="inline-flex items-center">
-      <input type="checkbox" name="on_lasso" value="1" class="mr-2" {% if device and device.on_lasso %}checked{% endif %}>
+    <label for="on_lasso" class="inline-flex items-center">
+      <input id="on_lasso" type="checkbox" name="on_lasso" value="1" class="mr-2" {% if device and device.on_lasso %}checked{% endif %}>
       On Lasso
     </label>
   </div>
   <div>
-    <label class="inline-flex items-center">
-      <input type="checkbox" name="on_r1" value="1" class="mr-2" {% if device and device.on_r1 %}checked{% endif %}>
+    <label for="on_r1" class="inline-flex items-center">
+      <input id="on_r1" type="checkbox" name="on_r1" value="1" class="mr-2" {% if device and device.on_r1 %}checked{% endif %}>
       On R1
     </label>
   </div>
   <div>
-    <label class="inline-flex items-center">
-      <input type="checkbox" name="priority" value="1" class="mr-2" {% if device and device.priority %}checked{% endif %}>
+    <label for="priority" class="inline-flex items-center">
+      <input id="priority" type="checkbox" name="priority" value="1" class="mr-2" {% if device and device.priority %}checked{% endif %}>
       Priority Device
     </label>
   </div>
   <div>
-    <label class="block">Site</label>
-    <select name="site_id" class="w-full p-2 text-black">
+    <label for="site_id" class="block">Site</label>
+    <select id="site_id" name="site_id" class="w-full p-2 text-black">
       <option value="">-- None --</option>
       {% for site in sites %}
       <option value="{{ site.id }}" {% if device and device.site_id == site.id %}selected{% endif %}>{{ site.name }}</option>
@@ -124,16 +124,16 @@
     </select>
   </div>
   <div>
-    <label class="block">Config Pull Interval</label>
-    <select name="config_pull_interval" class="w-full p-2 text-black">
+    <label for="config_pull_interval" class="block">Config Pull Interval</label>
+    <select id="config_pull_interval" name="config_pull_interval" class="w-full p-2 text-black">
       {% for opt in ['none','hourly','daily','weekly'] %}
       <option value="{{ opt }}" {% if device and device.config_pull_interval == opt %}selected{% endif %}>{{ opt.title() }}</option>
       {% endfor %}
     </select>
   </div>
   <div class="md:col-span-2">
-    <label class="block">Tags</label>
-    <input type="text" name="tag_names" list="tag-list" value="{{ device.tags | rejectattr('name', 'in', ['complete','incomplete']) | map(attribute='name') | join(', ') if device else '' }}" class="w-full p-2 text-black" />
+    <label for="tag_names" class="block">Tags</label>
+    <input id="tag_names" type="text" name="tag_names" list="tag-list" value="{{ device.tags | rejectattr('name', 'in', ['complete','incomplete']) | map(attribute='name') | join(', ') if device else '' }}" class="w-full p-2 text-black" />
     <datalist id="tag-list">
       {% for t in get_tags() %}
       <option value="{{ t.name }}">{{ t.name }}</option>

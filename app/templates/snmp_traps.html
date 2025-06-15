@@ -4,7 +4,7 @@
 <h1 class="text-xl mb-4">SNMP Traps</h1>
 <form method="get" class="mb-4">
   <label class="mr-2">Device:
-    <select name="device_id" onchange="this.form.submit()">
+    <select id="device_id" name="device_id" onchange="this.form.submit()">
       <option value="">All</option>
       {% for d in devices %}
       <option value="{{ d.id }}" {% if device_id and d.id == device_id %}selected{% endif %}>{{ d.hostname }}</option>
@@ -12,13 +12,13 @@
     </select>
   </label>
   <label class="mr-2">OID:
-    <input type="text" name="oid" value="{{ oid or '' }}" onchange="this.form.submit()">
+    <input id="oid" type="text" name="oid" value="{{ oid or '' }}" onchange="this.form.submit()">
   </label>
   <label class="mr-2">Start:
-    <input type="datetime-local" name="start" value="{{ start or '' }}" onchange="this.form.submit()">
+    <input id="start" type="datetime-local" name="start" value="{{ start or '' }}" onchange="this.form.submit()">
   </label>
   <label>End:
-    <input type="datetime-local" name="end" value="{{ end or '' }}" onchange="this.form.submit()">
+    <input id="end" type="datetime-local" name="end" value="{{ end or '' }}" onchange="this.form.submit()">
   </label>
 </form>
 <table class="min-w-full text-left">

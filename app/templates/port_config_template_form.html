@@ -4,12 +4,12 @@
 <h1 class="text-xl mb-4">{{ form_title }}</h1>
 <form method="post" class="space-y-4">
   <div>
-    <label class="block">Name</label>
-    <input type="text" name="name" value="{{ template.name if template else '' }}" class="w-full p-2 text-black" required />
+    <label for="name" class="block">Name</label>
+    <input id="name" type="text" name="name" value="{{ template.name if template else '' }}" class="w-full p-2 text-black" required />
   </div>
   <div>
-    <label class="block">Config Text</label>
-    <textarea name="config_text" rows="5" class="w-full p-2 text-black" required>{{ template.config_text if template else '' }}</textarea>
+    <label for="config_text" class="block">Config Text</label>
+    <textarea id="config_text" name="config_text" rows="5" class="w-full p-2 text-black" required>{{ template.config_text if template else '' }}</textarea>
   </div>
   {% if template and template.last_edited %}
   <p class="text-sm">Last Edited {{ template.last_edited.strftime('%Y-%m-%d %H:%M:%S') }}{% if template.edited_by %} by {{ template.edited_by.email }}{% endif %}</p>

@@ -4,12 +4,12 @@
 <h1 class="text-xl mb-4">{{ form_title }}</h1>
 <form method="post" class="space-y-4">
   <div>
-    <label class="block">Name</label>
-    <input type="text" name="name" value="{{ location.name if location else '' }}" class="w-full p-2 text-black" required />
+    <label for="name" class="block">Name</label>
+    <input id="name" type="text" name="name" value="{{ location.name if location else '' }}" class="w-full p-2 text-black" required />
   </div>
   <div>
-    <label class="block">Type</label>
-    <select name="location_type" class="w-full p-2 text-black" required>
+    <label for="location_type" class="block">Type</label>
+    <select id="location_type" name="location_type" class="w-full p-2 text-black" required>
       {% for lt in location_types %}
       <option value="{{ lt }}" {% if location and location.location_type == lt %}selected{% endif %}>{{ lt }}</option>
       {% endfor %}

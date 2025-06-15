@@ -5,7 +5,7 @@
 <a href="/devices/{{ device.id }}/ports" class="underline">Back to Ports</a>
 <form method="get" class="my-4">
   <label class="mr-2">Interface:
-    <select name="interface" onchange="this.form.submit()">
+    <select id="interface" name="interface" onchange="this.form.submit()">
       <option value="">All</option>
       {% for intf in interfaces %}
       <option value="{{ intf }}" {% if interface == intf %}selected{% endif %}>{{ intf }}</option>
@@ -13,13 +13,13 @@
     </select>
   </label>
   <label class="mr-2">Start:
-    <input type="date" name="start" value="{{ start or '' }}" onchange="this.form.submit()">
+    <input id="start" type="date" name="start" value="{{ start or '' }}" onchange="this.form.submit()">
   </label>
   <label class="mr-2">End:
-    <input type="date" name="end" value="{{ end or '' }}" onchange="this.form.submit()">
+    <input id="end" type="date" name="end" value="{{ end or '' }}" onchange="this.form.submit()">
   </label>
-  <label>
-    <input type="checkbox" name="changes_only" value="1" {% if changes_only %}checked{% endif %} onchange="this.form.submit()">
+  <label for="changes_only">
+    <input id="changes_only" type="checkbox" name="changes_only" value="1" {% if changes_only %}checked{% endif %} onchange="this.form.submit()">
     Changes only
   </label>
 </form>

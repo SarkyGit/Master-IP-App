@@ -4,20 +4,20 @@
 <h1 class="text-xl mb-4">{{ form_title }}</h1>
 <form method="post" class="space-y-4">
   <div>
-    <label class="block">Name</label>
-    <input type="text" name="name" value="{{ cred.name if cred else '' }}" class="w-full p-2 text-black" required />
+    <label for="name" class="block">Name</label>
+    <input id="name" type="text" name="name" value="{{ cred.name if cred else '' }}" class="w-full p-2 text-black" required />
   </div>
   <div>
-    <label class="block">Username</label>
-    <input type="text" name="username" value="{{ cred.username if cred else '' }}" class="w-full p-2 text-black" required />
+    <label for="username" class="block">Username</label>
+    <input id="username" type="text" name="username" value="{{ cred.username if cred else '' }}" class="w-full p-2 text-black" required />
   </div>
   <div>
-    <label class="block">Password</label>
-    <input type="password" name="password" value="{{ cred.password if cred else '' }}" class="w-full p-2 text-black" />
+    <label for="password" class="block">Password</label>
+    <input id="password" type="password" name="password" value="{{ cred.password if cred else '' }}" class="w-full p-2 text-black" />
   </div>
   <div>
-    <label class="block">Private Key</label>
-    <textarea name="private_key" class="w-full p-2 text-black">{{ cred.private_key if cred else '' }}</textarea>
+    <label for="private_key" class="block">Private Key</label>
+    <textarea id="private_key" name="private_key" class="w-full p-2 text-black">{{ cred.private_key if cred else '' }}</textarea>
   </div>
   {% if error %}
   <p class="text-red-500">{{ error }}</p>

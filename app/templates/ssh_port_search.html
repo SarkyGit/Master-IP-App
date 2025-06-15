@@ -4,14 +4,14 @@
 <h1 class="text-xl mb-4">Port Search</h1>
 <form method="post" class="space-y-4">
   <div>
-    <label class="block">Search</label>
-    <input type="text" name="search" value="{{ search or '' }}" class="p-2 text-black" required />
+    <label for="search" class="block">Search</label>
+    <input id="search" type="text" name="search" value="{{ search or '' }}" class="p-2 text-black" required />
   </div>
   <div>
-    <label class="block">Switches</label>
+    <label for="device_ids" class="block">Switches</label>
     {% for dev in devices %}
-    <label class="block">
-      <input type="checkbox" name="device_ids" value="{{ dev.id }}" {% if selected and dev.id in selected %}checked{% endif %} />
+    <label for="device_ids" class="block">
+      <input id="device_ids" type="checkbox" name="device_ids" value="{{ dev.id }}" {% if selected and dev.id in selected %}checked{% endif %} />
       {{ dev.hostname }}
     </label>
     {% endfor %}

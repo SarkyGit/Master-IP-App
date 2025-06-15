@@ -4,16 +4,16 @@
 <h1 class="text-xl mb-4">Bulk VLAN Config Push</h1>
 <form method="post" class="space-y-4">
   <div>
-    <label class="block">VLAN</label>
-    <select name="vlan_id" class="w-full p-2 text-black">
+    <label for="vlan_id" class="block">VLAN</label>
+    <select id="vlan_id" name="vlan_id" class="w-full p-2 text-black">
       {% for vlan in vlans %}
       <option value="{{ vlan.id }}" {% if selected_vlan == vlan.id %}selected{% endif %}>{{ vlan.tag }} - {{ vlan.description or '' }}</option>
       {% endfor %}
     </select>
   </div>
   <div>
-    <label class="block">Config Template (optional)</label>
-    <select name="template_id" class="w-full p-2 text-black">
+    <label for="template_id" class="block">Config Template (optional)</label>
+    <select id="template_id" name="template_id" class="w-full p-2 text-black">
       <option value="">-- Manual Config --</option>
       {% for tpl in templates %}
       <option value="{{ tpl.id }}" {% if template_id == tpl.id %}selected{% endif %}>{{ tpl.name }}</option>
@@ -21,12 +21,12 @@
     </select>
   </div>
   <div>
-    <label class="block">Manual Config</label>
-    <textarea name="config_text" rows="5" class="w-full p-2 text-black">{{ config_text or '' }}</textarea>
+    <label for="config_text" class="block">Manual Config</label>
+    <textarea id="config_text" name="config_text" rows="5" class="w-full p-2 text-black">{{ config_text or '' }}</textarea>
   </div>
   <div>
-    <label class="block">Device Model Filter (optional)</label>
-    <input type="text" name="model_filter" class="w-full p-2 text-black" value="{{ model_filter }}" />
+    <label for="model_filter" class="block">Device Model Filter (optional)</label>
+    <input id="model_filter" type="text" name="model_filter" class="w-full p-2 text-black" value="{{ model_filter }}" />
   </div>
   {% if device_count is not none %}
   <p class="text-yellow-400">{{ device_count }} devices will receive this configuration.</p>

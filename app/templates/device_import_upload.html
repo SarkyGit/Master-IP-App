@@ -4,8 +4,8 @@
 <form method="post" enctype="multipart/form-data" class="space-y-4">
   {% if current_user.role == 'superadmin' %}
   <div>
-    <label class="block">Site</label>
-    <select name="site_id" class="w-full p-2 text-black">
+    <label for="site_id" class="block">Site</label>
+    <select id="site_id" name="site_id" class="w-full p-2 text-black">
       {% for s in sites %}
       <option value="{{ s.id }}">{{ s.name }}</option>
       {% endfor %}
@@ -13,8 +13,8 @@
   </div>
   {% endif %}
   <div>
-    <label class="block">CSV or Spreadsheet</label>
-    <input type="file" name="import_file" required class="w-full text-black" />
+    <label for="import_file" class="block">CSV or Spreadsheet</label>
+    <input id="import_file" type="file" name="import_file" required class="w-full text-black" />
   </div>
   <button type="submit" class="bg-blue-600 px-4 py-2">Next</button>
 </form>

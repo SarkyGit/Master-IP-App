@@ -23,14 +23,14 @@
 {% endif %}
 <form method="get" class="my-2">
   <label class="me-2">SNMP Status:
-    <select name="snmp" onchange="this.form.submit()">
+    <select id="snmp" name="snmp" onchange="this.form.submit()">
       <option value="" {% if not snmp %}selected{% endif %}>All</option>
       <option value="reachable" {% if snmp == 'reachable' %}selected{% endif %}>Reachable</option>
       <option value="unreachable" {% if snmp == 'unreachable' %}selected{% endif %}>Unreachable</option>
     </select>
   </label>
   <label>Sort:
-    <select name="sort" onchange="this.form.submit()">
+    <select id="sort" name="sort" onchange="this.form.submit()">
       <option value="" {% if not sort %}selected{% endif %}>---</option>
       <option value="uptime" {% if sort == 'uptime' %}selected{% endif %}>Uptime Asc</option>
       <option value="-uptime" {% if sort == '-uptime' %}selected{% endif %}>Uptime Desc</option>
