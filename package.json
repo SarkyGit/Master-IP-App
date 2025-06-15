@@ -1,0 +1,20 @@
+{
+  "name": "master-ip-app",
+  "version": "1.0.0",
+  "description": "This application manages network devices, VLANs and configuration backups using [FastAPI](https://fastapi.tiangolo.com/). All data is stored in a PostgreSQL database specified via the `DATABASE_URL` environment variable. SQLite is not supported.",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:css": "unocss \"app/templates/**/*.html\" -o static/css/unocss.css"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "unocss": "^66.2.0"
+  }
+}
