@@ -3,8 +3,8 @@
 {% block content %}
 <h1 class="text-xl mb-4">Terminal - {{ device.hostname }}</h1>
 <div id="terminal" class="w-full h-screen bg-black text-white"></div>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@4.19.0/css/xterm.css" />
-<script src="https://cdn.jsdelivr.net/npm/xterm@4.19.0/lib/xterm.min.js"></script>
+<link rel="stylesheet" href="{{ request.url_for('static', path='css/xterm.css') }}" />
+<script src="{{ request.url_for('static', path='js/xterm.js') }}"></script>
 <script>
   window.deviceId = {{ device.id }};
 </script>

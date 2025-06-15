@@ -128,7 +128,7 @@
       <p>{{ message }}</p>
       {% block content %}{% endblock %}
     </div>
-    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="{{ request.url_for('static', path='js/alpine.min.js') }}" defer></script>
     {% block extra_scripts %}{% endblock %}
   </body>
 </html>
