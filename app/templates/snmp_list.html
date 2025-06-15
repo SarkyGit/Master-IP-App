@@ -22,16 +22,16 @@
       <td class="px-4 py-2">{{ profile.community_string }}</td>
       <td class="px-4 py-2">{{ profile.version }}</td>
       <td class="px-4 py-2">
-        <a href="/admin/snmp/{{ profile.id }}/edit" class="text-blue-400 underline mr-2">Edit</a>
-        <form method="post" action="/admin/snmp/{{ profile.id }}/delete" style="display:inline">
-          <button type="submit" class="text-red-400 underline" onclick="return confirm('Delete profile?')">Delete</button>
+        <a href="/admin/snmp/{{ profile.id }}/edit" class="btn btn-blue mr-2">Edit</a>
+        <form method="post" action="/admin/snmp/{{ profile.id }}/delete" class="inline">
+          <button type="submit" class="btn btn-red" onclick="return confirm('Delete profile?')">Delete</button>
         </form>
       </td>
     </tr>
   {% endfor %}
   </tbody>
 </table>
-<button type="submit" class="mt-2 bg-red-600 px-3 py-1">Delete Selected</button>
+<button type="submit" class="btn btn-red ">Delete Selected</button>
 </form>
 <script>
 document.getElementById('select-all').addEventListener('change', function(e){

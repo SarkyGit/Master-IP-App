@@ -13,7 +13,7 @@
   Current Config
   <a
     href="/network/port-configs/new?config_text={{ config|urlencode }}"
-    class="ml-2 underline text-sm text-blue-400"
+    class="ml-2 underline text-sm btn btn-blue"
     >Add as Template</a
   >
 </h2>
@@ -24,7 +24,7 @@
   Previous Config
   <a
     href="/network/port-configs/new?config_text={{ prev_config|urlencode }}"
-    class="ml-2 underline text-sm text-blue-400"
+    class="ml-2 underline text-sm btn btn-blue"
     >Add as Template</a
   >
 </h2>
@@ -34,7 +34,7 @@
 <form method="post" class="space-y-4">
   <textarea name="config_text" rows="5" class="w-full p-2 text-black" required></textarea>
   <div>
-    <button type="submit" class="bg-blue-600 px-4 py-2">Queue Change</button>
+    <button type="submit" class="btn btn-blue ">Queue Change</button>
     <a href="/devices/{{ device.id }}/ports" class="ml-2 underline">Back</a>
   </div>
 </form>

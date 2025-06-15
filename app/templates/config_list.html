@@ -2,7 +2,7 @@
 
 {% block content %}
 <h1 class="text-xl mb-4">Config Backups for {{ device.hostname }}</h1>
-<p><a href="/compare-configs?device_id={{ device.id }}" class="text-blue-400 underline">Compare</a></p>
+<p><a href="/compare-configs?device_id={{ device.id }}" class="btn btn-blue ">Compare</a></p>
 {% if device.last_snmp_check %}
 <p class="mb-4">
   {% if device.snmp_reachable %}
@@ -46,13 +46,13 @@
       </td>
       <td class="px-4 py-2">
         {% if not loop.last %}
-        <a href="/configs/{{ backup.id }}/diff" class="text-blue-400 underline">View Diff</a>
+        <a href="/configs/{{ backup.id }}/diff" class="btn btn-blue ">View Diff</a>
         {% else %}
         N/A
         {% endif %}
       </td>
       <td class="px-4 py-2" x-data="{open:false}">
-        <button class="text-blue-400 underline" @click="open = true">View Config</button>
+        <button class="btn btn-blue " @click="open = true">View Config</button>
         <div x-show="open" class="fixed inset-0 bg-black bg-opacity-50 flex justify-end" x-cloak>
           <div class="bg-gray-800 w-1/2 p-4">
             <div class="flex justify-between items-center border-b border-gray-700 pb-2">

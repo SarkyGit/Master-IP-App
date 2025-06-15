@@ -6,22 +6,22 @@
 <table class="min-w-full text-left mt-4">
   <thead>
     <tr>
-      <th class="px-4 py-2 text-left">Device</th>
-      <th class="px-4 py-2 text-left">Tags (comma separated)</th>
+      <th class=" text-left">Device</th>
+      <th class=" text-left">Tags (comma separated)</th>
     </tr>
   </thead>
   <tbody>
   {% for dev in devices %}
     <tr class="border-t border-gray-700">
-      <td class="px-4 py-2">{{ dev.hostname }}</td>
-      <td class="px-4 py-2">
+      <td class="">{{ dev.hostname }}</td>
+      <td class="">
         <input type="text" name="tags_{{ dev.id }}" value="{{ dev.tags | rejectattr('name', 'in', ['complete','incomplete']) | map(attribute='name') | join(', ') }}" class="w-full p-2 text-black" />
       </td>
     </tr>
   {% endfor %}
   </tbody>
 </table>
-<button type="submit" class="mt-2 bg-blue-600 px-4 py-1">Save</button>
+<button type="submit" class="mt-2 btn btn-blue px-4 py-1">Save</button>
 </form>
 <p class="mt-2">Automatic tags <em>complete</em> and <em>incomplete</em> cannot be removed.</p>
 {% endblock %}

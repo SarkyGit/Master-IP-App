@@ -23,7 +23,7 @@
       <td class="px-4 py-2">{{ entry.details }}</td>
       <td class="px-4 py-2">
         {% if entry.device %}
-        <a href="/compare-configs?device_id={{ entry.device.id }}" class="underline text-blue-400">Diff</a>
+        <a href="/compare-configs?device_id={{ entry.device.id }}" class="btn btn-blue">Diff</a>
         {% endif %}
       </td>
     </tr>

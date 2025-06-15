@@ -66,3 +66,15 @@ table td {
 .logged-out:hover {
   background-color: #333333;
 }
+
+/* Theme-aware button colours */
+.btn-blue { background-color: #0ea5e9; color: #ffffff; }
+.btn-blue:hover { background-color: #0284c7; }
+.btn-red { background-color: #dc2626; color: #ffffff; }
+.btn-red:hover { background-color: #b91c1c; }
+.btn-green { background-color: #16a34a; color: #ffffff; }
+.btn-green:hover { background-color: #15803d; }
+.btn-yellow { background-color: #eab308; color: #000000; }
+.btn-yellow:hover { background-color: #ca8a04; }
+.btn-grey { background-color: #4b5563; color: #ffffff; }
+.btn-grey:hover { background-color: #374151; }
