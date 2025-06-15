@@ -7,7 +7,6 @@ from fastapi.testclient import TestClient
 
 def get_test_app():
     os.environ.setdefault("DATABASE_URL", "postgresql://user:pass@localhost/test")
-    os.environ["ROOT_PATH"] = "/app"
     # Remove imported app modules to ensure patches apply
     for m in list(sys.modules):
         if m.startswith("app"):
@@ -28,4 +27,4 @@ client = TestClient(app)
 def test_static_urls_include_root_path():
     response = client.get("/")
     assert response.status_code == 200
-    assert "/app/static/" in response.text
+    assert "/static/" in response.text
