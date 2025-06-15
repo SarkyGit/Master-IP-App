@@ -3,7 +3,8 @@
 {% block content %}
 <h1 class="text-xl mb-4">Queued Tasks</h1>
 {% if queued %}
-<table class="min-w-full text-left">
+<div class="w-full overflow-auto px-4">
+<table class="w-full table-fixed text-left">
   <thead>
     <tr>
       <th class="text-left">Device</th>
@@ -19,6 +20,7 @@
     {% endfor %}
   </tbody>
 </table>
+</div>
 {% else %}
 <p class="text-base text-[var(--card-text)]">No queued tasks.</p>
 {% endif %}
