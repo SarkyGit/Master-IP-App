@@ -2,19 +2,21 @@
 {% block content %}
 <h1 class="text-xl mb-4">Device Import</h1>
 <form method="post" enctype="multipart/form-data" class="space-y-4">
-  {% if current_user.role == 'superadmin' %}
-  <div>
-    <label for="site_id" class="block">Site</label>
-    <select id="site_id" name="site_id" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
-      {% for s in sites %}
-      <option value="{{ s.id }}">{{ s.name }}</option>
-      {% endfor %}
-    </select>
-  </div>
-  {% endif %}
-  <div>
-    <label for="import_file" class="block">CSV or Spreadsheet</label>
-    <input id="import_file" type="file" name="import_file" required class="w-full text-[var(--input-text)]" />
+  <div class="flex flex-col lg:flex-row gap-6">
+    {% if current_user.role == 'superadmin' %}
+    <div class="flex-1 space-y-2">
+      <label for="site_id" class="block">Site</label>
+      <select id="site_id" name="site_id" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+        {% for s in sites %}
+        <option value="{{ s.id }}">{{ s.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    {% endif %}
+    <div class="flex-1 space-y-2">
+      <label for="import_file" class="block">CSV or Spreadsheet</label>
+      <input id="import_file" type="file" name="import_file" required class="w-full text-[var(--input-text)]" />
+    </div>
   </div>
   <button type="submit" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Next</button>
 </form>

@@ -7,13 +7,15 @@
     <label for="name" class="block">Name</label>
     <input id="name" type="text" name="name" value="{{ cred.name if cred else '' }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" required />
   </div>
-  <div>
-    <label for="username" class="block">Username</label>
-    <input id="username" type="text" name="username" value="{{ cred.username if cred else '' }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" required />
-  </div>
-  <div>
-    <label for="password" class="block">Password</label>
-    <input id="password" type="password" name="password" value="{{ cred.password if cred else '' }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" />
+  <div class="flex flex-col lg:flex-row gap-6">
+    <div class="flex-1 space-y-2">
+      <label for="username" class="block">Username</label>
+      <input id="username" type="text" name="username" value="{{ cred.username if cred else '' }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" required />
+    </div>
+    <div class="flex-1 space-y-2">
+      <label for="password" class="block">Password</label>
+      <input id="password" type="password" name="password" value="{{ cred.password if cred else '' }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" />
+    </div>
   </div>
   <div>
     <label for="private_key" class="block">Private Key</label>
