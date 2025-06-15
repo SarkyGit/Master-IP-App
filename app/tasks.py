@@ -338,7 +338,7 @@ def start_config_scheduler(app):
 
 def stop_config_scheduler() -> None:
     if scheduler.running:
-        scheduler.shutdown(wait=False)
+        scheduler.shutdown(wait=True)
 
 
 # -------------------- SNMP Trap Listener --------------------
