@@ -14,6 +14,26 @@
   </head>
   <body>
     <header>
+      <div class="top-header">
+        <div class="container mx-auto flex items-center justify-between">
+          <div class="logo-box flex items-center">
+            {% if logo_url() %}
+            <img src="{{ logo_url() }}" alt="Logo" class="h-10 mr-2" />
+            {% endif %}
+            <span>CEST Master IP and Config Tool</span>
+            {% if current_user and current_user.role == 'superadmin' %}
+            <a href="/admin/logo" class="ml-2 underline text-sm">Upload Logo</a>
+            {% endif %}
+          </div>
+          <div class="login-area">
+            {% if current_user %}
+            <a href="/auth/logout" class="logout">Logout</a>
+            {% else %}
+            <a href="/auth/login" class="logout">Login</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
       {% block nav %}
       <nav class="bg-gray-800 text-white">
         <div class="container mx-auto flex flex-wrap items-center justify-between" x-data="{open:false}">
@@ -112,9 +132,6 @@
                 {% endif %}
                 <div id="admin-menu" data-admin-menu data-label="{{ 'Super Admin' if current_user.role == 'superadmin' else 'Admin' }}" data-items='{{ admin_items|tojson }}'></div>
                 {% endif %}
-                <a href="/auth/logout" class="text-blue-400 underline">Logout</a>
-              {% else %}
-                <a href="/auth/login" class="text-blue-400 underline">Login</a>
               {% endif %}
             </div>
           </div>

@@ -29,6 +29,7 @@ from .export import router as export_router
 from .snmp_traps import router as snmp_traps_router
 from .syslog import router as syslog_router
 from .tag_manager import router as tag_manager_router
+from .admin_logo import router as admin_logo_router
 
 __all__ = [
     "auth_router",
@@ -62,4 +63,5 @@ __all__ = [
     "snmp_traps_router",
     "syslog_router",
     "tag_manager_router",
+    "admin_logo_router",
 ]
