@@ -22,7 +22,7 @@
     <option value="{{ b.id }}" {% if b.id == backup_b %}selected{% endif %}>{{ b.created_at }}</option>
     {% endfor %}
   </select>
-  <button type="submit" class="ml-2  px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition text-white">Compare</button>
+  <button type="submit" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition ml-2">Compare</button>
   {% endif %}
 </form>
 {% if device %}

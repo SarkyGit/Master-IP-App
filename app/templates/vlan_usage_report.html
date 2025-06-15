@@ -4,7 +4,7 @@
 <a href="?format=csv" class="underline">Download CSV</a>
 {% for row in report %}
   <details class="mb-3">
-    <summary class="px-2 py-1 cursor-pointer {% if row.count == 0 %}bg-red-700{% elif row.count > 10 %}bg-yellow-700{% else %}bg-gray-800{% endif %}">
+    <summary class="px-2 py-1 cursor-pointer {% if row.count == 0 %}bg-red-700{% elif > 10 %}bg-yellow-700{% else %}bg-gray-800{% endif %}">
       VLAN {{ row.vlan.tag }} - {{ row.vlan.description or '' }} ({{ row.count }} devices)
     </summary>
     {% if row.devices %}

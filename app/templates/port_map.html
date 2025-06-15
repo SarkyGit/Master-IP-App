@@ -10,8 +10,8 @@
   {% for row in rows %}
   <div class="flex justify-center space-x-1">
     {% for port in row %}
-    <div class="relative group w-16 h-14 text-xs rounded text-white flex flex-col items-center justify-center {% if port.status == 'up' %}bg-green-600{% elif port.status == 'down' %}bg-red-600{% else %}bg-gray-600{% endif %}">
-      <span>{{ port.number or port.name }}</span>
+    <div class="relative group w-16 h-14 text-xs rounded text-white flex flex-col items-center justify-center {% if port.status == 'up' %}bg-green-600{% elif 'down' %}bg-red-600{% else %}bg-gray-600{% endif %}">
+      <span class="text-base text-gray-100">{{ port.number or port.name }}</span>
       {% if port.vlan %}<span class="text-[0.65rem]">{{ port.vlan }}</span>{% endif %}
       {% if port.poe %}<span class="text-[0.6rem]">{{ port.poe }}W</span>{% endif %}
       {% if port.descr %}

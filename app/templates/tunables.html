@@ -2,7 +2,7 @@
 
 {% block content %}
 <h1 class="text-xl mb-4">System Tunables</h1>
-<p class="mb-3">Current Version: <span class="fw-bold">{{ version }}</span></p>
+<p class="mb-3 text-base text-gray-100">Current Version: <span class="fw-bold">{{ version }}</span></p>
 
 <div x-data="{tab:0}">
   <ul class="flex border-b" >
@@ -40,7 +40,7 @@
           {% else %}
           <input type="text" name="value" value="{{ tunable.value }}" class="text-black">
           {% endif %}
-          <button type="submit" class="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition px-2 py-1 ml-2">Save</button>
+          <button type="submit" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition px-2 py-1 ml-2">Save</button>
         </div>
       </form>
       {% endfor %}
