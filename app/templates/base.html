@@ -68,73 +68,90 @@
         </div>
       </div>
       {% block nav %}
-      <nav class="bg-gray-800 text-white">
-        <div class="container mx-auto flex flex-wrap items-center justify-between" x-data="{open:false}">
-          <button @click="open = !open" class="lg:hidden p-2">☰</button>
-          <div :class="{'block': open, 'hidden': !open}" class="w-full lg:block lg:w-auto">
-            <ul class="lg:flex lg:space-x-4">
+      <nav x-data="tabsNav()" class="bg-[var(--nav-bg)] text-[var(--nav-text)] p-2">
+        <div class="container mx-auto">
+          <div class="flex items-center justify-between">
+            <button @click="mobile = !mobile" class="lg:hidden p-2 rounded">☰</button>
+            <ul :class="mobile ? 'flex flex-col space-y-2' : 'hidden lg:flex space-x-2'">
               {% if current_user %}
-              <li class="relative py-1" x-data="{open:false}">
-                <button @click="open = !open" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition">Inventory</button>
-                <ul x-show="open" @click.away="open = false" class="absolute mt-2 bg-gray-800 text-white py-2 w-48" x-cloak>
-                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/devices">All Devices</a></li>
-                  {% for dtype in get_device_types() %}
-                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/devices/type/{{ dtype.id }}">{{ dtype.name }}</a></li>
-                  {% endfor %}
-                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/inventory/audit">Audit</a></li>
-                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/inventory/trailers">Trailer Inventory</a></li>
-                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/inventory/sites">Site Inventory</a></li>
-                </ul>
-              </li>
-              <li class="relative py-1" x-data="{open:false}">
-                <button @click="open = !open" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition">Network</button>
-                <ul x-show="open" @click.away="open = false" class="absolute mt-2 bg-gray-800 text-white py-2 w-48" x-cloak>
-                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/network/ip-search">IP Search</a></li>
-                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/vlans">VLAN MGMT</a></li>
-                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/network/port-configs">Port Configs</a></li>
-                </ul>
-              </li>
-                <li class="py-1">
-                  <a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition" href="/dashboard">Dashboard</a>
-                </li>
-              <li class="relative py-1" x-data="{open:false}">
-                <button @click="open = !open" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition">Tasks</button>
-                <ul x-show="open" @click.away="open = false" class="absolute mt-2 bg-gray-800 text-white py-2 w-48" x-cloak>
-                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/tasks">Task Queue</a></li>
-                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/devices/duplicates">Duplicate Checker</a></li>
-                  {% if current_user.role in ['admin','superadmin'] %}
-                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/tasks/edit-tags">Edit Tags</a></li>
-                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/tasks/google-sheets">Google Sheets</a></li>
-                  {% endif %}
-                </ul>
-              </li>
-              <li class="relative py-1" x-data="{open:false}">
-                <button @click="open = !open" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition">Reports</button>
-                <ul x-show="open" @click.away="open = false" class="absolute mt-2 bg-gray-800 text-white py-2 w-48" x-cloak>
-                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/reports/vlan-usage">VLAN Usage</a></li>
-                </ul>
-              </li>
+              <li><button @click="toggle('inventory')" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">Inventory</button></li>
+              <li><button @click="toggle('network')" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">Network</button></li>
+              <li><button @click="toggle('tasks')" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">Tasks</button></li>
+              <li><button @click="toggle('reports')" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">Reports</button></li>
               {% if current_user.role in ['editor','admin','superadmin'] %}
-              <li class="py-1">
-                <a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition" href="/bulk/device-import">Bulk Add Devices</a>
-              </li>
+              <li><button @click="toggle('bulk')" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">Bulk Add</button></li>
               {% endif %}
-              <li class="relative py-1" x-data="{open:false}">
-                <button @click="open = !open" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition">SSH</button>
-                <ul x-show="open" @click.away="open = false" class="absolute mt-2 bg-gray-800 text-white py-2 w-48" x-cloak>
-                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/ssh/port-config">Port Config</a></li>
-                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/ssh/port-check">Port Check</a></li>
-                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/ssh/config-check">Config Check</a></li>
-                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/ssh/port-search">Port Search</a></li>
-                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/ssh/bulk-port-update">Bulk Port Update</a></li>
-                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/bulk/vlan-push">VLAN Bulk Push</a></li>
-                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/ssh/netbird-connect">Initiate Netbird Connection</a></li>
-                </ul>
-              </li>
+              <li><button @click="toggle('ssh')" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">SSH</button></li>
               {% endif %}
             </ul>
           </div>
+          <div class="space-y-2 mt-2">
+            <div x-show="openTabs.includes('inventory')" class="p-2 rounded bg-[var(--submenu-bg)] text-[var(--submenu-text)]" x-cloak>
+              <div :class="mobile ? 'flex flex-col space-y-2' : 'flex space-x-2'">
+                <a href="/devices" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">All Devices</a>
+                {% for dtype in get_device_types() %}
+                <a href="/devices/type/{{ dtype.id }}" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">{{ dtype.name }}</a>
+                {% endfor %}
+                <a href="/inventory/audit" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">Audit</a>
+                <a href="/inventory/trailers" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">Trailer Inventory</a>
+                <a href="/inventory/sites" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">Site Inventory</a>
+              </div>
+            </div>
+            <div x-show="openTabs.includes('network')" class="p-2 rounded bg-[var(--submenu-bg)] text-[var(--submenu-text)]" x-cloak>
+              <div :class="mobile ? 'flex flex-col space-y-2' : 'flex space-x-2'">
+                <a href="/network/ip-search" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">IP Search</a>
+                <a href="/vlans" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">VLAN MGMT</a>
+                <a href="/network/port-configs" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">Port Configs</a>
+              </div>
+            </div>
+            <div x-show="openTabs.includes('tasks')" class="p-2 rounded bg-[var(--submenu-bg)] text-[var(--submenu-text)]" x-cloak>
+              <div :class="mobile ? 'flex flex-col space-y-2' : 'flex space-x-2'">
+                <a href="/tasks" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">Task Queue</a>
+                <a href="/devices/duplicates" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">Duplicate Checker</a>
+                {% if current_user.role in ['admin','superadmin'] %}
+                <a href="/tasks/edit-tags" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">Edit Tags</a>
+                <a href="/tasks/google-sheets" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">Google Sheets</a>
+                {% endif %}
+              </div>
+            </div>
+            <div x-show="openTabs.includes('reports')" class="p-2 rounded bg-[var(--submenu-bg)] text-[var(--submenu-text)]" x-cloak>
+              <div :class="mobile ? 'flex flex-col space-y-2' : 'flex space-x-2'">
+                <a href="/reports/vlan-usage" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">VLAN Usage</a>
+              </div>
+            </div>
+            {% if current_user.role in ['editor','admin','superadmin'] %}
+            <div x-show="openTabs.includes('bulk')" class="p-2 rounded bg-[var(--submenu-bg)] text-[var(--submenu-text)]" x-cloak>
+              <div :class="mobile ? 'flex flex-col space-y-2' : 'flex space-x-2'">
+                <a href="/bulk/device-import" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">Bulk Add Devices</a>
+              </div>
+            </div>
+            {% endif %}
+            <div x-show="openTabs.includes('ssh')" class="p-2 rounded bg-[var(--submenu-bg)] text-[var(--submenu-text)]" x-cloak>
+              <div :class="mobile ? 'flex flex-col space-y-2' : 'flex space-x-2'">
+                <a href="/ssh/port-config" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">Port Config</a>
+                <a href="/ssh/port-check" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">Port Check</a>
+                <a href="/ssh/config-check" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">Config Check</a>
+                <a href="/ssh/port-search" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">Port Search</a>
+                <a href="/ssh/bulk-port-update" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">Bulk Port Update</a>
+                <a href="/bulk/vlan-push" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">VLAN Bulk Push</a>
+                <a href="/ssh/netbird-connect" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">Initiate Netbird Connection</a>
+              </div>
+            </div>
+          </div>
         </div>
+        <script>
+          function tabsNav() {
+            return {
+              mobile: false,
+              openTabs: [],
+              toggle(name) {
+                if (this.openTabs.includes(name)) return;
+                this.openTabs.push(name);
+                if (this.openTabs.length > 2) this.openTabs.shift();
+              }
+            }
+          }
+        </script>
       </nav>
       {% endblock %}
     </header>
