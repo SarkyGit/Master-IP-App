@@ -81,6 +81,10 @@ from app.utils.paths import STATIC_DIR
 # deployments).
 os.makedirs(STATIC_DIR, exist_ok=True)
 
+# Provide visibility into where static assets are expected.  This helps with
+# debugging misconfigured deployments where files may not be found.
+print(f"Serving static files from: {STATIC_DIR}")
+
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 # Store login information in signed cookies
