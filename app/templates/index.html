@@ -2,15 +2,15 @@
 
 {% block content %}
 <h1 class="text-2xl mb-4">Welcome to the CEST Master IP Tool</h1>
-<p class="text-base text-gray-800">This application lets you browse network devices and review configuration history.</p>
-<p class="mt-2 text-base text-gray-100">As a viewer you can:</p>
+<p class="text-base text-[var(--card-text)]">This application lets you browse network devices and review configuration history.</p>
+<p class="mt-2 text-base text-[var(--card-text)]">As a viewer you can:</p>
 <ul class="list-disc list-inside ml-4">
   <li>See the list of registered devices</li>
   <li>Browse saved configuration backups</li>
   <li>Review audit information</li>
 </ul>
-<p class="mt-4 text-base text-gray-100">Log in to access additional features.</p>
+<p class="mt-4 text-base text-[var(--card-text)]">Log in to access additional features.</p>
 {% if not current_user %}
-<p class="mt-4 text-base text-gray-100"><a href="/auth/login" class="underline">Login</a></p>
+<p class="mt-4 text-base text-[var(--card-text)]"><a href="/auth/login" class="underline">Login</a></p>
 {% endif %}
 {% endblock %}

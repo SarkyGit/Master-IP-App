@@ -17,18 +17,18 @@
     {% for intf in interfaces %}
       <tr class="border-t border-gray-700">
         <td class="px-2 py-1">
-          <input type="text" name="name_{{ intf.id }}" value="{{ intf.name }}" class="w-24 p-1 text-black" />
+          <input type="text" name="name_{{ intf.id }}" value="{{ intf.name }}" class="w-24 p-1 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" />
         </td>
         <td class="px-2 py-1">
           <div class="flex items-center">
-            <input type="text" name="desc_{{ intf.id }}" value="{{ intf.description or '' }}" class="w-full p-1 text-black" />
+            <input type="text" name="desc_{{ intf.id }}" value="{{ intf.description or '' }}" class="w-full p-1 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" />
             {% if mismatch.get(intf.id) %}
             <span class="ml-1 text-yellow-400" title="Mismatch with device">&#9888;</span>
             {% endif %}
           </div>
         </td>
         <td class="px-2 py-1">
-          <select name="vlan_{{ intf.id }}" class="p-1 text-black">
+          <select name="vlan_{{ intf.id }}" class="p-1 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
             <option value=""></option>
             {% for v in vlans %}
             <option value="{{ v.id }}" {% if intf.vlan_id==v.id %}selected{% endif %}>{{ v.tag }}</option>
@@ -36,13 +36,13 @@
           </select>
         </td>
         <td class="px-2 py-1">
-          <pre class="bg-gray-800 p-1 whitespace-pre-wrap overflow-auto">{{ live_configs[intf.name] }}</pre>
+          <pre class="bg-[var(--card-bg)] p-1 whitespace-pre-wrap overflow-auto">{{ live_configs[intf.name] }}</pre>
         </td>
       </tr>
     {% endfor %}
     </tbody>
   </table>
-  <button type="submit" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition">Save Changes</button>
+  <button type="submit" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Save Changes</button>
   <a href="/devices/{{ device.id }}/port-map" class="ml-2 underline">Back</a>
 </form>
 {% endblock %}

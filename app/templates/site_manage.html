@@ -1,20 +1,20 @@
 {% extends "base.html" %}
 {% block content %}
 <h1 class="text-xl mb-2">{{ site.name }}</h1>
-<p class="text-base text-gray-800">{{ site.description }}</p>
+<p class="text-base text-[var(--card-text)]">{{ site.description }}</p>
 <h2 class="mt-4 font-bold">Users</h2>
 <ul>
   {% for u in users %}
   <li>{{ u.email }} ({{ u.role }})
     <form method="post" action="/sites/{{ site.id }}/remove-user" class="inline">
       <input type="hidden" name="user_id" value="{{ u.id }}">
-      <button type="submit" class="px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded transition">Remove</button>
+      <button type="submit" class="px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Remove</button>
     </form>
   </li>
   {% endfor %}
 </ul>
 <form method="post" action="/sites/{{ site.id }}/add-user" class="mt-2">
-  <select name="user_id" class="text-black">
+  <select name="user_id" class="rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
     {% for u in all_users %}
     <option value="{{ u.id }}">{{ u.email }}</option>
     {% endfor %}
@@ -26,7 +26,7 @@
   {% for d in devices %}
   <li>{{ d.hostname }} - {{ d.config_pull_interval }}
     <form method="post" action="/sites/{{ site.id }}/device/{{ d.id }}/interval" class="inline">
-      <select name="interval" class="text-black">
+      <select name="interval" class="rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
         {% for opt in ['none','hourly','daily','weekly'] %}
         <option value="{{ opt }}" {% if d.config_pull_interval==opt %}selected{% endif %}>{{ opt }}</option>
         {% endfor %}
@@ -35,13 +35,13 @@
     </form>
     <form method="post" action="/sites/{{ site.id }}/remove-device" class="inline">
       <input type="hidden" name="device_id" value="{{ d.id }}">
-      <button type="submit" class="px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded transition">Remove</button>
+      <button type="submit" class="px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Remove</button>
     </form>
   </li>
   {% endfor %}
 </ul>
 <form method="post" action="/sites/{{ site.id }}/add-device" class="mt-2">
-  <select name="device_id" class="text-black">
+  <select name="device_id" class="rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
     {% for d in all_devices %}
     <option value="{{ d.id }}">{{ d.hostname }}</option>
     {% endfor %}

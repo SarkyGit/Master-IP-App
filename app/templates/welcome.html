@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div id="welcome-cli" class="flex flex-col items-center justify-center text-center min-h-[50vh] font-mono text-cyan-300 bg-gray-900 p-4 rounded">
+<div id="welcome-cli" class="flex flex-col items-center justify-center text-center min-h-[50vh] font-mono text-[var(--card-text)] bg-[var(--card-bg)] p-4 rounded">
   <div class="cli-line opacity-0">Welcome, {{ current_user.email }}.</div>
   <div class="cli-line opacity-0">You are a {{ role|title }}, which allows you the following actions:</div>
   {% for line in text %}
@@ -15,7 +15,7 @@
   {% endfor %}
 </div>
 {% if alert %}
-<div class="mt-4 p-2 bg-yellow-200 text-yellow-900 rounded">{{ alert }}</div>
+<div class="mt-4 p-2 bg-[var(--alert-bg)] text-[var(--btn-text)] rounded">{{ alert }}</div>
 {% endif %}
 {% if login_history %}
 <h2 class="text-xl mt-8 mb-4">Login History</h2>

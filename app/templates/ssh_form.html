@@ -5,25 +5,25 @@
 <form method="post" class="space-y-4">
   <div>
     <label for="name" class="block">Name</label>
-    <input id="name" type="text" name="name" value="{{ cred.name if cred else '' }}" class="w-full p-2 text-black" required />
+    <input id="name" type="text" name="name" value="{{ cred.name if cred else '' }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" required />
   </div>
   <div>
     <label for="username" class="block">Username</label>
-    <input id="username" type="text" name="username" value="{{ cred.username if cred else '' }}" class="w-full p-2 text-black" required />
+    <input id="username" type="text" name="username" value="{{ cred.username if cred else '' }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" required />
   </div>
   <div>
     <label for="password" class="block">Password</label>
-    <input id="password" type="password" name="password" value="{{ cred.password if cred else '' }}" class="w-full p-2 text-black" />
+    <input id="password" type="password" name="password" value="{{ cred.password if cred else '' }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" />
   </div>
   <div>
     <label for="private_key" class="block">Private Key</label>
-    <textarea id="private_key" name="private_key" class="w-full p-2 text-black">{{ cred.private_key if cred else '' }}</textarea>
+    <textarea id="private_key" name="private_key" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">{{ cred.private_key if cred else '' }}</textarea>
   </div>
   {% if error %}
-  <p class="text-red-500">{{ error }}</p>
+  <p class="p-2 rounded bg-[var(--alert-bg)] text-[var(--btn-text)]">{{ error }}</p>
   {% endif %}
   <div>
-    <button type="submit" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition">Submit</button>
+    <button type="submit" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Submit</button>
     <a href="/admin/ssh" class="ml-2 underline">Cancel</a>
   </div>
 </form>

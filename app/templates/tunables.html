@@ -2,7 +2,7 @@
 
 {% block content %}
 <h1 class="text-xl mb-4">System Tunables</h1>
-<p class="mb-3 text-base text-gray-100">Current Version: <span class="fw-bold">{{ version }}</span></p>
+<p class="mb-3 text-base text-[var(--card-text)]">Current Version: <span class="fw-bold">{{ version }}</span></p>
 
 <div x-data="{tab:0}">
   <ul class="flex border-b" >
@@ -32,15 +32,15 @@
           {% if tunable.data_type == 'bool' %}
           <input type="checkbox" name="value" value="true" {% if tunable.value == 'true' %}checked{% endif %}>
           {% elif tunable.data_type == 'choice' %}
-          <select name="value" class="text-black">
+          <select name="value" class="rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
             {% for opt in tunable.options.split(',') %}
             <option value="{{ opt }}" {% if tunable.value == opt %}selected{% endif %}>{{ opt }}</option>
             {% endfor %}
           </select>
           {% else %}
-          <input type="text" name="value" value="{{ tunable.value }}" class="text-black">
+          <input type="text" name="value" value="{{ tunable.value }}" class="rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
           {% endif %}
-          <button type="submit" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition px-2 py-1 ml-2">Save</button>
+          <button type="submit" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition px-2 py-1 ml-2">Save</button>
         </div>
       </form>
       {% endfor %}

@@ -3,7 +3,7 @@
 {% block content %}
 <h1 class="text-xl mb-4">Port {{ port_name }} on {{ device.hostname }}</h1>
 {% if error %}
-<p class="text-red-500">{{ error }}</p>
+<p class="p-2 rounded bg-[var(--alert-bg)] text-[var(--btn-text)]">{{ error }}</p>
 {% endif %}
 {% if message %}
 <p class="text-green-400">{{ message }}</p>
@@ -13,28 +13,28 @@
   Current Config
   <a
     href="/network/port-configs/new?config_text={{ config|urlencode }}"
-    class="ml-2 underline text-sm px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition"
+    class="ml-2 underline text-sm px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition"
     >Add as Template</a
   >
 </h2>
-<pre class="bg-black p-2 whitespace-pre-wrap overflow-auto">{{ config }}</pre>
+<pre class="bg-[var(--card-bg)] p-2 whitespace-pre-wrap overflow-auto">{{ config }}</pre>
 {% endif %}
 {% if prev_config %}
 <h2 class="text-lg mt-4 flex items-center">
   Previous Config
   <a
     href="/network/port-configs/new?config_text={{ prev_config|urlencode }}"
-    class="ml-2 underline text-sm px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition"
+    class="ml-2 underline text-sm px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition"
     >Add as Template</a
   >
 </h2>
-<pre class="bg-black p-2 whitespace-pre-wrap overflow-auto">{{ prev_config }}</pre>
+<pre class="bg-[var(--card-bg)] p-2 whitespace-pre-wrap overflow-auto">{{ prev_config }}</pre>
 {% endif %}
 <h2 class="text-lg mt-4">Stage Change</h2>
 <form method="post" class="space-y-4">
-  <textarea name="config_text" rows="5" class="w-full p-2 text-black" required></textarea>
+  <textarea name="config_text" rows="5" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" required></textarea>
   <div>
-    <button type="submit" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition">Queue Change</button>
+    <button type="submit" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Queue Change</button>
     <a href="/devices/{{ device.id }}/ports" class="ml-2 underline">Back</a>
   </div>
 </form>

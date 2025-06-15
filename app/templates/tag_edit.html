@@ -15,13 +15,13 @@
     <tr class="border-t border-gray-700">
       <td class="">{{ dev.hostname }}</td>
       <td class="">
-        <input type="text" name="tags_{{ dev.id }}" value="{{ dev.tags | rejectattr('name', 'in', ['complete','incomplete']) | map(attribute='name') | join(', ') }}" class="w-full p-2 text-black" />
+        <input type="text" name="tags_{{ dev.id }}" value="{{ dev.tags | rejectattr('name', 'in', ['complete','incomplete']) | map(attribute='name') | join(', ') }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" />
       </td>
     </tr>
   {% endfor %}
   </tbody>
 </table>
-<button type="submit" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition mt-2 py-1">Save</button>
+<button type="submit" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition mt-2 py-1">Save</button>
 </form>
-<p class="mt-2 text-base text-gray-100">Automatic tags <em>complete</em> and <em>incomplete</em> cannot be removed.</p>
+<p class="mt-2 text-base text-[var(--card-text)]">Automatic tags <em>complete</em> and <em>incomplete</em> cannot be removed.</p>
 {% endblock %}

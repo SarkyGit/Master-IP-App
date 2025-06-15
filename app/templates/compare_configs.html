@@ -4,35 +4,35 @@
 <h1 class="text-xl mb-4">Compare Configs</h1>
 <form method="get" class="mb-4">
   <label for="device_id" class="mr-2">Device:</label>
-  <select name="device_id" id="device_id" onchange="this.form.submit()" class="inline w-auto text-black border rounded px-2 py-1">
+  <select name="device_id" id="device_id" onchange="this.form.submit()" class="inline w-auto text-[var(--input-text)] border rounded px-2 py-1">
     {% for dev in devices %}
     <option value="{{ dev.id }}" {% if device and dev.id == device.id %}selected{% endif %}>{{ dev.hostname }}</option>
     {% endfor %}
   </select>
   {% if device %}
   <label for="backup_a" class="ml-4 mr-2">Config A:</label>
-  <select name="backup_a" id="backup_a" class="inline w-auto text-black border rounded px-2 py-1">
+  <select name="backup_a" id="backup_a" class="inline w-auto text-[var(--input-text)] border rounded px-2 py-1">
     {% for b in backups %}
     <option value="{{ b.id }}" {% if b.id == backup_a %}selected{% endif %}>{{ b.created_at }}</option>
     {% endfor %}
   </select>
   <label for="backup_b" class="ml-4 mr-2">Config B:</label>
-  <select name="backup_b" id="backup_b" class="inline w-auto text-black border rounded px-2 py-1">
+  <select name="backup_b" id="backup_b" class="inline w-auto text-[var(--input-text)] border rounded px-2 py-1">
     {% for b in backups %}
     <option value="{{ b.id }}" {% if b.id == backup_b %}selected{% endif %}>{{ b.created_at }}</option>
     {% endfor %}
   </select>
-  <button type="submit" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition ml-2">Compare</button>
+  <button type="submit" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition ml-2">Compare</button>
   {% endif %}
 </form>
 {% if device %}
-<p class="mb-2">Device type: <span class="px-2 py-1 bg-gray-600 text-white rounded">{{ device.device_type.name }}</span></p>
+<p class="mb-2">Device type: <span class="px-2 py-1 bg-[var(--btn-bg)] text-[var(--btn-text)] rounded">{{ device.device_type.name }}</span></p>
 {% endif %}
 {% if diff_table %}
 <div class="overflow-auto">
   {{ diff_table | safe }}
 </div>
 {% elif backup_a and backup_b %}
-<p class="text-red-500">Unable to load selected configs.</p>
+<p class="p-2 rounded bg-[var(--alert-bg)] text-[var(--btn-text)]">Unable to load selected configs.</p>
 {% endif %}
 {% endblock %}

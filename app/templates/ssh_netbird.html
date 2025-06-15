@@ -2,17 +2,17 @@
 
 {% block content %}
 <h1 class="text-xl mb-4">Initiate Netbird Connection</h1>
-{% if error %}<p class="text-red-500">{{ error }}</p>{% endif %}
+{% if error %}<p class="p-2 rounded bg-[var(--alert-bg)] text-[var(--btn-text)]">{{ error }}</p>{% endif %}
 {% if message %}<p class="text-green-600">{{ message }}</p>{% endif %}
 <form method="post" class="space-y-4">
   <div>
     <label for="peer_id" class="block">Peer</label>
-    <select id="peer_id" name="peer_id" class="p-2 text-black">
+    <select id="peer_id" name="peer_id" class="p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
       {% for peer in peers %}
       <option value="{{ peer.id }}">{{ peer.name }}</option>
       {% endfor %}
     </select>
   </div>
-  <button type="submit" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition">Connect</button>
+  <button type="submit" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Connect</button>
 </form>
 {% endblock %}

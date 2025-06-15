@@ -5,21 +5,21 @@
 <form method="post" class="space-y-4">
   <div>
     <label for="name" class="block">Name</label>
-    <input id="name" type="text" name="name" value="{{ profile.name if profile else '' }}" class="w-full p-2 text-black" required />
+    <input id="name" type="text" name="name" value="{{ profile.name if profile else '' }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" required />
   </div>
   <div>
     <label for="community_string" class="block">Community String</label>
-    <input id="community_string" type="text" name="community_string" value="{{ profile.community_string if profile else '' }}" class="w-full p-2 text-black" required />
+    <input id="community_string" type="text" name="community_string" value="{{ profile.community_string if profile else '' }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" required />
   </div>
   <div>
     <label for="version" class="block">Version</label>
-    <input id="version" type="text" name="version" value="{{ profile.version if profile else '2c' }}" class="w-full p-2 text-black" />
+    <input id="version" type="text" name="version" value="{{ profile.version if profile else '2c' }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" />
   </div>
   {% if error %}
-  <p class="text-red-500">{{ error }}</p>
+  <p class="p-2 rounded bg-[var(--alert-bg)] text-[var(--btn-text)]">{{ error }}</p>
   {% endif %}
   <div>
-    <button type="submit" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition">Submit</button>
+    <button type="submit" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Submit</button>
     <a href="/admin/snmp" class="ml-2 underline">Cancel</a>
   </div>
 </form>

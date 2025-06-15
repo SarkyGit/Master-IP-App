@@ -5,7 +5,7 @@
   {% if current_user.role == 'superadmin' %}
   <div>
     <label for="site_id" class="block">Site</label>
-    <select id="site_id" name="site_id" class="w-full p-2 text-black">
+    <select id="site_id" name="site_id" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
       {% for s in sites %}
       <option value="{{ s.id }}">{{ s.name }}</option>
       {% endfor %}
@@ -14,8 +14,8 @@
   {% endif %}
   <div>
     <label for="import_file" class="block">CSV or Spreadsheet</label>
-    <input id="import_file" type="file" name="import_file" required class="w-full text-black" />
+    <input id="import_file" type="file" name="import_file" required class="w-full text-[var(--input-text)]" />
   </div>
-  <button type="submit" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition">Next</button>
+  <button type="submit" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Next</button>
 </form>
 {% endblock %}

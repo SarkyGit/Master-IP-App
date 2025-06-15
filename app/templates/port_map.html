@@ -5,17 +5,17 @@
   Port Map for {{ device.hostname }}
   <a href="/devices/{{ device.id }}/ports/edit" class="ml-4 text-sm underline">Edit Ports</a>
 </h1>
-{% if error %}<p class="text-red-500 mb-2">{{ error }}</p>{% endif %}
+{% if error %}<p class="p-2 rounded bg-[var(--alert-bg)] text-[var(--btn-text)] mb-2">{{ error }}</p>{% endif %}
 <div class="space-y-1 mb-4">
   {% for row in rows %}
   <div class="flex justify-center space-x-1">
     {% for port in row %}
-    <div class="relative group w-16 h-14 text-xs rounded text-white flex flex-col items-center justify-center {% if port.status == 'up' %}bg-green-600{% elif 'down' %}bg-red-600{% else %}bg-gray-600{% endif %}">
-      <span class="text-base text-gray-100">{{ port.number or port.name }}</span>
+    <div class="relative group w-16 h-14 text-xs rounded text-[var(--btn-text)] flex flex-col items-center justify-center {% if port.status == 'up' %}bg-[var(--btn-bg)]{% elif 'down' %}bg-[var(--btn-bg)]{% else %}bg-[var(--btn-bg)]{% endif %}">
+      <span class="text-base text-[var(--card-text)]">{{ port.number or port.name }}</span>
       {% if port.vlan %}<span class="text-[0.65rem]">{{ port.vlan }}</span>{% endif %}
       {% if port.poe %}<span class="text-[0.6rem]">{{ port.poe }}W</span>{% endif %}
       {% if port.descr %}
-      <span class="absolute bottom-full mb-1 hidden group-hover:block bg-black text-white px-1 py-0.5 rounded">{{ port.descr }}</span>
+      <span class="absolute bottom-full mb-1 hidden group-hover:block bg-[var(--card-bg)] text-[var(--btn-text)] px-1 py-0.5 rounded">{{ port.descr }}</span>
       {% endif %}
     </div>
     {% endfor %}

@@ -5,16 +5,16 @@
 <form method="post" class="space-y-4">
   <div>
     <label for="email" class="block">Email</label>
-    <input id="email" type="email" name="email" value="{{ user.email if user else '' }}" class="w-full p-2 text-black" {% if email_readonly %}readonly{% endif %} required />
+    <input id="email" type="email" name="email" value="{{ user.email if user else '' }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" {% if email_readonly %}readonly{% endif %} required />
   </div>
   <div>
     <label for="password" class="block">Password{% if not require_password %} (leave blank to keep current){% endif %}</label>
-    <input id="password" type="password" name="password" class="w-full p-2 text-black" {% if require_password %}required{% endif %} />
+    <input id="password" type="password" name="password" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" {% if require_password %}required{% endif %} />
   </div>
   {% if roles %}
   <div>
     <label for="role" class="block">Role</label>
-    <select id="role" name="role" class="w-full p-2 text-black">
+    <select id="role" name="role" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
       {% for r in roles %}
       <option value="{{ r }}" {% if user and user.role == r %}selected{% endif %}>{{ r }}</option>
       {% endfor %}
@@ -24,7 +24,7 @@
   {% if themes %}
   <div>
     <label for="theme" class="block">Theme</label>
-    <select id="theme" name="theme" class="w-full p-2 text-black">
+    <select id="theme" name="theme" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
       {% for t in themes %}
       <option value="{{ t }}" {% if user and user.theme == t %}selected{% endif %}>{{ t }}</option>
       {% endfor %}
@@ -34,7 +34,7 @@
   {% if fonts %}
   <div>
     <label for="font" class="block">Font</label>
-    <select id="font" name="font" class="w-full p-2 text-black">
+    <select id="font" name="font" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
       {% for f in fonts %}
       <option value="{{ f }}" {% if user and user.font == f %}selected{% endif %}>{{ f }}</option>
       {% endfor %}
@@ -50,10 +50,10 @@
   </div>
   {% endif %}
   {% if error %}
-  <p class="text-red-500">{{ error }}</p>
+  <p class="p-2 rounded bg-[var(--alert-bg)] text-[var(--btn-text)]">{{ error }}</p>
   {% endif %}
   <div>
-    <button type="submit" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition">Submit</button>
+    <button type="submit" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Submit</button>
     <a href="{{ cancel_url or '/users/me' }}" class="ml-2 underline">Cancel</a>
   </div>
 </form>
