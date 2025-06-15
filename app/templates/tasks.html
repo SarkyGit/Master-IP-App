@@ -20,7 +20,7 @@
   </tbody>
 </table>
 {% else %}
-<p>No queued tasks.</p>
+<p class="text-base text-gray-100">No queued tasks.</p>
 {% endif %}
 <hr class="my-4">
 <h2 class="text-lg mb-2">Live Session</h2>
@@ -30,7 +30,7 @@
     <option value="{{ dev.id }}">{{ dev.hostname }} ({{ dev.ip }})</option>
     {% endfor %}
   </select>
-  <button type="submit" class="btn btn-blue ">Connect</button>
+  <button type="submit" class="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition ">Connect</button>
 </form>
 
 <hr class="my-4">
@@ -46,12 +46,12 @@
       <option value="snmp_communities">SNMP Communities</option>
       <option value="port_config_templates">Port Config Templates</option>
     </select>
-    <a href="#" id="download-template" class="ml-2 btn btn-blue">Download CSV template</a>
+    <a href="#" id="download-template" class="ml-2 px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition">Download CSV template</a>
   </div>
   <div>
     <input type="file" name="csv_file" accept=".csv" class="text-black" required />
   </div>
-  <button type="submit" class="btn btn-blue ">Upload</button>
+  <button type="submit" class="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition ">Upload</button>
 </form>
 
 

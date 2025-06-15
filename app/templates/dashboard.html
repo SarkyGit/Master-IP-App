@@ -2,7 +2,7 @@
 {% block content %}
 <h1 class="text-xl mb-4">Dashboard{% if site %} - {{ site.name }}{% endif %}</h1>
 {% if no_site %}
-<p>You are not assigned to a site. Please contact an administrator.</p>
+<p class="text-base text-gray-100">You are not assigned to a site. Please contact an administrator.</p>
 {% endif %}
 {% if selectable_sites %}
 <form method="get" class="mb-4">

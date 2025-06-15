@@ -70,24 +70,6 @@ nav.bg-gray-800 .menu-right {
   padding: 0.5rem 0;
 }
 
-.top-header .logout-btn {
-  text-decoration: none;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
-  border: 1px solid #fff;
-  color: #fff;
-  background: none;
-}
-
-.top-header .logout-btn:hover {
-  text-decoration: underline;
-}
-
-.top-header a.logged-in {
-  border-color: #d97706;
-  color: #facc15;
-}
-
 .top-header .logo-box img {
   height: 40px;
 }

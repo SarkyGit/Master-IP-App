@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <h1 class="text-xl mb-4">Editing {{ file_path }}</h1>
-<div id="terminal" style="height:500px;" class="bg-black text-white"></div>
+<div id="terminal" class="bg-black text-white h-[500px]"></div>
 <script src="{{ request.url_for('static', path='js/xterm.js') }}"></script>
 <link rel="stylesheet" href="{{ request.url_for('static', path='css/xterm.css') }}" />
 <script>

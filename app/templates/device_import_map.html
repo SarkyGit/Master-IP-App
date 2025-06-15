@@ -19,7 +19,7 @@
     </tbody>
   </table>
   <div>
-    <p>Map each column:</p>
+    <p class="text-base text-gray-800">Map each column:</p>
     {% for col in columns %}
     <label class="block">{{ col }}
       <select id="map_{{ loop.index0 }}" name="map_{{ loop.index0 }}" class="text-black">
@@ -30,6 +30,6 @@
     </label>
     {% endfor %}
   </div>
-  <button type="submit" class="btn btn-blue ">Next</button>
+  <button type="submit" class="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition ">Next</button>
 </form>
 {% endblock %}
