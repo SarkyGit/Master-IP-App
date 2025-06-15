@@ -118,6 +118,8 @@ docker compose up --build -d
 
 Edit the `.env` file before starting if you need custom database credentials or other settings. To stop the containers run `docker compose down`.
 
+When running under Docker Compose, `DATABASE_URL` is already set to use the service name `db`. If you keep a `.env` file, ensure it does **not** redefine `DATABASE_URL` with `localhost`.
+
 ## Interface Themes
 
 Several visual themes are bundled under `static/themes`.  The available options are `dark_colourful`, `dark`, `light`, `blue`, `bw` and `homebrew`.  New users are created with the **dark_colourful** theme by default.
