@@ -72,7 +72,7 @@ If the login form reports **Invalid credentials**, run `python seed_superuser.py
 
 ## Interface Themes
 
-Several visual themes are bundled under `app/static/themes`.  The available options are `dark_colourful`, `dark`, `light`, `blue`, `bw` and `homebrew`.  New users are created with the **dark_colourful** theme by default.
+Several visual themes are bundled under `static/themes`.  The available options are `dark_colourful`, `dark`, `light`, `blue`, `bw` and `homebrew`.  New users are created with the **dark_colourful** theme by default.
 
 To switch themes, open **My Profile** from the user menu (or visit `/users/me`) and click **Edit Profile**.  Select a theme from the **Theme** drop‑down and submit the form to save the preference.
 
@@ -118,7 +118,7 @@ server {
     server_name example.com;
 
     location /static/ {
-        alias /path/to/Master-IP-App/app/static/;
+        alias /path/to/Master-IP-App/static/;
     }
 
     location / {

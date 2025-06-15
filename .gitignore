@@ -2,7 +2,7 @@
 *.pyc
 
 # Uploaded damage photos
-app/static/damage/*
-!app/static/damage/.gitkeep
+static/damage/*
+!static/damage/.gitkeep
 
 .env
