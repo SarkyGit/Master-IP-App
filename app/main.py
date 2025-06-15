@@ -75,6 +75,11 @@ async def shutdown_cleanup():
 # Path to the ``static`` directory at the repository root
 from app.utils.paths import STATIC_DIR
 
+# Ensure the static directory exists to avoid startup errors when it has been
+# mounted from outside the repository (for example at ``/static`` in Docker
+# deployments).
+os.makedirs(STATIC_DIR, exist_ok=True)
+
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 # Store login information in signed cookies
