@@ -8,7 +8,7 @@
   <li>{{ u.email }} ({{ u.role }})
     <form method="post" action="/sites/{{ site.id }}/remove-user" class="inline">
       <input type="hidden" name="user_id" value="{{ u.id }}">
-      <button type="submit" class="text-red-400 underline">Remove</button>
+      <button type="submit" class="btn btn-red">Remove</button>
     </form>
   </li>
   {% endfor %}
@@ -35,7 +35,7 @@
     </form>
     <form method="post" action="/sites/{{ site.id }}/remove-device" class="inline">
       <input type="hidden" name="device_id" value="{{ d.id }}">
-      <button type="submit" class="text-red-400 underline">Remove</button>
+      <button type="submit" class="btn btn-red">Remove</button>
     </form>
   </li>
   {% endfor %}

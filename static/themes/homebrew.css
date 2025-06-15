@@ -19,21 +19,20 @@ nav.bg-gray-800 {
   border-color: #00ff00 !important;
 }
 
-a.underline,
-a.text-blue-400 {
-  color: #0b0c10;
-  background-color: #00ff00;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.375rem;
-  text-decoration: none;
-  display: inline-block;
-}
-a.underline:hover,
-a.text-blue-400:hover {
-  background-color: #55dd00;
-}
 
 .diff_add { background-color: #003300; }
 .diff_chg { background-color: #005500; }
 .diff_sub { background-color: #330000; }
 table.diff { width: 100%; }
+
+/* Theme-aware button colours */
+.btn-blue { background-color: #00ff00; color: #0b0c10; }
+.btn-blue:hover { background-color: #55dd00; }
+.btn-red { background-color: #dc2626; color: #ffffff; }
+.btn-red:hover { background-color: #b91c1c; }
+.btn-green { background-color: #16a34a; color: #ffffff; }
+.btn-green:hover { background-color: #15803d; }
+.btn-yellow { background-color: #eab308; color: #000000; }
+.btn-yellow:hover { background-color: #ca8a04; }
+.btn-grey { background-color: #4b5563; color: #ffffff; }
+.btn-grey:hover { background-color: #374151; }

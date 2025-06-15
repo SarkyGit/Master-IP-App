@@ -8,8 +8,8 @@
 {% endif %}
 {% if current_user and current_user.role in ['editor','admin','superadmin'] %}
   <div class="relative inline-block ml-2" x-data="{open:false}">
-    <button class="px-3 py-1 bg-gray-700 text-white" @click="open = !open">Export</button>
-    <ul x-show="open" @click.away="open = false" class="absolute mt-2 bg-gray-800 text-white py-2 w-48 hidden" x-cloak>
+    <button class=" bg-gray-700 " @click="open = !open">Export</button>
+    <ul x-show="open" @click.away="open = false" class="absolute bg-gray-800  py-2 w-48 hidden" x-cloak>
       <li><a class="block px-4 py-2 hover:bg-gray-700" href="/export/inventory.csv">Export to CSV</a></li>
       <li><a class="block px-4 py-2 hover:bg-gray-700" href="/export/inventory.pdf">Export to PDF</a></li>
       <li><a class="block px-4 py-2 hover:bg-gray-700" href="/export/config-snapshot.zip">Download Config Snapshot</a></li>
@@ -17,7 +17,7 @@
   </div>
 {% endif %}
 {% if current_user and current_user.role == 'superadmin' %}
-  <form method="post" action="/admin/run-push-queue" style="display:inline">
+  <form method="post" action="/admin/run-push-queue" class="inline">
     <button type="submit" class="ml-2">🔄 Run Push Queue Now</button>
   </form>
 {% endif %}
@@ -101,19 +101,19 @@
     {% if current_user and current_user.role in ['editor','admin','superadmin'] %}
     <tr class="border-b border-gray-700">
       <td colspan="{{ column_count }}" class="px-4 py-2 text-right">
-        <a href="/devices/{{ device.id }}/edit" class="text-blue-400 underline mr-2">Edit</a>
+        <a href="/devices/{{ device.id }}/edit" class="btn btn-blue mr-2">Edit</a>
         <form method="post" action="/devices/{{ device.id }}/delete" class="inline">
-          <button type="submit" class="mr-2 px-3 py-1 bg-red-600 text-white" onclick="return confirm('Delete device?')">Delete</button>
+          <button type="submit" class="mr-2  btn btn-red " onclick="return confirm('Delete device?')">Delete</button>
         </form>
         <form method="post" action="/devices/{{ device.id }}/pull-config" class="inline">
-          <button type="submit" class="mr-2 px-3 py-1 bg-green-600 text-white">Pull Config</button>
+          <button type="submit" class="mr-2  btn btn-green ">Pull Config</button>
         </form>
-        <a href="/devices/{{ device.id }}/push-config" class="text-blue-400 underline mr-2">Push Config</a>
-        <a href="/devices/{{ device.id }}/configs" class="text-blue-400 underline mr-2">Configs</a>
+        <a href="/devices/{{ device.id }}/push-config" class="btn btn-blue mr-2">Push Config</a>
+        <a href="/devices/{{ device.id }}/configs" class="btn btn-blue mr-2">Configs</a>
         {% if device.snmp_community %}
-        <a href="/devices/{{ device.id }}/ports" class="text-blue-400 underline mr-2">Port Status</a>
-        <a href="/devices/{{ device.id }}/port-map" class="text-blue-400 underline mr-2">Port Map</a>
-        <a href="/devices/{{ device.id }}/ports/edit" class="text-blue-400 underline">Port Editor</a>
+        <a href="/devices/{{ device.id }}/ports" class="btn btn-blue mr-2">Port Status</a>
+        <a href="/devices/{{ device.id }}/port-map" class="btn btn-blue mr-2">Port Map</a>
+        <a href="/devices/{{ device.id }}/ports/edit" class="btn btn-blue ">Port Editor</a>
         {% endif %}
       </td>
     </tr>
@@ -122,7 +122,7 @@
   {% endfor %}
   </tbody>
 </table>
-<button type="submit" class="mt-2 bg-red-600 px-3 py-1">Delete Selected</button>
+<button type="submit" class="btn btn-red ">Delete Selected</button>
 </form>
 <script>
 document.getElementById('select-all').addEventListener('change', function(e){

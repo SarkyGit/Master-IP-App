@@ -6,15 +6,15 @@
 <table class="min-w-full text-left">
   <thead>
     <tr>
-      <th class="px-4 py-2 text-left">Device</th>
-      <th class="px-4 py-2 text-left">Status</th>
+      <th class=" text-left">Device</th>
+      <th class=" text-left">Status</th>
     </tr>
   </thead>
   <tbody>
     {% for item in queued %}
     <tr class="border-t border-gray-700">
-      <td class="px-4 py-2">{{ item.device.hostname }}</td>
-      <td class="px-4 py-2">{{ item.status or 'queued' }}</td>
+      <td class="">{{ item.device.hostname }}</td>
+      <td class="">{{ item.status or 'queued' }}</td>
     </tr>
     {% endfor %}
   </tbody>
@@ -30,7 +30,7 @@
     <option value="{{ dev.id }}">{{ dev.hostname }} ({{ dev.ip }})</option>
     {% endfor %}
   </select>
-  <button type="submit" class="bg-blue-600 px-3 py-1">Connect</button>
+  <button type="submit" class="btn btn-blue ">Connect</button>
 </form>
 
 <hr class="my-4">
@@ -46,12 +46,12 @@
       <option value="snmp_communities">SNMP Communities</option>
       <option value="port_config_templates">Port Config Templates</option>
     </select>
-    <a href="#" id="download-template" class="ml-2 underline text-blue-400">Download CSV template</a>
+    <a href="#" id="download-template" class="ml-2 btn btn-blue">Download CSV template</a>
   </div>
   <div>
     <input type="file" name="csv_file" accept=".csv" class="text-black" required />
   </div>
-  <button type="submit" class="bg-blue-600 px-3 py-1">Upload</button>
+  <button type="submit" class="btn btn-blue ">Upload</button>
 </form>
 
 
