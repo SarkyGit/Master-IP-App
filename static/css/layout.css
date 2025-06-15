@@ -70,7 +70,7 @@ nav.bg-gray-800 .menu-right {
   padding: 0.5rem 0;
 }
 
-.top-header a.logout-btn {
+.top-header .logout-btn {
   text-decoration: none;
   padding: 0.25rem 0.5rem;
   border-radius: 0.25rem;
@@ -79,7 +79,7 @@ nav.bg-gray-800 .menu-right {
   background: none;
 }
 
-.top-header a.logout-btn:hover {
+.top-header .logout-btn:hover {
   text-decoration: underline;
 }
 
