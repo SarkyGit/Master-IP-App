@@ -72,10 +72,10 @@ async def shutdown_cleanup():
     stop_config_scheduler()
 
 
-static_dir = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "static")
-)
-app.mount("/static", StaticFiles(directory=static_dir), name="static")
+# Path to the ``static`` directory at the repository root
+from app.utils.paths import STATIC_DIR
+
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 # Store login information in signed cookies
 app.add_middleware(
