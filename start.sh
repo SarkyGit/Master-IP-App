@@ -9,6 +9,10 @@ if [ -f .env ]; then
     set +a
 fi
 
+# Build static assets
+npm run build:css
+npm --prefix static run build
+
 # Wait for the database to become available
 python wait_for_db.py
 sleep 2
