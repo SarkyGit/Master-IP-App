@@ -8,12 +8,18 @@ Tailwind CSS has been removed from the project. Styling and components now rely 
 
 The steps below assume a brand new system with no tools installed. Commands are written so they can be copied and pasted directly into a terminal.
 
+> **Note**: The CSS build process requires **Node.js 18 or newer**. The steps below install Node.js 20 from the NodeSource repository.
+
 ### Ubuntu Development Setup
 
 ```bash
 # install required system packages
 sudo apt update
-sudo apt install -y git python3 python3-venv python3-pip nodejs npm postgresql
+sudo apt install -y git python3 python3-venv python3-pip postgresql curl
+
+# install Node.js (version 20.x) from NodeSource
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt install -y nodejs
 
 # clone the repository and enter the folder
 git clone https://github.com/youruser/Master-IP-App.git
@@ -49,10 +55,17 @@ Visit [http://localhost:8000](http://localhost:8000) and log in with the credent
 
 ### Ubuntu Production Setup
 
+> **Note**: Production deployments also require **Node.js 18+**. The commands
+> below install Node.js 20 using NodeSource.
+
 ```bash
 # install system packages
 sudo apt update
-sudo apt install -y git python3 python3-venv python3-pip nodejs npm postgresql
+sudo apt install -y git python3 python3-venv python3-pip postgresql curl
+
+# install Node.js (version 20.x) from NodeSource
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt install -y nodejs
 
 # clone the repository and enter it
 git clone https://github.com/youruser/Master-IP-App.git
