@@ -31,32 +31,6 @@
                 <li><a class="block px-4 py-2 hover:bg-[var(--btn-hover)]" href="/user/ssh">SSH Profiles</a></li>
               </ul>
             </div>
-            {% if current_user.role in ['admin','superadmin'] %}
-            {% if current_user.role == 'superadmin' %}
-            {% set admin_items = [
-              {'label':'Tunables','href':'/tunables'},
-              {'label':'SSH Credentials','href':'/admin/ssh'},
-              {'label':'SNMP Credentials','href':'/admin/snmp'},
-              {'label':'Device Types','href':'/device-types'},
-              {'label':'Tag Manager','href':'/admin/tags'},
-              {'label':'Locations','href':'/admin/locations'},
-              {'label':'Device Import','href':'/bulk/device-import'},
-              {'label':'Audit Log','href':'/admin/audit'},
-              {'label':'IP Bans','href':'/admin/ip-bans'},
-              {'label':'User Management','href':'/admin/users'},
-              {'label':'Debug Logs','href':'/admin/debug'}
-            ] %}
-            {% else %}
-            {% set admin_items = [
-              {'label':'SSH Credentials','href':'/admin/ssh'},
-              {'label':'SNMP Credentials','href':'/admin/snmp'},
-              {'label':'Device Types','href':'/device-types'},
-              {'label':'Locations','href':'/admin/locations'},
-              {'label':'Device Import','href':'/bulk/device-import'}
-            ] %}
-            {% endif %}
-            <div id="admin-menu" class="px-4 py-2 text-[var(--font-size)] text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition mr-2" data-admin-menu data-label="{{ 'Super Admin' if current_user.role == 'superadmin' else 'Admin' }}" data-items='{{ admin_items|tojson }}'></div>
-            {% endif %}
             <a href="/auth/logout" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition logged-in">Logout</a>
             {% else %}
             <a href="/auth/login" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition logged-out">Login</a>
@@ -83,6 +57,32 @@
                   <button @click="activeTopMenu = 'network'" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Network</button>
                   <button @click="activeTopMenu = 'tasks'" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Tasks</button>
                   <button @click="activeTopMenu = 'ssh'" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">SSH</button>
+                  {% if current_user.role in ['admin','superadmin'] %}
+                  {% if current_user.role == 'superadmin' %}
+                  {% set admin_items = [
+                    {'label':'Tunables','href':'/tunables'},
+                    {'label':'SSH Credentials','href':'/admin/ssh'},
+                    {'label':'SNMP Credentials','href':'/admin/snmp'},
+                    {'label':'Device Types','href':'/device-types'},
+                    {'label':'Tag Manager','href':'/admin/tags'},
+                    {'label':'Locations','href':'/admin/locations'},
+                    {'label':'Device Import','href':'/bulk/device-import'},
+                    {'label':'Audit Log','href':'/admin/audit'},
+                    {'label':'IP Bans','href':'/admin/ip-bans'},
+                    {'label':'User Management','href':'/admin/users'},
+                    {'label':'Debug Logs','href':'/admin/debug'}
+                  ] %}
+                  {% else %}
+                  {% set admin_items = [
+                    {'label':'SSH Credentials','href':'/admin/ssh'},
+                    {'label':'SNMP Credentials','href':'/admin/snmp'},
+                    {'label':'Device Types','href':'/device-types'},
+                    {'label':'Locations','href':'/admin/locations'},
+                    {'label':'Device Import','href':'/bulk/device-import'}
+                  ] %}
+                  {% endif %}
+                  <div id="admin-menu" class="px-4 py-2 text-[var(--font-size)] text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition" data-admin-menu data-label="{{ 'Super Admin' if current_user.role == 'superadmin' else 'Admin' }}" data-items='{{ admin_items|tojson }}'></div>
+                  {% endif %}
                 </div>
                 {% endif %}
               </div>
