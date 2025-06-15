@@ -2,7 +2,8 @@
 
 {% block content %}
 <h1 class="text-xl mb-4">User Details</h1>
-<table class="min-w-full text-left">
+<div class="w-full overflow-auto px-4">
+<table class="w-full table-fixed text-left">
   <tbody>
     <tr class="border-t border-gray-700">
       <th class="px-4 py-2 text-left">Email</th>
@@ -22,6 +23,7 @@
     </tr>
   </tbody>
 </table>
+</div>
 {% if current_user and current_user.id == user.id %}
 <a href="/users/me/edit" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Edit Profile</a>
 {% endif %}

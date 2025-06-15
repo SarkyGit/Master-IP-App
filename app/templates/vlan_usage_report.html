@@ -8,7 +8,8 @@
       VLAN {{ row.vlan.tag }} - {{ row.vlan.description or '' }} ({{ row.count }} devices)
     </summary>
     {% if row.devices %}
-    <table class="min-w-full text-left mt-2">
+    <div class="w-full overflow-auto px-4">
+    <table class="w-full table-fixed text-left mt-2">
       <thead>
         <tr>
           <th class="px-4 py-2 text-left">Hostname</th>
@@ -28,6 +29,7 @@
         {% endfor %}
       </tbody>
     </table>
+    </div>
     {% endif %}
   </details>
 {% else %}
