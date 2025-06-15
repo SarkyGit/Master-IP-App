@@ -34,6 +34,7 @@ source venv/bin/activate
 # install Python and Node dependencies
 pip install -r requirements.txt
 npm install
+npm --prefix static install # installs React/Vite dependencies for the frontend
 npm run build:css
 
 # create the application database
@@ -78,6 +79,7 @@ python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 npm install
+npm --prefix static install # installs React/Vite dependencies for the frontend
 npm run build:css
 
 # set up the database (adjust credentials as needed)
