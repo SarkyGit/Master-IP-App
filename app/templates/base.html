@@ -81,7 +81,7 @@
               {% if current_user.role in ['editor','admin','superadmin'] %}
               <li><button @click="toggle('bulk')" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">Bulk Add</button></li>
               {% endif %}
-              <li><button @click="toggle('ssh')" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">SSH</button></li>
+                <li class="ml-auto"><button @click="toggle('ssh')" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">SSH</button></li>
               {% endif %}
             </ul>
           </div>
