@@ -6,9 +6,12 @@ body {
 :root {
   --nav-bg: #000000;
   --nav-text: #ffffff;
-  --submenu-bg: #e0e0e0;
-  --submenu-text: #000000;
+  --submenu-bg: #1f2937;
+  --submenu-text: #e5e7eb;
   --submenu-hover-bg: #c0c0c0;
+  --tab-bg: #1e3a8a;
+  --tab-hover: #1d4ed8;
+  --tab-text: #ffffff;
   --btn-bg:        #1e3a8a;
   --btn-hover:     #1d4ed8;
   --btn-text:      #ffffff;
