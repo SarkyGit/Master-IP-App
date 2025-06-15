@@ -58,13 +58,16 @@ templates.env.globals["logo_url"] = logo_url
 from markupsafe import Markup
 
 
-def include_icon(name: str, color: str | None = None) -> str:
-    """Return SVG markup for the given icon with optional colour."""
+def include_icon(name: str, color: str | None = None, size: str | int = "3") -> str:
+    """Return SVG markup for the given icon with optional colour and size."""
     path = os.path.join(STATIC_DIR, "icons", f"{name}.svg")
     if not os.path.exists(path):
         return ""
     svg = open(path, "r", encoding="utf-8").read()
-    classes = ["w-3", "h-3"]
+    if str(size) == "1.5":
+        classes = ["w-[0.375rem]", "h-[0.375rem]"]
+    else:
+        classes = [f"w-{size}", f"h-{size}"]
     if color:
         classes.append(color)
     else:

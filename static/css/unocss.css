@@ -59,6 +59,7 @@
 .group:hover .group-hover\:block{display:block;}
 .inline-block{display:inline-block;}
 .hidden{display:none;}
+.h-\[0\.375rem\]{height:0.375rem;}
 .h-\[3\.9rem\]{height:3.9rem;}
 .h-\[500px\]{height:500px;}
 .h-10{height:2.5rem;}
@@ -70,6 +71,7 @@
 .max-w-lg{max-width:32rem;}
 .max-w-sm{max-width:24rem;}
 .min-h-\[50vh\]{min-height:50vh;}
+.w-\[0\.375rem\]{width:0.375rem;}
 .w-\[21\.5rem\]{width:21.5rem;}
 .w-\[6\.5rem\]{width:6.5rem;}
 .w-1\/2{width:50%;}
