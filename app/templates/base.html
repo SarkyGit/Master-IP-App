@@ -75,18 +75,6 @@
             <ul class="lg:flex lg:space-x-4">
               {% if current_user %}
               <li class="relative py-1" x-data="{open:false}">
-                <button @click="open = !open" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition">SSH</button>
-                <ul x-show="open" @click.away="open = false" class="absolute mt-2 bg-gray-800 text-white py-2 w-48" x-cloak>
-                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/ssh/port-config">Port Config</a></li>
-                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/ssh/port-check">Port Check</a></li>
-                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/ssh/config-check">Config Check</a></li>
-                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/ssh/port-search">Port Search</a></li>
-                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/ssh/bulk-port-update">Bulk Port Update</a></li>
-                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/bulk/vlan-push">VLAN Bulk Push</a></li>
-                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/ssh/netbird-connect">Initiate Netbird Connection</a></li>
-                </ul>
-              </li>
-              <li class="relative py-1" x-data="{open:false}">
                 <button @click="open = !open" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition">Inventory</button>
                 <ul x-show="open" @click.away="open = false" class="absolute mt-2 bg-gray-800 text-white py-2 w-48" x-cloak>
                   <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/devices">All Devices</a></li>
@@ -131,6 +119,18 @@
                 <a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition" href="/bulk/device-import">Bulk Add Devices</a>
               </li>
               {% endif %}
+              <li class="relative py-1" x-data="{open:false}">
+                <button @click="open = !open" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition">SSH</button>
+                <ul x-show="open" @click.away="open = false" class="absolute mt-2 bg-gray-800 text-white py-2 w-48" x-cloak>
+                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/ssh/port-config">Port Config</a></li>
+                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/ssh/port-check">Port Check</a></li>
+                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/ssh/config-check">Config Check</a></li>
+                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/ssh/port-search">Port Search</a></li>
+                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/ssh/bulk-port-update">Bulk Port Update</a></li>
+                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/bulk/vlan-push">VLAN Bulk Push</a></li>
+                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/ssh/netbird-connect">Initiate Netbird Connection</a></li>
+                </ul>
+              </li>
               {% endif %}
             </ul>
           </div>
