@@ -73,7 +73,7 @@ async def shutdown_cleanup():
 
 
 static_dir = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "static")
+    os.path.join(os.path.dirname(os.path.dirname(__file__)), "static")
 )
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
