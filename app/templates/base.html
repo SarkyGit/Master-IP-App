@@ -21,9 +21,6 @@
             <img src="{{ logo_url() }}" alt="Logo" class="h-10 mr-2" />
             {% endif %}
             <span class="text-[var(--btn-text)] text-base">CEST Master IP and Config Tool</span>
-            {% if current_user and current_user.role == 'superadmin' %}
-            <a href="/admin/logo" class="ml-2 underline text-sm">Upload Logo</a>
-            {% endif %}
           </div>
           <div class="login-area flex items-center space-x-2">
             {% if current_user %}
@@ -106,6 +103,7 @@
             </div>
             <div x-show="activeTopMenu == 'network'" class="border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3" x-cloak>
               <div :class="mobile ? 'flex flex-col space-y-2' : 'flex space-x-2'">
+                <a href="/dashboard" class="px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Dashboard</a>
                 <a href="/network/ip-search" class="px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">IP Search</a>
                 <a href="/vlans" class="px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">VLAN MGMT</a>
                 <a href="/network/port-configs" class="px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Port Configs</a>

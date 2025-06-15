@@ -57,6 +57,7 @@ async def list_tunables(
         "request": request,
         "groups": grouped_tunables(db),
         "version": version_row.value if version_row else "unknown",
+        "current_user": current_user,
     }
     return templates.TemplateResponse("tunables.html", context)
 
