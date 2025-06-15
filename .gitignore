@@ -4,5 +4,6 @@
 # Uploaded damage photos
 static/damage/*
 !static/damage/.gitkeep
+static/node_modules/
 
 .env

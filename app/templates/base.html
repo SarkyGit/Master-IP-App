@@ -86,32 +86,30 @@
                 <a class="text-blue-400 underline mr-2" href="/users/me">My Profile</a>
                 <a class="text-blue-400 underline mr-2" href="/user/ssh">SSH Profiles</a>
                 {% if current_user.role in ['admin','superadmin'] %}
-                <div class="relative py-1 mr-2" x-data="{open:false}">
-                  <button @click="open = !open" class="px-4 py-2 text-blue-400 border rounded hover:bg-gray-700">
-                    {{ 'Super Admin' if current_user.role == 'superadmin' else 'Admin' }}
-                  </button>
-                  <ul x-show="open" @click.away="open = false" class="absolute right-0 mt-2 bg-gray-800 text-white py-2 w-48 hidden" x-cloak>
-                    {% if current_user.role == 'superadmin' %}
-                    <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/tunables">Tunables</a></li>
-                    <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/admin/ssh">SSH Credentials</a></li>
-                    <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/admin/snmp">SNMP Credentials</a></li>
-                    <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/device-types">Device Types</a></li>
-                    <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/admin/tags">Tag Manager</a></li>
-                    <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/admin/locations">Locations</a></li>
-                    <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/bulk/device-import">Device Import</a></li>
-                    <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/admin/audit">Audit Log</a></li>
-                    <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/admin/ip-bans">IP Bans</a></li>
-                    <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/admin/users">User Management</a></li>
-                    <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/admin/debug">Debug Logs</a></li>
-                    {% else %}
-                    <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/admin/ssh">SSH Credentials</a></li>
-                    <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/admin/snmp">SNMP Credentials</a></li>
-                    <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/device-types">Device Types</a></li>
-                    <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/admin/locations">Locations</a></li>
-                    <li><a class="block px-4 py-2 text-blue-400 rounded hover:bg-gray-700" href="/bulk/device-import">Device Import</a></li>
-                    {% endif %}
-                  </ul>
-                </div>
+                {% if current_user.role == 'superadmin' %}
+                {% set admin_items = [
+                  {'label':'Tunables','href':'/tunables'},
+                  {'label':'SSH Credentials','href':'/admin/ssh'},
+                  {'label':'SNMP Credentials','href':'/admin/snmp'},
+                  {'label':'Device Types','href':'/device-types'},
+                  {'label':'Tag Manager','href':'/admin/tags'},
+                  {'label':'Locations','href':'/admin/locations'},
+                  {'label':'Device Import','href':'/bulk/device-import'},
+                  {'label':'Audit Log','href':'/admin/audit'},
+                  {'label':'IP Bans','href':'/admin/ip-bans'},
+                  {'label':'User Management','href':'/admin/users'},
+                  {'label':'Debug Logs','href':'/admin/debug'}
+                ] %}
+                {% else %}
+                {% set admin_items = [
+                  {'label':'SSH Credentials','href':'/admin/ssh'},
+                  {'label':'SNMP Credentials','href':'/admin/snmp'},
+                  {'label':'Device Types','href':'/device-types'},
+                  {'label':'Locations','href':'/admin/locations'},
+                  {'label':'Device Import','href':'/bulk/device-import'}
+                ] %}
+                {% endif %}
+                <div id="admin-menu" data-admin-menu data-label="{{ 'Super Admin' if current_user.role == 'superadmin' else 'Admin' }}" data-items='{{ admin_items|tojson }}'></div>
                 {% endif %}
                 <a href="/auth/logout" class="text-blue-400 underline">Logout</a>
               {% else %}
@@ -129,6 +127,7 @@
       {% block content %}{% endblock %}
     </div>
     <script src="{{ request.url_for('static', path='js/alpine.min.js') }}" defer></script>
+    <script type="module" src="{{ request.url_for('static', path='js/bundle.js') }}"></script>
     {% block extra_scripts %}{% endblock %}
   </body>
 </html>
