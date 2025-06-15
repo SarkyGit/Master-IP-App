@@ -73,6 +73,7 @@
           <div class="flex items-center justify-between">
             <button @click="mobile = !mobile" class="lg:hidden p-2 rounded">☰</button>
             <div :class="mobile ? 'flex flex-col space-y-2' : 'hidden lg:flex space-x-4 w-full'">
+              <button onclick="history.back()" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Back</button>
               {% if current_user %}
               <button @click="activeTopMenu = 'inventory'" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Inventory</button>
               <button @click="activeTopMenu = 'network'" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Network</button>
@@ -150,11 +151,10 @@
       </nav>
       {% endblock %}
     </header>
-    <div class="container mt-4">
-      <a href="javascript:history.back()" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">&laquo; Back</a>
-      <p class="text-base text-[var(--card-text)]">{{ message }}</p>
-      {% block content %}{% endblock %}
-    </div>
+      <div class="container mt-4">
+        <p class="text-base text-[var(--card-text)]">{{ message }}</p>
+        {% block content %}{% endblock %}
+      </div>
     <script src="{{ request.url_for('static', path='js/alpine.min.js') }}" defer></script>
     <script type="module" src="{{ request.url_for('static', path='js/bundle.js') }}"></script>
     {% block extra_scripts %}{% endblock %}
