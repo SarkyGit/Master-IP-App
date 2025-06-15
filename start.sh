@@ -2,8 +2,8 @@
 # Start Gunicorn with Uvicorn workers for production
 set -e
 
-# Load environment variables from .env if present
-if [ -f .env ]; then
+# Load environment variables from .env if DATABASE_URL is not set
+if [ -z "${DATABASE_URL}" ] && [ -f .env ]; then
     set -a
     . .env
     set +a
