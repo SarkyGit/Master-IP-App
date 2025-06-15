@@ -3,31 +3,52 @@
 {% block content %}
 <h1 class="text-xl mb-4">Device Types</h1>
 <a href="/device-types/new" class="underline">Add Device Type</a>
-<form method="post" action="/device-types/bulk-delete">
-<table class="min-w-full text-left mt-4">
+<form method="post" action="/device-types/bulk-delete" x-data="tableControls()" class="space-y-2 mt-4">
+<div class="flex justify-between items-center">
+  <label>Show
+    <select x-model="perPage" class="rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)] mx-1">
+      <option>10</option>
+      <option>25</option>
+      <option>50</option>
+      <option>100</option>
+    </select>
+    entries
+  </label>
+  <input x-model="search" type="text" placeholder="Search" class="rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)] px-2 py-1" />
+</div>
+<div class="overflow-x-auto">
+<table class="min-w-full text-left border-collapse">
   <thead>
     <tr>
-      <th class="px-2"><input type="checkbox" id="select-all"></th>
-      <th class="px-4 py-2 text-left">Name</th>
-      <th></th>
+      <th class="table-cell"><input type="checkbox" id="select-all"></th>
+      <th class="table-cell table-header">Name</th>
+      <th class="table-cell table-header"></th>
     </tr>
   </thead>
   <tbody>
   {% for dt in types %}
     <tr class="border-t border-gray-700">
-      <td class="px-2"><input type="checkbox" name="selected" value="{{ dt.id }}"></td>
-      <td class="px-4 py-2">{{ dt.name }}</td>
-      <td class="px-4 py-2">
-        <a href="/device-types/{{ dt.id }}/edit" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition mr-2">Edit</a>
+      <td class="table-cell"><input type="checkbox" name="selected" value="{{ dt.id }}"></td>
+      <td class="table-cell">{{ dt.name }}</td>
+      <td class="table-cell">
+        <a href="/device-types/{{ dt.id }}/edit" aria-label="Edit" class="inline-block p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition mr-2">{{ include_icon('pencil') }}</a>
         <form method="post" action="/device-types/{{ dt.id }}/delete" class="inline">
-          <button type="submit" class="px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition" onclick="return confirm('Delete type?')">Delete</button>
+          <button type="submit" aria-label="Delete" class="p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition" onclick="return confirm('Delete type?')">{{ include_icon('trash-2') }}</button>
         </form>
       </td>
     </tr>
   {% endfor %}
   </tbody>
 </table>
-<button type="submit" class="px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Delete Selected</button>
+<div class="flex justify-between items-center mt-2">
+  <span x-text="countText()" class="text-sm"></span>
+  <div>
+    <button type="button" @click="prev" class="px-3 py-1 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded mr-2 text-[var(--btn-text)]">Previous</button>
+    <button type="button" @click="next" class="px-3 py-1 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded text-[var(--btn-text)]">Next</button>
+  </div>
+</div>
+</div>
+<button type="submit" aria-label="Delete Selected" class="p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition mt-2">{{ include_icon('trash-2') }}</button>
 </form>
 <script>
 document.getElementById('select-all').addEventListener('change', function(e){
