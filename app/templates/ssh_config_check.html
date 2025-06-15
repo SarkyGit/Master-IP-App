@@ -5,17 +5,17 @@
 <form method="post" class="space-y-4">
   <div>
     <label for="device_id" class="block">Switch</label>
-    <select id="device_id" name="device_id" class="p-2 text-black">
+    <select id="device_id" name="device_id" class="p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
       {% for dev in devices %}
       <option value="{{ dev.id }}" {% if selected==dev.id %}selected{% endif %}>{{ dev.hostname }}</option>
       {% endfor %}
     </select>
   </div>
-  <button type="submit" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition">Fetch Config</button>
+  <button type="submit" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Fetch Config</button>
 </form>
-{% if error %}<p class="text-red-500 mt-2">{{ error }}</p>{% endif %}
+{% if error %}<p class="p-2 rounded bg-[var(--alert-bg)] text-[var(--btn-text)] mt-2">{{ error }}</p>{% endif %}
 {% if output %}
 <h2 class="text-lg mt-4">Running Config</h2>
-<pre class="bg-black p-2 whitespace-pre-wrap overflow-auto">{{ output }}</pre>
+<pre class="bg-[var(--card-bg)] p-2 whitespace-pre-wrap overflow-auto">{{ output }}</pre>
 {% endif %}
 {% endblock %}

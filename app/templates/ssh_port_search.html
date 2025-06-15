@@ -5,7 +5,7 @@
 <form method="post" class="space-y-4">
   <div>
     <label for="search" class="block">Search</label>
-    <input id="search" type="text" name="search" value="{{ search or '' }}" class="p-2 text-black" required />
+    <input id="search" type="text" name="search" value="{{ search or '' }}" class="p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" required />
   </div>
   <div>
     <label for="device_ids" class="block">Switches</label>
@@ -16,13 +16,13 @@
     </label>
     {% endfor %}
   </div>
-  <button type="submit" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition">Search</button>
+  <button type="submit" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Search</button>
 </form>
 {% if results %}
   {% for r in results %}
   <h2 class="text-lg mt-4">{{ r.device.hostname }}</h2>
-  {% if r.error %}<p class="text-red-500">{{ r.error }}</p>{% endif %}
-  {% if r.output %}<pre class="bg-black p-2 whitespace-pre-wrap overflow-auto">{{ r.output }}</pre>{% endif %}
+  {% if r.error %}<p class="p-2 rounded bg-[var(--alert-bg)] text-[var(--btn-text)]">{{ r.error }}</p>{% endif %}
+  {% if r.output %}<pre class="bg-[var(--card-bg)] p-2 whitespace-pre-wrap overflow-auto">{{ r.output }}</pre>{% endif %}
   {% endfor %}
 {% endif %}
 {% endblock %}

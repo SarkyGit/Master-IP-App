@@ -8,13 +8,13 @@
 <form method="post" class="space-y-4">
   <div>
     <label for="config_text" class="block">Configuration</label>
-    <textarea id="config_text" name="config_text" rows="10" class="w-full p-2 text-black" required></textarea>
+    <textarea id="config_text" name="config_text" rows="10" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" required></textarea>
   </div>
   {% if error %}
-  <p class="text-red-500">{{ error }}</p>
+  <p class="p-2 rounded bg-[var(--alert-bg)] text-[var(--btn-text)]">{{ error }}</p>
   {% endif %}
   <div>
-    <button type="submit" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition">Push Config to Device</button>
+    <button type="submit" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Push Config to Device</button>
     <a href="/devices" class="ml-2 underline">Cancel</a>
   </div>
 </form>

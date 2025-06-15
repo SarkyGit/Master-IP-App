@@ -4,13 +4,13 @@
 <form method="post">
   <div>
     <label for="name" class="block">Name</label>
-    <input id="name" name="name" value="{{ site.name if site }}" class="text-black w-full p-2" required>
+    <input id="name" name="name" value="{{ site.name if site }}" class="text-[var(--input-text)] w-full p-2" required>
   </div>
   <div>
     <label for="description" class="block">Description</label>
-    <textarea id="description" name="description" class="text-black w-full p-2">{{ site.description if site }}</textarea>
+    <textarea id="description" name="description" class="text-[var(--input-text)] w-full p-2">{{ site.description if site }}</textarea>
   </div>
-  {% if error %}<p class="text-red-500">{{ error }}</p>{% endif %}
-  <button type="submit" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition">Submit</button>
+  {% if error %}<p class="p-2 rounded bg-[var(--alert-bg)] text-[var(--btn-text)]">{{ error }}</p>{% endif %}
+  <button type="submit" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Submit</button>
 </form>
 {% endblock %}

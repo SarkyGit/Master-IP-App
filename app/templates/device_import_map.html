@@ -19,10 +19,10 @@
     </tbody>
   </table>
   <div>
-    <p class="text-base text-gray-800">Map each column:</p>
+    <p class="text-base text-[var(--card-text)]">Map each column:</p>
     {% for col in columns %}
     <label class="block">{{ col }}
-      <select id="map_{{ loop.index0 }}" name="map_{{ loop.index0 }}" class="text-black">
+      <select id="map_{{ loop.index0 }}" name="map_{{ loop.index0 }}" class="rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
         {% for f in fields %}
         <option value="{{ f }}">{{ f }}</option>
         {% endfor %}
@@ -30,6 +30,6 @@
     </label>
     {% endfor %}
   </div>
-  <button type="submit" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition">Next</button>
+  <button type="submit" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Next</button>
 </form>
 {% endblock %}

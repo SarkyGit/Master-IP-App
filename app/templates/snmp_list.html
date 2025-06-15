@@ -22,16 +22,16 @@
       <td class="px-4 py-2">{{ profile.community_string }}</td>
       <td class="px-4 py-2">{{ profile.version }}</td>
       <td class="px-4 py-2">
-        <a href="/admin/snmp/{{ profile.id }}/edit" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition mr-2">Edit</a>
+        <a href="/admin/snmp/{{ profile.id }}/edit" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition mr-2">Edit</a>
         <form method="post" action="/admin/snmp/{{ profile.id }}/delete" class="inline">
-          <button type="submit" class="px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded transition" onclick="return confirm('Delete profile?')">Delete</button>
+          <button type="submit" class="px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition" onclick="return confirm('Delete profile?')">Delete</button>
         </form>
       </td>
     </tr>
   {% endfor %}
   </tbody>
 </table>
-<button type="submit" class="px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded transition">Delete Selected</button>
+<button type="submit" class="px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Delete Selected</button>
 </form>
 <script>
 document.getElementById('select-all').addEventListener('change', function(e){

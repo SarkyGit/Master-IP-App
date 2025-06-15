@@ -12,12 +12,12 @@
   {% endfor %}
   {% endif %}
   <label class="block">On conflict:
-    <select id="conflict_action" name="conflict_action" class="text-black">
+    <select id="conflict_action" name="conflict_action" class="rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
       <option value="skip">Skip</option>
       <option value="overwrite">Overwrite</option>
       <option value="merge">Merge</option>
     </select>
   </label>
-  <button type="submit" name="confirm" value="yes" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition">Import</button>
+  <button type="submit" name="confirm" value="yes" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Import</button>
 </form>
 {% endblock %}

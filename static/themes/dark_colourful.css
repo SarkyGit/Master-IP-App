@@ -11,6 +11,17 @@ body {
   --submenu-bg: #374151;
   --submenu-text: #ffffff;
   --submenu-hover-bg: #4b5563;
+  --btn-bg:        #1e3a8a;
+  --btn-hover:     #1d4ed8;
+  --btn-text:      #ffffff;
+  --card-bg:       #1e293b;
+  --card-text:     #f1f5f9;
+  --input-bg:      #1f2937;
+  --input-text:    #f9fafb;
+  --table-bg:      #1f2937;
+  --alert-bg:      #334155;
+  --border-color:  #475569;
+  --hover-muted:   #374151;
 }
 
 h1, h2, h3, h4, h5, h6 {

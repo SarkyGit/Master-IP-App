@@ -20,17 +20,17 @@
   </tbody>
 </table>
 {% else %}
-<p class="text-base text-gray-100">No queued tasks.</p>
+<p class="text-base text-[var(--card-text)]">No queued tasks.</p>
 {% endif %}
 <hr class="my-4">
 <h2 class="text-lg mb-2">Live Session</h2>
 <form method="get" action="/tasks/live-session" class="space-x-2">
-  <select name="device_id" class="p-1 text-black">
+  <select name="device_id" class="p-1 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
     {% for dev in devices %}
     <option value="{{ dev.id }}">{{ dev.hostname }} ({{ dev.ip }})</option>
     {% endfor %}
   </select>
-  <button type="submit" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition">Connect</button>
+  <button type="submit" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Connect</button>
 </form>
 
 <hr class="my-4">
@@ -38,7 +38,7 @@
 <form method="post" action="/tasks/upload-csv" enctype="multipart/form-data" class="space-y-2">
   <div>
     <label for="table_name" class="block">Table</label>
-    <select id="table_name" name="table_name" class="p-1 text-black">
+    <select id="table_name" name="table_name" class="p-1 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
       <option value="devices">Devices</option>
       <option value="vlans">VLANs</option>
       <option value="device_types">Device Types</option>
@@ -46,12 +46,12 @@
       <option value="snmp_communities">SNMP Communities</option>
       <option value="port_config_templates">Port Config Templates</option>
     </select>
-    <a href="#" id="download-template" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition ml-2">Download CSV template</a>
+    <a href="#" id="download-template" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition ml-2">Download CSV template</a>
   </div>
   <div>
-    <input type="file" name="csv_file" accept=".csv" class="text-black" required />
+    <input type="file" name="csv_file" accept=".csv" class="rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" required />
   </div>
-  <button type="submit" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition">Upload</button>
+  <button type="submit" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Upload</button>
 </form>
 
 

@@ -19,9 +19,9 @@
       <td class="px-4 py-2">{{ tpl.last_edited.strftime('%Y-%m-%d %H:%M:%S') if tpl.last_edited else '' }}</td>
       <td class="px-4 py-2">{{ tpl.edited_by.email if tpl.edited_by else '' }}</td>
       <td class="px-4 py-2">
-        <a href="/network/port-configs/{{ tpl.id }}/edit" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition mr-2">Edit</a>
+        <a href="/network/port-configs/{{ tpl.id }}/edit" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition mr-2">Edit</a>
         <form method="post" action="/network/port-configs/{{ tpl.id }}/delete" class="inline">
-          <button type="submit" class="px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded transition" onclick="return confirm('Delete template?')">Delete</button>
+          <button type="submit" class="px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition" onclick="return confirm('Delete template?')">Delete</button>
         </form>
       </td>
     </tr>

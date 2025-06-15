@@ -20,7 +20,7 @@
             {% if logo_url() %}
             <img src="{{ logo_url() }}" alt="Logo" class="h-10 mr-2" />
             {% endif %}
-            <span class="text-white text-base">CEST Master IP and Config Tool</span>
+            <span class="text-[var(--btn-text)] text-base">CEST Master IP and Config Tool</span>
             {% if current_user and current_user.role == 'superadmin' %}
             <a href="/admin/logo" class="ml-2 underline text-sm">Upload Logo</a>
             {% endif %}
@@ -28,10 +28,10 @@
           <div class="login-area flex items-center space-x-2">
             {% if current_user %}
             <div class="relative" x-data="{open:false}">
-              <button @click="open = !open" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition">My Profile</button>
-              <ul x-show="open" @click.away="open = false" class="absolute right-0 mt-2 bg-gray-800 text-white py-2 w-48" x-cloak>
-                <li><a class="block px-4 py-2 hover:bg-gray-700" href="/users/me">View Profile</a></li>
-                <li><a class="block px-4 py-2 hover:bg-gray-700" href="/user/ssh">SSH Profiles</a></li>
+              <button @click="open = !open" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">My Profile</button>
+              <ul x-show="open" @click.away="open = false" class="absolute right-0 mt-2 bg-[var(--card-bg)] text-[var(--btn-text)] py-2 w-48" x-cloak>
+                <li><a class="block px-4 py-2 hover:bg-[var(--btn-hover)]" href="/users/me">View Profile</a></li>
+                <li><a class="block px-4 py-2 hover:bg-[var(--btn-hover)]" href="/user/ssh">SSH Profiles</a></li>
               </ul>
             </div>
             {% if current_user.role in ['admin','superadmin'] %}
@@ -58,11 +58,11 @@
               {'label':'Device Import','href':'/bulk/device-import'}
             ] %}
             {% endif %}
-            <div id="admin-menu" class="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition mr-2" data-admin-menu data-label="{{ 'Super Admin' if current_user.role == 'superadmin' else 'Admin' }}" data-items='{{ admin_items|tojson }}'></div>
+            <div id="admin-menu" class="px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition mr-2" data-admin-menu data-label="{{ 'Super Admin' if current_user.role == 'superadmin' else 'Admin' }}" data-items='{{ admin_items|tojson }}'></div>
             {% endif %}
-            <a href="/auth/logout" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition logged-in">Logout</a>
+            <a href="/auth/logout" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition logged-in">Logout</a>
             {% else %}
-            <a href="/auth/login" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition logged-out">Login</a>
+            <a href="/auth/login" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition logged-out">Login</a>
             {% endif %}
           </div>
         </div>
@@ -156,8 +156,8 @@
       {% endblock %}
     </header>
     <div class="container mt-4">
-      <a href="javascript:history.back()" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition">&laquo; Back</a>
-      <p class="text-base text-gray-100">{{ message }}</p>
+      <a href="javascript:history.back()" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">&laquo; Back</a>
+      <p class="text-base text-[var(--card-text)]">{{ message }}</p>
       {% block content %}{% endblock %}
     </div>
     <script src="{{ request.url_for('static', path='js/alpine.min.js') }}" defer></script>

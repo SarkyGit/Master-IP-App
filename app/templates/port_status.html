@@ -4,7 +4,7 @@
 <h1 class="text-xl mb-2">Port Status for {{ device.hostname }}</h1>
 <a href="/devices" class="underline inline-block mb-4">Back to Devices</a>
 {% if device.last_snmp_check %}
-<p class="mb-4 text-base text-gray-100">
+<p class="mb-4 text-base text-[var(--card-text)]">
   {% if device.snmp_reachable %}
     <span class="text-green-400">●</span>
   {% else %}
@@ -15,7 +15,7 @@
 </p>
 {% endif %}
 {% if error %}
-  <p class="text-red-500 mb-4">{{ error }}</p>
+  <p class="p-2 rounded bg-[var(--alert-bg)] text-[var(--btn-text)] mb-4">{{ error }}</p>
 {% endif %}
 
 <div class="grid grid-cols-2 gap-8 mb-8 mx-auto">
@@ -27,15 +27,15 @@
         {% for port in row %}
         <div
           id="port-{{ port.name|replace('/', '-') }}"
-          class="flex flex-col items-center justify-center text-xs text-white rounded-md {% if port.oper_status == 'up' %}bg-green-600{% else %}bg-red-600{% endif %} w-[6.5rem] h-[3.9rem]"
+          class="flex flex-col items-center justify-center text-xs text-[var(--btn-text)] rounded-md {% if port.oper_status == 'up' %}bg-[var(--btn-bg)]{% else %}bg-[var(--btn-bg)]{% endif %} w-[6.5rem] h-[3.9rem]"
           title="{{ port.descr or port.name }}"
         >
-          <span class="text-base text-gray-100">{{ port.name }}</span>
-          <span class="port-rate text-base text-gray-100">--</span>
+          <span class="text-base text-[var(--card-text)]">{{ port.name }}</span>
+          <span class="port-rate text-base text-[var(--card-text)]">--</span>
           {% if port.mode %}
-          <span class="text-base text-gray-100">{{ port.mode }}</span>
+          <span class="text-base text-[var(--card-text)]">{{ port.mode }}</span>
           {% elif port.vlan %}
-          <span class="text-base text-gray-100">VLAN {{ port.vlan }}</span>
+          <span class="text-base text-[var(--card-text)]">VLAN {{ port.vlan }}</span>
           {% endif %}
         </div>
         {% endfor %}
@@ -53,15 +53,15 @@
   {% for port in virtual_ports %}
     <div
       id="port-{{ port.name|replace('/', '-') }}"
-      class="flex flex-col items-center justify-center text-xs text-white {% if port.oper_status == 'up' %}bg-green-600{% else %}bg-red-600{% endif %} w-[6.5rem] h-[3.9rem]"
+      class="flex flex-col items-center justify-center text-xs text-[var(--btn-text)] {% if port.oper_status == 'up' %}bg-[var(--btn-bg)]{% else %}bg-[var(--btn-bg)]{% endif %} w-[6.5rem] h-[3.9rem]"
       title="{{ port.descr or port.name }}"
     >
-      <span class="text-base text-gray-100">{{ port.name }}</span>
-      <span class="port-rate text-base text-gray-100">--</span>
+      <span class="text-base text-[var(--card-text)]">{{ port.name }}</span>
+      <span class="port-rate text-base text-[var(--card-text)]">--</span>
       {% if port.mode %}
-      <span class="text-base text-gray-100">{{ port.mode }}</span>
+      <span class="text-base text-[var(--card-text)]">{{ port.mode }}</span>
       {% elif port.vlan %}
-      <span class="text-base text-gray-100">VLAN {{ port.vlan }}</span>
+      <span class="text-base text-[var(--card-text)]">VLAN {{ port.vlan }}</span>
       {% endif %}
     </div>
   {% endfor %}
@@ -104,8 +104,8 @@
       </td>
       <td class="px-4 py-2">{{ port.alias or '' }}</td>
       <td class="px-4 py-2">
-        <a href="/devices/{{ device.id }}/ports/{{ port.name }}/config" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition">Config</a>
-        <a href="/devices/{{ device.id }}/ports/{{ port.name }}/apply-template" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition ml-2">Template</a>
+        <a href="/devices/{{ device.id }}/ports/{{ port.name }}/config" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Config</a>
+        <a href="/devices/{{ device.id }}/ports/{{ port.name }}/apply-template" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition ml-2">Template</a>
       </td>
     </tr>
   {% endfor %}
