@@ -2,9 +2,9 @@
 
 {% block content %}
 <h1 class="text-xl mb-4">Devices</h1>
-<a href="/devices/column-prefs" class="underline block mb-2">Customize Columns</a>
+<a href="/devices/column-prefs" class="inline-block p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded transition mb-2">Customize Columns</a>
 {% if current_user and current_user.role in ['editor','admin','superadmin'] %}
-  <a href="/devices/new" class="underline">Add Device</a>
+  <a href="/devices/new" class="inline-block p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded transition">Add Device</a>
 {% endif %}
 {% if current_user and current_user.role in ['editor','admin','superadmin'] %}
   <div class="relative inline-block ml-2" x-data="{open:false}">

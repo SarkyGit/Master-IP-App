@@ -142,7 +142,7 @@
   </div>
   <div class="md:col-span-2">
     <button type="submit" aria-label="Submit" class="p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded transition">{{ include_icon('check') }}</button>
-    <a href="/devices" class="ml-2 underline">Cancel</a>
+    <a href="/devices" class="inline-block p-2 ml-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded transition">Cancel</a>
   </div>
 </form>
 {% if device %}
@@ -162,7 +162,7 @@
   <li>{{ log.timestamp }} - {{ log.severity }} - {{ log.message }}</li>
   {% endfor %}
 </ul>
-<a href="/syslog/live?device_id={{ device.id }}" class="underline">View All Logs</a>
+<a href="/syslog/live?device_id={{ device.id }}" class="inline-block p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded transition">View All Logs</a>
 {% endif %}
 <script>
 document.addEventListener('DOMContentLoaded', function () {
