@@ -616,7 +616,8 @@ async def upload_damage_photo(
         raise HTTPException(status_code=400, detail="Invalid file type")
     damage_dir = os.path.join(STATIC_DIR, "damage")
     os.makedirs(damage_dir, exist_ok=True)
-    filename = f"{device_id}_{int(datetime.utcnow().timestamp())}_{photo.filename}"
+    safe_name = os.path.basename(photo.filename)
+    filename = f"{device_id}_{int(datetime.utcnow().timestamp())}_{safe_name}"
     path = os.path.join(damage_dir, filename)
     with open(path, "wb") as f:
         f.write(await photo.read())
