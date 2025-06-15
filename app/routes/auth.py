@@ -74,7 +74,8 @@ async def login(
 async def logout(request: Request):
     """Clear the user session and redirect to login."""
     request.session.clear()
-    return RedirectResponse(url="/login", status_code=302)
+    # Redirect to the prefixed login route
+    return RedirectResponse(url="/auth/login", status_code=302)
 
 
 @router.get("/me")
