@@ -41,3 +41,17 @@ def get_tags():
     return tags
 
 templates.env.globals["get_tags"] = get_tags
+
+import os
+from app.utils.paths import STATIC_DIR
+
+
+def logo_url() -> str | None:
+    """Return the URL for the uploaded logo if it exists."""
+    path = os.path.join(STATIC_DIR, "logo.png")
+    if os.path.exists(path):
+        return "/static/logo.png"
+    return None
+
+
+templates.env.globals["logo_url"] = logo_url

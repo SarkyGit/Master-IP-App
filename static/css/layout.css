@@ -63,3 +63,25 @@ nav.bg-gray-800 .menu-right {
   display: flex;
   align-items: center;
 }
+
+.top-header {
+  background-color: #000;
+  color: #fff;
+  padding: 0.5rem 0;
+}
+
+.top-header a.logout {
+  color: #fff;
+  text-decoration: none;
+  padding: 0.25rem 0.5rem;
+  border: none;
+  background: none;
+}
+
+.top-header a.logout:hover {
+  text-decoration: underline;
+}
+
+.top-header .logo-box img {
+  height: 40px;
+}
