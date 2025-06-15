@@ -117,5 +117,5 @@
 
 {% block extra_scripts %}
 <script>window.deviceId = {{ device.id }};</script>
-<script src="/static/js/port_status.js"></script>
+<script src="{{ request.url_for('static', path='js/port_status.js') }}"></script>
 {% endblock %}

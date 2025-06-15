@@ -8,5 +8,5 @@
 <script>
   window.deviceId = {{ device.id }};
 </script>
-<script src="/static/js/terminal.js"></script>
+<script src="{{ request.url_for('static', path='js/terminal.js') }}"></script>
 {% endblock %}
