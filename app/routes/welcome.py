@@ -47,10 +47,46 @@ WELCOME_TEXT = {
     ],
 }
 
+# Inventory functions accessible by each role. These lines are displayed on the
+# welcome page below the general role description.
+INVENTORY_TEXT = {
+    "viewer": [
+        "View all devices",
+        "Review inventory audit logs",
+        "Browse trailer inventory",
+        "Browse site inventory",
+    ],
+    "user": [
+        "All viewer functions",
+        "Check switch port status",
+    ],
+    "editor": [
+        "All user functions",
+        "Add or modify device entries",
+        "Add or modify VLANs",
+        "Push or pull configurations",
+    ],
+    "admin": [
+        "All editor functions",
+        "Manage system tunables",
+    ],
+    "superadmin": [
+        "All admin functions",
+        "Manage credentials and view debug/audit logs",
+    ],
+}
+
 @router.get("/welcome/{role}")
 async def welcome_role(role: str, request: Request, current_user=Depends(get_current_user)):
     text = WELCOME_TEXT.get(role, [])
-    context = {"request": request, "role": role, "text": text, "current_user": current_user}
+    inventory = INVENTORY_TEXT.get(role, [])
+    context = {
+        "request": request,
+        "role": role,
+        "text": text,
+        "inventory_text": inventory,
+        "current_user": current_user,
+    }
     return templates.TemplateResponse("welcome.html", context)
 
 

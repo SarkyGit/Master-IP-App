@@ -44,7 +44,7 @@ from app.routes.tunables import router as tunables_router
 from app.routes.editor import router as editor_router
 from app.websockets.editor import shell_ws
 from app.websockets.terminal import router as terminal_ws_router
-from app.routes.welcome import router as welcome_router, WELCOME_TEXT
+from app.routes.welcome import router as welcome_router, WELCOME_TEXT, INVENTORY_TEXT
 from app.utils.auth import get_current_user
 from app.tasks import (
     start_queue_worker,
@@ -144,10 +144,12 @@ async def read_root(request: Request, current_user=Depends(get_current_user)):
     """Render a role-based welcome page or login screen."""
     if current_user:
         text = WELCOME_TEXT.get(current_user.role, [])
+        inventory = INVENTORY_TEXT.get(current_user.role, [])
         context = {
             "request": request,
             "role": current_user.role,
             "text": text,
+            "inventory_text": inventory,
             "current_user": current_user,
         }
         return templates.TemplateResponse("welcome.html", context)
