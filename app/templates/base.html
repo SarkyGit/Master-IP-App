@@ -74,67 +74,67 @@
             <button @click="mobile = !mobile" class="lg:hidden p-2 rounded">☰</button>
             <div :class="mobile ? 'flex flex-col space-y-2' : 'hidden lg:flex space-x-4 w-full'">
               {% if current_user %}
-              <button @click="activeTopMenu = 'inventory'" class="rounded-t-lg border border-b-0 px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Inventory</button>
-              <button @click="activeTopMenu = 'network'" class="rounded-t-lg border border-b-0 px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Network</button>
-              <button @click="activeTopMenu = 'tasks'" class="rounded-t-lg border border-b-0 px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Tasks</button>
-              <button @click="activeTopMenu = 'reports'" class="rounded-t-lg border border-b-0 px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Reports</button>
+              <button @click="activeTopMenu = 'inventory'" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Inventory</button>
+              <button @click="activeTopMenu = 'network'" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Network</button>
+              <button @click="activeTopMenu = 'tasks'" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Tasks</button>
+              <button @click="activeTopMenu = 'reports'" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Reports</button>
               {% if current_user.role in ['editor','admin','superadmin'] %}
-              <button @click="activeTopMenu = 'bulk'" class="rounded-t-lg border border-b-0 px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Bulk Add</button>
+              <button @click="activeTopMenu = 'bulk'" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Bulk Add</button>
               {% endif %}
-              <button @click="activeTopMenu = 'ssh'" class="ml-auto rounded-t-lg border border-b-0 px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">SSH</button>
+              <button @click="activeTopMenu = 'ssh'" class="ml-auto rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">SSH</button>
               {% endif %}
             </div>
           </div>
-          <div class="mt-1 space-y-2">
-            <div x-show="activeTopMenu == 'inventory'" class="border border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3" x-cloak>
-              <div :class="mobile ? 'flex flex-col space-y-2' : 'flex space-x-4'">
-                <a href="/devices" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">All Devices</a>
+          <div class="space-y-4 mt-1">
+            <div x-show="activeTopMenu == 'inventory'" class="border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3" x-cloak>
+              <div :class="mobile ? 'flex flex-col space-y-2' : 'flex space-x-2'">
+                <a href="/devices" class="px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">All Devices</a>
                 {% for dtype in get_device_types() %}
-                <a href="/devices/type/{{ dtype.id }}" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">{{ dtype.name }}</a>
+                <a href="/devices/type/{{ dtype.id }}" class="px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">{{ dtype.name }}</a>
                 {% endfor %}
-                <a href="/inventory/audit" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">Audit</a>
-                <a href="/inventory/trailers" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">Trailer Inventory</a>
-                <a href="/inventory/sites" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">Site Inventory</a>
+                <a href="/inventory/audit" class="px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Audit</a>
+                <a href="/inventory/trailers" class="px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Trailer Inventory</a>
+                <a href="/inventory/sites" class="px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Site Inventory</a>
               </div>
             </div>
-            <div x-show="activeTopMenu == 'network'" class="border border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3" x-cloak>
-              <div :class="mobile ? 'flex flex-col space-y-2' : 'flex space-x-4'">
-                <a href="/network/ip-search" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">IP Search</a>
-                <a href="/vlans" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">VLAN MGMT</a>
-                <a href="/network/port-configs" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">Port Configs</a>
+            <div x-show="activeTopMenu == 'network'" class="border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3" x-cloak>
+              <div :class="mobile ? 'flex flex-col space-y-2' : 'flex space-x-2'">
+                <a href="/network/ip-search" class="px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">IP Search</a>
+                <a href="/vlans" class="px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">VLAN MGMT</a>
+                <a href="/network/port-configs" class="px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Port Configs</a>
               </div>
             </div>
-            <div x-show="activeTopMenu == 'tasks'" class="border border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3" x-cloak>
-              <div :class="mobile ? 'flex flex-col space-y-2' : 'flex space-x-4'">
-                <a href="/tasks" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">Task Queue</a>
-                <a href="/devices/duplicates" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">Duplicate Checker</a>
+            <div x-show="activeTopMenu == 'tasks'" class="border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3" x-cloak>
+              <div :class="mobile ? 'flex flex-col space-y-2' : 'flex space-x-2'">
+                <a href="/tasks" class="px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Task Queue</a>
+                <a href="/devices/duplicates" class="px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Duplicate Checker</a>
                 {% if current_user.role in ['admin','superadmin'] %}
-                <a href="/tasks/edit-tags" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">Edit Tags</a>
-                <a href="/tasks/google-sheets" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">Google Sheets</a>
+                <a href="/tasks/edit-tags" class="px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Edit Tags</a>
+                <a href="/tasks/google-sheets" class="px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Google Sheets</a>
                 {% endif %}
               </div>
             </div>
-            <div x-show="activeTopMenu == 'reports'" class="border border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3" x-cloak>
-              <div :class="mobile ? 'flex flex-col space-y-2' : 'flex space-x-4'">
-                <a href="/reports/vlan-usage" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">VLAN Usage</a>
+            <div x-show="activeTopMenu == 'reports'" class="border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3" x-cloak>
+              <div :class="mobile ? 'flex flex-col space-y-2' : 'flex space-x-2'">
+                <a href="/reports/vlan-usage" class="px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">VLAN Usage</a>
               </div>
             </div>
             {% if current_user.role in ['editor','admin','superadmin'] %}
-            <div x-show="activeTopMenu == 'bulk'" class="border border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3" x-cloak>
-              <div :class="mobile ? 'flex flex-col space-y-2' : 'flex space-x-4'">
-                <a href="/bulk/device-import" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">Bulk Add Devices</a>
+            <div x-show="activeTopMenu == 'bulk'" class="border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3" x-cloak>
+              <div :class="mobile ? 'flex flex-col space-y-2' : 'flex space-x-2'">
+                <a href="/bulk/device-import" class="px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Bulk Add Devices</a>
               </div>
             </div>
             {% endif %}
-            <div x-show="activeTopMenu == 'ssh'" class="border border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3" x-cloak>
-              <div :class="mobile ? 'flex flex-col space-y-2' : 'flex space-x-4'">
-                <a href="/ssh/port-config" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">Port Config</a>
-                <a href="/ssh/port-check" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">Port Check</a>
-                <a href="/ssh/config-check" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">Config Check</a>
-                <a href="/ssh/port-search" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">Port Search</a>
-                <a href="/ssh/bulk-port-update" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">Bulk Port Update</a>
-                <a href="/bulk/vlan-push" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">VLAN Bulk Push</a>
-                <a href="/ssh/netbird-connect" class="p-2 rounded hover:bg-[var(--submenu-hover-bg)]">Initiate Netbird Connection</a>
+            <div x-show="activeTopMenu == 'ssh'" class="border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3" x-cloak>
+              <div :class="mobile ? 'flex flex-col space-y-2' : 'flex space-x-2'">
+                <a href="/ssh/port-config" class="px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Port Config</a>
+                <a href="/ssh/port-check" class="px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Port Check</a>
+                <a href="/ssh/config-check" class="px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Config Check</a>
+                <a href="/ssh/port-search" class="px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Port Search</a>
+                <a href="/ssh/bulk-port-update" class="px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Bulk Port Update</a>
+                <a href="/bulk/vlan-push" class="px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">VLAN Bulk Push</a>
+                <a href="/ssh/netbird-connect" class="px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Initiate Netbird Connection</a>
               </div>
             </div>
           </div>
