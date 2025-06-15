@@ -3,6 +3,14 @@ body {
   color: #00ff00;
 }
 
+:root {
+  --nav-bg: #1f2833;
+  --nav-text: #00ff00;
+  --submenu-bg: #232b36;
+  --submenu-text: #00ff00;
+  --submenu-hover-bg: #2b323d;
+}
+
 .duplicate {
   background-color: #4b5320;
 }

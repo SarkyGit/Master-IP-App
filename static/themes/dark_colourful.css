@@ -5,6 +5,14 @@ body {
   color: #e5e7eb;            /* text-gray-200 */
 }
 
+:root {
+  --nav-bg: #1f2937;
+  --nav-text: #ffffff;
+  --submenu-bg: #374151;
+  --submenu-text: #ffffff;
+  --submenu-hover-bg: #4b5563;
+}
+
 h1, h2, h3, h4, h5, h6 {
   color: #ffffff;            /* text-white */
 }
