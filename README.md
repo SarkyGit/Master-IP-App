@@ -4,80 +4,102 @@ This application manages network devices, VLANs and configuration backups using 
 
 Tailwind CSS has been removed from the project. Styling and components now rely on [UnoCSS](https://github.com/unocss/unocss) and [Radix UI](https://www.radix-ui.com/).
 
-## Prerequisites
+## Quick Installation
 
-- **Python 3.10+** (any recent Python 3 version should work)
-- **PostgreSQL 12+** installed and running
-- **Node.js** (18 or newer) to build CSS assets
-- (Optional) [virtualenv](https://docs.python.org/3/library/venv.html) for an isolated environment
+The steps below assume a brand new system with no tools installed. Commands are written so they can be copied and pasted directly into a terminal.
 
-## Setup
-
-1. **Clone the repository** and open a terminal in the project directory.
-2. *(Optional)* Create a virtual environment:
-   ```bash
-   python3 -m venv venv
-   source venv/bin/activate
-   ```
-3. **Install Python dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-   This installs all required packages, including `httpx<0.28`.
-4. **Install Node dependencies and build the CSS**:
-   ```bash
-   npm install
-   npm run build:css
-   ```
-   Run `npm run build:css` again whenever templates change to regenerate `static/css/unocss.css`.
-5. **Seed the database** with default values. This will create a superuser, system settings, and some sample devices. The `start.sh` script will automatically run these seed commands unless `AUTO_SEED` is disabled, but you can also run them manually:
-   ```bash
-   python seed_tunables.py
-   python seed_superuser.py
-   python seed_data.py
-   ```
-   Before running these scripts, create a `.env` file with a PostgreSQL connection string, for example:
-
-   ```bash
-   echo "DATABASE_URL=postgresql://postgres:postgres@localhost:5432/master_ip_db" > .env
-   ```
-   After setting the URL, run the seed scripts above to populate the PostgreSQL database.
-
-   Alternatively, execute `./init_db.sh` to automatically create the PostgreSQL
-   database (if needed), install dependencies and run all seed scripts in one
-   step.
-
-   **Note:** The sample devices created by `seed_data.py` use example IP
-   addresses in the `192.168.10.0/24` range. Adjust these addresses in
-   `seed_data.py` or modify the devices through the UI if they do not match your
-   environment.
-
-## Running the server
-
-Start the FastAPI application using [uvicorn](https://www.uvicorn.org/):
+### Ubuntu Development Setup
 
 ```bash
-uvicorn app.main:app --reload
-```
+# install required system packages
+sudo apt update
+sudo apt install -y git python3 python3-venv python3-pip nodejs npm postgresql
 
-`uvicorn` binds to `127.0.0.1` by default, so only the local machine can connect.
-To access the app from other computers, specify `--host 0.0.0.0` and optionally
-set the port:
+# clone the repository and enter the folder
+git clone https://github.com/youruser/Master-IP-App.git
+cd Master-IP-App
 
-```bash
+# create and activate a virtual environment
+python3 -m venv venv
+source venv/bin/activate
+
+# install Python and Node dependencies
+pip install -r requirements.txt
+npm install
+npm run build:css
+
+# create the application database
+sudo -u postgres psql -c "CREATE USER masteruser WITH PASSWORD 'masterpass';"
+sudo -u postgres psql -c "CREATE DATABASE master_ip_db OWNER masteruser;"
+
+# configure the connection string
+echo "DATABASE_URL=postgresql://masteruser:masterpass@localhost:5432/master_ip_db" > .env
+
+# seed default data
+./init_db.sh
+
+# start the development server
 uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-The `--reload` flag automatically restarts the server on code changes.
-
--Visit [http://localhost:8000](http://localhost:8000) in your browser. Log in with the credentials created by `seed_superuser.py`:
+Visit [http://localhost:8000](http://localhost:8000) and log in with the credentials created by `seed_superuser.py`:
 
 - **Email:** `Barny@CESTechnologies.com`
 - **Password:** `C0pperpa!r`
 
-After logging in you can add devices, VLANs and manage configuration backups through the web interface.
-The **Devices** menu also includes a *Duplicate Checker* page to locate records sharing the same IP, MAC or asset tag and to list devices missing these values.
-If the login form reports **Invalid credentials**, run `python seed_superuser.py` again to ensure the password is stored correctly.
+### Ubuntu Production Setup
+
+```bash
+# install system packages
+sudo apt update
+sudo apt install -y git python3 python3-venv python3-pip nodejs npm postgresql
+
+# clone the repository and enter it
+git clone https://github.com/youruser/Master-IP-App.git
+cd Master-IP-App
+
+# create virtualenv and install dependencies
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+npm install
+npm run build:css
+
+# set up the database (adjust credentials as needed)
+sudo -u postgres psql -c "CREATE USER masteruser WITH PASSWORD 'masterpass';"
+sudo -u postgres psql -c "CREATE DATABASE master_ip_db OWNER masteruser;"
+
+echo "DATABASE_URL=postgresql://masteruser:masterpass@localhost:5432/master_ip_db" > .env
+
+# optionally seed
+./init_db.sh
+
+# start the production server
+./start.sh
+```
+
+### Docker for Desktop on Windows (Development)
+
+Open **PowerShell** or **Git Bash** and run:
+
+```bash
+git clone https://github.com/youruser/Master-IP-App.git
+cd Master-IP-App
+
+docker compose up --build
+```
+
+The containers expose ports 8000 (web) and 5432 (PostgreSQL). Browse to `http://localhost:8000` once the log shows the server is ready.
+
+### Docker for Desktop on Windows (Production)
+
+```bash
+# from inside the project directory
+
+docker compose up --build -d
+```
+
+Edit the `.env` file before starting if you need custom database credentials or other settings. To stop the containers run `docker compose down`.
 
 ## Interface Themes
 
@@ -87,7 +109,11 @@ To switch themes, open **My Profile** from the user menu (or visit `/users/me`) 
 
 ## System Tunables
 
-The application stores various settings in the `system_tunables` table. These are seeded with default values by `seed_tunables.py` and can be adjusted from the **System Tunables** page in the web UI (admin role required). Recent additions include options for queue processing, SNMP trap and syslog listeners, web terminal timeouts and SMTP credentials.
+The application stores various settings in the `system_tunables` table. These are seeded with default values by `seed_tunables.py` and can be adjusted from the **System Tunables** page in the web UI (admin role required).
+
+## Production Deployment Notes
+
+The `start.sh` script runs the application using Gunicorn with Uvicorn workers. Adjust `WORKERS`, `TIMEOUT` and `PORT` in the environment if needed. When deploying behind Nginx or another reverse proxy be sure to forward the `X-Forwarded-Proto` header so generated links use HTTPS.
 
 ## Production deployment
 
