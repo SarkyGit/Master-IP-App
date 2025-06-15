@@ -4,7 +4,7 @@
 <h1 class="text-xl mb-2">Port Status for {{ device.hostname }}</h1>
 <a href="/devices" class="underline inline-block mb-4">Back to Devices</a>
 {% if device.last_snmp_check %}
-<p class="mb-4">
+<p class="mb-4 text-base text-gray-100">
   {% if device.snmp_reachable %}
     <span class="text-green-400">●</span>
   {% else %}
@@ -30,12 +30,12 @@
           class="flex flex-col items-center justify-center text-xs text-white rounded-md {% if port.oper_status == 'up' %}bg-green-600{% else %}bg-red-600{% endif %} w-[6.5rem] h-[3.9rem]"
           title="{{ port.descr or port.name }}"
         >
-          <span>{{ port.name }}</span>
-          <span class="port-rate">--</span>
+          <span class="text-base text-gray-100">{{ port.name }}</span>
+          <span class="port-rate text-base text-gray-100">--</span>
           {% if port.mode %}
-          <span>{{ port.mode }}</span>
+          <span class="text-base text-gray-100">{{ port.mode }}</span>
           {% elif port.vlan %}
-          <span>VLAN {{ port.vlan }}</span>
+          <span class="text-base text-gray-100">VLAN {{ port.vlan }}</span>
           {% endif %}
         </div>
         {% endfor %}
@@ -56,12 +56,12 @@
       class="flex flex-col items-center justify-center text-xs text-white {% if port.oper_status == 'up' %}bg-green-600{% else %}bg-red-600{% endif %} w-[6.5rem] h-[3.9rem]"
       title="{{ port.descr or port.name }}"
     >
-      <span>{{ port.name }}</span>
-      <span class="port-rate">--</span>
+      <span class="text-base text-gray-100">{{ port.name }}</span>
+      <span class="port-rate text-base text-gray-100">--</span>
       {% if port.mode %}
-      <span>{{ port.mode }}</span>
+      <span class="text-base text-gray-100">{{ port.mode }}</span>
       {% elif port.vlan %}
-      <span>VLAN {{ port.vlan }}</span>
+      <span class="text-base text-gray-100">VLAN {{ port.vlan }}</span>
       {% endif %}
     </div>
   {% endfor %}
@@ -104,8 +104,8 @@
       </td>
       <td class="px-4 py-2">{{ port.alias or '' }}</td>
       <td class="px-4 py-2">
-        <a href="/devices/{{ device.id }}/ports/{{ port.name }}/config" class="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition">Config</a>
-        <a href="/devices/{{ device.id }}/ports/{{ port.name }}/apply-template" class="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition ml-2">Template</a>
+        <a href="/devices/{{ device.id }}/ports/{{ port.name }}/config" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition">Config</a>
+        <a href="/devices/{{ device.id }}/ports/{{ port.name }}/apply-template" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition ml-2">Template</a>
       </td>
     </tr>
   {% endfor %}

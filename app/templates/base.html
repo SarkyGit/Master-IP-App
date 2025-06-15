@@ -28,7 +28,7 @@
           <div class="login-area flex items-center space-x-2">
             {% if current_user %}
             <div class="relative" x-data="{open:false}">
-              <button @click="open = !open" class="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition">My Profile</button>
+              <button @click="open = !open" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition">My Profile</button>
               <ul x-show="open" @click.away="open = false" class="absolute right-0 mt-2 bg-gray-800 text-white py-2 w-48" x-cloak>
                 <li><a class="block px-4 py-2 hover:bg-gray-700" href="/users/me">View Profile</a></li>
                 <li><a class="block px-4 py-2 hover:bg-gray-700" href="/user/ssh">SSH Profiles</a></li>
@@ -60,9 +60,9 @@
             {% endif %}
             <div id="admin-menu" class="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition mr-2" data-admin-menu data-label="{{ 'Super Admin' if current_user.role == 'superadmin' else 'Admin' }}" data-items='{{ admin_items|tojson }}'></div>
             {% endif %}
-            <a href="/auth/logout" class="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition logged-in">Logout</a>
+            <a href="/auth/logout" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition logged-in">Logout</a>
             {% else %}
-            <a href="/auth/login" class="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition logged-out">Login</a>
+            <a href="/auth/login" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition logged-out">Login</a>
             {% endif %}
           </div>
         </div>
@@ -75,60 +75,60 @@
             <ul class="lg:flex lg:space-x-4">
               {% if current_user %}
               <li class="relative py-1" x-data="{open:false}">
-                <button @click="open = !open" class="block px-4 py-2 px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition rounded hover:">SSH</button>
+                <button @click="open = !open" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition">SSH</button>
                 <ul x-show="open" @click.away="open = false" class="absolute mt-2 bg-gray-800 text-white py-2 w-48" x-cloak>
-                  <li><a class="block px-4 py-2 px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition rounded hover:bg-gray-700" href="/ssh/port-config">Port Config</a></li>
-                  <li><a class="block px-4 py-2 px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition rounded hover:bg-gray-700" href="/ssh/port-check">Port Check</a></li>
-                  <li><a class="block px-4 py-2 px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition rounded hover:bg-gray-700" href="/ssh/config-check">Config Check</a></li>
-                  <li><a class="block px-4 py-2 px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition rounded hover:bg-gray-700" href="/ssh/port-search">Port Search</a></li>
-                  <li><a class="block px-4 py-2 px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition rounded hover:bg-gray-700" href="/ssh/bulk-port-update">Bulk Port Update</a></li>
-                  <li><a class="block px-4 py-2 px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition rounded hover:bg-gray-700" href="/bulk/vlan-push">VLAN Bulk Push</a></li>
-                  <li><a class="block px-4 py-2 px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition rounded hover:bg-gray-700" href="/ssh/netbird-connect">Initiate Netbird Connection</a></li>
+                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/ssh/port-config">Port Config</a></li>
+                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/ssh/port-check">Port Check</a></li>
+                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/ssh/config-check">Config Check</a></li>
+                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/ssh/port-search">Port Search</a></li>
+                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/ssh/bulk-port-update">Bulk Port Update</a></li>
+                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/bulk/vlan-push">VLAN Bulk Push</a></li>
+                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/ssh/netbird-connect">Initiate Netbird Connection</a></li>
                 </ul>
               </li>
               <li class="relative py-1" x-data="{open:false}">
-                <button @click="open = !open" class="block px-4 py-2 px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition rounded hover:">Inventory</button>
+                <button @click="open = !open" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition">Inventory</button>
                 <ul x-show="open" @click.away="open = false" class="absolute mt-2 bg-gray-800 text-white py-2 w-48" x-cloak>
-                  <li><a class="block px-4 py-2 px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition rounded hover:bg-gray-700" href="/devices">All Devices</a></li>
+                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/devices">All Devices</a></li>
                   {% for dtype in get_device_types() %}
-                  <li><a class="block px-4 py-2 px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition rounded hover:bg-gray-700" href="/devices/type/{{ dtype.id }}">{{ dtype.name }}</a></li>
+                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/devices/type/{{ dtype.id }}">{{ dtype.name }}</a></li>
                   {% endfor %}
-                  <li><a class="block px-4 py-2 px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition rounded hover:bg-gray-700" href="/inventory/audit">Audit</a></li>
-                  <li><a class="block px-4 py-2 px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition rounded hover:bg-gray-700" href="/inventory/trailers">Trailer Inventory</a></li>
-                  <li><a class="block px-4 py-2 px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition rounded hover:bg-gray-700" href="/inventory/sites">Site Inventory</a></li>
+                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/inventory/audit">Audit</a></li>
+                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/inventory/trailers">Trailer Inventory</a></li>
+                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/inventory/sites">Site Inventory</a></li>
                 </ul>
               </li>
               <li class="relative py-1" x-data="{open:false}">
-                <button @click="open = !open" class="block px-4 py-2 px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition rounded hover:">Network</button>
+                <button @click="open = !open" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition">Network</button>
                 <ul x-show="open" @click.away="open = false" class="absolute mt-2 bg-gray-800 text-white py-2 w-48" x-cloak>
-                  <li><a class="block px-4 py-2 px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition rounded hover:bg-gray-700" href="/network/ip-search">IP Search</a></li>
-                  <li><a class="block px-4 py-2 px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition rounded hover:bg-gray-700" href="/vlans">VLAN MGMT</a></li>
-                  <li><a class="block px-4 py-2 px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition rounded hover:bg-gray-700" href="/network/port-configs">Port Configs</a></li>
+                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/network/ip-search">IP Search</a></li>
+                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/vlans">VLAN MGMT</a></li>
+                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/network/port-configs">Port Configs</a></li>
                 </ul>
               </li>
                 <li class="py-1">
-                  <a class="block px-4 py-2 px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition rounded hover:" href="/dashboard">Dashboard</a>
+                  <a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition" href="/dashboard">Dashboard</a>
                 </li>
               <li class="relative py-1" x-data="{open:false}">
-                <button @click="open = !open" class="block px-4 py-2 px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition rounded hover:">Tasks</button>
+                <button @click="open = !open" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition">Tasks</button>
                 <ul x-show="open" @click.away="open = false" class="absolute mt-2 bg-gray-800 text-white py-2 w-48" x-cloak>
-                  <li><a class="block px-4 py-2 px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition rounded hover:bg-gray-700" href="/tasks">Task Queue</a></li>
-                  <li><a class="block px-4 py-2 px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition rounded hover:bg-gray-700" href="/devices/duplicates">Duplicate Checker</a></li>
+                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/tasks">Task Queue</a></li>
+                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/devices/duplicates">Duplicate Checker</a></li>
                   {% if current_user.role in ['admin','superadmin'] %}
-                  <li><a class="block px-4 py-2 px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition rounded hover:bg-gray-700" href="/tasks/edit-tags">Edit Tags</a></li>
-                  <li><a class="block px-4 py-2 px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition rounded hover:bg-gray-700" href="/tasks/google-sheets">Google Sheets</a></li>
+                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/tasks/edit-tags">Edit Tags</a></li>
+                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/tasks/google-sheets">Google Sheets</a></li>
                   {% endif %}
                 </ul>
               </li>
               <li class="relative py-1" x-data="{open:false}">
-                <button @click="open = !open" class="block px-4 py-2 px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition rounded hover:">Reports</button>
+                <button @click="open = !open" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition">Reports</button>
                 <ul x-show="open" @click.away="open = false" class="absolute mt-2 bg-gray-800 text-white py-2 w-48" x-cloak>
-                  <li><a class="block px-4 py-2 px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition rounded hover:bg-gray-700" href="/reports/vlan-usage">VLAN Usage</a></li>
+                  <li><a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition hover:bg-gray-700" href="/reports/vlan-usage">VLAN Usage</a></li>
                 </ul>
               </li>
               {% if current_user.role in ['editor','admin','superadmin'] %}
               <li class="py-1">
-                <a class="block px-4 py-2 px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition rounded hover:" href="/bulk/device-import">Bulk Add Devices</a>
+                <a class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition" href="/bulk/device-import">Bulk Add Devices</a>
               </li>
               {% endif %}
               {% endif %}
@@ -139,7 +139,7 @@
       {% endblock %}
     </header>
     <div class="container mt-4">
-      <a href="javascript:history.back()" class="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition ">&laquo; Back</a>
+      <a href="javascript:history.back()" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition">&laquo; Back</a>
       <p class="text-base text-gray-100">{{ message }}</p>
       {% block content %}{% endblock %}
     </div>

@@ -12,7 +12,7 @@
     <label for="spreadsheet_id" class="block">Spreadsheet ID</label>
     <input id="spreadsheet_id" type="text" name="spreadsheet_id" value="{{ config.sheet_id }}" class="text-black w-96">
   </div>
-  <button type="submit" class="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition ">Save</button>
+  <button type="submit" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition">Save</button>
 </form>
 
 <hr class="my-4">
@@ -26,7 +26,7 @@
     <option value="snmp_communities">SNMP Communities</option>
     <option value="port_config_templates">Port Config Templates</option>
   </select>
-  <button type="submit" class="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition ">Export</button>
+  <button type="submit" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition">Export</button>
 </form>
 
 <hr class="my-4">
@@ -40,6 +40,6 @@
     <option value="snmp_communities">SNMP Communities</option>
     <option value="port_config_templates">Port Config Templates</option>
   </select>
-  <button type="submit" class="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition ">Import</button>
+  <button type="submit" class="block px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition">Import</button>
 </form>
 {% endblock %}
