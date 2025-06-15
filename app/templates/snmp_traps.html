@@ -40,7 +40,7 @@
       <td class="px-4 py-2">{{ trap.trap_oid }}</td>
       <td class="px-4 py-2">{{ trap.device.hostname if trap.device else '' }}</td>
       <td class="px-4 py-2">{{ trap.site.name if trap.site else '' }}</td>
-      <td class="px-4 py-2"><details><summary>View</summary><pre>{{ trap.message }}</pre></details></td>
+      <td class="px-4 py-2"><details><summary>View</summary><pre class="bg-[var(--code-bg)] text-[var(--code-text)] rounded px-2 py-1 text-sm whitespace-pre-wrap overflow-auto my-2">{{ trap.message }}</pre></details></td>
     </tr>
   {% endfor %}
   </tbody>
