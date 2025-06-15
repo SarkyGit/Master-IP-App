@@ -72,17 +72,20 @@
         <div class="container mx-auto">
           <div class="flex items-center justify-between">
             <button @click="mobile = !mobile" class="lg:hidden p-2 rounded">☰</button>
-            <div :class="mobile ? 'flex flex-col space-y-2' : 'hidden lg:flex space-x-4 w-full'">
+            <div :class="mobile ? 'flex flex-col space-y-2' : 'hidden lg:flex w-full'">
               <button onclick="history.back()" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Back</button>
               {% if current_user %}
-              <button @click="activeTopMenu = 'inventory'" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Inventory</button>
-              <button @click="activeTopMenu = 'network'" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Network</button>
-              <button @click="activeTopMenu = 'tasks'" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Tasks</button>
-              <button @click="activeTopMenu = 'reports'" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Reports</button>
-              {% if current_user.role in ['editor','admin','superadmin'] %}
-              <button @click="activeTopMenu = 'bulk'" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Bulk Add</button>
-              {% endif %}
-              <button @click="activeTopMenu = 'ssh'" class="ml-auto rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">SSH</button>
+              <div class="flex w-full">
+                <div class="flex space-x-4">
+                  <button @click="activeTopMenu = 'inventory'" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Inventory</button>
+                  <button @click="activeTopMenu = 'reports'" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Reports</button>
+                </div>
+                <div class="flex space-x-4 ml-auto">
+                  <button @click="activeTopMenu = 'network'" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Network</button>
+                  <button @click="activeTopMenu = 'tasks'" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Tasks</button>
+                  <button @click="activeTopMenu = 'ssh'" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">SSH</button>
+                </div>
+              </div>
               {% endif %}
             </div>
           </div>
@@ -96,6 +99,9 @@
                 <a href="/inventory/audit" class="px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Audit</a>
                 <a href="/inventory/trailers" class="px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Trailer Inventory</a>
                 <a href="/inventory/sites" class="px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Site Inventory</a>
+                {% if current_user.role in ['editor','admin','superadmin'] %}
+                <a href="/bulk/device-import" class="px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Bulk Add Devices</a>
+                {% endif %}
               </div>
             </div>
             <div x-show="activeTopMenu == 'network'" class="border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3" x-cloak>
@@ -120,13 +126,6 @@
                 <a href="/reports/vlan-usage" class="px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">VLAN Usage</a>
               </div>
             </div>
-            {% if current_user.role in ['editor','admin','superadmin'] %}
-            <div x-show="activeTopMenu == 'bulk'" class="border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3" x-cloak>
-              <div :class="mobile ? 'flex flex-col space-y-2' : 'flex space-x-2'">
-                <a href="/bulk/device-import" class="px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Bulk Add Devices</a>
-              </div>
-            </div>
-            {% endif %}
             <div x-show="activeTopMenu == 'ssh'" class="border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3" x-cloak>
               <div :class="mobile ? 'flex flex-col space-y-2' : 'flex space-x-2'">
                 <a href="/ssh/port-config" class="px-4 py-2 text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Port Config</a>
