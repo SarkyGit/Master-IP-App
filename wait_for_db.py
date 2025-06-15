@@ -16,7 +16,7 @@ for attempt in range(1, max_attempts + 1):
         print("Database is ready")
         break
     except Exception as exc:
-        print(f"Attempt {attempt}/{max_attempts} - waiting for database...")
+        print(f"Attempt {attempt}/{max_attempts} - waiting for database: {exc}")
         time.sleep(delay)
 else:
     print("Could not connect to database. Exiting.")
