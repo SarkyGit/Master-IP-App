@@ -58,6 +58,11 @@ nav.bg-gray-800 a {
   display: block;
 }
 
+/* Ensure all navigation links have no underlines */
+nav a {
+  text-decoration: none;
+}
+
 nav.bg-gray-800 .menu-right {
   margin-left: auto;
   display: flex;

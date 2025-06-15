@@ -35,7 +35,7 @@
       <td class="table-cell">{{ ban.ban_reason }}</td>
       <td class="table-cell">
         <form method="post" action="/admin/ip-bans/{{ ban.id }}/unban">
-          <button type='submit' aria-label='Unban' class='p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition' onclick="return confirm('Unban this IP?')">{{ include_icon('x-circle') }}</button>
+          <button type='submit' aria-label='Unban' class='px-4 py-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition' onclick="return confirm('Unban this IP?')">{{ include_icon('x-circle') }}</button>
         </form>
       </td>
     </tr>

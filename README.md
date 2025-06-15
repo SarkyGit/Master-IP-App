@@ -19,7 +19,7 @@ The steps below assume a brand new system with no tools installed. Commands are 
 sudo apt update
 sudo apt install -y git python3 python3-venv python3-pip postgresql curl
 
-# install Node.js (version 20.x) from NodeSource
+# install Node.js (version 20.x) from NodeSource (skip if Node.js ≥18 is already installed)
 curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 sudo apt install -y nodejs
 
@@ -33,6 +33,7 @@ source venv/bin/activate
 
 # install Python and Node dependencies
 pip install -r requirements.txt
+# install Node packages (required before running the CSS build step)
 npm install
 npm run build:css
 
@@ -65,7 +66,7 @@ Visit [http://localhost:8000](http://localhost:8000) and log in with the credent
 sudo apt update
 sudo apt install -y git python3 python3-venv python3-pip postgresql curl
 
-# install Node.js (version 20.x) from NodeSource
+# install Node.js (version 20.x) from NodeSource (skip if Node.js ≥18 is already installed)
 curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 sudo apt install -y nodejs
 
@@ -77,6 +78,7 @@ cd Master-IP-App
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
+# install Node packages (required before running the CSS build step)
 npm install
 npm run build:css
 
