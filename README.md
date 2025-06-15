@@ -2,6 +2,8 @@
 
 This application manages network devices, VLANs and configuration backups using [FastAPI](https://fastapi.tiangolo.com/). All data is stored in a PostgreSQL database specified via the `DATABASE_URL` environment variable. SQLite is not supported.
 
+The connection string can be stored in a `.env` file so the app picks it up when starting. The examples below create a user named `masteruser` with password `masterpass`, but you may use any PostgreSQL credentials. Update `DATABASE_URL` in `.env` to match your chosen username, password and database name. Both `init_db.sh` and `start.sh` automatically load this file and use the credentials as provided.
+
 Tailwind CSS has been removed from the project. Styling and components now rely on [UnoCSS](https://github.com/unocss/unocss) and [Radix UI](https://www.radix-ui.com/).
 
 ## Quick Installation
