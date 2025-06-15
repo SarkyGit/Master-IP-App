@@ -3,7 +3,8 @@
 {% block content %}
 <h1 class="text-xl mb-4">Edit Tags</h1>
 <form method="post">
-<table class="min-w-full text-left mt-4">
+<div class="w-full overflow-auto px-4">
+<table class="w-full table-fixed text-left mt-4">
   <thead>
     <tr>
       <th class="text-left">Device</th>
@@ -21,6 +22,7 @@
   {% endfor %}
   </tbody>
 </table>
+</div>
 <button type="submit" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition mt-2 py-1">Save</button>
 </form>
 <p class="mt-2 text-base text-[var(--card-text)]">Automatic tags <em>complete</em> and <em>incomplete</em> cannot be removed.</p>

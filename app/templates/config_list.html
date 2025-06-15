@@ -14,7 +14,8 @@
   (checked {{ device.last_snmp_check }})
 </p>
 {% endif %}
-<table class="min-w-full text-left">
+<div class="w-full overflow-auto px-4">
+<table class="w-full table-fixed text-left">
   <thead>
     <tr>
       <th class="px-4 py-2 text-left">Timestamp</th>
@@ -69,4 +70,5 @@
   {% endfor %}
   </tbody>
 </table>
+</div>
 {% endblock %}
