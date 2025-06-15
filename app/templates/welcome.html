@@ -1,13 +1,18 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="flex flex-col items-center justify-center text-center mt-10">
-  <h1 class="text-2xl mb-4">Welcome {{ role|title }}</h1>
-  <ul class="list-disc list-inside">
+<div id="welcome-cli" class="flex flex-col items-center justify-center text-center min-h-[50vh] font-mono text-cyan-300 bg-gray-900 p-4 rounded">
+  <div class="cli-line" style="opacity:0">Welcome, {{ current_user.email }}.</div>
+  <div class="cli-line" style="opacity:0">You are a {{ role|title }}, which allows you the following actions:</div>
   {% for line in text %}
-    <li>{{ line }}</li>
+  <div class="cli-line" style="opacity:0">- {{ line }}</div>
   {% endfor %}
-  </ul>
+  <div class="cli-line" style="opacity:0">&nbsp;</div>
+  <div class="cli-line" style="opacity:0">Inventory System Overview</div>
+  <div class="cli-line" style="opacity:0">This system tracks network devices and configurations.</div>
+  {% for line in inventory_text %}
+  <div class="cli-line" style="opacity:0">- {{ line }}</div>
+  {% endfor %}
 </div>
 {% if alert %}
 <div class="mt-4 p-2 bg-yellow-200 text-yellow-900 rounded">{{ alert }}</div>
@@ -35,4 +40,8 @@
   </tbody>
 </table>
 {% endif %}
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ request.url_for('static', path='js/welcome_cli.js') }}"></script>
 {% endblock %}
