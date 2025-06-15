@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-    <title>{% block title %}CES Inventory{% endblock %}</title>
+    <title>{% block title %}CEST Master IP Tool{% endblock %}</title>
     {% set theme = (current_user.theme if current_user else 'dark_colourful') if current_user is defined else 'dark_colourful' %}
     {% set font = (current_user.font if current_user else 'sans') if current_user is defined else 'sans' %}
     <link rel="stylesheet" href="{{ request.url_for('static', path='css/layout.css') }}">
@@ -27,9 +27,9 @@
           </div>
           <div class="login-area">
             {% if current_user %}
-            <a href="/auth/logout" class="logout">Logout</a>
+            <a href="/auth/logout" class="logout-btn logged-in">Logout</a>
             {% else %}
-            <a href="/auth/login" class="logout">Login</a>
+            <a href="/auth/login" class="logout-btn logged-out">Login</a>
             {% endif %}
           </div>
         </div>
@@ -37,7 +37,6 @@
       {% block nav %}
       <nav class="bg-gray-800 text-white">
         <div class="container mx-auto flex flex-wrap items-center justify-between" x-data="{open:false}">
-          <a class="font-bold" href="/">CES Inventory</a>
           <button @click="open = !open" class="lg:hidden p-2">☰</button>
           <div :class="{'block': open, 'hidden': !open}" class="w-full lg:block lg:w-auto">
             <ul class="lg:flex lg:space-x-4">

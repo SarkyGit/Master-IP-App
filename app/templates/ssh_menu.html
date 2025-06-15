@@ -2,13 +2,13 @@
 
 {% block content %}
 <h1 class="text-xl mb-4">SSH Tasks</h1>
-<ul class="list-disc ml-6 space-y-1">
-  <li><a class="underline text-blue-400" href="/ssh/port-config">Port Config</a></li>
-  <li><a class="underline text-blue-400" href="/ssh/port-check">Port Check</a></li>
-  <li><a class="underline text-blue-400" href="/ssh/config-check">Config Check</a></li>
-  <li><a class="underline text-blue-400" href="/ssh/port-search">Port Search</a></li>
-  <li><a class="underline text-blue-400" href="/ssh/bulk-port-update">Bulk Port Update</a></li>
-  <li><a class="underline text-blue-400" href="/bulk/vlan-push">VLAN Bulk Push</a></li>
-  <li><a class="underline text-blue-400" href="/ssh/netbird-connect">Initiate Netbird Connection</a></li>
-</ul>
+<div class="flex flex-nowrap gap-2 bg-gray-700 p-2 rounded">
+  <a class="bg-gray-600 text-white px-3 py-1 rounded-full" href="/ssh/port-config">Port Config</a>
+  <a class="bg-gray-600 text-white px-3 py-1 rounded-full" href="/ssh/port-check">Port Check</a>
+  <a class="bg-gray-600 text-white px-3 py-1 rounded-full" href="/ssh/config-check">Config Check</a>
+  <a class="bg-gray-600 text-white px-3 py-1 rounded-full" href="/ssh/port-search">Port Search</a>
+  <a class="bg-gray-600 text-white px-3 py-1 rounded-full" href="/ssh/bulk-port-update">Bulk Port Update</a>
+  <a class="bg-gray-600 text-white px-3 py-1 rounded-full" href="/bulk/vlan-push">VLAN Bulk Push</a>
+  <a class="bg-gray-600 text-white px-3 py-1 rounded-full" href="/ssh/netbird-connect">Initiate Netbird Connection</a>
+</div>
 {% endblock %}
