@@ -29,3 +29,10 @@ PHASE 4: UI & TERMINAL
 [ ] Auto-expire Sessions
 [ ] Add Config Push Templates
 [ ] Superadmin Debug Page
+
+PHASE 5: THEME CLEANUP
+
+[ ] Audit templates for fixed colour classes and inline styles
+[ ] Replace colour utilities with theme-aware button classes
+[ ] Add or update theme rules for common colours
+[ ] Review templates across all themes for consistent layout
