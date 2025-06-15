@@ -1,1 +1,5 @@
+:root {
+  --font-size: 0.875rem; /* default size, overridden per user preference */
+}
+
 body { font-family: Georgia, 'Times New Roman', serif; }
