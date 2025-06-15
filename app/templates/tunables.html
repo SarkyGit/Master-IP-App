@@ -3,6 +3,9 @@
 {% block content %}
 <h1 class="text-xl mb-4">System Tunables</h1>
 <p class="mb-3 text-base text-[var(--card-text)]">Current Version: <span class="fw-bold">{{ version }}</span></p>
+{% if current_user and current_user.role == 'superadmin' %}
+<p class="mb-3"><a href="/admin/logo" class="underline">Upload Logo</a></p>
+{% endif %}
 
 <div x-data="{tab:0}">
   <ul class="flex border-b" >
