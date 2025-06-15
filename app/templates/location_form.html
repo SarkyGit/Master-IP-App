@@ -3,17 +3,19 @@
 {% block content %}
 <h1 class="text-xl mb-4">{{ form_title }}</h1>
 <form method="post" class="space-y-4">
-  <div>
-    <label for="name" class="block">Name</label>
-    <input id="name" type="text" name="name" value="{{ location.name if location else '' }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" required />
-  </div>
-  <div>
-    <label for="location_type" class="block">Type</label>
-    <select id="location_type" name="location_type" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" required>
-      {% for lt in location_types %}
-      <option value="{{ lt }}" {% if location and location.location_type == lt %}selected{% endif %}>{{ lt }}</option>
-      {% endfor %}
-    </select>
+  <div class="flex flex-col lg:flex-row gap-6">
+    <div class="flex-1 space-y-2">
+      <label for="name" class="block">Name</label>
+      <input id="name" type="text" name="name" value="{{ location.name if location else '' }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" required />
+    </div>
+    <div class="flex-1 space-y-2">
+      <label for="location_type" class="block">Type</label>
+      <select id="location_type" name="location_type" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" required>
+        {% for lt in location_types %}
+        <option value="{{ lt }}" {% if location and location.location_type == lt %}selected{% endif %}>{{ lt }}</option>
+        {% endfor %}
+      </select>
+    </div>
   </div>
   {% if error %}
   <p class="p-2 rounded bg-[var(--alert-bg)] text-[var(--btn-text)]">{{ error }}</p>
