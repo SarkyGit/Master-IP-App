@@ -19,6 +19,6 @@ export default defineConfig({
   },
   // Ensure UnoCSS includes the shortcuts even when used dynamically
   safelist: [
-    'table-cell', 'table-header',
+    'table-cell', 'table-header', 'w-[0.375rem]', 'h-[0.375rem]',
   ],
 })
