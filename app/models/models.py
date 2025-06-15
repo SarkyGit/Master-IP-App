@@ -201,6 +201,7 @@ class User(Base):
     is_active = Column(Boolean, default=True)
     theme = Column(String, nullable=False, default="dark_colourful")
     font = Column(String, nullable=False, default="sans")
+    menu_style = Column(String, nullable=False, default="tabbed")
     created_at = Column(DateTime, default=datetime.utcnow)
 
     site_memberships = relationship("SiteMembership", back_populates="user")

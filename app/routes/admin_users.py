@@ -41,6 +41,7 @@ async def new_user_form(request: Request, current_user=Depends(require_role("sup
         "cancel_url": "/admin/users",
         "themes": ["dark_colourful", "dark", "light", "blue", "bw", "homebrew"],
         "fonts": ["sans", "serif", "mono"],
+        "menu_styles": ["tabbed", "dropdown"],
     }
     return templates.TemplateResponse("user_form.html", context)
 
@@ -54,6 +55,7 @@ async def create_user(
     is_active: bool = Form(False),
     theme: str = Form("dark_colourful"),
     font: str = Form("sans"),
+    menu_style: str = Form("tabbed"),
     db: Session = Depends(get_db),
     current_user=Depends(require_role("superadmin")),
 ):
@@ -70,6 +72,7 @@ async def create_user(
             "cancel_url": "/admin/users",
             "themes": ["dark_colourful", "dark", "light", "blue", "bw", "homebrew"],
             "fonts": ["sans", "serif", "mono"],
+            "menu_styles": ["tabbed", "dropdown"],
         }
         return templates.TemplateResponse("user_form.html", context)
 
@@ -83,6 +86,7 @@ async def create_user(
         is_active=is_active,
         theme=theme,
         font=font,
+        menu_style=menu_style,
     )
     db.add(user)
     db.commit()
@@ -111,6 +115,7 @@ async def edit_user_form(
         "cancel_url": "/admin/users",
         "themes": ["dark_colourful", "dark", "light", "blue", "bw", "homebrew"],
         "fonts": ["sans", "serif", "mono"],
+        "menu_styles": ["tabbed", "dropdown"],
     }
     return templates.TemplateResponse("user_form.html", context)
 
@@ -123,6 +128,7 @@ async def update_user(
     is_active: bool = Form(False),
     theme: str = Form("dark_colourful"),
     font: str = Form("sans"),
+    menu_style: str = Form("tabbed"),
     password: str | None = Form(None),
     db: Session = Depends(get_db),
     current_user=Depends(require_role("superadmin")),
@@ -136,6 +142,7 @@ async def update_user(
     user.is_active = is_active
     user.theme = theme
     user.font = font
+    user.menu_style = menu_style
     if password:
         user.hashed_password = get_password_hash(password)
     db.commit()

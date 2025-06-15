@@ -1,0 +1,67 @@
+<nav class="bg-[var(--nav-bg)] text-[var(--nav-text)] p-2">
+  <div class="container mx-auto">
+    <div class="flex flex-col space-y-1">
+      <a href="javascript:history.back()" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Back</a>
+      {% if current_user %}
+      <div class="flex flex-col space-y-1">
+        <a href="/dashboard" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Dashboard</a>
+        <a href="/devices" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">All Devices</a>
+        {% for dtype in get_device_types() %}
+        <a href="/devices/type/{{ dtype.id }}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">{{ dtype.name }}</a>
+        {% endfor %}
+        <a href="/inventory/audit" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Audit</a>
+        <a href="/inventory/trailers" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Trailer Inventory</a>
+        <a href="/inventory/sites" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Site Inventory</a>
+        {% if current_user.role in ['editor','admin','superadmin'] %}
+        <a href="/bulk/device-import" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Bulk Add Devices</a>
+        {% endif %}
+        <a href="/network/ip-search" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">IP Search</a>
+        <a href="/vlans" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">VLAN MGMT</a>
+        <a href="/network/port-configs" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Port Configs</a>
+        <a href="/tasks" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Task Queue</a>
+        <a href="/devices/duplicates" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Duplicate Checker</a>
+        {% if current_user.role in ['admin','superadmin'] %}
+        <a href="/tasks/edit-tags" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Edit Tags</a>
+        <a href="/tasks/google-sheets" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Google Sheets</a>
+        {% endif %}
+        <a href="/reports/vlan-usage" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">VLAN Usage</a>
+        <a href="/ssh/port-config" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Port Config</a>
+        <a href="/ssh/port-check" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Port Check</a>
+        <a href="/ssh/config-check" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Config Check</a>
+        <a href="/ssh/port-search" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Port Search</a>
+        <a href="/ssh/bulk-port-update" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Bulk Port Update</a>
+        <a href="/bulk/vlan-push" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">VLAN Bulk Push</a>
+        <a href="/ssh/netbird-connect" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Initiate Netbird Connection</a>
+        {% if current_user.role in ['admin','superadmin'] %}
+          {% if current_user.role == 'superadmin' %}
+          {% set admin_items = [
+            {'label':'Tunables','href':'/tunables'},
+            {'label':'SSH Credentials','href':'/admin/ssh'},
+            {'label':'SNMP Credentials','href':'/admin/snmp'},
+            {'label':'Device Types','href':'/device-types'},
+            {'label':'Tag Manager','href':'/admin/tags'},
+            {'label':'Locations','href':'/admin/locations'},
+            {'label':'Device Import','href':'/bulk/device-import'},
+            {'label':'Audit Log','href':'/admin/audit'},
+            {'label':'IP Bans','href':'/admin/ip-bans'},
+            {'label':'User Management','href':'/admin/users'},
+            {'label':'Debug Logs','href':'/admin/debug'}
+          ] %}
+          {% else %}
+          {% set admin_items = [
+            {'label':'SSH Credentials','href':'/admin/ssh'},
+            {'label':'SNMP Credentials','href':'/admin/snmp'},
+            {'label':'Device Types','href':'/device-types'},
+            {'label':'Locations','href':'/admin/locations'},
+            {'label':'Device Import','href':'/bulk/device-import'}
+          ] %}
+          {% endif %}
+          {% for item in admin_items %}
+          <a href="{{ item.href }}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">{{ item.label }}</a>
+          {% endfor %}
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</nav>
