@@ -5,11 +5,11 @@ BASE_DIR = os.path.dirname(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 )
 
-# Absolute path to the "static" directory.
+# Absolute path to the ``static`` directory.
 #
-# The application historically assumed that static assets live under the
-# repository root, i.e. ``BASE_DIR/static``.  Some deployment setups mount the
-# ``static`` directory elsewhere (for example at ``/static``) which caused the
-# app to still look under ``/app/static``.  Allow overriding the location via the
-# ``STATIC_DIR`` environment variable so these deployments work out of the box.
-STATIC_DIR = os.environ.get("STATIC_DIR", os.path.join(BASE_DIR, "static"))
+# Static assets are always served from ``BASE_DIR/static``.  Earlier versions of
+# the application allowed overriding this path via the ``STATIC_DIR``
+# environment variable.  That behaviour caused inconsistencies when the
+# directory was mounted at a different location.  The path is now fixed to the
+# repository's ``static`` folder so all components refer to the same location.
+STATIC_DIR = os.path.join(BASE_DIR, "static")

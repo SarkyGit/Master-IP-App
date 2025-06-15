@@ -161,10 +161,10 @@ Set the `AUTO_SEED` environment variable to `0` or `false` to skip the automatic
 Adjust `WORKERS`, `TIMEOUT` and `PORT` as needed. The server listens on
 `0.0.0.0` so it can be proxied by a web server such as Nginx.
 
-By default static assets are served from the `static` directory under the
-repository root. Deployments may mount this folder elsewhere (for example at
-`/static` inside a Docker container). Set the `STATIC_DIR` environment variable
-to the desired location so the application mounts that directory.
+Static assets are served from the `static` directory under the repository root.
+This location is fixed. When deploying inside containers or under a reverse
+proxy, ensure that `/path/to/Master-IP-App/static` is accessible at `/static` so
+the application can find its assets.
 
 If the app is exposed under a URL prefix (e.g. `/inventory/` instead of `/`),
 set the `ROOT_PATH` environment variable to that prefix so all generated links
