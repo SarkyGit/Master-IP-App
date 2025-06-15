@@ -149,7 +149,7 @@
 <h2 class="text-lg mt-4">Damage Photos</h2>
 <div class="grid gap-2 grid-cols-2 md:grid-cols-3 mb-2">
   {% for photo in damage_photos %}
-  <img src="/static/damage/{{ photo.filename }}" class="max-w-full h-auto" />
+  <img src="{{ request.url_for('static', path='damage/' ~ photo.filename) }}" class="max-w-full h-auto" />
   {% endfor %}
 </div>
 <form method="post" action="/devices/{{ device.id }}/damage" enctype="multipart/form-data" class="mb-4">
