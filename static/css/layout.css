@@ -73,3 +73,25 @@ nav.bg-gray-800 .menu-right {
 .top-header .logo-box img {
   height: 40px;
 }
+/* Form layout adjustments */
+form:not(.inline) {
+  max-width: 36rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+form:not(.inline) > * + * {
+  margin-top: 1rem;
+}
+
+form hr {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+form select {
+  margin-bottom: 1rem;
+}
