@@ -2,10 +2,13 @@
 
 This application manages network devices, VLANs and configuration backups using [FastAPI](https://fastapi.tiangolo.com/). All data is stored in a PostgreSQL database specified via the `DATABASE_URL` environment variable. SQLite is not supported.
 
+Tailwind CSS has been removed from the project. Styling and components now rely on [UnoCSS](https://github.com/unocss/unocss) and [Radix UI](https://www.radix-ui.com/).
+
 ## Prerequisites
 
 - **Python 3.10+** (any recent Python 3 version should work)
 - **PostgreSQL 12+** installed and running
+- **Node.js** (18 or newer) to build CSS assets
 - (Optional) [virtualenv](https://docs.python.org/3/library/venv.html) for an isolated environment
 
 ## Setup
@@ -16,12 +19,18 @@ This application manages network devices, VLANs and configuration backups using 
    python3 -m venv venv
    source venv/bin/activate
    ```
-3. **Install dependencies**:
+3. **Install Python dependencies**:
    ```bash
    pip install -r requirements.txt
    ```
    This installs all required packages, including `httpx<0.28`.
-4. **Seed the database** with default values. This will create a superuser, system settings, and some sample devices. The `start.sh` script will automatically run these seed commands unless `AUTO_SEED` is disabled, but you can also run them manually:
+4. **Install Node dependencies and build the CSS**:
+   ```bash
+   npm install
+   npm run build:css
+   ```
+   Run `npm run build:css` again whenever templates change to regenerate `static/css/unocss.css`.
+5. **Seed the database** with default values. This will create a superuser, system settings, and some sample devices. The `start.sh` script will automatically run these seed commands unless `AUTO_SEED` is disabled, but you can also run them manually:
    ```bash
    python seed_tunables.py
    python seed_superuser.py
