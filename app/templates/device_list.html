@@ -101,19 +101,19 @@
     {% if current_user and current_user.role in ['editor','admin','superadmin'] %}
     <tr class="border-b border-gray-700">
       <td colspan="{{ column_count }}" class="px-4 py-2 text-right">
-        <a href="/devices/{{ device.id }}/edit" class="btn btn-blue mr-2">Edit</a>
+        <a href="/devices/{{ device.id }}/edit" class="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition mr-2">Edit</a>
         <form method="post" action="/devices/{{ device.id }}/delete" class="inline">
-          <button type="submit" class="mr-2  btn btn-red " onclick="return confirm('Delete device?')">Delete</button>
+          <button type="submit" class="mr-2  px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded transition " onclick="return confirm('Delete device?')">Delete</button>
         </form>
         <form method="post" action="/devices/{{ device.id }}/pull-config" class="inline">
-          <button type="submit" class="mr-2  btn btn-green ">Pull Config</button>
+          <button type="submit" class="mr-2  px-4 py-2 text-white bg-green-600 hover:bg-green-700 rounded transition ">Pull Config</button>
         </form>
-        <a href="/devices/{{ device.id }}/push-config" class="btn btn-blue mr-2">Push Config</a>
-        <a href="/devices/{{ device.id }}/configs" class="btn btn-blue mr-2">Configs</a>
+        <a href="/devices/{{ device.id }}/push-config" class="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition mr-2">Push Config</a>
+        <a href="/devices/{{ device.id }}/configs" class="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition mr-2">Configs</a>
         {% if device.snmp_community %}
-        <a href="/devices/{{ device.id }}/ports" class="btn btn-blue mr-2">Port Status</a>
-        <a href="/devices/{{ device.id }}/port-map" class="btn btn-blue mr-2">Port Map</a>
-        <a href="/devices/{{ device.id }}/ports/edit" class="btn btn-blue ">Port Editor</a>
+        <a href="/devices/{{ device.id }}/ports" class="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition mr-2">Port Status</a>
+        <a href="/devices/{{ device.id }}/port-map" class="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition mr-2">Port Map</a>
+        <a href="/devices/{{ device.id }}/ports/edit" class="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition ">Port Editor</a>
         {% endif %}
       </td>
     </tr>
@@ -122,7 +122,7 @@
   {% endfor %}
   </tbody>
 </table>
-<button type="submit" class="btn btn-red ">Delete Selected</button>
+<button type="submit" class="px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded transition ">Delete Selected</button>
 </form>
 <script>
 document.getElementById('select-all').addEventListener('change', function(e){

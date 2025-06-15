@@ -4,27 +4,27 @@
 <h1 class="text-xl mb-4">Debug Logs</h1>
 <div class="mb-4">
   <h2 class="text-lg">SNMP Trap Listener</h2>
-  <p>Status: {{ 'running' if trap_running else 'stopped' }} on port {{ trap_port }}</p>
+  <p class="text-base text-gray-100">Status: {{ 'running' if trap_running else 'stopped' }} on port {{ trap_port }}</p>
   <form method="post" action="/admin/debug/trap-listener">
     {% if trap_running %}
     <input type="hidden" name="action" value="stop">
-    <button type="submit" class="btn btn-red ">Stop Listener</button>
+    <button type="submit" class="px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded transition ">Stop Listener</button>
     {% else %}
     <input type="hidden" name="action" value="start">
-    <button type="submit" class="btn btn-green ">Start Listener</button>
+    <button type="submit" class="px-4 py-2 text-white bg-green-600 hover:bg-green-700 rounded transition ">Start Listener</button>
     {% endif %}
   </form>
 </div>
 <div class="mb-4">
   <h2 class="text-lg">Syslog Listener</h2>
-  <p>Status: {{ 'running' if syslog_running else 'stopped' }} on port {{ syslog_port }}</p>
+  <p class="text-base text-gray-100">Status: {{ 'running' if syslog_running else 'stopped' }} on port {{ syslog_port }}</p>
   <form method="post" action="/admin/debug/syslog-listener">
     {% if syslog_running %}
     <input type="hidden" name="action" value="stop">
-    <button type="submit" class="btn btn-red ">Stop Listener</button>
+    <button type="submit" class="px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded transition ">Stop Listener</button>
     {% else %}
     <input type="hidden" name="action" value="start">
-    <button type="submit" class="btn btn-green ">Start Listener</button>
+    <button type="submit" class="px-4 py-2 text-white bg-green-600 hover:bg-green-700 rounded transition ">Start Listener</button>
     {% endif %}
   </form>
 </div>
@@ -71,7 +71,7 @@
       <td class="px-4 py-2">{{ entry.user.email if entry.user else 'System' }}</td>
       <td class="px-4 py-2">{{ entry.action_type }}</td>
       <td class="px-4 py-2">{{ entry.details[:50] }}</td>
-      <td class="px-4 py-2"><a href="/admin/debug/{{ entry.id }}" class="btn btn-blue ">View Full</a></td>
+      <td class="px-4 py-2"><a href="/admin/debug/{{ entry.id }}" class="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition ">View Full</a></td>
     </tr>
   {% endfor %}
   </tbody>

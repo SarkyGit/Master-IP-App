@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 {% block content %}
 <h1 class="text-xl mb-2">{{ site.name }}</h1>
-<p>{{ site.description }}</p>
+<p class="text-base text-gray-800">{{ site.description }}</p>
 <h2 class="mt-4 font-bold">Users</h2>
 <ul>
   {% for u in users %}
   <li>{{ u.email }} ({{ u.role }})
     <form method="post" action="/sites/{{ site.id }}/remove-user" class="inline">
       <input type="hidden" name="user_id" value="{{ u.id }}">
-      <button type="submit" class="btn btn-red">Remove</button>
+      <button type="submit" class="px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded transition">Remove</button>
     </form>
   </li>
   {% endfor %}
@@ -35,7 +35,7 @@
     </form>
     <form method="post" action="/sites/{{ site.id }}/remove-device" class="inline">
       <input type="hidden" name="device_id" value="{{ d.id }}">
-      <button type="submit" class="btn btn-red">Remove</button>
+      <button type="submit" class="px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded transition">Remove</button>
     </form>
   </li>
   {% endfor %}

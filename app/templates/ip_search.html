@@ -4,7 +4,7 @@
 <h1 class="text-xl mb-4">IP Search</h1>
 <form method="get" class="mb-4">
   <input type="text" name="ip" value="{{ ip or '' }}" class="text-black px-2" placeholder="Enter IP">
-  <button type="submit" class="btn btn-blue ">Search</button>
+  <button type="submit" class="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition ">Search</button>
 </form>
 {% if ip %}
 <h2 class="text-lg mb-2">Results for '{{ ip }}'</h2>
