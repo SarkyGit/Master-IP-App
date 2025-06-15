@@ -2,24 +2,38 @@
 
 {% block content %}
 <h1 class="text-xl mb-4">Banned IPs</h1>
-<table class="min-w-full text-left">
+<div x-data="tableControls()" class="space-y-2">
+<div class="flex justify-between items-center">
+  <label>Show
+    <select x-model="perPage" class="rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)] mx-1">
+      <option>10</option>
+      <option>25</option>
+      <option>50</option>
+      <option>100</option>
+    </select>
+    entries
+  </label>
+  <input x-model="search" type="text" placeholder="Search" class="rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)] px-2 py-1" />
+</div>
+<div class="overflow-x-auto">
+<table class="min-w-full text-left border-collapse">
   <thead>
     <tr>
-      <th class="px-4 py-2 text-left">IP Address</th>
-      <th class="px-4 py-2 text-left">Banned Until</th>
-      <th class="px-4 py-2 text-left">Attempts</th>
-      <th class="px-4 py-2 text-left">Reason</th>
-      <th></th>
+      <th class="table-cell table-header">IP Address</th>
+      <th class="table-cell table-header">Banned Until</th>
+      <th class="table-cell table-header">Attempts</th>
+      <th class="table-cell table-header">Reason</th>
+      <th class="table-cell table-header"></th>
     </tr>
   </thead>
   <tbody>
   {% for ban in bans %}
     <tr class="border-t border-gray-700">
-      <td class="px-4 py-2">{{ ban.ip_address }}</td>
-      <td class="px-4 py-2">{{ ban.banned_until }}</td>
-      <td class="px-4 py-2">{{ ban.attempt_count }}</td>
-      <td class="px-4 py-2">{{ ban.ban_reason }}</td>
-      <td class="px-4 py-2">
+      <td class="table-cell">{{ ban.ip_address }}</td>
+      <td class="table-cell">{{ ban.banned_until }}</td>
+      <td class="table-cell">{{ ban.attempt_count }}</td>
+      <td class="table-cell">{{ ban.ban_reason }}</td>
+      <td class="table-cell">
         <form method="post" action="/admin/ip-bans/{{ ban.id }}/unban">
           <button type='submit' aria-label='Unban' class='px-4 py-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition' onclick="return confirm('Unban this IP?')">{{ include_icon('x-circle') }}</button>
         </form>
@@ -28,26 +42,57 @@
   {% endfor %}
   </tbody>
 </table>
+<div class="flex justify-between items-center mt-2">
+  <span x-text="countText()" class="text-sm"></span>
+  <div>
+    <button type="button" @click="prev" class="px-3 py-1 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded mr-2 text-[var(--btn-text)]">Previous</button>
+    <button type="button" @click="next" class="px-3 py-1 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded text-[var(--btn-text)]">Next</button>
+  </div>
+</div>
+</div>
 
 <h2 class="text-xl mt-8 mb-4">Recent Login Attempts</h2>
-<table class="min-w-full text-left">
+<div x-data="tableControls()" class="space-y-2">
+<div class="flex justify-between items-center">
+  <label>Show
+    <select x-model="perPage" class="rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)] mx-1">
+      <option>10</option>
+      <option>25</option>
+      <option>50</option>
+      <option>100</option>
+    </select>
+    entries
+  </label>
+  <input x-model="search" type="text" placeholder="Search" class="rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)] px-2 py-1" />
+</div>
+<div class="overflow-x-auto">
+<table class="min-w-full text-left border-collapse">
   <thead>
     <tr>
-      <th class="px-4 py-2 text-left">Timestamp</th>
-      <th class="px-4 py-2 text-left">User</th>
-      <th class="px-4 py-2 text-left">Action</th>
-      <th class="px-4 py-2 text-left">Details</th>
+      <th class="table-cell table-header">Timestamp</th>
+      <th class="table-cell table-header">User</th>
+      <th class="table-cell table-header">Action</th>
+      <th class="table-cell table-header">Details</th>
     </tr>
   </thead>
   <tbody>
   {% for entry in logs %}
     <tr class="border-t border-gray-700">
-      <td class="px-4 py-2">{{ entry.timestamp }}</td>
-      <td class="px-4 py-2">{{ entry.user.email if entry.user else 'System' }}</td>
-      <td class="px-4 py-2">{{ entry.action_type }}</td>
-      <td class="px-4 py-2">{{ entry.details }}</td>
+      <td class="table-cell">{{ entry.timestamp }}</td>
+      <td class="table-cell">{{ entry.user.email if entry.user else 'System' }}</td>
+      <td class="table-cell">{{ entry.action_type }}</td>
+      <td class="table-cell">{{ entry.details }}</td>
     </tr>
   {% endfor %}
   </tbody>
 </table>
+<div class="flex justify-between items-center mt-2">
+  <span x-text="countText()" class="text-sm"></span>
+  <div>
+    <button type="button" @click="prev" class="px-3 py-1 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded mr-2 text-[var(--btn-text)]">Previous</button>
+    <button type="button" @click="next" class="px-3 py-1 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded text-[var(--btn-text)]">Next</button>
+  </div>
+</div>
+</div>
+</div>
 {% endblock %}

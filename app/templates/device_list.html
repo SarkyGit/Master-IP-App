@@ -8,7 +8,7 @@
 {% endif %}
 {% if current_user and current_user.role in ['editor','admin','superadmin'] %}
   <div class="relative inline-block ml-2" x-data="{open:false}">
-    <button class="bg-[var(--card-bg)]" @click="open = !open">Export</button>
+    <button aria-label="Export" class="bg-[var(--card-bg)] p-2 rounded" @click="open = !open">{{ include_icon('download') }}</button>
     <ul x-show="open" @click.away="open = false" class="absolute bg-[var(--card-bg)] py-2 w-48" x-cloak>
       <li><a class="block px-4 py-2 hover:bg-[var(--btn-hover)]" href="/export/inventory.csv">Export to CSV</a></li>
       <li><a class="block px-4 py-2 hover:bg-[var(--btn-hover)]" href="/export/inventory.pdf">Export to PDF</a></li>
@@ -18,7 +18,7 @@
 {% endif %}
 {% if current_user and current_user.role == 'superadmin' %}
   <form method="post" action="/admin/run-push-queue" class="inline">
-    <button type="submit" class="ml-2">🔄 Run Push Queue Now</button>
+    <button type="submit" aria-label="Run Push Queue" class="ml-2 p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">{{ include_icon('refresh-ccw') }}</button>
   </form>
 {% endif %}
 <form method="get" class="my-2">
@@ -37,58 +37,71 @@
     </select>
   </label>
 </form>
-<form method="post" action="/devices/bulk-delete">
-<table class="min-w-full text-left">
+<form method="post" action="/devices/bulk-delete" x-data="tableControls()" class="space-y-2">
+<div class="flex justify-between items-center">
+  <label>Show
+    <select x-model="perPage" class="rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)] mx-1">
+      <option>10</option>
+      <option>25</option>
+      <option>50</option>
+      <option>100</option>
+    </select>
+    entries
+  </label>
+  <input x-model="search" type="text" placeholder="Search" class="rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)] px-2 py-1" />
+</div>
+<div class="overflow-x-auto">
+<table class="min-w-full text-left border-collapse">
   <thead>
     <tr>
-      <th class="px-2"><input type="checkbox" id="select-all"></th>
-      {% if column_prefs.hostname %}<th class="px-4 py-2 text-left">{{ column_labels['hostname'] }}</th>{% endif %}
-      {% if column_prefs.ip %}<th class="px-4 py-2 text-left">{{ column_labels['ip'] }}</th>{% endif %}
-      {% if column_prefs.mac %}<th class="px-4 py-2 text-left">{{ column_labels['mac'] }}</th>{% endif %}
-      {% if column_prefs.asset_tag %}<th class="px-4 py-2 text-left">{{ column_labels['asset_tag'] }}</th>{% endif %}
-      {% if column_prefs.model %}<th class="px-4 py-2 text-left">{{ column_labels['model'] }}</th>{% endif %}
-      {% if column_prefs.manufacturer %}<th class="px-4 py-2 text-left">{{ column_labels['manufacturer'] }}</th>{% endif %}
-      {% if column_prefs.platform %}<th class="px-4 py-2 text-left">{{ column_labels['platform'] }}</th>{% endif %}
-      {% if column_prefs.serial %}<th class="px-4 py-2 text-left">{{ column_labels['serial'] }}</th>{% endif %}
-      {% if column_prefs.location %}<th class="px-4 py-2 text-left">{{ column_labels['location'] }}</th>{% endif %}
-      {% if column_prefs.on_lasso %}<th class="px-4 py-2 text-left">{{ column_labels['on_lasso'] }}</th>{% endif %}
-      {% if column_prefs.on_r1 %}<th class="px-4 py-2 text-left">{{ column_labels['on_r1'] }}</th>{% endif %}
-      {% if column_prefs.type %}<th class="px-4 py-2 text-left">{{ column_labels['type'] }}</th>{% endif %}
-      {% if column_prefs.state %}<th class="px-4 py-2 text-left">{{ column_labels['state'] }}</th>{% endif %}
-      {% if column_prefs.vlan %}<th class="px-4 py-2 text-left">{{ column_labels['vlan'] }}</th>{% endif %}
-      {% if column_prefs.ssh_profile %}<th class="px-4 py-2 text-left">{{ column_labels['ssh_profile'] }}</th>{% endif %}
-      {% if column_prefs.snmp_profile %}<th class="px-4 py-2 text-left">{{ column_labels['snmp_profile'] }}</th>{% endif %}
-      {% if column_prefs.status %}<th class="px-4 py-2 text-left">{{ column_labels['status'] }}</th>{% endif %}
-      {% if column_prefs.tags %}<th class="px-4 py-2 text-left">{{ column_labels['tags'] }}</th>{% endif %}
+      <th class="table-cell"><input type="checkbox" id="select-all"></th>
+      {% if column_prefs.hostname %}<th class="table-cell table-header">{{ column_labels['hostname'] }}</th>{% endif %}
+      {% if column_prefs.ip %}<th class="table-cell table-header">{{ column_labels['ip'] }}</th>{% endif %}
+      {% if column_prefs.mac %}<th class="table-cell table-header">{{ column_labels['mac'] }}</th>{% endif %}
+      {% if column_prefs.asset_tag %}<th class="table-cell table-header">{{ column_labels['asset_tag'] }}</th>{% endif %}
+      {% if column_prefs.model %}<th class="table-cell table-header">{{ column_labels['model'] }}</th>{% endif %}
+      {% if column_prefs.manufacturer %}<th class="table-cell table-header">{{ column_labels['manufacturer'] }}</th>{% endif %}
+      {% if column_prefs.platform %}<th class="table-cell table-header">{{ column_labels['platform'] }}</th>{% endif %}
+      {% if column_prefs.serial %}<th class="table-cell table-header">{{ column_labels['serial'] }}</th>{% endif %}
+      {% if column_prefs.location %}<th class="table-cell table-header">{{ column_labels['location'] }}</th>{% endif %}
+      {% if column_prefs.on_lasso %}<th class="table-cell table-header">{{ column_labels['on_lasso'] }}</th>{% endif %}
+      {% if column_prefs.on_r1 %}<th class="table-cell table-header">{{ column_labels['on_r1'] }}</th>{% endif %}
+      {% if column_prefs.type %}<th class="table-cell table-header">{{ column_labels['type'] }}</th>{% endif %}
+      {% if column_prefs.state %}<th class="table-cell table-header">{{ column_labels['state'] }}</th>{% endif %}
+      {% if column_prefs.vlan %}<th class="table-cell table-header">{{ column_labels['vlan'] }}</th>{% endif %}
+      {% if column_prefs.ssh_profile %}<th class="table-cell table-header">{{ column_labels['ssh_profile'] }}</th>{% endif %}
+      {% if column_prefs.snmp_profile %}<th class="table-cell table-header">{{ column_labels['snmp_profile'] }}</th>{% endif %}
+      {% if column_prefs.status %}<th class="table-cell table-header">{{ column_labels['status'] }}</th>{% endif %}
+      {% if column_prefs.tags %}<th class="table-cell table-header">{{ column_labels['tags'] }}</th>{% endif %}
     </tr>
   </thead>
   <tbody>
   {% for device in devices %}
     <tr class="border-t border-gray-700">
-      <td class="px-2"><input type="checkbox" name="selected" value="{{ device.id }}"></td>
-      {% if column_prefs.hostname %}<td class="px-4 py-2">{{ device.hostname }}</td>{% endif %}
-      {% if column_prefs.ip %}<td class="px-4 py-2 {% if device.ip and duplicate_ips.get(device.ip) %}duplicate{% endif %}" title="{{ duplicate_ips.get(device.ip)|join(', ') if duplicate_ips.get(device.ip) }}">{{ device.ip }}</td>{% endif %}
-      {% if column_prefs.mac %}<td class="px-4 py-2 {% if device.mac and duplicate_macs.get(device.mac) %}duplicate{% endif %}" title="{{ duplicate_macs.get(device.mac)|join(', ') if duplicate_macs.get(device.mac) }}">{{ device.mac or '' }}</td>{% endif %}
-      {% if column_prefs.asset_tag %}<td class="px-4 py-2 {% if device.asset_tag and duplicate_tags.get(device.asset_tag) %}duplicate{% endif %}" title="{{ duplicate_tags.get(device.asset_tag)|join(', ') if duplicate_tags.get(device.asset_tag) }}">{{ device.asset_tag or '' }}</td>{% endif %}
-      {% if column_prefs.model %}<td class="px-4 py-2">{{ device.model or '' }}</td>{% endif %}
-      {% if column_prefs.manufacturer %}<td class="px-4 py-2">{{ device.manufacturer }}</td>{% endif %}
-      {% if column_prefs.platform %}<td class="px-4 py-2">{{ device.detected_platform or '' }}</td>{% endif %}
-      {% if column_prefs.serial %}<td class="px-4 py-2">{{ device.serial_number or '' }}</td>{% endif %}
-      {% if column_prefs.location %}<td class="px-4 py-2">{{ device.location_ref.name if device.location_ref else '' }}</td>{% endif %}
-      {% if column_prefs.on_lasso %}<td class="px-4 py-2">{{ '✔' if device.on_lasso else '' }}</td>{% endif %}
-      {% if column_prefs.on_r1 %}<td class="px-4 py-2">{{ '✔' if device.on_r1 else '' }}</td>{% endif %}
-      {% if column_prefs.type %}<td class="px-4 py-2">{{ device.device_type.name if device.device_type else '' }}</td>{% endif %}
-      {% if column_prefs.state %}<td class="px-4 py-2">{{ device.status or '' }}</td>{% endif %}
-      {% if column_prefs.vlan %}<td class="px-4 py-2">{{ device.vlan.tag if device.vlan else '' }}</td>{% endif %}
-      {% if column_prefs.ssh_profile %}<td class="px-4 py-2">
+      <td class="table-cell"><input type="checkbox" name="selected" value="{{ device.id }}"></td>
+      {% if column_prefs.hostname %}<td class="table-cell">{{ device.hostname }}</td>{% endif %}
+      {% if column_prefs.ip %}<td class="table-cell {% if device.ip and duplicate_ips.get(device.ip) %}duplicate{% endif %}" title="{{ duplicate_ips.get(device.ip)|join(', ') if duplicate_ips.get(device.ip) }}">{{ device.ip }}</td>{% endif %}
+      {% if column_prefs.mac %}<td class="table-cell {% if device.mac and duplicate_macs.get(device.mac) %}duplicate{% endif %}" title="{{ duplicate_macs.get(device.mac)|join(', ') if duplicate_macs.get(device.mac) }}">{{ device.mac or '' }}</td>{% endif %}
+      {% if column_prefs.asset_tag %}<td class="table-cell {% if device.asset_tag and duplicate_tags.get(device.asset_tag) %}duplicate{% endif %}" title="{{ duplicate_tags.get(device.asset_tag)|join(', ') if duplicate_tags.get(device.asset_tag) }}">{{ device.asset_tag or '' }}</td>{% endif %}
+      {% if column_prefs.model %}<td class="table-cell">{{ device.model or '' }}</td>{% endif %}
+      {% if column_prefs.manufacturer %}<td class="table-cell">{{ device.manufacturer }}</td>{% endif %}
+      {% if column_prefs.platform %}<td class="table-cell">{{ device.detected_platform or '' }}</td>{% endif %}
+      {% if column_prefs.serial %}<td class="table-cell">{{ device.serial_number or '' }}</td>{% endif %}
+      {% if column_prefs.location %}<td class="table-cell">{{ device.location_ref.name if device.location_ref else '' }}</td>{% endif %}
+      {% if column_prefs.on_lasso %}<td class="table-cell">{{ '✔' if device.on_lasso else '' }}</td>{% endif %}
+      {% if column_prefs.on_r1 %}<td class="table-cell">{{ '✔' if device.on_r1 else '' }}</td>{% endif %}
+      {% if column_prefs.type %}<td class="table-cell">{{ device.device_type.name if device.device_type else '' }}</td>{% endif %}
+      {% if column_prefs.state %}<td class="table-cell">{{ device.status or '' }}</td>{% endif %}
+      {% if column_prefs.vlan %}<td class="table-cell">{{ device.vlan.tag if device.vlan else '' }}</td>{% endif %}
+      {% if column_prefs.ssh_profile %}<td class="table-cell">
         {{ device.ssh_credential.name if device.ssh_credential else '' }}
         {% if device.ssh_credential %}
           {% if device.ssh_profile_is_default %}(default){% else %}(manual){% endif %}
         {% endif %}
         {% if personal_creds.get(device.id) %}(personal){% endif %}
       </td>{% endif %}
-      {% if column_prefs.snmp_profile %}<td class="px-4 py-2">{{ device.snmp_community.name if device.snmp_community else '' }}</td>{% endif %}
-      {% if column_prefs.status %}<td class="px-4 py-2">
+      {% if column_prefs.snmp_profile %}<td class="table-cell">{{ device.snmp_community.name if device.snmp_community else '' }}</td>{% endif %}
+      {% if column_prefs.status %}<td class="table-cell">
         {% if device.snmp_reachable %}
           <span class="text-green-400">●</span>
         {% else %}
@@ -96,24 +109,24 @@
         {% endif %}
         {{ device.uptime_seconds | format_uptime }}
       </td>{% endif %}
-      {% if column_prefs.tags %}<td class="px-4 py-2">{{ device.tags | map(attribute='name') | join(', ') }}</td>{% endif %}
+      {% if column_prefs.tags %}<td class="table-cell">{{ device.tags | map(attribute='name') | join(', ') }}</td>{% endif %}
     </tr>
     {% if current_user and current_user.role in ['editor','admin','superadmin'] %}
     <tr class="border-b border-gray-700">
       <td colspan="{{ column_count }}" class="px-4 py-2 text-right">
-        <a href="/devices/{{ device.id }}/edit" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition mr-2">Edit</a>
+        <a href="/devices/{{ device.id }}/edit" aria-label="Edit" class="inline-block p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition mr-2">{{ include_icon('pencil') }}</a>
         <form method="post" action="/devices/{{ device.id }}/delete" class="inline">
-          <button type="submit" class="mr-2 px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition" onclick="return confirm('Delete device?')">Delete</button>
+          <button type="submit" aria-label="Delete" class="p-2 mr-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition" onclick="return confirm('Delete device?')">{{ include_icon('trash-2') }}</button>
         </form>
         <form method="post" action="/devices/{{ device.id }}/pull-config" class="inline">
-          <button type="submit" class="mr-2 px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Pull Config</button>
+          <button type="submit" aria-label="Pull Config" class="p-2 mr-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">{{ include_icon('download') }}</button>
         </form>
-        <a href="/devices/{{ device.id }}/push-config" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition mr-2">Push Config</a>
-        <a href="/devices/{{ device.id }}/configs" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition mr-2">Configs</a>
+        <a href="/devices/{{ device.id }}/push-config" aria-label="Push Config" class="inline-block p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition mr-2">{{ include_icon('upload') }}</a>
+        <a href="/devices/{{ device.id }}/configs" aria-label="Configs" class="inline-block p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition mr-2">{{ include_icon('eye') }}</a>
         {% if device.snmp_community %}
-        <a href="/devices/{{ device.id }}/ports" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition mr-2">Port Status</a>
-        <a href="/devices/{{ device.id }}/port-map" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition mr-2">Port Map</a>
-        <a href="/devices/{{ device.id }}/ports/edit" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Port Editor</a>
+        <a href="/devices/{{ device.id }}/ports" aria-label="Port Status" class="inline-block p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition mr-2">{{ include_icon('eye') }}</a>
+        <a href="/devices/{{ device.id }}/port-map" aria-label="Port Map" class="inline-block p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition mr-2">{{ include_icon('link-2') }}</a>
+        <a href="/devices/{{ device.id }}/ports/edit" aria-label="Port Editor" class="inline-block p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">{{ include_icon('pencil') }}</a>
         {% endif %}
       </td>
     </tr>
@@ -122,7 +135,15 @@
   {% endfor %}
   </tbody>
 </table>
-<button type="submit" class="px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Delete Selected</button>
+<div class="flex justify-between items-center mt-2">
+  <span x-text="countText()" class="text-sm"></span>
+  <div>
+    <button type="button" @click="prev" class="px-3 py-1 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded mr-2 text-[var(--btn-text)]">Previous</button>
+    <button type="button" @click="next" class="px-3 py-1 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded text-[var(--btn-text)]">Next</button>
+  </div>
+</div>
+</div>
+<button type="submit" aria-label="Delete Selected" class="p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition mt-2">{{ include_icon('trash-2') }}</button>
 </form>
 <script>
 document.getElementById('select-all').addEventListener('change', function(e){
