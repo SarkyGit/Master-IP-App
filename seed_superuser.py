@@ -24,6 +24,7 @@ def main():
             is_active=True,
             theme="dark_colourful",
             font="sans",
+            menu_style="tabbed",
         )
         db.add(user)
         db.commit()

@@ -26,6 +26,7 @@ async def edit_my_profile_form(request: Request, current_user: User = Depends(re
         "error": None,
         "themes": ["dark_colourful", "dark", "light", "blue", "bw", "homebrew"],
         "fonts": ["sans", "serif", "mono"],
+        "menu_styles": ["tabbed", "dropdown"],
     }
     return templates.TemplateResponse("user_form.html", context)
 
@@ -37,6 +38,7 @@ async def update_my_profile(
     password: str | None = Form(None),
     theme: str = Form("dark_colourful"),
     font: str = Form("sans"),
+    menu_style: str = Form("tabbed"),
     db: Session = Depends(get_db),
     current_user: User = Depends(require_role("viewer")),
 ):
@@ -50,12 +52,14 @@ async def update_my_profile(
             "error": "Email already in use",
             "themes": ["dark_colourful", "dark", "light", "blue", "bw", "homebrew"],
             "fonts": ["sans", "serif", "mono"],
+            "menu_styles": ["tabbed", "dropdown"],
         }
         return templates.TemplateResponse("user_form.html", context)
 
     current_user.email = email
     current_user.theme = theme
     current_user.font = font
+    current_user.menu_style = menu_style
     if password:
         current_user.hashed_password = get_password_hash(password)
     db.commit()

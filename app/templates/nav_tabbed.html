@@ -1,0 +1,109 @@
+<nav x-data="tabsNav()" class="bg-[var(--nav-bg)] text-[var(--nav-text)] p-2">
+  <div class="container mx-auto">
+    <div class="flex items-center justify-between">
+      <button @click="mobile = !mobile" class="lg:hidden p-2 rounded">☰</button>
+      <div :class="mobile ? 'flex flex-col space-y-2' : 'hidden lg:flex w-full'">
+        <div class="flex w-full">
+          <div class="flex space-x-4">
+            <button onclick="history.back()" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Back</button>
+            {% if current_user %}
+            <button @click="activeTopMenu = 'inventory'" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Inventory</button>
+            <button @click="activeTopMenu = 'reports'" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Reports</button>
+            {% endif %}
+          </div>
+          {% if current_user %}
+          <div class="flex space-x-4 ml-auto">
+            <button @click="activeTopMenu = 'network'" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Network</button>
+            <button @click="activeTopMenu = 'tasks'" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Tasks</button>
+            <button @click="activeTopMenu = 'ssh'" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">SSH</button>
+            {% if current_user.role in ['admin','superadmin'] %}
+            {% if current_user.role == 'superadmin' %}
+            {% set admin_items = [
+              {'label':'Tunables','href':'/tunables'},
+              {'label':'SSH Credentials','href':'/admin/ssh'},
+              {'label':'SNMP Credentials','href':'/admin/snmp'},
+              {'label':'Device Types','href':'/device-types'},
+              {'label':'Tag Manager','href':'/admin/tags'},
+              {'label':'Locations','href':'/admin/locations'},
+              {'label':'Device Import','href':'/bulk/device-import'},
+              {'label':'Audit Log','href':'/admin/audit'},
+              {'label':'IP Bans','href':'/admin/ip-bans'},
+              {'label':'User Management','href':'/admin/users'},
+              {'label':'Debug Logs','href':'/admin/debug'}
+            ] %}
+            {% else %}
+            {% set admin_items = [
+              {'label':'SSH Credentials','href':'/admin/ssh'},
+              {'label':'SNMP Credentials','href':'/admin/snmp'},
+              {'label':'Device Types','href':'/device-types'},
+              {'label':'Locations','href':'/admin/locations'},
+              {'label':'Device Import','href':'/bulk/device-import'}
+            ] %}
+            {% endif %}
+            <div id="admin-menu" class="px-4 py-2 text-[var(--font-size)] text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition" data-admin-menu data-label="{{ 'Super Admin' if current_user.role == 'superadmin' else 'Admin' }}" data-items='{{ admin_items|tojson }}'></div>
+            {% endif %}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    <div class="mt-1">
+      <div x-show="activeTopMenu == 'inventory'" class="border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3" x-cloak>
+        <div :class="mobile ? 'flex flex-col space-y-2' : 'flex space-x-2'">
+          <a href="/devices" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">All Devices</a>
+          {% for dtype in get_device_types() %}
+          <a href="/devices/type/{{ dtype.id }}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">{{ dtype.name }}</a>
+          {% endfor %}
+          <a href="/inventory/audit" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Audit</a>
+          <a href="/inventory/trailers" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Trailer Inventory</a>
+          <a href="/inventory/sites" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Site Inventory</a>
+          {% if current_user.role in ['editor','admin','superadmin'] %}
+          <a href="/bulk/device-import" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Bulk Add Devices</a>
+          {% endif %}
+        </div>
+      </div>
+      <div x-show="activeTopMenu == 'network'" class="border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3" x-cloak>
+        <div :class="mobile ? 'flex flex-col space-y-2' : 'flex space-x-2'">
+          <a href="/dashboard" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Dashboard</a>
+          <a href="/network/ip-search" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">IP Search</a>
+          <a href="/vlans" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">VLAN MGMT</a>
+          <a href="/network/port-configs" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Port Configs</a>
+        </div>
+      </div>
+      <div x-show="activeTopMenu == 'tasks'" class="border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3" x-cloak>
+        <div :class="mobile ? 'flex flex-col space-y-2' : 'flex space-x-2'">
+          <a href="/tasks" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Task Queue</a>
+          <a href="/devices/duplicates" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Duplicate Checker</a>
+          {% if current_user.role in ['admin','superadmin'] %}
+          <a href="/tasks/edit-tags" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Edit Tags</a>
+          <a href="/tasks/google-sheets" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Google Sheets</a>
+          {% endif %}
+        </div>
+      </div>
+      <div x-show="activeTopMenu == 'reports'" class="border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3" x-cloak>
+        <div :class="mobile ? 'flex flex-col space-y-2' : 'flex space-x-2'">
+          <a href="/reports/vlan-usage" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">VLAN Usage</a>
+        </div>
+      </div>
+      <div x-show="activeTopMenu == 'ssh'" class="border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3" x-cloak>
+        <div :class="mobile ? 'flex flex-col space-y-2' : 'flex space-x-2'">
+          <a href="/ssh/port-config" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Port Config</a>
+          <a href="/ssh/port-check" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Port Check</a>
+          <a href="/ssh/config-check" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Config Check</a>
+          <a href="/ssh/port-search" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Port Search</a>
+          <a href="/ssh/bulk-port-update" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Bulk Port Update</a>
+          <a href="/bulk/vlan-push" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">VLAN Bulk Push</a>
+          <a href="/ssh/netbird-connect" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Initiate Netbird Connection</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    function tabsNav() {
+      return {
+        mobile: false,
+        activeTopMenu: ''
+      }
+    }
+  </script>
+</nav>

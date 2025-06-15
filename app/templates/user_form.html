@@ -41,6 +41,16 @@
     </select>
   </div>
   {% endif %}
+  {% if menu_styles %}
+  <div>
+    <label for="menu_style" class="block">Menu Layout</label>
+    <select id="menu_style" name="menu_style" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+      {% for m in menu_styles %}
+      <option value="{{ m }}" {% if user and user.menu_style == m %}selected{% endif %}>{{ 'Tabbed Navigation' if m == 'tabbed' else 'Dropdown Navigation' }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  {% endif %}
   {% if show_active %}
   <div>
     <label for="is_active" class="inline-flex items-center">
