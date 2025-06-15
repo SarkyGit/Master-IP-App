@@ -56,6 +56,7 @@ from puresnmp import Client, PyWrapper, V2C
 from puresnmp.exc import SnmpError
 import re
 from app.tasks import schedule_device_config_pull, unschedule_device_config_pull
+from app.utils.paths import STATIC_DIR
 
 
 router = APIRouter()
@@ -613,8 +614,7 @@ async def upload_damage_photo(
         raise HTTPException(status_code=403, detail="Device not assigned to your site")
     if not photo.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="Invalid file type")
-    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    damage_dir = os.path.join(base_dir, "static", "damage")
+    damage_dir = os.path.join(STATIC_DIR, "damage")
     os.makedirs(damage_dir, exist_ok=True)
     filename = f"{device_id}_{int(datetime.utcnow().timestamp())}_{photo.filename}"
     path = os.path.join(damage_dir, filename)

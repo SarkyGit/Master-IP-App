@@ -13,6 +13,7 @@ from app.utils.auth import require_role, get_user_site_ids
 from app.models.models import Device, VLAN, ConfigBackup
 import zipfile
 from app.utils.audit import log_audit
+from app.utils.paths import STATIC_DIR
 
 try:
     from reportlab.lib.pagesizes import letter, landscape
@@ -94,8 +95,7 @@ async def export_inventory_pdf(
     title = Paragraph("Device Inventory", styles["Title"])
     date = Paragraph(datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC"), styles["Normal"])
 
-    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    logo_path = os.path.join(base_dir, "static", "logo.png")
+    logo_path = os.path.join(STATIC_DIR, "logo.png")
     if os.path.exists(logo_path):
         try:
             elements.append(Image(logo_path, width=100, height=50))
