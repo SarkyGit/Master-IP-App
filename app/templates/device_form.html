@@ -141,7 +141,7 @@
     </datalist>
   </div>
   <div class="md:col-span-2">
-    <button type="submit" aria-label="Submit" class="p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">{{ include_icon('check') }}</button>
+    <button type="submit" aria-label="Submit" class="p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded transition">{{ include_icon('check') }}</button>
     <a href="/devices" class="ml-2 underline">Cancel</a>
   </div>
 </form>
@@ -154,7 +154,7 @@
 </div>
 <form method="post" action="/devices/{{ device.id }}/damage" enctype="multipart/form-data" class="mb-4">
   <input type="file" name="photo" accept="image/*" class="mb-2" required />
-  <button type="submit" aria-label="Upload Photo" class="p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">{{ include_icon('upload') }}</button>
+  <button type="submit" aria-label="Upload Photo" class="p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded transition">{{ include_icon('upload','text-orange-500') }}</button>
 </form>
 <h2 class="text-lg mt-4">Recent Syslog</h2>
 <ul class="mb-4">

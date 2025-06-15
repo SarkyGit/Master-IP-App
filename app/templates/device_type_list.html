@@ -3,7 +3,7 @@
 {% block content %}
 <h1 class="text-xl mb-4">Device Types</h1>
 <a href="/device-types/new" class="underline">Add Device Type</a>
-<form method="post" action="/device-types/bulk-delete" x-data="tableControls()" class="space-y-2 mt-4">
+<form method="post" action="/device-types/bulk-delete" x-data="tableControls()" class="space-y-2 mt-4 full-width">
 <div class="flex justify-between items-center">
   <label>Show
     <select x-model="perPage" class="rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)] mx-1">
@@ -16,8 +16,8 @@
   </label>
   <input x-model="search" type="text" placeholder="Search" class="rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)] px-2 py-1" />
 </div>
-<div class="overflow-x-auto">
-<table class="min-w-full text-left border-collapse">
+<div class="w-full overflow-auto px-4">
+<table class="w-full table-fixed text-left border-collapse">
   <thead>
     <tr>
       <th class="table-cell"><input type="checkbox" id="select-all"></th>
@@ -31,9 +31,9 @@
       <td class="table-cell"><input type="checkbox" name="selected" value="{{ dt.id }}"></td>
       <td class="table-cell">{{ dt.name }}</td>
       <td class="table-cell">
-        <a href="/device-types/{{ dt.id }}/edit" aria-label="Edit" class="inline-block p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition mr-2">{{ include_icon('pencil') }}</a>
+        <a href="/device-types/{{ dt.id }}/edit" aria-label="Edit" class="inline-block p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded transition mr-2">{{ include_icon('pencil','text-blue-500') }}</a>
         <form method="post" action="/device-types/{{ dt.id }}/delete" class="inline">
-          <button type="submit" aria-label="Delete" class="p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition" onclick="return confirm('Delete type?')">{{ include_icon('trash-2') }}</button>
+          <button type="submit" aria-label="Delete" class="p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded transition" onclick="return confirm('Delete type?')">{{ include_icon('trash-2','text-red-500') }}</button>
         </form>
       </td>
     </tr>
@@ -48,7 +48,7 @@
   </div>
 </div>
 </div>
-<button type="submit" aria-label="Delete Selected" class="p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition mt-2">{{ include_icon('trash-2') }}</button>
+<button type="submit" aria-label="Delete Selected" class="p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded transition mt-2">{{ include_icon('trash-2','text-red-500') }}</button>
 </form>
 <script>
 document.getElementById('select-all').addEventListener('change', function(e){

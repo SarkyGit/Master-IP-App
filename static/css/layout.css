@@ -3,7 +3,8 @@ body {
 }
 
 .container {
-  max-width: 1000px;
+  width: 100%;
+  max-width: none;
   margin-left: auto;
   margin-right: auto;
   padding-left: 1rem;
@@ -85,6 +86,12 @@ form:not(.inline) {
   margin-right: auto;
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
+}
+
+form.full-width {
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
 }
 
 form:not(.inline) > * + * {

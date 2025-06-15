@@ -2,7 +2,8 @@
 
 {% block content %}
 <h1 class="text-xl mb-4">Tag Manager</h1>
-<table class="min-w-full text-left mt-4">
+<div class="w-full overflow-auto px-4">
+<table class="w-full table-fixed text-left mt-4">
   <thead>
     <tr>
       <th class="px-4 py-2 text-left">Tag</th>
@@ -44,4 +45,5 @@
   {% endfor %}
   </tbody>
 </table>
+</div>
 {% endblock %}

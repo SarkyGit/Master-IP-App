@@ -3,8 +3,9 @@
 {% block content %}
 <h1 class="text-xl mb-4">Locations</h1>
 <a href="/admin/locations/new" class="underline">Add Location</a>
-<form method="post" action="/admin/locations/bulk-delete">
-<table class="min-w-full text-left mt-4">
+<form method="post" action="/admin/locations/bulk-delete" class="full-width">
+<div class="w-full overflow-auto px-4">
+<table class="w-full table-fixed text-left mt-4">
   <thead>
     <tr>
       <th class="px-2"><input type="checkbox" id="select-all"></th>
@@ -29,6 +30,7 @@
   {% endfor %}
   </tbody>
 </table>
+</div>
 <button type="submit" class="px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Delete Selected</button>
 </form>
 <script>
