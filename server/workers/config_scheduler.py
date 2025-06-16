@@ -2,13 +2,13 @@ import asyncio
 from datetime import datetime, timedelta
 from collections import defaultdict
 import asyncssh
+import os
+
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from puresnmp import Client, PyWrapper, V2C
-from aiosnmp import SnmpV2TrapServer
-from aiosnmp.snmp import SnmpMessage
 
 from core.utils.ssh import build_conn_kwargs
 from core.utils.device_detect import detect_ssh_platform
-
 from core.utils.db_session import SessionLocal
 from core.models.models import (
     ConfigBackup,
@@ -23,80 +23,9 @@ from core.models.models import (
 from core.utils.audit import log_audit
 from core.utils.email_utils import send_email
 from core.utils.templates import templates
-import os
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
-QUEUE_INTERVAL = int(os.environ.get("QUEUE_INTERVAL", "60"))
 PORT_HISTORY_RETENTION_DAYS = int(os.environ.get("PORT_HISTORY_RETENTION_DAYS", "60"))
 
-
-async def run_push_queue_once():
-    db = SessionLocal()
-    queued = db.query(ConfigBackup).filter(ConfigBackup.queued.is_(True)).all()
-    for backup in queued:
-        device = backup.device
-        cred = device.ssh_credential
-        if not cred:
-            backup.status = "failed"
-            backup.queued = False
-            db.commit()
-            continue
-        conn_kwargs = build_conn_kwargs(cred)
-        try:
-            async with asyncssh.connect(device.ip, **conn_kwargs) as conn:
-                await detect_ssh_platform(db, device, conn)
-                _, session = await conn.create_session(asyncssh.SSHClientProcess)
-                for line in backup.config_text.splitlines():
-                    session.stdin.write(line + "\n")
-                session.stdin.write("exit\n")
-                await session.wait_closed()
-            backup.queued = False
-            backup.status = "pushed"
-            backup.created_at = datetime.utcnow()
-            log_audit(db, None, "push", device, f"Queued config pushed to {device.ip}")
-        except Exception as exc:
-            backup.status = "pending"
-            log_audit(db, None, "debug", device, f"Queue push error: {exc}")
-        db.commit()
-    db.close()
-
-
-def cleanup_port_history():
-    db = SessionLocal()
-    cutoff = datetime.utcnow() - timedelta(days=PORT_HISTORY_RETENTION_DAYS)
-    db.query(PortStatusHistory).filter(PortStatusHistory.timestamp < cutoff).delete()
-    db.commit()
-    db.close()
-
-
-_queue_worker_task: asyncio.Task | None = None
-
-
-async def queue_worker():
-    while True:
-        await run_push_queue_once()
-        await asyncio.sleep(QUEUE_INTERVAL)
-
-
-def start_queue_worker(app):
-    @app.on_event("startup")
-    async def start_worker():
-        global _queue_worker_task
-        _queue_worker_task = asyncio.create_task(queue_worker())
-
-
-async def stop_queue_worker():
-    global _queue_worker_task
-    if _queue_worker_task:
-        _queue_worker_task.cancel()
-        try:
-            await _queue_worker_task
-        except asyncio.CancelledError:
-            pass
-        _queue_worker_task = None
-
-
-# -------------------- Scheduled Config Pulls --------------------
 
 scheduler = AsyncIOScheduler()
 
@@ -107,8 +36,15 @@ INTERVAL_MAP = {
 }
 
 
+def cleanup_port_history():
+    db = SessionLocal()
+    cutoff = datetime.utcnow() - timedelta(days=PORT_HISTORY_RETENTION_DAYS)
+    db.query(PortStatusHistory).filter(PortStatusHistory.timestamp < cutoff).delete()
+    db.commit()
+    db.close()
+
+
 async def run_config_pull(device_id: int):
-    """Perform an SSH config pull and store the result."""
     db = SessionLocal()
     device = db.query(Device).filter(Device.id == device_id).first()
     if not device:
@@ -154,7 +90,6 @@ async def run_config_pull(device_id: int):
 
 
 def schedule_device_config_pull(device: Device):
-    """Register or update a scheduled config pull job for the device."""
     job_id = f"config_pull_{device.id}"
     if device.site_id is None or device.config_pull_interval == "none":
         try:
@@ -178,7 +113,6 @@ def schedule_device_config_pull(device: Device):
 
 
 def unschedule_device_config_pull(device_id: int):
-    """Remove a scheduled job for the device if present."""
     job_id = f"config_pull_{device_id}"
     try:
         scheduler.remove_job(job_id)
@@ -187,7 +121,6 @@ def unschedule_device_config_pull(device_id: int):
 
 
 async def _poll_device_snmp_status(db, device: Device) -> None:
-    """Poll a single device for uptime via SNMP."""
     profile = device.snmp_community
     if not profile:
         return
@@ -204,7 +137,6 @@ async def _poll_device_snmp_status(db, device: Device) -> None:
 
 
 async def poll_all_device_status() -> None:
-    """Poll SNMP status for all devices with profiles."""
     db = SessionLocal()
     devices = db.query(Device).filter(Device.snmp_community_id.is_not(None)).all()
     for dev in devices:
@@ -213,7 +145,6 @@ async def poll_all_device_status() -> None:
 
 
 async def send_site_summaries():
-    """Compile and email daily configuration change summaries by site."""
     db = SessionLocal()
     since = datetime.utcnow() - timedelta(days=1)
     sites = db.query(Site).all()
@@ -341,160 +272,16 @@ def stop_config_scheduler() -> None:
         scheduler.shutdown(wait=True)
 
 
-# -------------------- SNMP Trap Listener --------------------
-
-TRAP_PORT = int(os.environ.get("SNMP_TRAP_PORT", "162"))
-_trap_transport = None
-_trap_server = None
-_trap_running = False
-
-
-async def _trap_handler(host, port, message):
-    from core.models.models import SNMPTrapLog, Device
-
-    trap_oid = None
-    parts = []
-    for vb in message.data.varbinds:
-        val = vb.value
-        if vb.oid == "1.3.6.1.6.3.1.1.4.1.0":
-            trap_oid = val.decode() if isinstance(val, (bytes, bytearray)) else str(val)
-        if isinstance(val, (bytes, bytearray)):
-            try:
-                parts.append(val.decode())
-            except Exception:
-                parts.append(val.hex())
-        else:
-            parts.append(str(val))
-    text = "; ".join(parts)
-    if not text:
-        raw = SnmpMessage(message.version, message.community, message.data).encode()
-        text = raw.hex()
-
-    db = SessionLocal()
-    device = db.query(Device).filter(Device.ip == host).first()
-    log = SNMPTrapLog(
-        timestamp=datetime.utcnow(),
-        source_ip=host,
-        trap_oid=trap_oid,
-        message=text,
-        device_id=device.id if device else None,
-        site_id=device.site_id if device else None,
-    )
-    db.add(log)
-    db.commit()
-    db.close()
+async def main():
+    scheduler.start()
+    try:
+        while True:
+            await asyncio.sleep(3600)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        stop_config_scheduler()
 
 
-async def start_trap_listener():
-    global _trap_transport, _trap_server, _trap_running
-    if _trap_running:
-        return
-    server = SnmpV2TrapServer(port=TRAP_PORT, handler=_trap_handler)
-    _trap_transport, _ = await server.run()
-    _trap_server = server
-    _trap_running = True
-
-
-async def stop_trap_listener():
-    global _trap_transport, _trap_server, _trap_running
-    if _trap_transport:
-        _trap_transport.close()
-        _trap_transport = None
-    _trap_server = None
-    _trap_running = False
-
-
-def trap_listener_running() -> bool:
-    return _trap_running
-
-
-def setup_trap_listener(app):
-    @app.on_event("startup")
-    async def _start():
-        if os.environ.get("ENABLE_TRAP_LISTENER") == "1":
-            await start_trap_listener()
-
-
-# -------------------- Syslog Listener --------------------
-
-SYSLOG_PORT = int(os.environ.get("SYSLOG_PORT", "514"))
-_syslog_transport = None
-_syslog_running = False
-
-from syslog_rfc5424_parser import SyslogMessage, ParseError
-import syslogmp
-
-
-class _SyslogProtocol(asyncio.DatagramProtocol):
-    def datagram_received(self, data, addr):
-        try:
-            text = data.decode().strip()
-        except Exception:
-            return
-
-        timestamp = datetime.utcnow()
-        severity = None
-        facility = None
-        message = text
-        try:
-            msg = SyslogMessage.parse(text)
-            timestamp = msg.timestamp or timestamp
-            severity = str(msg.severity)
-            facility = str(msg.facility)
-            message = msg.msg
-        except Exception:
-            try:
-                m = syslogmp.parse(text)
-                timestamp = m.timestamp or timestamp
-                severity = str(m.severity)
-                facility = str(m.facility)
-                message = m.message
-            except Exception:
-                pass
-
-        db = SessionLocal()
-        from core.models.models import SyslogEntry, Device
-
-        device = db.query(Device).filter(Device.ip == addr[0]).first()
-        log = SyslogEntry(
-            timestamp=timestamp,
-            source_ip=addr[0],
-            severity=severity,
-            facility=facility,
-            message=message,
-            device_id=device.id if device else None,
-            site_id=device.site_id if device else None,
-        )
-        db.add(log)
-        db.commit()
-        db.close()
-
-
-async def start_syslog_listener():
-    global _syslog_transport, _syslog_running
-    if _syslog_running:
-        return
-    loop = asyncio.get_running_loop()
-    _syslog_transport, _ = await loop.create_datagram_endpoint(
-        _SyslogProtocol, local_addr=("0.0.0.0", SYSLOG_PORT)
-    )
-    _syslog_running = True
-
-
-async def stop_syslog_listener():
-    global _syslog_transport, _syslog_running
-    if _syslog_transport:
-        _syslog_transport.close()
-        _syslog_transport = None
-    _syslog_running = False
-
-
-def syslog_listener_running() -> bool:
-    return _syslog_running
-
-
-def setup_syslog_listener(app):
-    @app.on_event("startup")
-    async def _start_syslog():
-        if os.environ.get("ENABLE_SYSLOG_LISTENER") == "1":
-            await start_syslog_listener()
+if __name__ == "__main__":
+    asyncio.run(main())

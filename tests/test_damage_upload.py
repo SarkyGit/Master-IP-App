@@ -16,10 +16,10 @@ def get_test_app():
             del sys.modules[m]
     with mock.patch("sqlalchemy.create_engine"), \
          mock.patch("sqlalchemy.schema.MetaData.create_all"), \
-         mock.patch("server.tasks.start_queue_worker"), \
-         mock.patch("server.tasks.start_config_scheduler"), \
-         mock.patch("server.tasks.setup_trap_listener"), \
-         mock.patch("server.tasks.setup_syslog_listener"):
+         mock.patch("server.workers.queue_worker.start_queue_worker"), \
+         mock.patch("server.workers.config_scheduler.start_config_scheduler"), \
+         mock.patch("server.workers.trap_listener.setup_trap_listener"), \
+         mock.patch("server.workers.syslog_listener.setup_syslog_listener"):
         return importlib.import_module("server.main").app
 
 

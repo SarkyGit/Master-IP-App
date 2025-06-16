@@ -6,7 +6,10 @@ from core.utils.db_session import get_db
 from core.utils.auth import require_role, user_in_site, ROLE_HIERARCHY
 from core.models.models import Site, User, Device, SiteMembership
 from core.utils.templates import templates
-from server.tasks import schedule_device_config_pull, unschedule_device_config_pull
+from server.workers.config_scheduler import (
+    schedule_device_config_pull,
+    unschedule_device_config_pull,
+)
 from core.utils.dashboard import DEFAULT_WIDGETS, WIDGET_LABELS
 from core.models.models import SiteDashboardWidget
 

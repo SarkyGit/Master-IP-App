@@ -7,11 +7,13 @@ from typing import Optional
 from core.utils.db_session import get_db
 from core.utils.auth import require_role
 from core.models.models import AuditLog, User, Device
-from server.tasks import (
+from server.workers.trap_listener import (
     start_trap_listener,
     stop_trap_listener,
     trap_listener_running,
     TRAP_PORT,
+)
+from server.workers.syslog_listener import (
     start_syslog_listener,
     stop_syslog_listener,
     syslog_listener_running,

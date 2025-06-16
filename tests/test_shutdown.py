@@ -17,7 +17,7 @@ def get_app_for_shutdown():
         await asyncio.sleep(0)
 
     def simple_config_scheduler(app):
-        from server.tasks import scheduler
+        from server.workers.config_scheduler import scheduler
 
         @app.on_event("startup")
         async def start_sched():
@@ -26,13 +26,13 @@ def get_app_for_shutdown():
     with mock.patch("sqlalchemy.create_engine"), mock.patch(
         "sqlalchemy.schema.MetaData.create_all"
     ), mock.patch(
-        "server.tasks.run_push_queue_once", dummy_run_push_queue_once
+        "server.workers.queue_worker.run_push_queue_once", dummy_run_push_queue_once
     ), mock.patch(
-        "server.tasks.start_config_scheduler", simple_config_scheduler
+        "server.workers.config_scheduler.start_config_scheduler", simple_config_scheduler
     ), mock.patch(
-        "server.tasks.setup_trap_listener"
+        "server.workers.trap_listener.setup_trap_listener"
     ), mock.patch(
-        "server.tasks.setup_syslog_listener"
+        "server.workers.syslog_listener.setup_syslog_listener"
     ):
         return importlib.import_module("server.main").app
 

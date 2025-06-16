@@ -51,14 +51,10 @@ from server.websockets.editor import shell_ws
 from server.websockets.terminal import router as terminal_ws_router
 from server.routes.ui.welcome import router as welcome_router, WELCOME_TEXT, INVENTORY_TEXT
 from core.utils.auth import get_current_user
-from server.tasks import (
-    start_queue_worker,
-    start_config_scheduler,
-    stop_queue_worker,
-    stop_config_scheduler,
-    setup_trap_listener,
-    setup_syslog_listener,
-)
+from server.workers.queue_worker import start_queue_worker, stop_queue_worker
+from server.workers.config_scheduler import start_config_scheduler, stop_config_scheduler
+from server.workers.trap_listener import setup_trap_listener
+from server.workers.syslog_listener import setup_syslog_listener
 from core.utils.templates import templates
 
 # Allow deploying the app under a URL prefix by setting ROOT_PATH.
