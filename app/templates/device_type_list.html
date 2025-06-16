@@ -22,7 +22,7 @@
     <tr>
       <th class="table-cell"><input type="checkbox" id="select-all"></th>
       <th class="table-cell table-header">Name</th>
-      <th class="table-cell table-header"></th>
+      <th class="text-center w-[10rem]">Actions</th>
     </tr>
   </thead>
   <tbody>
@@ -30,11 +30,13 @@
     <tr class="border-t border-gray-700">
       <td class="table-cell"><input type="checkbox" name="selected" value="{{ dt.id }}"></td>
       <td class="table-cell">{{ dt.name }}</td>
-      <td class="table-cell">
-        <a href="/device-types/{{ dt.id }}/edit" aria-label="Edit" class="inline-block p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded transition mr-2">{{ include_icon('pencil','text-blue-500','1.5') }}</a>
-        <form method="post" action="/device-types/{{ dt.id }}/delete" class="inline">
-          <button type="submit" aria-label="Delete" class="p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded transition" onclick="return confirm('Delete type?')">{{ include_icon('trash-2','text-red-500','1.5') }}</button>
-        </form>
+      <td class="text-center w-[10rem] whitespace-nowrap">
+        <div class="flex justify-center flex-wrap gap-1">
+          <a href="/device-types/{{ dt.id }}/edit" aria-label="Edit" class="p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded">{{ include_icon('pencil','text-blue-500','1.5') }}</a>
+          <form method="post" action="/device-types/{{ dt.id }}/delete" class="inline">
+            <button type="submit" aria-label="Delete" class="p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded" onclick="return confirm('Delete type?')">{{ include_icon('trash-2','text-red-500','1.5') }}</button>
+          </form>
+        </div>
       </td>
     </tr>
   {% endfor %}

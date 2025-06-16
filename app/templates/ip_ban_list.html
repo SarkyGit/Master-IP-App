@@ -23,7 +23,7 @@
       <th class="table-cell table-header">Banned Until</th>
       <th class="table-cell table-header">Attempts</th>
       <th class="table-cell table-header">Reason</th>
-      <th class="table-cell table-header"></th>
+      <th class="text-center w-[10rem]">Actions</th>
     </tr>
   </thead>
   <tbody>
@@ -33,10 +33,12 @@
       <td class="table-cell">{{ ban.banned_until }}</td>
       <td class="table-cell">{{ ban.attempt_count }}</td>
       <td class="table-cell">{{ ban.ban_reason }}</td>
-      <td class="table-cell">
-        <form method="post" action="/admin/ip-bans/{{ ban.id }}/unban">
-          <button type='submit' aria-label='Unban' class='px-4 py-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded transition' onclick="return confirm('Unban this IP?')">{{ include_icon('x-circle') }}</button>
-        </form>
+      <td class="text-center w-[10rem] whitespace-nowrap">
+        <div class="flex justify-center flex-wrap gap-1">
+          <form method="post" action="/admin/ip-bans/{{ ban.id }}/unban" class="inline">
+            <button type='submit' aria-label='Unban' class='p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded' onclick="return confirm('Unban this IP?')">{{ include_icon('x-circle') }}</button>
+          </form>
+        </div>
       </td>
     </tr>
   {% endfor %}
