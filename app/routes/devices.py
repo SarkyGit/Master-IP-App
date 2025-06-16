@@ -6,8 +6,10 @@ from fastapi import (
     Form,
     UploadFile,
     File,
+    Body,
 )
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, HTMLResponse
+from pydantic import BaseModel
 from app.utils.templates import templates
 from sqlalchemy.orm import Session
 from sqlalchemy import func
@@ -60,6 +62,10 @@ from app.utils.paths import STATIC_DIR
 
 
 router = APIRouter()
+
+
+class ColumnSelection(BaseModel):
+    selected: list[str] = []
 
 # Basic status options for dropdown menus
 STATUS_OPTIONS = ["active", "inactive", "maintenance"]
@@ -158,18 +164,20 @@ async def device_column_prefs(
         "column_labels": DEVICE_COLUMN_LABELS,
         "current_user": current_user,
     }
-    return templates.TemplateResponse("device_column_prefs.html", context)
+    template = "device_column_prefs_modal.html" if request.headers.get("HX-Request") else "device_column_prefs.html"
+    return templates.TemplateResponse(template, context)
 
 
 @router.post("/devices/column-prefs")
 async def save_device_column_prefs(
     request: Request,
-    columns: list[str] = Form([]),
+    selection: ColumnSelection | None = Body(None),
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user),
 ):
     if not current_user:
         raise HTTPException(status_code=401, detail="Not authenticated")
+    selected = selection.selected if selection else []
     db.query(ColumnPreference).filter_by(user_id=current_user.id, view="device_list").delete()
     for idx, name in enumerate(DEFAULT_DEVICE_COLUMNS):
         db.add(
@@ -177,11 +185,13 @@ async def save_device_column_prefs(
                 user_id=current_user.id,
                 view="device_list",
                 name=name,
-                enabled=name in columns,
+                enabled=name in selected,
                 position=idx,
             )
         )
     db.commit()
+    if request.headers.get("HX-Request"):
+        return HTMLResponse("", status_code=204)
     return RedirectResponse(url="/devices", status_code=302)
 
 
