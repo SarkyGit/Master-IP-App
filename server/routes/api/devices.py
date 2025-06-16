@@ -28,7 +28,7 @@ def create_device(
     db: Session = Depends(get_db),
     current_user: Device = Depends(auth_utils.require_role("editor")),
 ):
-    obj = Device(**device.dict(exclude={"version"}))
+    obj = Device(**device.dict())
     obj.version = 1
     db.add(obj)
     db.commit()

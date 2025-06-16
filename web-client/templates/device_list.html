@@ -96,7 +96,10 @@
         {{ device.uptime_seconds | format_uptime }}
       </td>{% endif %}
       {% if column_prefs.tags %}<td class="table-cell">{{ device.tags | map(attribute='name') | join(', ') }}</td>{% endif %}
-      <td class="table-cell">{{ device.version }}</td>
+      <td class="table-cell">
+        {{ device.version }}
+        {% if device.conflict_data %}{{ include_icon('alert-triangle','text-red-500','1.5') }}{% endif %}
+      </td>
       <td class="text-right w-[10rem] whitespace-nowrap">
         <div class="flex justify-end flex-wrap gap-1">
           {% if device.ssh_credential or personal_creds.get(device.id) %}

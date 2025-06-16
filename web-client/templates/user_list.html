@@ -21,7 +21,10 @@
       <td class="px-4 py-2">{{ user.email }}</td>
       <td class="px-4 py-2">{{ user.role }}</td>
       <td class="px-4 py-2">{{ 'active' if user.is_active else 'inactive' }}</td>
-      <td class="px-4 py-2">{{ user.version }}</td>
+      <td class="px-4 py-2">
+        {{ user.version }}
+        {% if user.conflict_data %}{{ include_icon('alert-triangle','text-red-500','1.5') }}{% endif %}
+      </td>
       <td class="px-4 py-2">{{ user.created_at }}</td>
       <td class="px-4 py-2">
         <a href="/admin/users/{{ user.id }}/edit" aria-label="Edit" class="p-2 rounded transition mr-2">{{ include_icon('pencil','text-blue-500','1.5') }}</a>

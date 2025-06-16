@@ -28,7 +28,7 @@ def create_cred(
     db: Session = Depends(get_db),
     current_user: SSHCredential = Depends(auth_utils.require_role("admin")),
 ):
-    obj = SSHCredential(**cred.dict(exclude={"version"}))
+    obj = SSHCredential(**cred.dict())
     obj.version = 1
     db.add(obj)
     db.commit()
