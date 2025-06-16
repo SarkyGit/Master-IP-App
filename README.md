@@ -140,8 +140,14 @@ npm run build:web
 
 ## Cloud & Mobile Integration
 
-The [cloud architecture](docs/cloud_architecture.md) document describes the planned replication model for running multiple sites with a central server. Docker Compose examples for both roles will be added as the implementation progresses. The mobile client will authenticate against either the local site or the cloud depending on connectivity.
-Set `ENABLE_CLOUD_SYNC=1` on local servers to activate the placeholder sync worker. Future releases will also respect a `ROLE` variable (`cloud` or `local`) to toggle behaviour.
+The [cloud architecture](docs/cloud_architecture.md) document describes the planned replication model for running multiple sites with a central server. Two compose files are now provided:
+
+- `docker-compose.yml` – run a **local** instance with `ROLE=local`.
+- `docker-compose.cloud.yml` – run the **cloud** server with `ROLE=cloud`.
+
+Kubernetes manifests under `k8s/` mirror this setup. Set `ENABLE_CLOUD_SYNC=1` on local servers to start the background worker that pushes updates to the cloud.
+
+The `mobile-client/` folder now contains a minimal React Native app that lists devices from the REST API. Use `npm install` then `npm start` inside that directory to launch it with Expo.
 
 ## Interface Themes
 
@@ -219,6 +225,8 @@ The application reads several options from the environment. Important variables 
 - `ENABLE_SYSLOG_LISTENER` and `SYSLOG_PORT` – enable and configure the syslog listener.
 - `QUEUE_INTERVAL` and `PORT_HISTORY_RETENTION_DAYS` – worker scheduling values.
 - `WORKERS`, `TIMEOUT`, `PORT` and `AUTO_SEED` – options used by `start.sh`.
+- `ROLE` – set to `local` or `cloud` to control sync behaviour.
+- `ENABLE_CLOUD_SYNC` – when `1`, start the background sync worker (local role).
 ## Nginx reverse proxy with SSL
 
 Install Nginx on the host and create a server block that proxies requests to
