@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: master-ip-cloud
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: master-ip-cloud
+  template:
+    metadata:
+      labels:
+        app: master-ip-cloud
+    spec:
+      containers:
+      - name: web
+        image: master-ip:latest
+        env:
+        - name: ROLE
+          value: "cloud"
+        ports:
+        - containerPort: 8000

@@ -22,3 +22,4 @@ syslogmp
 
 openpyxl
 httpx<0.28
+alembic==1.12.0
