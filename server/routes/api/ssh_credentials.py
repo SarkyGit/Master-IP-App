@@ -4,15 +4,29 @@ from sqlalchemy.orm import Session
 from core.utils.db_session import get_db
 from core.models.models import SSHCredential
 from core import schemas
+from core.utils import auth as auth_utils
 
 router = APIRouter(prefix="/api/v1/ssh-credentials", tags=["ssh_credentials"])
 
 @router.get("/", response_model=list[schemas.SSHCredentialRead])
-def list_creds(db: Session = Depends(get_db)):
-    return db.query(SSHCredential).all()
+def list_creds(
+    skip: int = 0,
+    limit: int = 100,
+    search: str | None = None,
+    db: Session = Depends(get_db),
+    current_user: SSHCredential = Depends(auth_utils.require_role("viewer")),
+):
+    q = db.query(SSHCredential)
+    if search:
+        q = q.filter(SSHCredential.name.ilike(f"%{search}%"))
+    return q.offset(skip).limit(limit).all()
 
 @router.post("/", response_model=schemas.SSHCredentialRead)
-def create_cred(cred: schemas.SSHCredentialCreate, db: Session = Depends(get_db)):
+def create_cred(
+    cred: schemas.SSHCredentialCreate,
+    db: Session = Depends(get_db),
+    current_user: SSHCredential = Depends(auth_utils.require_role("admin")),
+):
     obj = SSHCredential(**cred.dict())
     db.add(obj)
     db.commit()
@@ -20,15 +34,24 @@ def create_cred(cred: schemas.SSHCredentialCreate, db: Session = Depends(get_db)
     return obj
 
 @router.get("/{cred_id}", response_model=schemas.SSHCredentialRead)
-def get_cred(cred_id: int, db: Session = Depends(get_db)):
-    obj = db.query(SSHCredential).filter(SSHCredential.id == cred_id).first()
+def get_cred(
+    cred_id: int,
+    db: Session = Depends(get_db),
+    current_user: SSHCredential = Depends(auth_utils.require_role("viewer")),
+):
+    obj = db.query(SSHCredential).filter_by(id=cred_id).first()
     if not obj:
         raise HTTPException(status_code=404, detail="Credential not found")
     return obj
 
 @router.put("/{cred_id}", response_model=schemas.SSHCredentialRead)
-def update_cred(cred_id: int, update: schemas.SSHCredentialUpdate, db: Session = Depends(get_db)):
-    obj = db.query(SSHCredential).filter(SSHCredential.id == cred_id).first()
+def update_cred(
+    cred_id: int,
+    update: schemas.SSHCredentialUpdate,
+    db: Session = Depends(get_db),
+    current_user: SSHCredential = Depends(auth_utils.require_role("admin")),
+):
+    obj = db.query(SSHCredential).filter_by(id=cred_id).first()
     if not obj:
         raise HTTPException(status_code=404, detail="Credential not found")
     for key, value in update.dict(exclude_unset=True).items():
@@ -38,8 +61,12 @@ def update_cred(cred_id: int, update: schemas.SSHCredentialUpdate, db: Session =
     return obj
 
 @router.delete("/{cred_id}")
-def delete_cred(cred_id: int, db: Session = Depends(get_db)):
-    obj = db.query(SSHCredential).filter(SSHCredential.id == cred_id).first()
+def delete_cred(
+    cred_id: int,
+    db: Session = Depends(get_db),
+    current_user: SSHCredential = Depends(auth_utils.require_role("admin")),
+):
+    obj = db.query(SSHCredential).filter_by(id=cred_id).first()
     if not obj:
         raise HTTPException(status_code=404, detail="Credential not found")
     db.delete(obj)
