@@ -1,5 +1,5 @@
 <nav x-data="tabsNav()" x-init="setTimeout(() => ready = true, 50)" class="bg-[var(--nav-bg)] text-[var(--nav-text)] p-2">
-  <div class="container mx-auto">
+  <div class="px-6 mx-auto max-w-screen-2xl">
     <div class="flex items-center justify-between">
       <button @click="mobile = !mobile" class="lg:hidden p-2 rounded">☰</button>
       <div :class="mobile ? 'flex flex-col space-y-2' : 'hidden lg:flex w-full'">
