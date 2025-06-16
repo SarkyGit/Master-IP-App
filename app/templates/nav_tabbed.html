@@ -9,6 +9,7 @@
             {% if current_user %}
             <button @click="activeTopMenu = 'inventory'; submenuAlign = $event.target.dataset.align" data-align="left" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Inventory</button>
             <button @click="activeTopMenu = 'reports'; submenuAlign = $event.target.dataset.align" data-align="left" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Reports</button>
+            <button @click="activeTopMenu = 'inventory-admin'; submenuAlign = $event.target.dataset.align" data-align="left" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Inventory Admin</button>
             {% endif %}
           </div>
           {% if current_user %}
@@ -22,7 +23,6 @@
               {'label':'Tunables','href':'/tunables'},
               {'label':'SSH Credentials','href':'/admin/ssh'},
               {'label':'SNMP Credentials','href':'/admin/snmp'},
-              {'label':'Device Types','href':'/device-types'},
               {'label':'Tag Manager','href':'/admin/tags'},
               {'label':'Locations','href':'/admin/locations'},
               {'label':'Device Import','href':'/bulk/device-import'},
@@ -35,7 +35,6 @@
             {% set admin_items = [
               {'label':'SSH Credentials','href':'/admin/ssh'},
               {'label':'SNMP Credentials','href':'/admin/snmp'},
-              {'label':'Device Types','href':'/device-types'},
               {'label':'Locations','href':'/admin/locations'},
               {'label':'Device Import','href':'/bulk/device-import'}
             ] %}
@@ -54,12 +53,6 @@
           {% for dtype in get_device_types() %}
           <a href="/devices/type/{{ dtype.id }}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">{{ dtype.name }}</a>
           {% endfor %}
-          <a href="/inventory/audit" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Audit</a>
-          <a href="/inventory/trailers" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Trailer Inventory</a>
-          <a href="/inventory/sites" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Site Inventory</a>
-          {% if current_user.role in ['editor','admin','superadmin'] %}
-          <a href="/inventory/add-device" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Add Device</a>
-          {% endif %}
         </div>
       </div>
       <div x-show="ready && activeTopMenu == 'network'" x-transition.opacity.duration.150ms :class="(submenuAlign === 'right' ? 'ml-auto text-right ' : '') + 'border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3'" x-cloak>
@@ -73,16 +66,27 @@
       <div x-show="ready && activeTopMenu == 'tasks'" x-transition.opacity.duration.150ms :class="(submenuAlign === 'right' ? 'ml-auto text-right ' : '') + 'border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3'" x-cloak>
         <div :class="mobile ? 'flex flex-col space-y-2' : 'flex space-x-2'">
           <a href="/tasks" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Task Queue</a>
-          <a href="/devices/duplicates" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Duplicate Checker</a>
+          <a href="/reports/vlan-usage" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">VLAN Usage</a>
           {% if current_user.role in ['admin','superadmin'] %}
-          <a href="/tasks/edit-tags" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Edit Tags</a>
           <a href="/tasks/google-sheets" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Google Sheets</a>
           {% endif %}
         </div>
       </div>
       <div x-show="ready && activeTopMenu == 'reports'" x-transition.opacity.duration.150ms :class="(submenuAlign === 'right' ? 'ml-auto text-right ' : '') + 'border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3'" x-cloak>
         <div :class="mobile ? 'flex flex-col space-y-2' : 'flex space-x-2'">
-          <a href="/reports/vlan-usage" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">VLAN Usage</a>
+          <a href="/inventory/audit" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Audit</a>
+          <a href="/devices/duplicates" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Duplicate Checker</a>
+        </div>
+      </div>
+      <div x-show="ready && activeTopMenu == 'inventory-admin'" x-transition.opacity.duration.150ms :class="(submenuAlign === 'right' ? 'ml-auto text-right ' : '') + 'border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3'" x-cloak>
+        <div :class="mobile ? 'flex flex-col space-y-2' : 'flex space-x-2'">
+          <a href="/tasks/edit-tags" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Edit Tags</a>
+          <a href="/device-types" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Device Types</a>
+          <a href="/inventory/sites" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Site Inventory</a>
+          <a href="/inventory/trailers" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Trailer Inventory</a>
+          {% if current_user.role in ['editor','admin','superadmin'] %}
+          <a href="/inventory/add-device" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Add Device</a>
+          {% endif %}
         </div>
       </div>
       <div x-show="ready && activeTopMenu == 'netdev'" x-transition.opacity.duration.150ms :class="(submenuAlign === 'right' ? 'ml-auto text-right ' : '') + 'border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3'" x-cloak>

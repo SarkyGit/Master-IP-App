@@ -9,22 +9,25 @@
         {% for dtype in get_device_types() %}
         <a href="/devices/type/{{ dtype.id }}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">{{ dtype.name }}</a>
         {% endfor %}
-        <a href="/inventory/audit" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Audit</a>
-        <a href="/inventory/trailers" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Trailer Inventory</a>
-        <a href="/inventory/sites" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Site Inventory</a>
-        {% if current_user.role in ['editor','admin','superadmin'] %}
-        <a href="/inventory/add-device" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Add Device</a>
-        {% endif %}
         <a href="/network/ip-search" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">IP Search</a>
         <a href="/vlans" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">VLAN MGMT</a>
         <a href="/network/port-configs" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Port Configs</a>
         <a href="/tasks" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Task Queue</a>
-        <a href="/devices/duplicates" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Duplicate Checker</a>
+        <a href="/reports/vlan-usage" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">VLAN Usage</a>
         {% if current_user.role in ['admin','superadmin'] %}
-        <a href="/tasks/edit-tags" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Edit Tags</a>
         <a href="/tasks/google-sheets" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Google Sheets</a>
         {% endif %}
-        <a href="/reports/vlan-usage" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">VLAN Usage</a>
+        <span class="mt-2 font-bold">Inventory Admin</span>
+        <a href="/tasks/edit-tags" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Edit Tags</a>
+        <a href="/device-types" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Device Types</a>
+        <a href="/inventory/sites" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Site Inventory</a>
+        <a href="/inventory/trailers" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Trailer Inventory</a>
+        {% if current_user.role in ['editor','admin','superadmin'] %}
+        <a href="/inventory/add-device" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Add Device</a>
+        {% endif %}
+        <span class="mt-2 font-bold">Reports</span>
+        <a href="/inventory/audit" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Audit</a>
+        <a href="/devices/duplicates" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Duplicate Checker</a>
         <span class="mt-2 font-bold">Network Devices</span>
         <a href="/ssh/port-config" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Port Config</a>
         <a href="/ssh/port-check" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Port Check</a>
@@ -38,7 +41,6 @@
             {'label':'Tunables','href':'/tunables'},
             {'label':'SSH Credentials','href':'/admin/ssh'},
             {'label':'SNMP Credentials','href':'/admin/snmp'},
-            {'label':'Device Types','href':'/device-types'},
             {'label':'Tag Manager','href':'/admin/tags'},
             {'label':'Locations','href':'/admin/locations'},
             {'label':'Device Import','href':'/bulk/device-import'},
@@ -51,7 +53,6 @@
           {% set admin_items = [
             {'label':'SSH Credentials','href':'/admin/ssh'},
             {'label':'SNMP Credentials','href':'/admin/snmp'},
-            {'label':'Device Types','href':'/device-types'},
             {'label':'Locations','href':'/admin/locations'},
             {'label':'Device Import','href':'/bulk/device-import'}
           ] %}
