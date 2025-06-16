@@ -28,7 +28,8 @@ def create_device(
     db: Session = Depends(get_db),
     current_user: Device = Depends(auth_utils.require_role("editor")),
 ):
-    obj = Device(**device.dict())
+    obj = Device(**device.dict(exclude={"version"}))
+    obj.version = 1
     db.add(obj)
     db.commit()
     db.refresh(obj)
@@ -55,8 +56,8 @@ def update_device(
     obj = db.query(Device).filter_by(id=device_id).first()
     if not obj:
         raise HTTPException(status_code=404, detail="Device not found")
-    update_data = update.dict(exclude_unset=True)
-    apply_update(obj, update_data)
+    update_data = update.dict(exclude_unset=True, exclude={"version"})
+    apply_update(obj, update_data, incoming_version=update.version)
     db.commit()
     db.refresh(obj)
     return obj

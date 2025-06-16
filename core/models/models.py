@@ -20,7 +20,7 @@ class VLAN(Base):
     __tablename__ = "vlans"
 
     id = Column(Integer, primary_key=True)
-    version = Column(Integer, default=1)
+    version = Column(Integer, default=1, nullable=False)
     conflict_data = Column(JSON, nullable=True)
     tag = Column(Integer, unique=True, nullable=False)
     description = Column(String, nullable=True)
@@ -32,7 +32,7 @@ class SSHCredential(Base):
     __tablename__ = "ssh_credentials"
 
     id = Column(Integer, primary_key=True)
-    version = Column(Integer, default=1)
+    version = Column(Integer, default=1, nullable=False)
     conflict_data = Column(JSON, nullable=True)
     name = Column(String, unique=True, nullable=False)
     username = Column(String, nullable=False)
@@ -117,7 +117,7 @@ class Device(Base):
     __tablename__ = "devices"
 
     id = Column(Integer, primary_key=True)
-    version = Column(Integer, default=1)
+    version = Column(Integer, default=1, nullable=False)
     conflict_data = Column(JSON, nullable=True)
     hostname = Column(String, unique=True, nullable=False)
     ip = Column(String, nullable=False)
@@ -206,7 +206,7 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True)
-    version = Column(Integer, default=1)
+    version = Column(Integer, default=1, nullable=False)
     conflict_data = Column(JSON, nullable=True)
     email = Column(String, unique=True, nullable=False)
     hashed_password = Column(String, nullable=False)

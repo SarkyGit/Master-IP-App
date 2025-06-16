@@ -64,19 +64,19 @@ class DummyDB:
         self.models = models
         self.data = {
             models.User: [
-            models.User(id=1, email="admin@example.com", hashed_password="x", role="admin", is_active=True),
-            models.User(id=2, email="viewer@example.com", hashed_password="x", role="viewer", is_active=True),
+            models.User(id=1, email="admin@example.com", hashed_password="x", role="admin", is_active=True, version=1),
+            models.User(id=2, email="viewer@example.com", hashed_password="x", role="viewer", is_active=True, version=1),
             ],
             models.Device: [
-                models.Device(id=1, hostname="switch1", ip="1.1.1.1", manufacturer="cisco", model="x"),
-                models.Device(id=2, hostname="router2", ip="2.2.2.2", manufacturer="juniper", model="y"),
+                models.Device(id=1, hostname="switch1", ip="1.1.1.1", manufacturer="cisco", model="x", version=1),
+                models.Device(id=2, hostname="router2", ip="2.2.2.2", manufacturer="juniper", model="y", version=1),
             ],
             models.VLAN: [
-                models.VLAN(id=1, tag=10, description="office"),
-                models.VLAN(id=2, tag=20, description="lab"),
+                models.VLAN(id=1, tag=10, description="office", version=1),
+                models.VLAN(id=2, tag=20, description="lab", version=1),
             ],
             models.SSHCredential: [
-                models.SSHCredential(id=1, name="main", username="root", password="pw"),
+                models.SSHCredential(id=1, name="main", username="root", password="pw", version=1),
             ],
         }
 
@@ -138,3 +138,16 @@ def test_vlans_filter():
     data = resp.json()
     assert len(data) == 1
     assert data[0]["tag"] == 10
+
+
+def test_device_update_increments_version():
+    token = _token()
+    resp = client.put(
+        "/api/v1/devices/1",
+        json={"hostname": "switch-one", "version": 1},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["version"] == 2
+    assert data["hostname"] == "switch-one"

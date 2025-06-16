@@ -28,7 +28,8 @@ def create_cred(
     db: Session = Depends(get_db),
     current_user: SSHCredential = Depends(auth_utils.require_role("admin")),
 ):
-    obj = SSHCredential(**cred.dict())
+    obj = SSHCredential(**cred.dict(exclude={"version"}))
+    obj.version = 1
     db.add(obj)
     db.commit()
     db.refresh(obj)
@@ -55,8 +56,8 @@ def update_cred(
     obj = db.query(SSHCredential).filter_by(id=cred_id).first()
     if not obj:
         raise HTTPException(status_code=404, detail="Credential not found")
-    update_data = update.dict(exclude_unset=True)
-    apply_update(obj, update_data)
+    update_data = update.dict(exclude_unset=True, exclude={"version"})
+    apply_update(obj, update_data, incoming_version=update.version)
     db.commit()
     db.refresh(obj)
     return obj
