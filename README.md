@@ -141,6 +141,7 @@ npm run build:web
 ## Cloud & Mobile Integration
 
 The [cloud architecture](docs/cloud_architecture.md) document describes the planned replication model for running multiple sites with a central server. Docker Compose examples for both roles will be added as the implementation progresses. The mobile client will authenticate against either the local site or the cloud depending on connectivity.
+Set `ENABLE_CLOUD_SYNC=1` on local servers to activate the placeholder sync worker. Future releases will also respect a `ROLE` variable (`cloud` or `local`) to toggle behaviour.
 
 ## Interface Themes
 

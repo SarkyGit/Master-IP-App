@@ -44,6 +44,7 @@ from server.routes import (
     api_users_router,
     api_vlans_router,
     api_ssh_credentials_router,
+    api_sync_router,
 )
 from server.routes.ui.tunables import router as tunables_router
 from server.routes.ui.editor import router as editor_router
@@ -55,6 +56,7 @@ from server.workers.queue_worker import start_queue_worker, stop_queue_worker
 from server.workers.config_scheduler import start_config_scheduler, stop_config_scheduler
 from server.workers.trap_listener import setup_trap_listener
 from server.workers.syslog_listener import setup_syslog_listener
+from server.workers.cloud_sync import start_cloud_sync, stop_cloud_sync
 from core.utils.templates import templates
 
 # Allow deploying the app under a URL prefix by setting ROOT_PATH.
@@ -66,12 +68,14 @@ start_queue_worker(app)
 start_config_scheduler(app)
 setup_trap_listener(app)
 setup_syslog_listener(app)
+start_cloud_sync(app)
 
 
 @app.on_event("shutdown")
 async def shutdown_cleanup():
     await stop_queue_worker()
     stop_config_scheduler()
+    await stop_cloud_sync()
 
 
 # Path to the ``static`` directory under ``web-client``
@@ -106,6 +110,7 @@ app.include_router(api_devices_router)
 app.include_router(api_users_router)
 app.include_router(api_vlans_router)
 app.include_router(api_ssh_credentials_router)
+app.include_router(api_sync_router)
 app.include_router(admin_profiles_router)
 app.include_router(configs_router)
 app.include_router(admin_router)
