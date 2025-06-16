@@ -52,9 +52,9 @@
         N/A
         {% endif %}
       </td>
-      <td class="px-4 py-2" x-data="{open:false}">
+      <td class="px-4 py-2" x-data="{open:false, ready:false}" x-init="setTimeout(() => ready = true, 50)">
         <button class="px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition" @click="open = true">View Config</button>
-        <div x-show="open" class="fixed inset-0 bg-[var(--card-bg)] bg-opacity-50 flex justify-end" x-cloak>
+        <div x-show="ready && open" x-transition.opacity.duration.150ms class="fixed inset-0 bg-[var(--card-bg)] bg-opacity-50 flex justify-end" x-cloak>
           <div class="bg-[var(--card-bg)] w-1/2 p-4">
             <div class="flex justify-between items-center border-b border-gray-700 pb-2">
               <h5>Config from {{ backup.created_at }}</h5>

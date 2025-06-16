@@ -1,4 +1,4 @@
-<nav x-data="tabsNav()" class="bg-[var(--nav-bg)] text-[var(--nav-text)] p-2">
+<nav x-data="tabsNav()" x-init="setTimeout(() => ready = true, 50)" class="bg-[var(--nav-bg)] text-[var(--nav-text)] p-2">
   <div class="container mx-auto">
     <div class="flex items-center justify-between">
       <button @click="mobile = !mobile" class="lg:hidden p-2 rounded">☰</button>
@@ -48,7 +48,7 @@
       </div>
     </div>
     <div class="mt-1">
-      <div x-show="activeTopMenu == 'inventory'" :class="(submenuAlign === 'right' ? 'ml-auto text-right ' : '') + 'border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3'" x-cloak>
+      <div x-show="ready && activeTopMenu == 'inventory'" x-transition.opacity.duration.150ms :class="(submenuAlign === 'right' ? 'ml-auto text-right ' : '') + 'border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3'" x-cloak>
         <div :class="mobile ? 'flex flex-col space-y-2' : 'flex space-x-2'">
           <a href="/devices" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">All Devices</a>
           {% for dtype in get_device_types() %}
@@ -62,7 +62,7 @@
           {% endif %}
         </div>
       </div>
-      <div x-show="activeTopMenu == 'network'" :class="(submenuAlign === 'right' ? 'ml-auto text-right ' : '') + 'border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3'" x-cloak>
+      <div x-show="ready && activeTopMenu == 'network'" x-transition.opacity.duration.150ms :class="(submenuAlign === 'right' ? 'ml-auto text-right ' : '') + 'border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3'" x-cloak>
         <div :class="mobile ? 'flex flex-col space-y-2' : 'flex space-x-2'">
           <a href="/dashboard" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Dashboard</a>
           <a href="/network/ip-search" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">IP Search</a>
@@ -70,7 +70,7 @@
           <a href="/network/port-configs" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Port Configs</a>
         </div>
       </div>
-      <div x-show="activeTopMenu == 'tasks'" :class="(submenuAlign === 'right' ? 'ml-auto text-right ' : '') + 'border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3'" x-cloak>
+      <div x-show="ready && activeTopMenu == 'tasks'" x-transition.opacity.duration.150ms :class="(submenuAlign === 'right' ? 'ml-auto text-right ' : '') + 'border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3'" x-cloak>
         <div :class="mobile ? 'flex flex-col space-y-2' : 'flex space-x-2'">
           <a href="/tasks" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Task Queue</a>
           <a href="/devices/duplicates" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Duplicate Checker</a>
@@ -80,12 +80,12 @@
           {% endif %}
         </div>
       </div>
-      <div x-show="activeTopMenu == 'reports'" :class="(submenuAlign === 'right' ? 'ml-auto text-right ' : '') + 'border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3'" x-cloak>
+      <div x-show="ready && activeTopMenu == 'reports'" x-transition.opacity.duration.150ms :class="(submenuAlign === 'right' ? 'ml-auto text-right ' : '') + 'border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3'" x-cloak>
         <div :class="mobile ? 'flex flex-col space-y-2' : 'flex space-x-2'">
           <a href="/reports/vlan-usage" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">VLAN Usage</a>
         </div>
       </div>
-      <div x-show="activeTopMenu == 'ssh'" :class="(submenuAlign === 'right' ? 'ml-auto text-right ' : '') + 'border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3'" x-cloak>
+      <div x-show="ready && activeTopMenu == 'ssh'" x-transition.opacity.duration.150ms :class="(submenuAlign === 'right' ? 'ml-auto text-right ' : '') + 'border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3'" x-cloak>
         <div :class="mobile ? 'flex flex-col space-y-2' : 'flex space-x-2'">
           <a href="/ssh/port-config" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Port Config</a>
           <a href="/ssh/port-check" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Port Check</a>
@@ -97,7 +97,7 @@
         </div>
       </div>
       {% if current_user.role in ['admin','superadmin'] %}
-      <div x-show="activeTopMenu == 'admin'" :class="(submenuAlign === 'right' ? 'ml-auto text-right ' : '') + 'border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3'" x-cloak>
+      <div x-show="ready && activeTopMenu == 'admin'" x-transition.opacity.duration.150ms :class="(submenuAlign === 'right' ? 'ml-auto text-right ' : '') + 'border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3'" x-cloak>
         <div :class="mobile ? 'flex flex-col space-y-2' : 'flex space-x-2'">
           {% for item in admin_items %}
           <a href="{{ item.href }}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">{{ item.label }}</a>
@@ -112,7 +112,8 @@
       return {
         mobile: false,
         activeTopMenu: '',
-        submenuAlign: 'left'
+        submenuAlign: 'left',
+        ready: false
       }
     }
   </script>

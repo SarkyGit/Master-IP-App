@@ -7,9 +7,9 @@
   <a href="/devices/new" class="inline-block p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded transition">Add Device</a>
 {% endif %}
 {% if current_user and current_user.role in ['editor','admin','superadmin'] %}
-  <div class="relative inline-block ml-2" x-data="{open:false}">
+  <div class="relative inline-block ml-2" x-data="{open:false, ready:false}" x-init="setTimeout(() => ready = true, 50)">
     <button aria-label="Export" class="bg-[var(--card-bg)] p-2 text-[var(--btn-text)] rounded" @click="open = !open">{{ include_icon('download','text-orange-500','1.5') }}</button>
-    <ul x-show="open" @click.away="open = false" class="absolute bg-[var(--card-bg)] py-2 w-48" x-cloak>
+    <ul x-show="ready && open" x-transition.opacity.duration.150ms @click.away="open = false" class="absolute bg-[var(--card-bg)] py-2 w-48" x-cloak>
       <li><a class="block px-4 py-2 hover:bg-[var(--btn-hover)]" href="/export/inventory.csv">Export to CSV</a></li>
       <li><a class="block px-4 py-2 hover:bg-[var(--btn-hover)]" href="/export/inventory.pdf">Export to PDF</a></li>
       <li><a class="block px-4 py-2 hover:bg-[var(--btn-hover)]" href="/export/config-snapshot.zip">Download Config Snapshot</a></li>

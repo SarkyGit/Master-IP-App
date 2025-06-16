@@ -25,9 +25,9 @@
           </div>
           <div class="login-area flex items-center space-x-2">
             {% if current_user %}
-            <div class="relative" x-data="{open:false}">
+            <div class="relative" x-data="{open:false, ready:false}" x-init="setTimeout(() => ready = true, 50)">
               <button @click="open = !open" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">My Profile</button>
-              <ul x-show="open" @click.away="open = false" class="absolute right-0 mt-2 bg-[var(--card-bg)] text-[var(--btn-text)] py-2 w-48" x-cloak>
+              <ul x-show="ready && open" x-transition.opacity.duration.150ms @click.away="open = false" class="absolute right-0 mt-2 bg-[var(--card-bg)] text-[var(--btn-text)] py-2 w-48" x-cloak>
                 <li><a class="block px-4 py-2 hover:bg-[var(--btn-hover)]" href="/users/me">View Profile</a></li>
                 <li><a class="block px-4 py-2 hover:bg-[var(--btn-hover)]" href="/user/ssh">SSH Profiles</a></li>
               </ul>
@@ -52,7 +52,7 @@
       {% endif %}
       {% endblock %}
     </header>
-      <div class="w-full px-4 mt-4">
+      <div id="page-content" class="w-full px-4 mt-4 opacity-0 transition-opacity duration-200" x-init="$el.classList.add('opacity-100')">
         <p class="text-base text-[var(--card-text)]">{{ message }}</p>
         {% block content %}{% endblock %}
       </div>
