@@ -2,52 +2,52 @@
 
 {% block content %}
 <h1 class="text-xl mb-4">{{ form_title }}</h1>
-<form method="post" id="device-form" class="space-y-4">
-  <div class="form-row">
-    <div class="form-item">
-      <label for="hostname" class="block">Hostname</label>
-      <input id="hostname" type="text" name="hostname" value="{{ device.hostname if device else '' }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" required />
+<form method="post" id="device-form">
+  <div class="flex flex-wrap gap-4 mb-4 items-start">
+    <div class="flex flex-col flex-1 min-w-[280px]">
+      <label for="hostname" class="mb-1 fw-bold block">Hostname</label>
+      <input id="hostname" type="text" name="hostname" value="{{ device.hostname if device else '' }}" class="form-input w-full" required />
     </div>
-    <div class="form-item">
-      <label for="ip-field" class="block">IP Address</label>
-      <input type="text" name="ip" id="ip-field" value="{{ device.ip if device else '' }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" />
+    <div class="flex flex-col flex-1 min-w-[280px]">
+      <label for="ip-field" class="mb-1 fw-bold block">IP Address</label>
+      <input type="text" name="ip" id="ip-field" value="{{ device.ip if device else '' }}" class="form-input w-full" />
     </div>
-    <div class="form-item">
-      <label for="mac" class="block">MAC Address</label>
-      <input id="mac" type="text" name="mac" value="{{ device.mac if device else '' }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" />
+    <div class="flex flex-col flex-1 min-w-[280px]">
+      <label for="mac" class="mb-1 fw-bold block">MAC Address</label>
+      <input id="mac" type="text" name="mac" value="{{ device.mac if device else '' }}" class="form-input w-full" />
     </div>
   </div>
-  <div class="form-row">
-    <div class="form-item">
-      <label for="asset_tag" class="block">Asset Tag</label>
-      <input id="asset_tag" type="text" name="asset_tag" value="{{ device.asset_tag if device else '' }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" />
+  <div class="flex flex-wrap gap-4 mb-4 items-start">
+    <div class="flex flex-col flex-1 min-w-[280px]">
+      <label for="asset_tag" class="mb-1 fw-bold block">Asset Tag</label>
+      <input id="asset_tag" type="text" name="asset_tag" value="{{ device.asset_tag if device else '' }}" class="form-input w-full" />
     </div>
-    <div class="form-item">
-      <label for="model" class="block">Model</label>
-      <input id="model" list="model-list" type="text" name="model" value="{{ device.model if device else '' }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" />
+    <div class="flex flex-col flex-1 min-w-[280px]">
+      <label for="model" class="mb-1 fw-bold block">Model</label>
+      <input id="model" list="model-list" type="text" name="model" value="{{ device.model if device else '' }}" class="form-input w-full" />
       <datalist id="model-list">
         {% for m in model_list %}
         <option value="{{ m }}">{{ m }}</option>
         {% endfor %}
       </datalist>
     </div>
-    <div class="form-item">
-      <label for="serial_number" class="block">Serial Number</label>
-      <input id="serial_number" type="text" name="serial_number" value="{{ device.serial_number if device else '' }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" />
+    <div class="flex flex-col flex-1 min-w-[280px]">
+      <label for="serial_number" class="mb-1 fw-bold block">Serial Number</label>
+      <input id="serial_number" type="text" name="serial_number" value="{{ device.serial_number if device else '' }}" class="form-input w-full" />
     </div>
   </div>
-  <div class="form-row">
-    <div class="form-item">
-      <label for="manufacturer" class="block">Manufacturer</label>
-      <input id="manufacturer" type="text" name="manufacturer" value="{{ device.manufacturer if device else '' }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" required />
+  <div class="flex flex-wrap gap-4 mb-4 items-start">
+    <div class="flex flex-col flex-1 min-w-[280px]">
+      <label for="manufacturer" class="mb-1 fw-bold block">Manufacturer</label>
+      <input id="manufacturer" type="text" name="manufacturer" value="{{ device.manufacturer if device else '' }}" class="form-input w-full" required />
     </div>
-    <div class="form-item">
-      <label for="detected_platform" class="block">Detected Platform</label>
-      <input id="detected_platform" type="text" name="detected_platform" value="{{ device.detected_platform if device else '' }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" />
+    <div class="flex flex-col flex-1 min-w-[280px]">
+      <label for="detected_platform" class="mb-1 fw-bold block">Detected Platform</label>
+      <input id="detected_platform" type="text" name="detected_platform" value="{{ device.detected_platform if device else '' }}" class="form-input w-full" />
     </div>
-    <div class="form-item">
-      <label for="device_type_id" class="block">Device Type</label>
-      <select id="device_type_id" name="device_type_id" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" required>
+    <div class="flex flex-col flex-1 min-w-[280px]">
+      <label for="device_type_id" class="mb-1 fw-bold block">Device Type</label>
+      <select id="device_type_id" name="device_type_id" class="form-select w-full" required>
         <option value="">---</option>
         {% for dt in device_types %}
         <option value="{{ dt.id }}" {% if device and device.device_type_id == dt.id %}selected{% endif %}>{{ dt.name }}</option>
@@ -55,9 +55,10 @@
       </select>
     </div>
   </div>
-  <div class="form-item">
-      <label for="location_id" class="block">Location</label>
-      <select id="location_id" name="location_id" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+  <div class="flex flex-wrap gap-4 mb-4 items-start">
+    <div class="flex flex-col flex-1 min-w-[280px]">
+      <label for="location_id" class="mb-1 fw-bold block">Location</label>
+      <select id="location_id" name="location_id" class="form-select w-full">
         <option value="">---</option>
         {% for loc in locations %}
         <option value="{{ loc.id }}" {% if device and device.location_id == loc.id %}selected{% endif %}>{{ loc.name }} ({{ loc.location_type }})</option>
@@ -66,19 +67,19 @@
     </div>
   </div>
   {% if device %}
-  <div class="form-row">
-    <div class="form-item">
-      <label for="status" class="block">Status</label>
-      <select id="status" name="status" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+  <div class="flex flex-wrap gap-4 mb-4 items-start">
+    <div class="flex flex-col flex-1 min-w-[280px]">
+      <label for="status" class="mb-1 fw-bold block">Status</label>
+      <select id="status" name="status" class="form-select w-full">
         <option value="">---</option>
         {% for st in status_options %}
         <option value="{{ st }}" {% if device and device.status == st %}selected{% endif %}>{{ st }}</option>
         {% endfor %}
       </select>
     </div>
-    <div class="form-item">
-      <label for="vlan-field" class="block">VLAN <span id="vlan-suggestion" class="ml-2 text-sm text-green-400"></span></label>
-      <select name="vlan_id" id="vlan-field" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+    <div class="flex flex-col flex-1 min-w-[280px]">
+      <label for="vlan-field" class="mb-1 fw-bold block">VLAN <span id="vlan-suggestion" class="ml-2 text-sm text-green-400"></span></label>
+      <select name="vlan_id" id="vlan-field" class="form-select w-full">
         <option value="">---</option>
         {% for vlan in vlans %}
         <option value="{{ vlan.id }}" {% if device and device.vlan_id == vlan.id %}selected{% endif %}>{{ vlan.tag }} - {{ vlan.description or '' }}</option>
@@ -87,28 +88,28 @@
     </div>
   </div>
   {% endif %}
-  <div class="form-row">
-    <div class="form-item">
-      <label for="ssh_credential_id" class="block">SSH Profile</label>
-      <select id="ssh_credential_id" name="ssh_credential_id" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+  <div class="flex flex-wrap gap-4 mb-4 items-start">
+    <div class="flex flex-col flex-1 min-w-[280px]">
+      <label for="ssh_credential_id" class="mb-1 fw-bold block">SSH Profile</label>
+      <select id="ssh_credential_id" name="ssh_credential_id" class="form-select w-full">
         <option value="">---</option>
         {% for cred in ssh_credentials %}
         <option value="{{ cred.id }}" {% if device and device.ssh_credential_id == cred.id %}selected{% endif %}>{{ cred.name }}</option>
         {% endfor %}
       </select>
     </div>
-    <div class="form-item">
-      <label for="snmp_community_id" class="block">SNMP Profile</label>
-      <select id="snmp_community_id" name="snmp_community_id" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+    <div class="flex flex-col flex-1 min-w-[280px]">
+      <label for="snmp_community_id" class="mb-1 fw-bold block">SNMP Profile</label>
+      <select id="snmp_community_id" name="snmp_community_id" class="form-select w-full">
         <option value="">---</option>
         {% for snmp in snmp_communities %}
         <option value="{{ snmp.id }}" {% if device and device.snmp_community_id == snmp.id %}selected{% endif %}>{{ snmp.name }}</option>
         {% endfor %}
       </select>
     </div>
-    <div class="form-item">
-      <label for="site_id" class="block">Site</label>
-      <select id="site_id" name="site_id" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+    <div class="flex flex-col flex-1 min-w-[280px]">
+      <label for="site_id" class="mb-1 fw-bold block">Site</label>
+      <select id="site_id" name="site_id" class="form-select w-full">
         <option value="">-- None --</option>
         {% for site in sites %}
         <option value="{{ site.id }}" {% if device and device.site_id == site.id %}selected{% endif %}>{{ site.name }}</option>
@@ -116,46 +117,40 @@
       </select>
     </div>
   </div>
-  <div class="form-row">
-    <div class="form-item">
-      <label for="on_lasso" class="inline-flex items-center">
-        <input id="on_lasso" type="checkbox" name="on_lasso" value="1" class="mr-2" {% if device and device.on_lasso %}checked{% endif %}>
-        On Lasso
-      </label>
+  <div class="flex flex-wrap gap-4 mb-4 items-start">
+    <div class="flex flex-col flex-1 min-w-[280px]">
+      <label for="on_lasso" class="mb-1 fw-bold block">On Lasso</label>
+      <input id="on_lasso" type="checkbox" name="on_lasso" value="1" class="form-input" {% if device and device.on_lasso %}checked{% endif %}>
     </div>
-    <div class="form-item">
-      <label for="on_r1" class="inline-flex items-center">
-        <input id="on_r1" type="checkbox" name="on_r1" value="1" class="mr-2" {% if device and device.on_r1 %}checked{% endif %}>
-        On R1
-      </label>
+    <div class="flex flex-col flex-1 min-w-[280px]">
+      <label for="on_r1" class="mb-1 fw-bold block">On R1</label>
+      <input id="on_r1" type="checkbox" name="on_r1" value="1" class="form-input" {% if device and device.on_r1 %}checked{% endif %}>
     </div>
-    <div class="form-item">
-      <label for="priority" class="inline-flex items-center">
-        <input id="priority" type="checkbox" name="priority" value="1" class="mr-2" {% if device and device.priority %}checked{% endif %}>
-        Priority Device
-      </label>
+    <div class="flex flex-col flex-1 min-w-[280px]">
+      <label for="priority" class="mb-1 fw-bold block">Priority Device</label>
+      <input id="priority" type="checkbox" name="priority" value="1" class="form-input" {% if device and device.priority %}checked{% endif %}>
     </div>
   </div>
-  <div class="form-row">
-    <div class="form-item">
-      <label for="config_pull_interval" class="block">Config Pull Interval</label>
-      <select id="config_pull_interval" name="config_pull_interval" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+  <div class="flex flex-wrap gap-4 mb-4 items-start">
+    <div class="flex flex-col flex-1 min-w-[280px]">
+      <label for="config_pull_interval" class="mb-1 fw-bold block">Config Pull Interval</label>
+      <select id="config_pull_interval" name="config_pull_interval" class="form-select w-full">
         {% for opt in ['none','hourly','daily','weekly'] %}
         <option value="{{ opt }}" {% if device and device.config_pull_interval == opt %}selected{% endif %}>{{ opt.title() }}</option>
         {% endfor %}
       </select>
     </div>
   </div>
-  <div class="form-row">
-    <div class="form-item">
-      <label for="notes" class="block">Notes</label>
-      <textarea id="notes" name="notes" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">{{ device.notes if device else '' }}</textarea>
+  <div class="flex flex-wrap gap-4 mb-4 items-start">
+    <div class="flex flex-col flex-1 min-w-[280px]">
+      <label for="notes" class="mb-1 fw-bold block">Notes</label>
+      <textarea id="notes" name="notes" class="form-input w-full">{{ device.notes if device else '' }}</textarea>
     </div>
   </div>
-  <div class="form-row">
-    <div class="form-item">
-      <label for="tag_names" class="block">Tags</label>
-      <input id="tag_names" type="text" name="tag_names" list="tag-list" value="{{ device.tags | rejectattr('name', 'in', ['complete','incomplete']) | map(attribute='name') | join(', ') if device else '' }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" />
+  <div class="flex flex-wrap gap-4 mb-4 items-start">
+    <div class="flex flex-col flex-1 min-w-[280px]">
+      <label for="tag_names" class="mb-1 fw-bold block">Tags</label>
+      <input id="tag_names" type="text" name="tag_names" list="tag-list" value="{{ device.tags | rejectattr('name', 'in', ['complete','incomplete']) | map(attribute='name') | join(', ') if device else '' }}" class="form-input w-full" />
       <datalist id="tag-list">
         {% for t in get_tags() %}
         <option value="{{ t.name }}">{{ t.name }}</option>
@@ -163,8 +158,8 @@
       </datalist>
     </div>
   </div>
-  <div class="form-row">
-    <div class="form-item">
+  <div class="flex flex-wrap gap-4 mb-4 items-start">
+    <div class="flex flex-col flex-1 min-w-[280px]">
       <button type="submit" aria-label="Submit" class="p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded transition">{{ include_icon('check') }}</button>
       <a href="/devices" class="inline-block p-2 ml-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded transition">Cancel</a>
     </div>

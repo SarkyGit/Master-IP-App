@@ -2,27 +2,31 @@
 
 {% block content %}
 <h1 class="text-xl mb-4">{{ form_title }}</h1>
-<form method="post" class="space-y-4">
-  <div>
-    <label for="name" class="block">Name</label>
-    <input id="name" type="text" name="name" value="{{ profile.name if profile else '' }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" required />
-  </div>
-  <div class="form-row">
-    <div class="form-item space-y-2">
-      <label for="community_string" class="block">Community String</label>
-      <input id="community_string" type="text" name="community_string" value="{{ profile.community_string if profile else '' }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" required />
+<form method="post">
+  <div class="flex flex-wrap gap-4 mb-4 items-start">
+    <div class="flex flex-col flex-1 min-w-[280px]">
+      <label for="name" class="mb-1 fw-bold block">Name</label>
+      <input id="name" type="text" name="name" value="{{ profile.name if profile else '' }}" class="form-input w-full" required />
     </div>
-    <div class="form-item space-y-2">
-      <label for="version" class="block">Version</label>
-      <input id="version" type="text" name="version" value="{{ profile.version if profile else '2c' }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" />
+  </div>
+  <div class="flex flex-wrap gap-4 mb-4 items-start">
+    <div class="flex flex-col flex-1 min-w-[280px]">
+      <label for="community_string" class="mb-1 fw-bold block">Community String</label>
+      <input id="community_string" type="text" name="community_string" value="{{ profile.community_string if profile else '' }}" class="form-input w-full" required />
+    </div>
+    <div class="flex flex-col flex-1 min-w-[280px]">
+      <label for="version" class="mb-1 fw-bold block">Version</label>
+      <input id="version" type="text" name="version" value="{{ profile.version if profile else '2c' }}" class="form-input w-full" />
     </div>
   </div>
   {% if error %}
   <p class="p-2 rounded bg-[var(--alert-bg)]">{{ error }}</p>
   {% endif %}
-  <div>
-    <button type="submit" aria-label="Submit" class="p-2 rounded transition">{{ include_icon('check') }}</button>
-    <a href="/admin/snmp" class="ml-2 underline">Cancel</a>
+  <div class="flex flex-wrap gap-4 mb-4 items-start">
+    <div class="flex flex-col flex-1 min-w-[280px]">
+      <button type="submit" aria-label="Submit" class="p-2 rounded transition">{{ include_icon('check') }}</button>
+      <a href="/admin/snmp" class="ml-2 underline">Cancel</a>
+    </div>
   </div>
 </form>
 {% endblock %}
