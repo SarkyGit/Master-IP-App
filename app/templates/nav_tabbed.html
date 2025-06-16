@@ -1,4 +1,4 @@
-<nav x-data="tabsNav()" x-init="setTimeout(() => ready = true, 50)" class="bg-[var(--nav-bg)] text-[var(--nav-text)] p-2">
+<nav x-data="tabsNav()" x-init="initFromStorage()" class="bg-[var(--nav-bg)] text-[var(--nav-text)] p-2">
   <div class="px-6 mx-auto max-w-screen-2xl">
     <div class="flex items-center justify-between">
       <button @click="mobile = !mobile" class="lg:hidden p-2 rounded">☰</button>
@@ -7,18 +7,18 @@
           <div class="flex space-x-4">
             <button onclick="history.back()" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Back</button>
             {% if current_user %}
-            <button @click="activeTopMenu = 'inventory'; submenuAlign = $event.target.dataset.align" data-align="left" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Inventory</button>
-            <button @click="activeTopMenu = 'reports'; submenuAlign = $event.target.dataset.align" data-align="left" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Reports</button>
-            <button @click="activeTopMenu = 'inventory-admin'; submenuAlign = $event.target.dataset.align" data-align="left" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Inventory Admin</button>
+            <button @click="setTop('inventory', $event.target.dataset.align)" data-align="left" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Inventory</button>
+            <button @click="setTop('reports', $event.target.dataset.align)" data-align="left" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Reports</button>
+            <button @click="setTop('inventory-admin', $event.target.dataset.align)" data-align="left" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Inventory Admin</button>
             {% endif %}
           </div>
           {% if current_user %}
           <div class="flex space-x-4 ml-auto">
-            <button @click="activeTopMenu = 'network'; submenuAlign = $event.target.dataset.align" data-align="right" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Network</button>
-            <button @click="activeTopMenu = 'tasks'; submenuAlign = $event.target.dataset.align" data-align="right" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Tasks</button>
-            <button @click="activeTopMenu = 'netdev'; submenuAlign = $event.target.dataset.align" data-align="right" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Network Devices</button>
+            <button @click="setTop('network', $event.target.dataset.align)" data-align="right" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Network</button>
+            <button @click="setTop('tasks', $event.target.dataset.align)" data-align="right" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Tasks</button>
+            <button @click="setTop('netdev', $event.target.dataset.align)" data-align="right" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Network Devices</button>
             {% if current_user.role in ['admin','superadmin'] %}
-            <button @click="activeTopMenu = 'tunables'; submenuAlign = $event.target.dataset.align" data-align="right" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Tunables</button>
+            <button @click="setTop('tunables', $event.target.dataset.align)" data-align="right" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Tunables</button>
             {% if current_user.role == 'superadmin' %}
             {% set admin_items = [
               {'label':'SSH Credentials','href':'/admin/ssh'},
@@ -39,7 +39,7 @@
               {'label':'Device Import','href':'/bulk/device-import'}
             ] %}
             {% endif %}
-            <button @click="activeTopMenu = 'admin'; submenuAlign = $event.target.dataset.align" data-align="right" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">{{ 'Super Admin' if current_user.role == 'superadmin' else 'Admin' }}</button>
+            <button @click="setTop('admin', $event.target.dataset.align)" data-align="right" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">{{ 'Super Admin' if current_user.role == 'superadmin' else 'Admin' }}</button>
             {% endif %}
           </div>
           {% endif %}
@@ -49,63 +49,63 @@
     <div class="mt-1">
       <div x-show="ready && activeTopMenu == 'inventory'" x-transition.opacity.duration.150ms :class="(submenuAlign === 'right' ? 'ml-auto text-right ' : '') + 'border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3'" x-cloak>
         <div :class="mobile ? 'flex flex-col space-y-2' : 'flex space-x-2'">
-          <a href="/devices" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">All Devices</a>
+          <a href="/devices" @click="setSub('/devices')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/devices'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">All Devices</a>
           {% for dtype in get_device_types() %}
-          <a href="/devices/type/{{ dtype.id }}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">{{ dtype.name }}</a>
+          <a href="/devices/type/{{ dtype.id }}" @click="setSub('/devices/type/{{ dtype.id }}')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/devices/type/{{ dtype.id }}'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">{{ dtype.name }}</a>
           {% endfor %}
         </div>
       </div>
       <div x-show="ready && activeTopMenu == 'network'" x-transition.opacity.duration.150ms :class="(submenuAlign === 'right' ? 'ml-auto text-right ' : '') + 'border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3'" x-cloak>
         <div :class="mobile ? 'flex flex-col space-y-2' : 'flex space-x-2'">
-          <a href="/dashboard" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Dashboard</a>
-          <a href="/network/ip-search" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">IP Search</a>
-          <a href="/vlans" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">VLAN MGMT</a>
-          <a href="/network/port-configs" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Port Configs</a>
+          <a href="/dashboard" @click="setSub('/dashboard')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/dashboard'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Dashboard</a>
+          <a href="/network/ip-search" @click="setSub('/network/ip-search')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/network/ip-search'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">IP Search</a>
+          <a href="/vlans" @click="setSub('/vlans')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/vlans'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">VLAN MGMT</a>
+          <a href="/network/port-configs" @click="setSub('/network/port-configs')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/network/port-configs'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Port Configs</a>
         </div>
       </div>
       <div x-show="ready && activeTopMenu == 'tasks'" x-transition.opacity.duration.150ms :class="(submenuAlign === 'right' ? 'ml-auto text-right ' : '') + 'border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3'" x-cloak>
         <div :class="mobile ? 'flex flex-col space-y-2' : 'flex space-x-2'">
-          <a href="/tasks" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Task Queue</a>
-          <a href="/reports/vlan-usage" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">VLAN Usage</a>
+          <a href="/tasks" @click="setSub('/tasks')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/tasks'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Task Queue</a>
+          <a href="/reports/vlan-usage" @click="setSub('/reports/vlan-usage')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/reports/vlan-usage'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">VLAN Usage</a>
           {% if current_user.role in ['admin','superadmin'] %}
-          <a href="/tasks/google-sheets" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Google Sheets</a>
+          <a href="/tasks/google-sheets" @click="setSub('/tasks/google-sheets')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/tasks/google-sheets'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Google Sheets</a>
           {% endif %}
         </div>
       </div>
       <div x-show="ready && activeTopMenu == 'reports'" x-transition.opacity.duration.150ms :class="(submenuAlign === 'right' ? 'ml-auto text-right ' : '') + 'border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3'" x-cloak>
         <div :class="mobile ? 'flex flex-col space-y-2' : 'flex space-x-2'">
-          <a href="/inventory/audit" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Audit</a>
-          <a href="/devices/duplicates" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Duplicate Checker</a>
+          <a href="/inventory/audit" @click="setSub('/inventory/audit')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/inventory/audit'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Audit</a>
+          <a href="/devices/duplicates" @click="setSub('/devices/duplicates')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/devices/duplicates'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Duplicate Checker</a>
         </div>
       </div>
       <div x-show="ready && activeTopMenu == 'inventory-admin'" x-transition.opacity.duration.150ms :class="(submenuAlign === 'right' ? 'ml-auto text-right ' : '') + 'border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3'" x-cloak>
         <div :class="mobile ? 'flex flex-col space-y-2' : 'flex space-x-2'">
-          <a href="/tasks/edit-tags" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Edit Tags</a>
-          <a href="/device-types" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Device Types</a>
-          <a href="/inventory/sites" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Site Inventory</a>
-          <a href="/inventory/trailers" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Trailer Inventory</a>
+          <a href="/tasks/edit-tags" @click="setSub('/tasks/edit-tags')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/tasks/edit-tags'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Edit Tags</a>
+          <a href="/device-types" @click="setSub('/device-types')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/device-types'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Device Types</a>
+          <a href="/inventory/sites" @click="setSub('/inventory/sites')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/inventory/sites'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Site Inventory</a>
+          <a href="/inventory/trailers" @click="setSub('/inventory/trailers')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/inventory/trailers'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Trailer Inventory</a>
           {% if current_user.role in ['editor','admin','superadmin'] %}
-          <a href="/inventory/add-device" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Add Device</a>
+          <a href="/inventory/add-device" @click="setSub('/inventory/add-device')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/inventory/add-device'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Add Device</a>
           {% endif %}
         </div>
       </div>
       <div x-show="ready && activeTopMenu == 'netdev'" x-transition.opacity.duration.150ms :class="(submenuAlign === 'right' ? 'ml-auto text-right ' : '') + 'border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3'" x-cloak>
         <div :class="mobile ? 'flex flex-col space-y-2' : 'flex space-x-2'">
-          <a href="/ssh/port-config" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Port Config</a>
-          <a href="/ssh/port-check" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Port Check</a>
-          <a href="/ssh/config-check" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Config Check</a>
-          <a href="/ssh/port-search" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Port Search</a>
-          <a href="/ssh/bulk-port-update" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Bulk Port Update</a>
-          <a href="/bulk/vlan-push" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">VLAN Bulk Push</a>
+          <a href="/ssh/port-config" @click="setSub('/ssh/port-config')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/ssh/port-config'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Port Config</a>
+          <a href="/ssh/port-check" @click="setSub('/ssh/port-check')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/ssh/port-check'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Port Check</a>
+          <a href="/ssh/config-check" @click="setSub('/ssh/config-check')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/ssh/config-check'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Config Check</a>
+          <a href="/ssh/port-search" @click="setSub('/ssh/port-search')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/ssh/port-search'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Port Search</a>
+          <a href="/ssh/bulk-port-update" @click="setSub('/ssh/bulk-port-update')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/ssh/bulk-port-update'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Bulk Port Update</a>
+          <a href="/bulk/vlan-push" @click="setSub('/bulk/vlan-push')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/bulk/vlan-push'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">VLAN Bulk Push</a>
         </div>
       </div>
       {% if current_user.role in ['admin','superadmin'] %}
       <div x-show="ready && activeTopMenu == 'tunables'" x-transition.opacity.duration.150ms :class="(submenuAlign === 'right' ? 'ml-auto text-right ' : '') + 'border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3'" x-cloak>
         <div :class="mobile ? 'flex flex-col space-y-2' : 'flex space-x-2'">
           {% for cat in get_tunable_categories() %}
-          <a href="/tunables?category={{ cat | urlencode }}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">{{ cat }}</a>
+          <a href="/tunables?category={{ cat | urlencode }}" @click="setSub('/tunables?category={{ cat | urlencode }}')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/tunables?category={{ cat | urlencode }}'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">{{ cat }}</a>
           {% endfor %}
-          <a href="/admin/logo" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Upload Logo</a>
+          <a href="/admin/logo" @click="setSub('/admin/logo')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/admin/logo'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Upload Logo</a>
         </div>
       </div>
       {% endif %}
@@ -113,7 +113,7 @@
       <div x-show="ready && activeTopMenu == 'admin'" x-transition.opacity.duration.150ms :class="(submenuAlign === 'right' ? 'ml-auto text-right ' : '') + 'border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3'" x-cloak>
         <div :class="mobile ? 'flex flex-col space-y-2' : 'flex space-x-2'">
           {% for item in admin_items %}
-          <a href="{{ item.href }}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">{{ item.label }}</a>
+          <a href="{{ item.href }}" @click="setSub('{{ item.href }}')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '{{ item.href }}'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">{{ item.label }}</a>
           {% endfor %}
         </div>
       </div>
@@ -125,8 +125,25 @@
       return {
         mobile: false,
         activeTopMenu: '',
+        activeSubMenu: '',
         submenuAlign: 'left',
-        ready: false
+        ready: false,
+        initFromStorage() {
+          this.activeTopMenu = localStorage.getItem('activeTopMenu') || ''
+          this.activeSubMenu = localStorage.getItem('activeSubMenu') || ''
+          setTimeout(() => this.ready = true, 50)
+        },
+        setTop(menu, align) {
+          this.activeTopMenu = menu
+          this.submenuAlign = align
+          localStorage.setItem('activeTopMenu', menu)
+          localStorage.removeItem('activeSubMenu')
+          this.activeSubMenu = ''
+        },
+        setSub(href) {
+          this.activeSubMenu = href
+          localStorage.setItem('activeSubMenu', href)
+        }
       }
     }
   </script>
