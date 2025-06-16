@@ -2,7 +2,6 @@
 
 {% block content %}
 <h1 class="text-xl mb-4">Devices</h1>
-<a href="/devices/column-prefs" class="inline-block p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded transition mb-2">Customize Columns</a>
 {% if current_user and current_user.role in ['editor','admin','superadmin'] %}
   <a href="/devices/new" class="inline-block p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded transition">Add Device</a>
 {% endif %}
@@ -21,22 +20,6 @@
     <button type="submit" aria-label="Run Push Queue" class="ml-2 p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded transition">{{ include_icon('refresh-ccw', None, '1.5') }}</button>
   </form>
 {% endif %}
-<form method="get" class="my-2">
-  <label class="me-2">SNMP Status:
-    <select id="snmp" name="snmp" onchange="this.form.submit()">
-      <option value="" {% if not snmp %}selected{% endif %}>All</option>
-      <option value="reachable" {% if snmp == 'reachable' %}selected{% endif %}>Reachable</option>
-      <option value="unreachable" {% if snmp == 'unreachable' %}selected{% endif %}>Unreachable</option>
-    </select>
-  </label>
-  <label>Sort:
-    <select id="sort" name="sort" onchange="this.form.submit()">
-      <option value="" {% if not sort %}selected{% endif %}>---</option>
-      <option value="uptime" {% if sort == 'uptime' %}selected{% endif %}>Uptime Asc</option>
-      <option value="-uptime" {% if sort == '-uptime' %}selected{% endif %}>Uptime Desc</option>
-    </select>
-  </label>
-</form>
 <form method="post" action="/devices/bulk-delete" x-data="tableControls()" class="space-y-2 full-width">
 <div class="flex justify-between items-center">
   <label>Show
@@ -51,7 +34,7 @@
   <input x-model="search" type="text" placeholder="Search" class="rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)] px-2 py-1" />
 </div>
 <div class="w-full overflow-auto">
-<table class="min-w-full table-fixed text-left border-collapse">
+<table class="min-w-full table-fixed text-left border-collapse devices-table">
   <thead>
     <tr>
       <th class="table-cell"><input type="checkbox" id="select-all"></th>
@@ -77,7 +60,7 @@
   </thead>
   <tbody>
   {% for device in devices %}
-    <tr class="border-t border-gray-700">
+    <tr>
       <td class="table-cell"><input type="checkbox" name="selected" value="{{ device.id }}"></td>
       {% if column_prefs.hostname %}<td class="table-cell">{{ device.hostname }}{% if device.ssh_credential or personal_creds.get(device.id) %}<a href="/ssh/port-config?device_id={{ device.id }}" title="View in Network Devices" class="ml-1">⚡</a>{% endif %}</td>{% endif %}
       {% if column_prefs.ip %}<td class="table-cell {% if device.ip and duplicate_ips.get(device.ip) %}duplicate{% endif %}" title="{{ duplicate_ips.get(device.ip)|join(', ') if duplicate_ips.get(device.ip) }}">{{ device.ip }}</td>{% endif %}
@@ -112,7 +95,7 @@
       {% if column_prefs.tags %}<td class="table-cell">{{ device.tags | map(attribute='name') | join(', ') }}</td>{% endif %}
     </tr>
     {% if current_user and current_user.role in ['editor','admin','superadmin'] %}
-    <tr class="border-b border-gray-700">
+    <tr>
       <td colspan="{{ column_count }}" class="px-4 py-2 text-right">
         <a href="/devices/{{ device.id }}/edit" aria-label="Edit" class="inline-block px-2 text-sm text-[var(--btn-text)] hover:text-[var(--btn-hover-text)] mr-2">{{ include_icon('pencil','text-blue-500','1.5') }}</a>
         <form method="post" action="/devices/{{ device.id }}/delete" class="inline">

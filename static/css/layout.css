@@ -152,3 +152,16 @@ body.col-resize {
 .submenu a {
   font-size: var(--submenu-font-size);
 }
+
+/* Styling for the devices table */
+table.devices-table td,
+table.devices-table th {
+  border-right: 1px solid var(--border-color);
+}
+table.devices-table td:last-child,
+table.devices-table th:last-child {
+  border-right: none;
+}
+table.devices-table tbody tr {
+  border-bottom: 2px solid var(--border-color);
+}
