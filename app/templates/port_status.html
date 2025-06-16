@@ -105,8 +105,8 @@
       </td>
       <td class="px-4 py-2">{{ port.alias or '' }}</td>
       <td class="px-4 py-2">
-        <a href="/devices/{{ device.id }}/ports/{{ port.name }}/config" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Config</a>
-        <a href="/devices/{{ device.id }}/ports/{{ port.name }}/apply-template" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition ml-2">Template</a>
+        <a href="/devices/{{ device.id }}/ports/{{ port.name }}/config" class="inline-block px-2 text-sm text-[var(--btn-text)] hover:text-[var(--btn-hover-text)]">Config</a>
+        <a href="/devices/{{ device.id }}/ports/{{ port.name }}/apply-template" class="inline-block px-2 text-sm text-[var(--btn-text)] hover:text-[var(--btn-hover-text)] ml-2">Template</a>
       </td>
     </tr>
   {% endfor %}
