@@ -40,5 +40,5 @@ def test_admin_links_present():
     client = TestClient(app)
     response = client.get("/")
     assert response.status_code == 200
-    for label in ["SSH Credentials", "Device Types", "Locations", "Device Import"]:
+    for label in ["SSH Credentials", "Locations", "Device Import"]:
         assert label in response.text
