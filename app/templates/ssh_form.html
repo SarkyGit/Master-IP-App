@@ -2,31 +2,37 @@
 
 {% block content %}
 <h1 class="text-xl mb-4">{{ form_title }}</h1>
-<form method="post" class="space-y-4">
-  <div>
-    <label for="name" class="block">Name</label>
-    <input id="name" type="text" name="name" value="{{ cred.name if cred else '' }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" required />
-  </div>
-  <div class="form-row">
-    <div class="form-item space-y-2">
-      <label for="username" class="block">Username</label>
-      <input id="username" type="text" name="username" value="{{ cred.username if cred else '' }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" required />
-    </div>
-    <div class="form-item space-y-2">
-      <label for="password" class="block">Password</label>
-      <input id="password" type="password" name="password" value="{{ cred.password if cred else '' }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" />
+<form method="post">
+  <div class="flex flex-wrap gap-4 mb-4 items-start">
+    <div class="flex flex-col flex-1 min-w-[280px]">
+      <label for="name" class="mb-1 fw-bold block">Name</label>
+      <input id="name" type="text" name="name" value="{{ cred.name if cred else '' }}" class="form-input w-full" required />
     </div>
   </div>
-  <div>
-    <label for="private_key" class="block">Private Key</label>
-    <textarea id="private_key" name="private_key" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">{{ cred.private_key if cred else '' }}</textarea>
+  <div class="flex flex-wrap gap-4 mb-4 items-start">
+    <div class="flex flex-col flex-1 min-w-[280px]">
+      <label for="username" class="mb-1 fw-bold block">Username</label>
+      <input id="username" type="text" name="username" value="{{ cred.username if cred else '' }}" class="form-input w-full" required />
+    </div>
+    <div class="flex flex-col flex-1 min-w-[280px]">
+      <label for="password" class="mb-1 fw-bold block">Password</label>
+      <input id="password" type="password" name="password" value="{{ cred.password if cred else '' }}" class="form-input w-full" />
+    </div>
+  </div>
+  <div class="flex flex-wrap gap-4 mb-4 items-start">
+    <div class="flex flex-col flex-1 min-w-[280px]">
+      <label for="private_key" class="mb-1 fw-bold block">Private Key</label>
+      <textarea id="private_key" name="private_key" class="form-input w-full">{{ cred.private_key if cred else '' }}</textarea>
+    </div>
   </div>
   {% if error %}
   <p class="p-2 rounded bg-[var(--alert-bg)]">{{ error }}</p>
   {% endif %}
-  <div>
-    <button type="submit" aria-label="Submit" class="p-2 rounded transition">{{ include_icon('check') }}</button>
-    <a href="/admin/ssh" class="ml-2 underline">Cancel</a>
+  <div class="flex flex-wrap gap-4 mb-4 items-start">
+    <div class="flex flex-col flex-1 min-w-[280px]">
+      <button type="submit" aria-label="Submit" class="p-2 rounded transition">{{ include_icon('check') }}</button>
+      <a href="/admin/ssh" class="ml-2 underline">Cancel</a>
+    </div>
   </div>
 </form>
 {% endblock %}

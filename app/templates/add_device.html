@@ -37,12 +37,21 @@
 </form>
 
 <h2 class="text-lg mb-2">Import via CSV</h2>
-<form method="post" action="/inventory/add-device/csv" enctype="multipart/form-data" class="space-y-2 mb-6">
-  <input type="file" name="csv_file" class="text-[var(--input-text)]" required />
-  <div>
+<form method="post" action="/inventory/add-device/csv" enctype="multipart/form-data" class="mb-6">
+  <div class="flex flex-wrap gap-4 mb-4 items-start">
+    <div class="flex flex-col flex-1 min-w-[280px]">
+      <label for="csv_file" class="mb-1 fw-bold block">CSV File</label>
+      <input id="csv_file" type="file" name="csv_file" class="form-input w-full" required />
+    </div>
+  </div>
+  <div class="mb-4">
     <a href="{{ request.url_for('static', path='add_device_example.csv') }}" class="underline">Download Example CSV</a>
   </div>
-  <button type="submit" class="p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded">Upload</button>
+  <div class="flex flex-wrap gap-4 mb-4 items-start">
+    <div class="flex flex-col flex-1 min-w-[280px]">
+      <button type="submit" class="p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded">Upload</button>
+    </div>
+  </div>
 </form>
 
 <h2 class="text-lg mb-2">Manual Entry</h2>

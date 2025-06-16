@@ -2,23 +2,25 @@
 
 {% block content %}
 <h1 class="text-xl mb-4">{{ form_title }}</h1>
-<form method="post" class="space-y-4">
-  <div class="form-row">
-    <div class="form-item space-y-2">
-      <label for="tag" class="block">Tag</label>
-      <input id="tag" type="number" name="tag" value="{{ vlan.tag if vlan else '' }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" required />
+<form method="post">
+  <div class="flex flex-wrap gap-4 mb-4 items-start">
+    <div class="flex flex-col flex-1 min-w-[280px]">
+      <label for="tag" class="mb-1 fw-bold block">Tag</label>
+      <input id="tag" type="number" name="tag" value="{{ vlan.tag if vlan else '' }}" class="form-input w-full" required />
     </div>
-    <div class="form-item space-y-2">
-      <label for="description" class="block">Description</label>
-      <input id="description" type="text" name="description" value="{{ vlan.description if vlan else '' }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" />
+    <div class="flex flex-col flex-1 min-w-[280px]">
+      <label for="description" class="mb-1 fw-bold block">Description</label>
+      <input id="description" type="text" name="description" value="{{ vlan.description if vlan else '' }}" class="form-input w-full" />
     </div>
   </div>
   {% if error %}
   <p class="p-2 rounded bg-[var(--alert-bg)]">{{ error }}</p>
   {% endif %}
-  <div>
-    <button type="submit" aria-label="Submit" class="p-2 rounded transition">{{ include_icon('check') }}</button>
-    <a href="/vlans" class="ml-2 underline">Cancel</a>
+  <div class="flex flex-wrap gap-4 mb-4 items-start">
+    <div class="flex flex-col flex-1 min-w-[280px]">
+      <button type="submit" aria-label="Submit" class="p-2 rounded transition">{{ include_icon('check') }}</button>
+      <a href="/vlans" class="ml-2 underline">Cancel</a>
+    </div>
   </div>
 </form>
 {% endblock %}
