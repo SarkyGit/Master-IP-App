@@ -28,3 +28,15 @@ def test_sync_endpoint_accepts_payload():
     resp = client.post("/api/v1/sync", json={"devices": []})
     assert resp.status_code == 200
     assert resp.json()["status"] == "received"
+
+
+def test_sync_push_endpoint():
+    resp = client.post("/api/v1/sync/push", json={"devices": []})
+    assert resp.status_code == 200
+    assert resp.json()["status"] == "pushed"
+
+
+def test_sync_pull_endpoint():
+    resp = client.post("/api/v1/sync/pull", json={"since": "now"})
+    assert resp.status_code == 200
+    assert resp.json()["status"] == "pulled"
