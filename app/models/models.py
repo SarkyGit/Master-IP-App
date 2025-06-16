@@ -205,6 +205,9 @@ class User(Base):
     theme = Column(String, nullable=False, default="dark_colourful")
     font = Column(String, nullable=False, default="sans")
     menu_style = Column(String, nullable=False, default="tabbed")
+    ssh_username = Column(String, nullable=True)
+    ssh_password = Column(String, nullable=True)
+    ssh_port = Column(Integer, nullable=True, default=22)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     site_memberships = relationship("SiteMembership", back_populates="user")
