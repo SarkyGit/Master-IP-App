@@ -56,10 +56,30 @@ def logo_url() -> str | None:
 
 templates.env.globals["logo_url"] = logo_url
 from markupsafe import Markup
+from jinja2 import pass_context
 
 
-def include_icon(name: str, color: str | None = None, size: str | int = "3") -> str:
-    """Return SVG markup for the given icon with optional colour and size."""
+@pass_context
+def include_icon(ctx, name: str, color: str | None = None, size: str | int = "3") -> str:
+    """Return markup for the given icon respecting the selected theme."""
+    request = ctx.get("request")
+    theme = None
+    user = ctx.get("current_user")
+    if user:
+        theme = getattr(user, "theme", None)
+    if theme == "apple_glass":
+        url = (
+            request.url_for("static", path=f"icons/glass/{name}.svg")
+            if request
+            else f"/static/icons/glass/{name}.svg"
+        )
+        if str(size) == "1.5":
+            classes = ["w-[0.375rem]", "h-[0.375rem]"]
+        else:
+            classes = [f"w-{size}", f"h-{size}"]
+        markup = f'<img src="{url}" class="{" ".join(classes)}" alt="{name}" />'
+        return Markup(markup)
+
     path = os.path.join(STATIC_DIR, "icons", f"{name}.svg")
     if not os.path.exists(path):
         return ""

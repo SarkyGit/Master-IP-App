@@ -24,7 +24,7 @@ async def edit_my_profile_form(request: Request, current_user: User = Depends(re
         "user": current_user,
         "current_user": current_user,
         "error": None,
-        "themes": ["dark_colourful", "dark", "light", "blue", "bw", "homebrew"],
+        "themes": ["dark_colourful", "dark", "light", "blue", "bw", "homebrew", "apple_glass"],
         "fonts": ["sans", "serif", "mono"],
         "menu_styles": ["tabbed", "dropdown"],
     }
@@ -50,7 +50,7 @@ async def update_my_profile(
             "user": current_user,
             "current_user": current_user,
             "error": "Email already in use",
-            "themes": ["dark_colourful", "dark", "light", "blue", "bw", "homebrew"],
+            "themes": ["dark_colourful", "dark", "light", "blue", "bw", "homebrew", "apple_glass"],
             "fonts": ["sans", "serif", "mono"],
             "menu_styles": ["tabbed", "dropdown"],
         }
