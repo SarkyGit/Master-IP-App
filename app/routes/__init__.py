@@ -22,6 +22,7 @@ from .ip_bans import router as ip_bans_router
 from .user_ssh import router as user_ssh_router
 from .login_events import router as login_events_router
 from .inventory import router as inventory_router
+from .add_device import router as add_device_router
 from .admin_site import router as admin_site_router
 from .bulk import router as bulk_router
 from .reports import router as reports_router
@@ -55,6 +56,7 @@ __all__ = [
     "ip_bans_router",
     "user_ssh_router",
     "login_events_router",
+    "add_device_router",
     "inventory_router",
     "admin_site_router",
     "bulk_router",

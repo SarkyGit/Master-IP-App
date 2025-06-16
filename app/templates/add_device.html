@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="text-xl mb-4">Add Device</h1>
+
+<h2 class="text-lg mb-2">Import from Google Sheet</h2>
+<form method="post" action="/inventory/add-device/google" class="mb-6">
+  <p class="mb-2 text-sm">Spreadsheet must include the columns below.</p>
+  <table class="table-fixed text-left text-sm mb-2 border border-[var(--border-color)]">
+    <thead>
+      <tr>
+        <th class="px-2 py-1">hostname</th>
+        <th class="px-2 py-1">ip</th>
+        <th class="px-2 py-1">mac</th>
+        <th class="px-2 py-1">model</th>
+        <th class="px-2 py-1">asset_tag</th>
+        <th class="px-2 py-1">location</th>
+        <th class="px-2 py-1">device_type</th>
+        <th class="px-2 py-1">serial_number</th>
+        <th class="px-2 py-1">manufacturer</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="px-2 py-1">example-1</td>
+        <td class="px-2 py-1">192.0.2.10</td>
+        <td class="px-2 py-1">AA:BB:CC:DD:EE:FF</td>
+        <td class="px-2 py-1">ModelX</td>
+        <td class="px-2 py-1">12345</td>
+        <td class="px-2 py-1">Main</td>
+        <td class="px-2 py-1">Switch</td>
+        <td class="px-2 py-1">SN123</td>
+        <td class="px-2 py-1">Acme</td>
+      </tr>
+    </tbody>
+  </table>
+  <button type="submit" class="p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded">Import</button>
+</form>
+
+<h2 class="text-lg mb-2">Import via CSV</h2>
+<form method="post" action="/inventory/add-device/csv" enctype="multipart/form-data" class="space-y-2 mb-6">
+  <input type="file" name="csv_file" class="text-[var(--input-text)]" required />
+  <div>
+    <a href="{{ request.url_for('static', path='add_device_example.csv') }}" class="underline">Download Example CSV</a>
+  </div>
+  <button type="submit" class="p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded">Upload</button>
+</form>
+
+<h2 class="text-lg mb-2">Manual Entry</h2>
+<form method="post" action="/inventory/add-device/manual" id="manual-form">
+  <div class="overflow-auto mb-2">
+    <table class="min-w-full table-fixed text-left" id="device-table">
+      <thead>
+        <tr>
+          <th class="px-2 py-1">Hostname</th>
+          <th class="px-2 py-1">IP</th>
+          <th class="px-2 py-1">MAC</th>
+          <th class="px-2 py-1">Model</th>
+          <th class="px-2 py-1">Asset Tag</th>
+          <th class="px-2 py-1">Location</th>
+          <th class="px-2 py-1">Device Type</th>
+          <th class="px-2 py-1">Serial</th>
+          <th class="px-2 py-1">Manufacturer</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><input name="hostname[]" class="w-full p-1 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" required></td>
+          <td><input name="ip[]" class="w-full p-1 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" required></td>
+          <td><input name="mac[]" class="w-full p-1 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]"></td>
+          <td><input name="model[]" class="w-full p-1 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]"></td>
+          <td><input name="asset_tag[]" class="w-full p-1 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]"></td>
+          <td>
+            <select name="location[]" class="w-full p-1 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+              <option value=""></option>
+              {% for loc in locations %}
+              <option value="{{ loc.name }}">{{ loc.name }}</option>
+              {% endfor %}
+            </select>
+          </td>
+          <td>
+            <select name="device_type[]" class="w-full p-1 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" required>
+              <option value=""></option>
+              {% for dt in device_types %}
+              <option value="{{ dt.name }}">{{ dt.name }}</option>
+              {% endfor %}
+            </select>
+          </td>
+          <td><input name="serial_number[]" class="w-full p-1 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]"></td>
+          <td><input name="manufacturer[]" class="w-full p-1 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" required></td>
+          <td class="text-center"><button type="button" class="remove-row" aria-label="Remove">&#128465;</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="space-x-2 mb-2">
+    <button type="button" id="add-row" class="p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded">Add Row</button>
+    <button type="button" id="dup-row" class="p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded">Duplicate Row</button>
+  </div>
+  <button type="submit" class="p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded">Submit Devices</button>
+</form>
+
+<script>
+(function(){
+  const table = document.querySelector('#device-table tbody');
+  function bind(row){
+    row.querySelector('.remove-row').addEventListener('click', () => row.remove());
+  }
+  bind(table.querySelector('tr'));
+  document.getElementById('add-row').addEventListener('click', () => {
+    const row = table.querySelector('tr').cloneNode(true);
+    row.querySelectorAll('input').forEach(i => i.value='');
+    bind(row);
+    table.appendChild(row);
+  });
+  document.getElementById('dup-row').addEventListener('click', () => {
+    const rows = table.querySelectorAll('tr');
+    const row = rows[rows.length-1].cloneNode(true);
+    bind(row);
+    table.appendChild(row);
+  });
+})();
+</script>
+{% endblock %}
