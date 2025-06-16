@@ -8,7 +8,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build:css": "unocss \"app/templates/**/*.html\" -o static/css/unocss.css"
+    "build:web": "unocss \"web-client/templates/**/*.html\" -o web-client/static/css/unocss.css"
   },
   "keywords": [],
   "author": "",

@@ -2,9 +2,9 @@
 *.pyc
 
 # Uploaded damage photos
-static/damage/*
-!static/damage/.gitkeep
-static/node_modules/
+web-client/static/damage/*
+!web-client/static/damage/.gitkeep
+web-client/static/node_modules/
 
 .env
 node_modules/

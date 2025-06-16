@@ -74,7 +74,7 @@ async def shutdown_cleanup():
     stop_config_scheduler()
 
 
-# Path to the ``static`` directory at the repository root
+# Path to the ``static`` directory under ``web-client``
 from core.utils.paths import STATIC_DIR
 
 # Ensure the static directory exists to avoid startup errors when it has been

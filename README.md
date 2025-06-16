@@ -35,7 +35,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 # install Node packages (required before running the CSS build step)
 npm install
-npm run build:css
+npm run build:web
 
 # create the application database
 sudo -u postgres psql -c "CREATE USER masteruser WITH PASSWORD 'masterpass';"
@@ -80,7 +80,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 # install Node packages (required before running the CSS build step)
 npm install
-npm run build:css
+npm run build:web
 
 # set up the database (adjust credentials as needed)
 sudo -u postgres psql -c "CREATE USER masteruser WITH PASSWORD 'masterpass';"
@@ -120,9 +120,23 @@ Edit the `.env` file before starting if you need custom database credentials or 
 
 When running under Docker Compose, `DATABASE_URL` is already set to use the service name `db`. If you keep a `.env` file, ensure it does **not** redefine `DATABASE_URL` with `localhost`.
 
+## Building the Clients
+
+Two front-end clients live in this repository:
+
+- `web-client/` contains HTML templates and static assets served by FastAPI.
+- `mobile-client/` is a scaffold for a future mobile app that will call the
+  REST API under `/api/v1/`.
+
+Rebuild the web client CSS after installing Node dependencies:
+
+```bash
+npm run build:web
+```
+
 ## Interface Themes
 
-Several visual themes are bundled under `static/themes`.  The available options are `dark_colourful`, `dark`, `light`, `blue`, `bw` and `homebrew`.  New users are created with the **dark_colourful** theme by default.
+Several visual themes are bundled under `web-client/static/themes`.  The available options are `dark_colourful`, `dark`, `light`, `blue`, `bw` and `homebrew`.  New users are created with the **dark_colourful** theme by default.
 
 To switch themes, open **My Profile** from the user menu (or visit `/users/me`) and click **Edit Profile**.  Select a theme from the **Theme** drop‑down and submit the form to save the preference.
 
@@ -161,9 +175,9 @@ Set the `AUTO_SEED` environment variable to `0` or `false` to skip the automatic
 Adjust `WORKERS`, `TIMEOUT` and `PORT` as needed. The server listens on
 `0.0.0.0` so it can be proxied by a web server such as Nginx.
 
-Static assets are served from the `static` directory under the repository root.
+Static assets are served from the `web-client/static` directory.
 This location is fixed. When deploying inside containers or under a reverse
-proxy, ensure that `/path/to/Master-IP-App/static` is accessible at `/static` so
+proxy, ensure that `/path/to/Master-IP-App/web-client/static` is accessible at `/static` so
 the application can find its assets.
 
 If the app is exposed under a URL prefix (e.g. `/inventory/` instead of `/`),
@@ -181,7 +195,7 @@ server {
     server_name example.com;
 
     location /static/ {
-        alias /path/to/Master-IP-App/static/;
+        alias /path/to/Master-IP-App/web-client/static/;
     }
 
     location / {
