@@ -63,6 +63,14 @@
     </div>
   </div>
   {% endif %}
+  <div class="form-row">
+    <div class="form-item">
+      <label for="scroll_handoff_enabled" class="inline-flex items-center">
+        <input id="scroll_handoff_enabled" type="checkbox" name="scroll_handoff_enabled" value="1" class="mr-2" {% if user and user.scroll_handoff_enabled %}checked{% endif %}>
+        Enable Vertical-to-Horizontal Scroll Handoff for Tables
+      </label>
+    </div>
+  </div>
   {% if show_active %}
   <div class="form-row">
     <div class="form-item">
