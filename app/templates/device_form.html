@@ -132,6 +132,10 @@
     </select>
   </div>
   <div class="md:col-span-2">
+    <label for="notes" class="block">Notes</label>
+    <textarea id="notes" name="notes" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">{{ device.notes if device else '' }}</textarea>
+  </div>
+  <div class="md:col-span-2">
     <label for="tag_names" class="block">Tags</label>
     <input id="tag_names" type="text" name="tag_names" list="tag-list" value="{{ device.tags | rejectattr('name', 'in', ['complete','incomplete']) | map(attribute='name') | join(', ') if device else '' }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" />
     <datalist id="tag-list">

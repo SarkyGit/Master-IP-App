@@ -385,6 +385,7 @@ async def create_device(
     ssh_credential_id: str = Form(None),
     snmp_community_id: str = Form(None),
     detected_platform: str = Form(None),
+    notes: str = Form(None),
     tag_names: str = Form(""),
     db: Session = Depends(get_db),
     current_user=Depends(require_role("editor")),
@@ -406,6 +407,7 @@ async def create_device(
         priority=bool(priority),
         site_id=int(site_id) if site_id else None,
         config_pull_interval=config_pull_interval,
+        notes=notes or None,
         ssh_credential_id=int(ssh_credential_id) if ssh_credential_id else None,
         snmp_community_id=int(snmp_community_id) if snmp_community_id else None,
         created_by_id=current_user.id,
@@ -506,6 +508,7 @@ async def update_device(
     vlan_id: str = Form(None),
     ssh_credential_id: str = Form(None),
     snmp_community_id: str = Form(None),
+    notes: str = Form(None),
     tag_names: str = Form(""),
     db: Session = Depends(get_db),
     current_user=Depends(require_role("editor")),
@@ -534,6 +537,7 @@ async def update_device(
         "vlan_id": device.vlan_id,
         "ssh_credential_id": device.ssh_credential_id,
         "snmp_community_id": device.snmp_community_id,
+        "notes": device.notes,
         "detected_platform": device.detected_platform,
         "ssh_profile_is_default": device.ssh_profile_is_default,
     }
@@ -552,6 +556,7 @@ async def update_device(
     device.priority = bool(priority)
     device.site_id = int(site_id) if site_id else None
     device.config_pull_interval = config_pull_interval
+    device.notes = notes or None
     device.status = status or None
     device.vlan_id = int(vlan_id) if vlan_id else None
     old_cred = device.ssh_credential_id

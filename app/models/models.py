@@ -149,6 +149,9 @@ class Device(Base):
     # Timestamp of the last successful scheduled pull
     last_config_pull = Column(DateTime, nullable=True)
 
+    # Free-form notes about the device
+    notes = Column(Text, nullable=True)
+
     vlan = relationship("VLAN", back_populates="devices")
     ssh_credential = relationship("SSHCredential", back_populates="devices")
     snmp_community = relationship("SNMPCommunity", back_populates="devices")
