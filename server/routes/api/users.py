@@ -28,7 +28,7 @@ def create_user(
     db: Session = Depends(get_db),
     current_user: User = Depends(auth_utils.require_role("admin")),
 ):
-    obj = User(**user.dict(exclude={"version"}))
+    obj = User(**user.dict())
     obj.version = 1
     db.add(obj)
     db.commit()

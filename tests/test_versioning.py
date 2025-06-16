@@ -19,5 +19,7 @@ def test_apply_update_conflict():
     apply_update(d, {"name": "x"}, incoming_version=0, source="test")
     assert d.version == 2
     assert d.conflict_data is not None
-    assert d.conflict_data["source"] == "test"
-    assert "name" in d.conflict_data["conflicting_fields"]
+    assert d.conflict_data[0]["source"] == "test"
+    assert d.conflict_data[0]["field"] == "name"
+    assert d.conflict_data[0]["remote_value"] == "x"
+    assert getattr(d, "name", None) == None

@@ -1,4 +1,26 @@
+from __future__ import annotations
+
+from datetime import datetime
+from typing import Any
+
 from pydantic import BaseModel
+
+
+class ConflictEntry(BaseModel):
+    """Details about a field conflict during sync."""
+
+    field: str
+    local_value: Any
+    remote_value: Any
+    timestamp: datetime
+    source: str
+
+
+class BaseSchema(BaseModel):
+    """Common attributes for versioned models."""
+
+    version: int = 1
+    conflict_data: list[ConflictEntry] | None = None
 
 
 class ColumnSelection(BaseModel):
@@ -7,15 +29,14 @@ class ColumnSelection(BaseModel):
     selected: list[str] = []
 
 
-class VLANBase(BaseModel):
+class VLANBase(BaseSchema):
     tag: int
     description: str | None = None
-    version: int = 1
-    conflict_data: dict | None = None
 
 
-class VLANCreate(VLANBase):
-    pass
+class VLANCreate(BaseModel):
+    tag: int
+    description: str | None = None
 
 
 class VLANRead(VLANBase):
@@ -31,18 +52,20 @@ class VLANUpdate(BaseModel):
     version: int | None = None
 
 
-class DeviceBase(BaseModel):
+class DeviceBase(BaseSchema):
     hostname: str
     ip: str
     vlan_id: int | None = None
     manufacturer: str | None = None
     model: str | None = None
-    version: int = 1
-    conflict_data: dict | None = None
 
 
-class DeviceCreate(DeviceBase):
-    pass
+class DeviceCreate(BaseModel):
+    hostname: str
+    ip: str
+    vlan_id: int | None = None
+    manufacturer: str | None = None
+    model: str | None = None
 
 
 class DeviceRead(DeviceBase):
@@ -61,17 +84,18 @@ class DeviceUpdate(BaseModel):
     version: int | None = None
 
 
-class SSHCredentialBase(BaseModel):
+class SSHCredentialBase(BaseSchema):
     name: str
     username: str
     password: str | None = None
     private_key: str | None = None
-    version: int = 1
-    conflict_data: dict | None = None
 
 
-class SSHCredentialCreate(SSHCredentialBase):
-    pass
+class SSHCredentialCreate(BaseModel):
+    name: str
+    username: str
+    password: str | None = None
+    private_key: str | None = None
 
 
 class SSHCredentialRead(SSHCredentialBase):
@@ -89,15 +113,16 @@ class SSHCredentialUpdate(BaseModel):
     version: int | None = None
 
 
-class UserBase(BaseModel):
+class UserBase(BaseSchema):
     email: str
     role: str = "viewer"
     is_active: bool = True
-    version: int = 1
-    conflict_data: dict | None = None
 
 
-class UserCreate(UserBase):
+class UserCreate(BaseModel):
+    email: str
+    role: str = "viewer"
+    is_active: bool = True
     hashed_password: str
 
 

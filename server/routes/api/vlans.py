@@ -28,7 +28,7 @@ def create_vlan(
     db: Session = Depends(get_db),
     current_user: VLAN = Depends(auth_utils.require_role("editor")),
 ):
-    obj = VLAN(**vlan.dict(exclude={"version"}))
+    obj = VLAN(**vlan.dict())
     obj.version = 1
     db.add(obj)
     db.commit()
