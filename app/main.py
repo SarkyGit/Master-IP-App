@@ -31,6 +31,7 @@ from app.routes import (
     user_ssh_router,
     login_events_router,
     inventory_router,
+    add_device_router,
     admin_site_router,
     bulk_router,
     reports_router,
@@ -118,6 +119,7 @@ app.include_router(ip_bans_router)
 app.include_router(user_ssh_router)
 app.include_router(login_events_router)
 app.include_router(inventory_router)
+app.include_router(add_device_router)
 app.include_router(admin_site_router)
 app.include_router(bulk_router)
 app.include_router(reports_router)

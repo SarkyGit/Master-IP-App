@@ -1,0 +1,3 @@
+hostname,ip,mac,model,asset_tag,location,device_type,serial_number,manufacturer
+example-1,192.0.2.10,AA:BB:CC:DD:EE:FF,ModelX,12345,Main,Switch,SN123,Acme
+
