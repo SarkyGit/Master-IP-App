@@ -2,7 +2,7 @@ from collections import defaultdict, deque
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 
-from app.models.models import BannedIP
+from core.models.models import BannedIP
 
 # In-memory tracking of failed login timestamps
 _FAILED_SHORT = defaultdict(deque)  # 10 minute window

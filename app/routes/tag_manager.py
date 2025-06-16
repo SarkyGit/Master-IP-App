@@ -3,11 +3,11 @@ from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 
-from app.utils.db_session import get_db
-from app.utils.auth import require_role, get_current_user
-from app.utils.templates import templates
-from app.utils.tags import add_tag_to_device, remove_tag_from_device
-from app.models.models import Tag
+from core.utils.db_session import get_db
+from core.utils.auth import require_role, get_current_user
+from core.utils.templates import templates
+from core.utils.tags import add_tag_to_device, remove_tag_from_device
+from core.models.models import Tag
 
 router = APIRouter()
 

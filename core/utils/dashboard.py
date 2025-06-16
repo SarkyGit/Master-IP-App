@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 
-from app.models.models import (
+from core.models.models import (
     DashboardWidget,
     SiteDashboardWidget,
     Device,

@@ -1,16 +1,16 @@
 from fastapi import APIRouter, Request, Depends, Form, HTTPException
 from fastapi.responses import RedirectResponse
 from datetime import datetime
-from app.utils.templates import templates
+from core.utils.templates import templates
 from sqlalchemy.orm import Session
 
-from app.utils.db_session import get_db
-from app.utils import auth as auth_utils
-from app.utils.audit import log_audit
-from app.utils.ip_banning import check_ban, record_failure, clear_attempts
-from app.utils.login_events import log_login_event
-from app.utils.geolocation import geolocate_ip
-from app.models.models import User, LoginEvent
+from core.utils.db_session import get_db
+from core.utils import auth as auth_utils
+from core.utils.audit import log_audit
+from core.utils.ip_banning import check_ban, record_failure, clear_attempts
+from core.utils.login_events import log_login_event
+from core.utils.geolocation import geolocate_ip
+from core.models.models import User, LoginEvent
 
 
 

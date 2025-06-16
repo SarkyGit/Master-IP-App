@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Request, Depends
-from app.utils.templates import templates
-from app.utils.auth import require_role
+from core.utils.templates import templates
+from core.utils.auth import require_role
 
 router = APIRouter()
 

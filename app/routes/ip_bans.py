@@ -3,11 +3,11 @@ from fastapi import APIRouter, Request, Depends, Form
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 
-from app.utils.db_session import get_db
-from app.utils.auth import require_role
-from app.utils.templates import templates
-from app.utils.audit import log_audit
-from app.models.models import BannedIP, AuditLog
+from core.utils.db_session import get_db
+from core.utils.auth import require_role
+from core.utils.templates import templates
+from core.utils.audit import log_audit
+from core.models.models import BannedIP, AuditLog
 
 router = APIRouter()
 

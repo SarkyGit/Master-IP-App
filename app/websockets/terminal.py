@@ -7,12 +7,12 @@ import time
 import logging
 import os
 
-from app.utils.ssh import build_conn_kwargs
-from app.utils.device_detect import detect_ssh_platform
+from core.utils.ssh import build_conn_kwargs
+from core.utils.device_detect import detect_ssh_platform
 
-from app.utils.db_session import SessionLocal
-from app.models.models import Device, User
-from app.utils.auth import ROLE_HIERARCHY, user_in_site
+from core.utils.db_session import SessionLocal
+from core.models.models import Device, User
+from core.utils.auth import ROLE_HIERARCHY, user_in_site
 
 router = APIRouter()
 INACTIVITY_TIMEOUT = int(os.environ.get("SSH_TIMEOUT", "900"))

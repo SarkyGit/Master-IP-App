@@ -9,14 +9,14 @@ from fastapi import (
     Body,
 )
 from fastapi.responses import RedirectResponse, HTMLResponse
-from pydantic import BaseModel
-from app.utils.templates import templates
+from core.schemas import ColumnSelection
+from core.utils.templates import templates
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 
-from app.utils.db_session import get_db
-from app.utils.auth import get_current_user, require_role, user_in_site
-from app.models.models import (
+from core.utils.db_session import get_db
+from core.utils.auth import get_current_user, require_role, user_in_site
+from core.models.models import (
     Device,
     VLAN,
     SSHCredential,
@@ -33,39 +33,35 @@ from app.models.models import (
     ColumnPreference,
     DeviceDamage,
 )
-from app.utils.audit import log_audit
-from app.utils.tags import (
+from core.utils.audit import log_audit
+from core.utils.tags import (
     update_device_complete_tag,
     update_device_attribute_tags,
     get_or_create_tag,
     add_tag_to_device,
     remove_tag_from_device,
 )
-from app.utils.columns import (
+from core.utils.columns import (
     load_column_preferences,
     DEFAULT_DEVICE_COLUMNS,
     DEVICE_COLUMN_LABELS,
 )
-from app.models.models import DeviceEditLog
+from core.models.models import DeviceEditLog
 
 import asyncssh
 import asyncio
 
-from app.utils.ssh import build_conn_kwargs, resolve_ssh_credential
-from app.utils.device_detect import detect_ssh_platform, detect_snmp_platform
+from core.utils.ssh import build_conn_kwargs, resolve_ssh_credential
+from core.utils.device_detect import detect_ssh_platform, detect_snmp_platform
 from datetime import datetime
 from puresnmp import Client, PyWrapper, V2C
 from puresnmp.exc import SnmpError
 import re
 from app.tasks import schedule_device_config_pull, unschedule_device_config_pull
-from app.utils.paths import STATIC_DIR
+from core.utils.paths import STATIC_DIR
 
 
 router = APIRouter()
-
-
-class ColumnSelection(BaseModel):
-    selected: list[str] = []
 
 # Basic status options for dropdown menus
 STATUS_OPTIONS = ["active", "inactive", "maintenance"]
@@ -463,7 +459,7 @@ async def edit_device_form(
         model_list,
         sites,
     ) = _load_form_options(db)
-    from app.models.models import SyslogEntry
+    from core.models.models import SyslogEntry
     logs = (
         db.query(SyslogEntry)
         .filter(SyslogEntry.device_id == device.id)

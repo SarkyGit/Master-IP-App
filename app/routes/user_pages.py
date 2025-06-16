@@ -1,16 +1,16 @@
 from fastapi import APIRouter, Request, Depends, HTTPException, Form
 from fastapi.responses import RedirectResponse
-from app.utils.templates import templates
+from core.utils.templates import templates
 from sqlalchemy.orm import Session
 
-from app.utils.db_session import get_db
-from app.utils.auth import (
+from core.utils.db_session import get_db
+from core.utils.auth import (
     get_current_user,
     require_role,
     ROLE_HIERARCHY,
     get_password_hash,
 )
-from app.models.models import User, SystemTunable, LoginEvent
+from core.models.models import User, SystemTunable, LoginEvent
 
 router = APIRouter()
 

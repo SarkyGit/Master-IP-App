@@ -2,13 +2,13 @@ from fastapi import APIRouter, Request, Depends, Form, HTTPException
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 
-from app.utils.db_session import get_db
-from app.utils.auth import require_role, user_in_site, ROLE_HIERARCHY
-from app.models.models import Site, User, Device, SiteMembership
-from app.utils.templates import templates
+from core.utils.db_session import get_db
+from core.utils.auth import require_role, user_in_site, ROLE_HIERARCHY
+from core.models.models import Site, User, Device, SiteMembership
+from core.utils.templates import templates
 from app.tasks import schedule_device_config_pull, unschedule_device_config_pull
-from app.utils.dashboard import DEFAULT_WIDGETS, WIDGET_LABELS
-from app.models.models import SiteDashboardWidget
+from core.utils.dashboard import DEFAULT_WIDGETS, WIDGET_LABELS
+from core.models.models import SiteDashboardWidget
 
 router = APIRouter()
 

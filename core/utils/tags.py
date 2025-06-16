@@ -1,9 +1,9 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 
-from app.models.models import Device, Tag, DeviceType, Location
-from app.utils.audit import log_audit
-from app.models.models import User
+from core.models.models import Device, Tag, DeviceType, Location
+from core.utils.audit import log_audit
+from core.models.models import User
 
 
 def get_or_create_tag(db: Session, name: str) -> Tag:

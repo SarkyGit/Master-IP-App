@@ -12,7 +12,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import relationship
 from sqlalchemy import Table
 
-from app.utils.database import Base
+from core.utils.database import Base
 
 
 class VLAN(Base):

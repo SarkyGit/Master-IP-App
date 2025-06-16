@@ -8,12 +8,12 @@ from fastapi import APIRouter, Depends
 from fastapi.responses import Response, StreamingResponse
 from sqlalchemy.orm import Session
 
-from app.utils.db_session import get_db
-from app.utils.auth import require_role, get_user_site_ids
-from app.models.models import Device, VLAN, ConfigBackup
+from core.utils.db_session import get_db
+from core.utils.auth import require_role, get_user_site_ids
+from core.models.models import Device, VLAN, ConfigBackup
 import zipfile
-from app.utils.audit import log_audit
-from app.utils.paths import STATIC_DIR
+from core.utils.audit import log_audit
+from core.utils.paths import STATIC_DIR
 
 try:
     from reportlab.lib.pagesizes import letter, landscape

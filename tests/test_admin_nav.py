@@ -22,8 +22,8 @@ def get_test_app():
 
 def test_admin_links_present():
     app = get_test_app()
-    from app.utils import auth as auth_utils
-    from app.utils import templates as templates_utils
+    from core.utils import auth as auth_utils
+    from core.utils import templates as templates_utils
 
     admin_user = types.SimpleNamespace(
         id=1,

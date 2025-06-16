@@ -26,7 +26,7 @@ def get_test_app():
 def test_upload_damage_photo_sanitizes_filename(tmp_path, monkeypatch):
     app = get_test_app()
     from app.routes import devices as devices_module
-    from app.models.models import DeviceDamage, Device
+    from core.models.models import DeviceDamage, Device
 
     # Prepare dummy device and DB session
     dummy_device = types.SimpleNamespace(id=1, site_id=1)

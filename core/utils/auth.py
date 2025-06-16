@@ -4,8 +4,8 @@ from typing import Optional, Callable
 from fastapi import Request, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from app.utils.db_session import get_db
-from app.models.models import User, Site, SiteMembership
+from core.utils.db_session import get_db
+from core.models.models import User, Site, SiteMembership
 
 
 ROLE_CHOICES = {"viewer", "user", "editor", "admin", "superadmin"}

@@ -3,10 +3,10 @@ from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 import csv
 
-from app.utils.templates import templates
-from app.utils.auth import require_role
-from app.utils.db_session import get_db
-from app.models.models import Device, DeviceType, Location
+from core.utils.templates import templates
+from core.utils.auth import require_role
+from core.utils.db_session import get_db
+from core.models.models import Device, DeviceType, Location
 from app.routes.task_views import _open_sheet
 from app.routes.devices import _format_ip
 

@@ -6,11 +6,11 @@ from puresnmp import Client, PyWrapper, V2C
 from aiosnmp import SnmpV2TrapServer
 from aiosnmp.snmp import SnmpMessage
 
-from app.utils.ssh import build_conn_kwargs
-from app.utils.device_detect import detect_ssh_platform
+from core.utils.ssh import build_conn_kwargs
+from core.utils.device_detect import detect_ssh_platform
 
-from app.utils.db_session import SessionLocal
-from app.models.models import (
+from core.utils.db_session import SessionLocal
+from core.models.models import (
     ConfigBackup,
     Device,
     Site,
@@ -20,9 +20,9 @@ from app.models.models import (
     EmailLog,
     PortStatusHistory,
 )
-from app.utils.audit import log_audit
-from app.utils.email_utils import send_email
-from app.utils.templates import templates
+from core.utils.audit import log_audit
+from core.utils.email_utils import send_email
+from core.utils.templates import templates
 import os
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
@@ -350,7 +350,7 @@ _trap_running = False
 
 
 async def _trap_handler(host, port, message):
-    from app.models.models import SNMPTrapLog, Device
+    from core.models.models import SNMPTrapLog, Device
 
     trap_oid = None
     parts = []
@@ -453,7 +453,7 @@ class _SyslogProtocol(asyncio.DatagramProtocol):
                 pass
 
         db = SessionLocal()
-        from app.models.models import SyslogEntry, Device
+        from core.models.models import SyslogEntry, Device
 
         device = db.query(Device).filter(Device.ip == addr[0]).first()
         log = SyslogEntry(
