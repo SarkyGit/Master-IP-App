@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request, Depends, Form
+from fastapi import APIRouter, Request, Depends, Form, Query
 from app.utils.templates import templates
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
@@ -45,9 +45,14 @@ def grouped_tunables(db: Session):
 @router.get("/tunables")
 async def list_tunables(
     request: Request,
+    category: str | None = Query(None),
     db: Session = Depends(get_db),
     current_user=Depends(require_role("admin")),
 ):
+    grouped = grouped_tunables(db)
+    categories = sorted(grouped.keys())
+    active = category or (categories[0] if categories else None)
+    files = grouped.get(active, {}) if active else {}
     version_row = (
         db.query(SystemTunable)
         .filter(SystemTunable.name == "App Version")
@@ -55,7 +60,7 @@ async def list_tunables(
     )
     context = {
         "request": request,
-        "groups": grouped_tunables(db),
+        "groups": files,
         "version": version_row.value if version_row else "unknown",
         "current_user": current_user,
     }

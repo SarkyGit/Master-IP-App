@@ -18,9 +18,9 @@
             <button @click="activeTopMenu = 'tasks'; submenuAlign = $event.target.dataset.align" data-align="right" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Tasks</button>
             <button @click="activeTopMenu = 'netdev'; submenuAlign = $event.target.dataset.align" data-align="right" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Network Devices</button>
             {% if current_user.role in ['admin','superadmin'] %}
+            <button @click="activeTopMenu = 'tunables'; submenuAlign = $event.target.dataset.align" data-align="right" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Tunables</button>
             {% if current_user.role == 'superadmin' %}
             {% set admin_items = [
-              {'label':'Tunables','href':'/tunables'},
               {'label':'SSH Credentials','href':'/admin/ssh'},
               {'label':'SNMP Credentials','href':'/admin/snmp'},
               {'label':'Tag Manager','href':'/admin/tags'},
@@ -99,6 +99,16 @@
           <a href="/bulk/vlan-push" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">VLAN Bulk Push</a>
         </div>
       </div>
+      {% if current_user.role in ['admin','superadmin'] %}
+      <div x-show="ready && activeTopMenu == 'tunables'" x-transition.opacity.duration.150ms :class="(submenuAlign === 'right' ? 'ml-auto text-right ' : '') + 'border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3'" x-cloak>
+        <div :class="mobile ? 'flex flex-col space-y-2' : 'flex space-x-2'">
+          {% for cat in get_tunable_categories() %}
+          <a href="/tunables?category={{ cat | urlencode }}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">{{ cat }}</a>
+          {% endfor %}
+          <a href="/admin/logo" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Upload Logo</a>
+        </div>
+      </div>
+      {% endif %}
       {% if current_user.role in ['admin','superadmin'] %}
       <div x-show="ready && activeTopMenu == 'admin'" x-transition.opacity.duration.150ms :class="(submenuAlign === 'right' ? 'ml-auto text-right ' : '') + 'border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3'" x-cloak>
         <div :class="mobile ? 'flex flex-col space-y-2' : 'flex space-x-2'">

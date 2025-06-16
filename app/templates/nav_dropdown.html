@@ -36,9 +36,15 @@
         <a href="/ssh/bulk-port-update" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Bulk Port Update</a>
         <a href="/bulk/vlan-push" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">VLAN Bulk Push</a>
         {% if current_user.role in ['admin','superadmin'] %}
+        <span class="mt-2 font-bold">Tunables</span>
+        {% for cat in get_tunable_categories() %}
+        <a href="/tunables?category={{ cat | urlencode }}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">{{ cat }}</a>
+        {% endfor %}
+        <a href="/admin/logo" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Upload Logo</a>
+        {% endif %}
+        {% if current_user.role in ['admin','superadmin'] %}
           {% if current_user.role == 'superadmin' %}
           {% set admin_items = [
-            {'label':'Tunables','href':'/tunables'},
             {'label':'SSH Credentials','href':'/admin/ssh'},
             {'label':'SNMP Credentials','href':'/admin/snmp'},
             {'label':'Tag Manager','href':'/admin/tags'},
