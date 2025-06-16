@@ -89,9 +89,11 @@ print(f"Serving static files from: {STATIC_DIR}")
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 # Store login information in signed cookies
+# The session expires after SESSION_TTL seconds (default 12 hours)
 app.add_middleware(
     SessionMiddleware,
     secret_key=os.environ.get("SECRET_KEY", "change-me"),
+    max_age=int(os.environ.get("SESSION_TTL", "43200")),
 )
 
 app.include_router(auth_router, prefix="/auth")
