@@ -36,6 +36,7 @@ from .api.devices import router as api_devices_router
 from .api.users import router as api_users_router
 from .api.vlans import router as api_vlans_router
 from .api.ssh_credentials import router as api_ssh_credentials_router
+from .api.sync import router as api_sync_router
 
 __all__ = [
     "auth_router",
@@ -76,4 +77,5 @@ __all__ = [
     "api_users_router",
     "api_vlans_router",
     "api_ssh_credentials_router",
+    "api_sync_router",
 ]

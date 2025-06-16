@@ -41,9 +41,23 @@ PHASE 6: CLOUD & MOBILE INTEGRATION
 
 [x] Design architecture for cloud server with site-level replicas
 [ ] Implement record versioning and conflict resolution fields
+  - [ ] Add version columns to models and schemas
+  - [ ] Track unresolved conflicts in a dedicated field
+  - [ ] Generate Alembic migration scripts
 [ ] Add sync endpoints and background jobs for local/cloud replication
+  - [ ] POST `/api/v1/sync` to accept batched updates
+  - [ ] Background worker to push local changes
+  - [ ] Background worker to pull updates from cloud
 [ ] Provide configuration options for cloud vs. local deployment
+  - [ ] `ROLE` environment variable controls cloud or local behaviour
+  - [ ] Conditional startup of cloud sync components
 [ ] Expand mobile-client folder into functional app connecting to local servers
+  - [ ] Scaffold React Native project with authentication
+  - [ ] Implement device list view backed by REST API
 [ ] Supply Docker/Kubernetes configs for cloud and local roles
+  - [ ] `docker-compose.cloud.yml` for the central server
+  - [ ] Kubernetes manifests under `k8s/`
 [ ] Write tests for synchronization and mobile interactions
+  - [ ] Unit tests for sync worker and API endpoints
+  - [ ] Integration tests simulating mobile app requests
 [ ] Update README with setup instructions for cloud/local servers and mobile app

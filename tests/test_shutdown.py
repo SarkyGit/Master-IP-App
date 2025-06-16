@@ -33,6 +33,8 @@ def get_app_for_shutdown():
         "server.workers.trap_listener.setup_trap_listener"
     ), mock.patch(
         "server.workers.syslog_listener.setup_syslog_listener"
+    ), mock.patch(
+        "server.workers.cloud_sync.start_cloud_sync"
     ):
         return importlib.import_module("server.main").app
 
