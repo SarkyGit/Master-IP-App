@@ -208,6 +208,7 @@ The application reads several options from the environment. Important variables 
 - `DATABASE_URL` – PostgreSQL connection string.
 - `SECRET_KEY` – signing key for sessions and API tokens.
 - `TOKEN_TTL` – token lifetime in seconds (default 3600).
+- `SESSION_TTL` – session cookie lifetime in seconds (default 43200).
 - `ROOT_PATH` – optional URL prefix when served behind a proxy.
 - `ENABLE_TRAP_LISTENER` and `SNMP_TRAP_PORT` – enable and configure the trap listener.
 - `ENABLE_SYSLOG_LISTENER` and `SYSLOG_PORT` – enable and configure the syslog listener.
