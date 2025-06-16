@@ -304,3 +304,7 @@ python -m pip install -r requirements.txt
 
 ### `venv/bin/python: No such file or directory`
 This message appears when the `venv` directory has not been created. Run the commands above to create the virtual environment before installing the dependencies.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
