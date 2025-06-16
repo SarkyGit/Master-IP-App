@@ -1,6 +1,6 @@
 from fastapi.templating import Jinja2Templates
 from app.utils.db_session import SessionLocal
-from app.models.models import DeviceType, Tag
+from app.models.models import DeviceType, Tag, SystemTunable
 
 templates = Jinja2Templates(directory="app/templates")
 
@@ -102,3 +102,13 @@ def include_icon(ctx, name: str, color: str | None = None, size: str | int = "3"
 
 
 templates.env.globals["include_icon"] = include_icon
+
+
+def get_tunable_categories():
+    db = SessionLocal()
+    rows = db.query(SystemTunable.function).distinct().order_by(SystemTunable.function).all()
+    db.close()
+    return [r[0] for r in rows]
+
+
+templates.env.globals["get_tunable_categories"] = get_tunable_categories
