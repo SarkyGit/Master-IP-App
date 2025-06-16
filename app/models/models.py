@@ -443,6 +443,17 @@ class ColumnPreference(Base):
     user = relationship("User")
 
 
+class TablePreference(Base):
+    __tablename__ = "table_preferences"
+
+    user_id = Column(Integer, ForeignKey("users.id"), primary_key=True)
+    table_id = Column(String, primary_key=True)
+    column_widths = Column(Text, nullable=True)
+    visible_columns = Column(Text, nullable=True)
+
+    user = relationship("User")
+
+
 class ImportLog(Base):
     __tablename__ = "import_logs"
 

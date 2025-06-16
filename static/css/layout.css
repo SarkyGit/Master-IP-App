@@ -107,3 +107,28 @@ form hr {
 form select {
   margin-bottom: 1rem;
 }
+
+th .resizer {
+  position: absolute;
+  top: 0;
+  right: -2px;
+  width: 6px;
+  height: 100%;
+  cursor: col-resize;
+  z-index: 10;
+}
+
+th:hover .resizer {
+  background: var(--border-color);
+  opacity: 0.5;
+}
+
+th .resizer.active,
+body.col-resize th .resizer {
+  background: var(--border-color);
+  opacity: 0.8;
+}
+
+body.col-resize {
+  cursor: col-resize;
+}
