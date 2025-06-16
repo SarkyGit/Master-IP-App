@@ -57,12 +57,13 @@
       {% if column_prefs.snmp_profile %}<th class="table-cell table-header">{{ column_labels['snmp_profile'] }}</th>{% endif %}
       {% if column_prefs.status %}<th class="table-cell table-header">{{ column_labels['status'] }}</th>{% endif %}
       {% if column_prefs.tags %}<th class="table-cell table-header">{{ column_labels['tags'] }}</th>{% endif %}
+      <th class="table-cell table-header">Ver</th>
       <th class="text-right w-[10rem]">Actions</th>
     </tr>
   </thead>
   <tbody>
   {% for device in devices %}
-    <tr>
+    <tr {% if device.conflict_data %}style="background-color:#7f1d1d"{% endif %}>
       <td class="table-cell"><input type="checkbox" name="selected" value="{{ device.id }}"></td>
       {% if column_prefs.hostname %}<td class="table-cell">{{ device.hostname }}</td>{% endif %}
       {% if column_prefs.ip %}<td class="table-cell {% if device.ip and duplicate_ips.get(device.ip) %}duplicate{% endif %}" title="{{ duplicate_ips.get(device.ip)|join(', ') if duplicate_ips.get(device.ip) }}">{{ device.ip }}</td>{% endif %}
@@ -95,6 +96,7 @@
         {{ device.uptime_seconds | format_uptime }}
       </td>{% endif %}
       {% if column_prefs.tags %}<td class="table-cell">{{ device.tags | map(attribute='name') | join(', ') }}</td>{% endif %}
+      <td class="table-cell">{{ device.version }}</td>
       <td class="text-right w-[10rem] whitespace-nowrap">
         <div class="flex justify-end flex-wrap gap-1">
           {% if device.ssh_credential or personal_creds.get(device.id) %}

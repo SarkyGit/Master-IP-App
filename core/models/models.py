@@ -8,6 +8,7 @@ from sqlalchemy import (
     Text,
     Boolean,
     Float,
+    JSON,
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy import Table
@@ -20,7 +21,7 @@ class VLAN(Base):
 
     id = Column(Integer, primary_key=True)
     version = Column(Integer, default=1)
-    has_conflict = Column(Boolean, default=False)
+    conflict_data = Column(JSON, nullable=True)
     tag = Column(Integer, unique=True, nullable=False)
     description = Column(String, nullable=True)
 
@@ -32,7 +33,7 @@ class SSHCredential(Base):
 
     id = Column(Integer, primary_key=True)
     version = Column(Integer, default=1)
-    has_conflict = Column(Boolean, default=False)
+    conflict_data = Column(JSON, nullable=True)
     name = Column(String, unique=True, nullable=False)
     username = Column(String, nullable=False)
     password = Column(String, nullable=True)
@@ -117,7 +118,7 @@ class Device(Base):
 
     id = Column(Integer, primary_key=True)
     version = Column(Integer, default=1)
-    has_conflict = Column(Boolean, default=False)
+    conflict_data = Column(JSON, nullable=True)
     hostname = Column(String, unique=True, nullable=False)
     ip = Column(String, nullable=False)
     mac = Column(String, nullable=True)
@@ -206,7 +207,7 @@ class User(Base):
 
     id = Column(Integer, primary_key=True)
     version = Column(Integer, default=1)
-    has_conflict = Column(Boolean, default=False)
+    conflict_data = Column(JSON, nullable=True)
     email = Column(String, unique=True, nullable=False)
     hashed_password = Column(String, nullable=False)
     role = Column(String, nullable=False, default="viewer")

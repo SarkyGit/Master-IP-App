@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from core.utils.db_session import get_db
 from core.models.models import Device
 from core import schemas
+from core.utils.versioning import apply_update
 from core.utils import auth as auth_utils
 
 router = APIRouter(prefix="/api/v1/devices", tags=["devices"])
@@ -54,8 +55,8 @@ def update_device(
     obj = db.query(Device).filter_by(id=device_id).first()
     if not obj:
         raise HTTPException(status_code=404, detail="Device not found")
-    for key, value in update.dict(exclude_unset=True).items():
-        setattr(obj, key, value)
+    update_data = update.dict(exclude_unset=True)
+    apply_update(obj, update_data)
     db.commit()
     db.refresh(obj)
     return obj

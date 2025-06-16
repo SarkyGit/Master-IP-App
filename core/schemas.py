@@ -11,7 +11,7 @@ class VLANBase(BaseModel):
     tag: int
     description: str | None = None
     version: int | None = 1
-    has_conflict: bool | None = False
+    conflict_data: dict | None = None
 
 
 class VLANCreate(VLANBase):
@@ -37,7 +37,7 @@ class DeviceBase(BaseModel):
     manufacturer: str | None = None
     model: str | None = None
     version: int | None = 1
-    has_conflict: bool | None = False
+    conflict_data: dict | None = None
 
 
 class DeviceCreate(DeviceBase):
@@ -65,7 +65,7 @@ class SSHCredentialBase(BaseModel):
     password: str | None = None
     private_key: str | None = None
     version: int | None = 1
-    has_conflict: bool | None = False
+    conflict_data: dict | None = None
 
 
 class SSHCredentialCreate(SSHCredentialBase):
@@ -91,7 +91,7 @@ class UserBase(BaseModel):
     role: str = "viewer"
     is_active: bool = True
     version: int | None = 1
-    has_conflict: bool | None = False
+    conflict_data: dict | None = None
 
 
 class UserCreate(UserBase):

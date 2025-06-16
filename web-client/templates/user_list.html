@@ -10,16 +10,18 @@
       <th class="px-4 py-2 text-left">Email</th>
       <th class="px-4 py-2 text-left">Role</th>
       <th class="px-4 py-2 text-left">Status</th>
+      <th class="px-4 py-2 text-left">Version</th>
       <th class="px-4 py-2 text-left">Created</th>
       <th></th>
     </tr>
   </thead>
   <tbody>
     {% for user in users %}
-    <tr class="border-t border-gray-700 {% if not user.is_active %}opacity-50{% endif %}">
+    <tr class="border-t border-gray-700 {% if not user.is_active %}opacity-50{% endif %}" {% if user.conflict_data %}style="background-color:#7f1d1d"{% endif %}>
       <td class="px-4 py-2">{{ user.email }}</td>
       <td class="px-4 py-2">{{ user.role }}</td>
       <td class="px-4 py-2">{{ 'active' if user.is_active else 'inactive' }}</td>
+      <td class="px-4 py-2">{{ user.version }}</td>
       <td class="px-4 py-2">{{ user.created_at }}</td>
       <td class="px-4 py-2">
         <a href="/admin/users/{{ user.id }}/edit" aria-label="Edit" class="p-2 rounded transition mr-2">{{ include_icon('pencil','text-blue-500','1.5') }}</a>
