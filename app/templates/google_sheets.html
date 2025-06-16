@@ -4,12 +4,12 @@
 <h1 class="text-xl mb-4">Google Sheets Integration</h1>
 
 <form method="post" action="/tasks/google-sheets-config" class="space-y-2 mb-4">
-  <div class="flex flex-col lg:flex-row gap-6">
-    <div class="flex-1 space-y-2">
+  <div class="form-row">
+    <div class="form-item space-y-2">
       <label for="service_account_json" class="block">Service Account JSON Path</label>
       <input id="service_account_json" type="text" name="service_account_json" value="{{ config.creds }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
     </div>
-    <div class="flex-1 space-y-2">
+    <div class="form-item space-y-2">
       <label for="spreadsheet_id" class="block">Spreadsheet ID</label>
       <input id="spreadsheet_id" type="text" name="spreadsheet_id" value="{{ config.sheet_id }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
     </div>

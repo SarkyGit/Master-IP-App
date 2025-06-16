@@ -3,8 +3,8 @@
 {% block content %}
 <h1 class="text-xl mb-4">Port Config</h1>
 <form method="post" class="space-y-4">
-  <div class="flex flex-col lg:flex-row gap-6">
-    <div class="flex-1 space-y-2">
+  <div class="form-row">
+    <div class="form-item space-y-2">
       <label for="device_id" class="block">Switch</label>
       <select id="device_id" name="device_id" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
         {% for dev in devices %}
@@ -12,7 +12,7 @@
         {% endfor %}
       </select>
     </div>
-    <div class="flex-1 space-y-2">
+    <div class="form-item space-y-2">
       <label for="port_name" class="block">Port</label>
       <input id="port_name" type="text" name="port_name" value="{{ port_name or '' }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" required />
     </div>
