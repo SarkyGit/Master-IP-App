@@ -6,6 +6,13 @@ The connection string can be stored in a `.env` file so the app picks it up when
 
 Tailwind CSS has been removed from the project. Styling and components now rely on [UnoCSS](https://github.com/unocss/unocss) and [Radix UI](https://www.radix-ui.com/).
 
+## Repository Layout
+
+- `core/` contains database models, authentication helpers and common utilities.
+- `server/` holds the FastAPI application, API routes and background workers.
+- `web-client/` stores HTML templates and static assets served by the app.
+- `mobile-client/` is a placeholder for a future mobile application.
+
 ## Quick Installation
 
 The steps below assume a brand new system with no tools installed. Commands are written so they can be copied and pasted directly into a terminal.
@@ -120,19 +127,16 @@ Edit the `.env` file before starting if you need custom database credentials or 
 
 When running under Docker Compose, `DATABASE_URL` is already set to use the service name `db`. If you keep a `.env` file, ensure it does **not** redefine `DATABASE_URL` with `localhost`.
 
+The `web` service no longer mounts the repository as a volume. Static assets are built inside the image, so run `docker compose build` after changing files under `web-client/` or the server code.
+
 ## Building the Clients
+Two front-end clients are shipped with the repository.
 
-Two front-end clients live in this repository:
-
-- `web-client/` contains HTML templates and static assets served by FastAPI.
-- `mobile-client/` is a scaffold for a future mobile app that will call the
-  REST API under `/api/v1/`.
-
-Rebuild the web client CSS after installing Node dependencies:
-
+- `web-client/` contains the HTML templates and UnoCSS styles. Build the CSS with:
 ```bash
 npm run build:web
 ```
+- `mobile-client/` is currently just a scaffold. A future release will contain a React Native or Flutter application.
 
 ## Interface Themes
 
@@ -143,6 +147,20 @@ To switch themes, open **My Profile** from the user menu (or visit `/users/me`) 
 ## System Tunables
 
 The application stores various settings in the `system_tunables` table. These are seeded with default values by `seed_tunables.py` and can be adjusted from the **System Tunables** page in the web UI (admin role required).
+
+## Server Workers
+
+Several background workers run alongside the FastAPI app.
+- `queue_worker` pushes configuration changes from the queue at intervals.
+- `config_scheduler` schedules periodic configuration pulls and cleanup tasks.
+- `trap_listener` listens for SNMP traps when `ENABLE_TRAP_LISTENER=1`.
+- `syslog_listener` collects syslog messages when `ENABLE_SYSLOG_LISTENER=1`.
+These workers start automatically when `server.main` is launched but can also be executed directly with `python -m server.workers.<name>` for debugging.
+
+## Token-based API Authentication
+
+Obtain a token via the `/auth/token` endpoint by POSTing `email` and `password`. The response includes a `bearer` token which must be sent in the `Authorization` header when calling any `/api/v1/` route. Tokens are signed using `SECRET_KEY` and expire after `TOKEN_TTL` seconds (default 3600).
+
 
 ## Production Deployment Notes
 
@@ -184,6 +202,17 @@ If the app is exposed under a URL prefix (e.g. `/inventory/` instead of `/`),
 set the `ROOT_PATH` environment variable to that prefix so all generated links
 including static asset URLs use the correct path.
 
+## Environment Variables
+
+The application reads several options from the environment. Important variables include:
+- `DATABASE_URL` – PostgreSQL connection string.
+- `SECRET_KEY` – signing key for sessions and API tokens.
+- `TOKEN_TTL` – token lifetime in seconds (default 3600).
+- `ROOT_PATH` – optional URL prefix when served behind a proxy.
+- `ENABLE_TRAP_LISTENER` and `SNMP_TRAP_PORT` – enable and configure the trap listener.
+- `ENABLE_SYSLOG_LISTENER` and `SYSLOG_PORT` – enable and configure the syslog listener.
+- `QUEUE_INTERVAL` and `PORT_HISTORY_RETENTION_DAYS` – worker scheduling values.
+- `WORKERS`, `TIMEOUT`, `PORT` and `AUTO_SEED` – options used by `start.sh`.
 ## Nginx reverse proxy with SSL
 
 Install Nginx on the host and create a server block that proxies requests to
