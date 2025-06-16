@@ -7,7 +7,7 @@
 <p class="mb-3"><a href="/admin/logo" class="underline">Upload Logo</a></p>
 {% endif %}
 
-<div x-data="{tab:0}">
+<div x-data="{tab:0, ready:false}" x-init="setTimeout(() => ready = true, 50)">
   <ul class="flex border-b" >
     {% for function in groups.keys() %}
     <li class="mr-2">
@@ -17,7 +17,7 @@
   </ul>
 
   {% for function, files in groups.items() %}
-  <div x-show="tab==={{ loop.index0 }}" class="mt-3" x-cloak>
+  <div x-show="ready && tab==={{ loop.index0 }}" x-transition.opacity.duration.150ms class="mt-3" x-cloak>
     {% for file, tunables in files.items() %}
     <h3 class="mt-2">{{ file }}</h3>
       {% for tunable in tunables %}
