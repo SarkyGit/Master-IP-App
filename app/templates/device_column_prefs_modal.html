@@ -1,0 +1,19 @@
+<div id="modal" class="fixed inset-0 bg-black/50 flex items-center justify-center">
+  <div class="bg-[var(--card-bg)] p-4 rounded shadow min-w-[20rem]">
+    <h1 class="text-xl mb-4">Customize Columns</h1>
+    <form hx-post="/devices/column-prefs" hx-target="#modal" hx-swap="outerHTML" method="post">
+      {% for name, label in column_labels.items() %}
+      <div class="mb-2">
+        <label class="inline-flex items-center">
+          <input type="checkbox" name="selected" value="{{ name }}" class="mr-2" {% if prefs[name] %}checked{% endif %}>
+          {{ label }}
+        </label>
+      </div>
+      {% endfor %}
+      <div class="text-right mt-2">
+        <button type="submit" class="px-3 py-1 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded">Save</button>
+        <button type="button" class="px-3 py-1 ml-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded" onclick="document.getElementById('modal').innerHTML=''">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
