@@ -7,7 +7,7 @@
 {% for file, tunables in groups.items() %}
 <h3 class="mt-2">{{ file }}</h3>
 <form method="post" action="/tunables/group" class="mb-3 p-3 border rounded">
-  <div class="flex flex-wrap gap-4 items-start">
+  <div class="flex flex-wrap gap-x-8 gap-y-4 items-start">
     {% for tunable in tunables %}
     <div class="flex flex-col flex-1 min-w-[280px]">
       <label class="mb-1 fw-bold block">{{ tunable.name }}</label>

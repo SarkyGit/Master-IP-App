@@ -3,13 +3,13 @@
 {% block content %}
 <h1 class="text-xl mb-4">{{ form_title }}</h1>
 <form method="post">
-  <div class="flex flex-wrap gap-4 mb-4 items-start">
+  <div class="flex flex-wrap gap-x-8 gap-y-4 mb-4 items-start">
     <div class="flex flex-col flex-1 min-w-[280px]">
       <label for="name" class="mb-1 fw-bold block">Name</label>
       <input id="name" type="text" name="name" value="{{ cred.name if cred else '' }}" class="form-input w-full" required />
     </div>
   </div>
-  <div class="flex flex-wrap gap-4 mb-4 items-start">
+  <div class="flex flex-wrap gap-x-8 gap-y-4 mb-4 items-start">
     <div class="flex flex-col flex-1 min-w-[280px]">
       <label for="username" class="mb-1 fw-bold block">Username</label>
       <input id="username" type="text" name="username" value="{{ cred.username if cred else '' }}" class="form-input w-full" required />
@@ -19,7 +19,7 @@
       <input id="password" type="password" name="password" value="{{ cred.password if cred else '' }}" class="form-input w-full" />
     </div>
   </div>
-  <div class="flex flex-wrap gap-4 mb-4 items-start">
+  <div class="flex flex-wrap gap-x-8 gap-y-4 mb-4 items-start">
     <div class="flex flex-col flex-1 min-w-[280px]">
       <label for="private_key" class="mb-1 fw-bold block">Private Key</label>
       <textarea id="private_key" name="private_key" class="form-input w-full">{{ cred.private_key if cred else '' }}</textarea>
@@ -28,7 +28,7 @@
   {% if error %}
   <p class="p-2 rounded bg-[var(--alert-bg)]">{{ error }}</p>
   {% endif %}
-  <div class="flex flex-wrap gap-4 mb-4 items-start">
+  <div class="flex flex-wrap gap-x-8 gap-y-4 mb-4 items-start">
     <div class="flex flex-col flex-1 min-w-[280px]">
       <button type="submit" aria-label="Submit" class="p-2 rounded transition">{{ include_icon('check') }}</button>
       <a href="/admin/ssh" class="ml-2 underline">Cancel</a>

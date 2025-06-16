@@ -3,7 +3,7 @@
 {% block content %}
 <h1 class="text-xl mb-4">{{ form_title }}</h1>
 <form method="post" id="device-form">
-  <div class="flex flex-wrap gap-4 mb-4 items-start">
+  <div class="flex flex-wrap gap-x-8 gap-y-4 mb-4 items-start">
     <div class="flex flex-col flex-1 min-w-[280px]">
       <label for="hostname" class="mb-1 fw-bold block">Hostname</label>
       <input id="hostname" type="text" name="hostname" value="{{ device.hostname if device else '' }}" class="form-input w-full" required />
@@ -17,7 +17,7 @@
       <input id="mac" type="text" name="mac" value="{{ device.mac if device else '' }}" class="form-input w-full" />
     </div>
   </div>
-  <div class="flex flex-wrap gap-4 mb-4 items-start">
+  <div class="flex flex-wrap gap-x-8 gap-y-4 mb-4 items-start">
     <div class="flex flex-col flex-1 min-w-[280px]">
       <label for="asset_tag" class="mb-1 fw-bold block">Asset Tag</label>
       <input id="asset_tag" type="text" name="asset_tag" value="{{ device.asset_tag if device else '' }}" class="form-input w-full" />
@@ -36,7 +36,7 @@
       <input id="serial_number" type="text" name="serial_number" value="{{ device.serial_number if device else '' }}" class="form-input w-full" />
     </div>
   </div>
-  <div class="flex flex-wrap gap-4 mb-4 items-start">
+  <div class="flex flex-wrap gap-x-8 gap-y-4 mb-4 items-start">
     <div class="flex flex-col flex-1 min-w-[280px]">
       <label for="manufacturer" class="mb-1 fw-bold block">Manufacturer</label>
       <input id="manufacturer" type="text" name="manufacturer" value="{{ device.manufacturer if device else '' }}" class="form-input w-full" required />
@@ -55,7 +55,7 @@
       </select>
     </div>
   </div>
-  <div class="flex flex-wrap gap-4 mb-4 items-start">
+  <div class="flex flex-wrap gap-x-8 gap-y-4 mb-4 items-start">
     <div class="flex flex-col flex-1 min-w-[280px]">
       <label for="location_id" class="mb-1 fw-bold block">Location</label>
       <select id="location_id" name="location_id" class="form-select w-full">
@@ -67,7 +67,7 @@
     </div>
   </div>
   {% if device %}
-  <div class="flex flex-wrap gap-4 mb-4 items-start">
+  <div class="flex flex-wrap gap-x-8 gap-y-4 mb-4 items-start">
     <div class="flex flex-col flex-1 min-w-[280px]">
       <label for="status" class="mb-1 fw-bold block">Status</label>
       <select id="status" name="status" class="form-select w-full">
@@ -88,7 +88,7 @@
     </div>
   </div>
   {% endif %}
-  <div class="flex flex-wrap gap-4 mb-4 items-start">
+  <div class="flex flex-wrap gap-x-8 gap-y-4 mb-4 items-start">
     <div class="flex flex-col flex-1 min-w-[280px]">
       <label for="ssh_credential_id" class="mb-1 fw-bold block">SSH Profile</label>
       <select id="ssh_credential_id" name="ssh_credential_id" class="form-select w-full">
@@ -117,7 +117,7 @@
       </select>
     </div>
   </div>
-  <div class="flex flex-wrap gap-4 mb-4 items-start">
+  <div class="flex flex-wrap gap-x-8 gap-y-4 mb-4 items-start">
     <div class="flex flex-col flex-1 min-w-[280px]">
       <label for="on_lasso" class="mb-1 fw-bold block">On Lasso</label>
       <input id="on_lasso" type="checkbox" name="on_lasso" value="1" class="form-input" {% if device and device.on_lasso %}checked{% endif %}>
@@ -131,7 +131,7 @@
       <input id="priority" type="checkbox" name="priority" value="1" class="form-input" {% if device and device.priority %}checked{% endif %}>
     </div>
   </div>
-  <div class="flex flex-wrap gap-4 mb-4 items-start">
+  <div class="flex flex-wrap gap-x-8 gap-y-4 mb-4 items-start">
     <div class="flex flex-col flex-1 min-w-[280px]">
       <label for="config_pull_interval" class="mb-1 fw-bold block">Config Pull Interval</label>
       <select id="config_pull_interval" name="config_pull_interval" class="form-select w-full">
@@ -141,13 +141,13 @@
       </select>
     </div>
   </div>
-  <div class="flex flex-wrap gap-4 mb-4 items-start">
+  <div class="flex flex-wrap gap-x-8 gap-y-4 mb-4 items-start">
     <div class="flex flex-col flex-1 min-w-[280px]">
       <label for="notes" class="mb-1 fw-bold block">Notes</label>
       <textarea id="notes" name="notes" class="form-input w-full">{{ device.notes if device else '' }}</textarea>
     </div>
   </div>
-  <div class="flex flex-wrap gap-4 mb-4 items-start">
+  <div class="flex flex-wrap gap-x-8 gap-y-4 mb-4 items-start">
     <div class="flex flex-col flex-1 min-w-[280px]">
       <label for="tag_names" class="mb-1 fw-bold block">Tags</label>
       <input id="tag_names" type="text" name="tag_names" list="tag-list" value="{{ device.tags | rejectattr('name', 'in', ['complete','incomplete']) | map(attribute='name') | join(', ') if device else '' }}" class="form-input w-full" />
@@ -158,7 +158,7 @@
       </datalist>
     </div>
   </div>
-  <div class="flex flex-wrap gap-4 mb-4 items-start">
+  <div class="flex flex-wrap gap-x-8 gap-y-4 mb-4 items-start">
     <div class="flex flex-col flex-1 min-w-[280px]">
       <button type="submit" aria-label="Submit" class="p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded transition">{{ include_icon('check') }}</button>
       <a href="/devices" class="inline-block p-2 ml-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded transition">Cancel</a>
