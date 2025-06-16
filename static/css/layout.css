@@ -140,7 +140,7 @@ body.col-resize {
 .form-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 1rem 2rem;
   margin-bottom: 1rem;
 }
 .form-row > .form-item {
