@@ -1,0 +1,29 @@
+version: '3.9'
+services:
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_DB: master_ip_db
+      POSTGRES_USER: masteruser
+      POSTGRES_PASSWORD: masterpass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  web:
+    build:
+      context: ../..
+    command: ./start.sh
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql://masteruser:masterpass@db:5432/master_ip_db
+      ROLE: local
+      ENABLE_CLOUD_SYNC: "1"
+    ports:
+      - "8000:8000"
+
+volumes:
+  postgres_data:

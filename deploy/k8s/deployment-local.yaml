@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: master-ip-local
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: master-ip-local
+  template:
+    metadata:
+      labels:
+        app: master-ip-local
+    spec:
+      containers:
+      - name: web
+        image: master-ip:latest
+        envFrom:
+        - configMapRef:
+            name: master-ip-config-local
+        ports:
+        - containerPort: 8000

@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: master-ip-config-cloud
+data:
+  ROLE: "cloud"
+  DATABASE_URL: "postgresql://masteruser:masterpass@postgres:5432/master_ip_cloud"

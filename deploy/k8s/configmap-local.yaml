@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: master-ip-config-local
+data:
+  ROLE: "local"
+  DATABASE_URL: "postgresql://masteruser:masterpass@postgres:5432/master_ip_db"
+  ENABLE_CLOUD_SYNC: "1"
