@@ -22,8 +22,7 @@ services:
       ROOT_PATH: ""
     ports:
       - "8000:8000"
-    volumes:
-      - .:/app
+    # volume removed to prevent static files from being overridden in production
 
   nginx:
     image: nginx:latest
