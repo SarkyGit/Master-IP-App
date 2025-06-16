@@ -75,3 +75,24 @@ async def update_tunable(
         tunable.value = value
         db.commit()
     return RedirectResponse(url="/tunables", status_code=302)
+
+
+@router.post("/tunables/group")
+async def update_tunables_group(
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("admin")),
+):
+    form = await request.form()
+    for key, value in form.items():
+        if not key.startswith("tunable_"):
+            continue
+        try:
+            tunable_id = int(key.split("_", 1)[1])
+        except (IndexError, ValueError):
+            continue
+        tunable = db.query(SystemTunable).filter(SystemTunable.id == tunable_id).first()
+        if tunable:
+            tunable.value = value
+    db.commit()
+    return RedirectResponse(url="/tunables", status_code=302)
