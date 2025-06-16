@@ -11,11 +11,11 @@ body {
   --submenu-bg: #1f2937;
   --submenu-text: #e5e7eb;
   --submenu-hover-bg: #4b5563;
-  --tab-bg: #1e3a8a;
-  --tab-hover: #1d4ed8;
+  --tab-bg: #7c3aed;
+  --tab-hover: #a855f7;
   --tab-text: #ffffff;
-  --btn-bg:        #1e3a8a;
-  --btn-hover:     #1d4ed8;
+  --btn-bg:        #7c3aed;
+  --btn-hover:     #a855f7;
   --btn-text:      #ffffff;
   --btn-hover-text: #ffffff;
   --card-bg:       #1e293b;
@@ -25,7 +25,7 @@ body {
   --table-bg:      #1f2937;
   --code-text: #f1f5f9;
   --code-bg: #1e293b;
-  --alert-bg:      #334155;
+  --alert-bg:      #be123c;
   --border-color:  #475569;
   --hover-muted:   #374151;
 }

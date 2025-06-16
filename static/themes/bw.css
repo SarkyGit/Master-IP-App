@@ -1,35 +1,35 @@
 body {
-  background-color: #ffffff;
-  color: #000000;
+  background-color: #000000;
+  color: #ffffff;
 }
 
 :root {
   --nav-bg: #000000;
   --nav-text: #ffffff;
-  --submenu-bg: #1f2937;
+  --submenu-bg: #1a1a1a;
   --submenu-text: #e5e7eb;
-  --submenu-hover-bg: #c0c0c0;
-  --tab-bg: #1e3a8a;
-  --tab-hover: #1d4ed8;
+  --submenu-hover-bg: #333333;
+  --tab-bg: #333333;
+  --tab-hover: #444444;
   --tab-text: #ffffff;
-  --btn-bg:        #1e3a8a;
-  --btn-hover:     #1d4ed8;
+  --btn-bg:        #333333;
+  --btn-hover:     #555555;
   --btn-text:      #ffffff;
   --btn-hover-text: #ffffff;
-  --card-bg:       #1e293b;
-  --card-text:     #f1f5f9;
-  --input-bg:      #1f2937;
+  --card-bg:       #111111;
+  --card-text:     #ffffff;
+  --input-bg:      #1a1a1a;
   --input-text:    #f9fafb;
-  --table-bg:      #1f2937;
+  --table-bg:      #1a1a1a;
   --code-text: #f1f5f9;
-  --code-bg: #1e293b;
-  --alert-bg:      #334155;
-  --border-color:  #475569;
-  --hover-muted:   #374151;
+  --code-bg: #111111;
+  --alert-bg:      #333333;
+  --border-color:  #444444;
+  --hover-muted:   #222222;
 }
 
 .duplicate {
-  background-color: #cccccc;
+  background-color: #666666;
 }
 
 nav.bg-gray-800 {
@@ -41,7 +41,7 @@ nav.bg-gray-800 {
 }
 
 .border-gray-700 {
-  border-color: #000000 !important;
+  border-color: #333333 !important;
 }
 
 
