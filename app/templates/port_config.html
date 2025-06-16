@@ -3,7 +3,7 @@
 {% block content %}
 <h1 class="text-xl mb-4">Port {{ port_name }} on {{ device.hostname }}</h1>
 {% if error %}
-<p class="p-2 rounded bg-[var(--alert-bg)] text-[var(--btn-text)]">{{ error }}</p>
+<p class="p-2 rounded bg-[var(--alert-bg)]">{{ error }}</p>
 {% endif %}
 {% if message %}
 <p class="text-green-400">{{ message }}</p>
@@ -13,7 +13,7 @@
   Current Config
   <a
     href="/network/port-configs/new?config_text={{ config|urlencode }}"
-    class="ml-2 underline text-sm px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition"
+    class="ml-2 underline text-sm px-4 py-2 rounded transition"
     >Add as Template</a
   >
 </h2>
@@ -24,7 +24,7 @@
   Previous Config
   <a
     href="/network/port-configs/new?config_text={{ prev_config|urlencode }}"
-    class="ml-2 underline text-sm px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition"
+    class="ml-2 underline text-sm px-4 py-2 rounded transition"
     >Add as Template</a
   >
 </h2>
@@ -34,7 +34,7 @@
 <form method="post" class="space-y-4">
   <textarea name="config_text" rows="5" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" required></textarea>
   <div>
-    <button type="submit" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Queue Change</button>
+    <button type="submit" aria-label="Queue Change" class="p-2 rounded transition">{{ include_icon('plus-square') }}</button>
     <a href="/devices/{{ device.id }}/ports" class="ml-2 underline">Back</a>
   </div>
 </form>

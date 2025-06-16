@@ -60,10 +60,10 @@
   </div>
   {% endif %}
   {% if error %}
-  <p class="p-2 rounded bg-[var(--alert-bg)] text-[var(--btn-text)]">{{ error }}</p>
+  <p class="p-2 rounded bg-[var(--alert-bg)]">{{ error }}</p>
   {% endif %}
   <div>
-    <button type="submit" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Submit</button>
+    <button type="submit" aria-label="Submit" class="p-2 rounded transition">{{ include_icon('check') }}</button>
     <a href="{{ cancel_url or '/users/me' }}" class="ml-2 underline">Cancel</a>
   </div>
 </form>

@@ -21,7 +21,7 @@
       <td class="px-4 py-2">
         <form method="post" action="/admin/tags/{{ tag.id }}/rename" class="inline">
           <input type="text" name="new_name" class="w-32 p-1 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" />
-          <button type="submit" class="px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Rename</button>
+          <button type="submit" aria-label="Rename" class="p-2 rounded transition">{{ include_icon('pencil','text-blue-500','1.5') }}</button>
         </form>
       </td>
       <td class="px-4 py-2">
@@ -33,12 +33,12 @@
               {% endif %}
             {% endfor %}
           </select>
-          <button type="submit" class="px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Merge</button>
+          <button type="submit" aria-label="Merge" class="p-2 rounded transition">{{ include_icon('merge') }}</button>
         </form>
       </td>
       <td class="px-4 py-2">
         <form method="post" action="/admin/tags/{{ tag.id }}/delete" class="inline">
-          <button type="submit" class="px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition" onclick="return confirm('Delete tag?')">Delete</button>
+          <button type="submit" aria-label="Delete" class="p-2 rounded transition" onclick="return confirm('Delete tag?')">{{ include_icon('trash-2','text-red-500','1.5') }}</button>
         </form>
       </td>
     </tr>

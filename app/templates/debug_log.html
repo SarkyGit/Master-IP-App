@@ -8,10 +8,10 @@
   <form method="post" action="/admin/debug/trap-listener">
     {% if trap_running %}
     <input type="hidden" name="action" value="stop">
-    <button type="submit" class="px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Stop Listener</button>
+    <button type="submit" aria-label="Stop Listener" class="p-2 rounded transition">{{ include_icon('stop') }}</button>
     {% else %}
     <input type="hidden" name="action" value="start">
-    <button type="submit" class="px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Start Listener</button>
+    <button type="submit" aria-label="Start Listener" class="p-2 rounded transition">{{ include_icon('play') }}</button>
     {% endif %}
   </form>
 </div>
@@ -21,10 +21,10 @@
   <form method="post" action="/admin/debug/syslog-listener">
     {% if syslog_running %}
     <input type="hidden" name="action" value="stop">
-    <button type="submit" class="px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Stop Listener</button>
+    <button type="submit" aria-label="Stop Listener" class="p-2 rounded transition">{{ include_icon('stop') }}</button>
     {% else %}
     <input type="hidden" name="action" value="start">
-    <button type="submit" class="px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Start Listener</button>
+    <button type="submit" aria-label="Start Listener" class="p-2 rounded transition">{{ include_icon('play') }}</button>
     {% endif %}
   </form>
 </div>
@@ -72,7 +72,7 @@
       <td class="px-4 py-2">{{ entry.user.email if entry.user else 'System' }}</td>
       <td class="px-4 py-2">{{ entry.action_type }}</td>
       <td class="px-4 py-2">{{ entry.details[:50] }}</td>
-      <td class="px-4 py-2"><a href="/admin/debug/{{ entry.id }}" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">View Full</a></td>
+      <td class="px-4 py-2"><a href="/admin/debug/{{ entry.id }}" class="block px-4 py-2 rounded transition">View Full</a></td>
     </tr>
   {% endfor %}
   </tbody>

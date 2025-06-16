@@ -7,9 +7,9 @@
     <input type="text" name="email" placeholder="Email" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" />
     <input type="password" name="password" placeholder="Password" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" />
     {% if error %}
-    <p class="p-2 rounded bg-[var(--alert-bg)] text-[var(--btn-text)]">{{ error }}</p>
+    <p class="p-2 rounded bg-[var(--alert-bg)]">{{ error }}</p>
     {% endif %}
-    <button type="submit" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Login</button>
+    <button type="submit" aria-label="Login" class="p-2 rounded transition">{{ include_icon('log-in') }}</button>
   </form>
 </div>
 {% endblock %}

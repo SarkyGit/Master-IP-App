@@ -36,7 +36,7 @@
       <td class="text-center w-[10rem] whitespace-nowrap">
         <div class="flex justify-center flex-wrap gap-1">
           <form method="post" action="/admin/ip-bans/{{ ban.id }}/unban" class="inline">
-            <button type='submit' aria-label='Unban' class='p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition' onclick="return confirm('Unban this IP?')">{{ include_icon('x-circle') }}</button>
+          <button type='submit' aria-label='Unban' class='p-2 rounded transition' onclick="return confirm('Unban this IP?')">{{ include_icon('x-circle') }}</button>
           </form>
         </div>
       </td>

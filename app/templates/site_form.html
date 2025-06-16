@@ -10,7 +10,7 @@
     <label for="description" class="block">Description</label>
     <textarea id="description" name="description" class="text-[var(--input-text)] w-full p-2">{{ site.description if site }}</textarea>
   </div>
-  {% if error %}<p class="p-2 rounded bg-[var(--alert-bg)] text-[var(--btn-text)]">{{ error }}</p>{% endif %}
-  <button type="submit" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Submit</button>
+  {% if error %}<p class="p-2 rounded bg-[var(--alert-bg)]">{{ error }}</p>{% endif %}
+  <button type="submit" aria-label="Submit" class="p-2 rounded transition">{{ include_icon('check') }}</button>
 </form>
 {% endblock %}

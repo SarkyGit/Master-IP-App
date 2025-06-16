@@ -22,17 +22,17 @@
     <option value="{{ b.id }}" {% if b.id == backup_b %}selected{% endif %}>{{ b.created_at }}</option>
     {% endfor %}
   </select>
-  <button type="submit" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition ml-2">Compare</button>
+  <button type="submit" aria-label="Compare" class="p-2 rounded transition ml-2">{{ include_icon('eye') }}</button>
   {% endif %}
 </form>
 {% if device %}
-<p class="mb-2">Device type: <span class="px-2 py-1 bg-[var(--btn-bg)] text-[var(--btn-text)] rounded">{{ device.device_type.name }}</span></p>
+<p class="mb-2">Device type: <span class="px-2 py-1 rounded">{{ device.device_type.name }}</span></p>
 {% endif %}
 {% if diff_table %}
 <div class="overflow-auto">
   {{ diff_table | safe }}
 </div>
 {% elif backup_a and backup_b %}
-<p class="p-2 rounded bg-[var(--alert-bg)] text-[var(--btn-text)]">Unable to load selected configs.</p>
+<p class="p-2 rounded bg-[var(--alert-bg)]">Unable to load selected configs.</p>
 {% endif %}
 {% endblock %}
