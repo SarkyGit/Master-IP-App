@@ -5,6 +5,12 @@
 <div class="w-full overflow-auto">
 <table class="min-w-full table-fixed text-left">
   <tbody>
+    {% if user.username is defined %}
+    <tr class="border-t border-gray-700">
+      <th class="px-4 py-2 text-left">Username</th>
+      <td class="px-4 py-2">{{ user.username }}</td>
+    </tr>
+    {% endif %}
     <tr class="border-t border-gray-700">
       <th class="px-4 py-2 text-left">Email</th>
       <td class="px-4 py-2">{{ user.email }}</td>
@@ -12,6 +18,16 @@
     <tr class="border-t border-gray-700">
       <th class="px-4 py-2 text-left">Role</th>
       <td class="px-4 py-2">{{ user.role }}</td>
+    </tr>
+    <tr class="border-t border-gray-700">
+      <th class="px-4 py-2 text-left">Last Login</th>
+      <td class="px-4 py-2">
+        {% if last_login %}
+          {{ last_login.timestamp }} ({{ last_login.ip_address }})
+        {% else %}
+          Never
+        {% endif %}
+      </td>
     </tr>
     <tr class="border-t border-gray-700">
       <th class="px-4 py-2 text-left">Active</th>
@@ -25,6 +41,71 @@
 </table>
 </div>
 {% if current_user and current_user.id == user.id %}
-<a href="/users/me/edit" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Edit Profile</a>
+<h2 class="text-lg mt-6 mb-2">SSH Credentials</h2>
+<form method="post" action="/users/me/ssh" class="space-y-4">
+  <div class="form-row">
+    <div class="form-item">
+      <label for="ssh_username" class="block">SSH Username</label>
+      <input id="ssh_username" name="ssh_username" value="{{ user.ssh_username or '' }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" required />
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-item">
+      <label for="ssh_password" class="block">SSH Password</label>
+      <input id="ssh_password" type="password" name="ssh_password" value="{{ user.ssh_password or '' }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" />
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-item">
+      <label for="ssh_port" class="block">SSH Port</label>
+      <input id="ssh_port" type="number" min="1" max="65535" name="ssh_port" value="{{ user.ssh_port or 22 }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" />
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-item">
+      <button type="submit" aria-label="Save" class="p-2 rounded transition">{{ include_icon('save') }}</button>
+    </div>
+  </div>
+</form>
+
+<h2 class="text-lg mt-6 mb-2">Preferences</h2>
+<form method="post" action="/users/me/prefs" class="space-y-4">
+  <div class="form-row">
+    <div class="form-item">
+      <label for="theme" class="block">Theme</label>
+      <select id="theme" name="theme" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+        {% for t in themes %}
+        <option value="{{ t }}" {% if user.theme == t %}selected{% endif %}>{{ t }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-item">
+      <label for="font" class="block">Font</label>
+      <select id="font" name="font" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+        {% for f in fonts %}
+        <option value="{{ f }}" {% if user.font == f %}selected{% endif %}>{{ f }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-item">
+      <label for="menu_style" class="block">Menu Layout</label>
+      <select id="menu_style" name="menu_style" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+        <option value="tabbed" {% if user.menu_style == 'tabbed' %}selected{% endif %}>Tabbed Navigation</option>
+        <option value="dropdown" {% if user.menu_style == 'dropdown' %}selected{% endif %}>Dropdown Navigation</option>
+      </select>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-item">
+      <button type="submit" aria-label="Save" class="p-2 rounded transition">{{ include_icon('save') }}</button>
+    </div>
+  </div>
+</form>
+
+<a href="/users/me/edit" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition mt-4">Edit Profile</a>
 {% endif %}
 {% endblock %}
