@@ -1,5 +1,6 @@
 :root {
   --font-size: 0.875rem; /* default size, overridden per user preference */
+  --submenu-font-size: calc(var(--font-size) * 0.9);
 }
 
 body { font-family: 'Courier New', monospace; }
