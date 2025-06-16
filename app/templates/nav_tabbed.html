@@ -15,7 +15,7 @@
           <div class="flex space-x-4 ml-auto">
             <button @click="activeTopMenu = 'network'; submenuAlign = $event.target.dataset.align" data-align="right" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Network</button>
             <button @click="activeTopMenu = 'tasks'; submenuAlign = $event.target.dataset.align" data-align="right" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Tasks</button>
-            <button @click="activeTopMenu = 'ssh'; submenuAlign = $event.target.dataset.align" data-align="right" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">SSH</button>
+            <button @click="activeTopMenu = 'netdev'; submenuAlign = $event.target.dataset.align" data-align="right" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Network Devices</button>
             {% if current_user.role in ['admin','superadmin'] %}
             {% if current_user.role == 'superadmin' %}
             {% set admin_items = [
@@ -85,7 +85,7 @@
           <a href="/reports/vlan-usage" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">VLAN Usage</a>
         </div>
       </div>
-      <div x-show="ready && activeTopMenu == 'ssh'" x-transition.opacity.duration.150ms :class="(submenuAlign === 'right' ? 'ml-auto text-right ' : '') + 'border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3'" x-cloak>
+      <div x-show="ready && activeTopMenu == 'netdev'" x-transition.opacity.duration.150ms :class="(submenuAlign === 'right' ? 'ml-auto text-right ' : '') + 'border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3'" x-cloak>
         <div :class="mobile ? 'flex flex-col space-y-2' : 'flex space-x-2'">
           <a href="/ssh/port-config" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Port Config</a>
           <a href="/ssh/port-check" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Port Check</a>
@@ -93,7 +93,6 @@
           <a href="/ssh/port-search" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Port Search</a>
           <a href="/ssh/bulk-port-update" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Bulk Port Update</a>
           <a href="/bulk/vlan-push" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">VLAN Bulk Push</a>
-          <a href="/ssh/netbird-connect" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Initiate Netbird Connection</a>
         </div>
       </div>
       {% if current_user.role in ['admin','superadmin'] %}
