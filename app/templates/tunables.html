@@ -31,7 +31,7 @@
           <p class="text-sm text-gray-400">Options: {{ tunable.options }}</p>
           {% endif %}
         </div>
-        <div class="mb-2">
+        <div class="mb-2 flex flex-wrap items-center gap-2">
           {% if tunable.data_type == 'bool' %}
           <input type="checkbox" name="value" value="true" {% if tunable.value == 'true' %}checked{% endif %}>
           {% elif tunable.data_type == 'choice' %}
@@ -43,7 +43,7 @@
           {% else %}
           <input type="text" name="value" value="{{ tunable.value }}" class="rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
           {% endif %}
-          <button type="submit" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition px-2 py-1 ml-2">Save</button>
+          <button type="submit" class="px-4 py-1.5 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded shadow transition">Save</button>
         </div>
       </form>
       {% endfor %}

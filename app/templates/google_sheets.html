@@ -14,12 +14,12 @@
       <input id="spreadsheet_id" type="text" name="spreadsheet_id" value="{{ config.sheet_id }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
     </div>
   </div>
-  <button type="submit" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Save</button>
+  <button type="submit" class="px-4 py-1.5 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded shadow transition">Save</button>
 </form>
 
 <hr class="my-4">
 <h2 class="text-lg mb-2">Export Table to Sheets</h2>
-<form method="post" action="/tasks/export-google" class="space-y-2 mb-4">
+<form method="post" action="/tasks/export-google" class="flex flex-wrap items-center gap-2 mb-4">
   <select name="table_name" class="p-1 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
     <option value="devices">Devices</option>
     <option value="vlans">VLANs</option>
@@ -28,12 +28,12 @@
     <option value="snmp_communities">SNMP Communities</option>
     <option value="port_config_templates">Port Config Templates</option>
   </select>
-  <button type="submit" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Export</button>
+  <button type="submit" class="px-4 py-1.5 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded shadow transition">Export</button>
 </form>
 
 <hr class="my-4">
 <h2 class="text-lg mb-2">Import Table from Sheets</h2>
-<form method="post" action="/tasks/import-google" class="space-y-2 mb-4">
+<form method="post" action="/tasks/import-google" class="flex flex-wrap items-center gap-2 mb-4">
   <select name="table_name" class="p-1 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
     <option value="devices">Devices</option>
     <option value="vlans">VLANs</option>
@@ -42,6 +42,6 @@
     <option value="snmp_communities">SNMP Communities</option>
     <option value="port_config_templates">Port Config Templates</option>
   </select>
-  <button type="submit" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Import</button>
+  <button type="submit" class="px-4 py-1.5 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded shadow transition">Import</button>
 </form>
 {% endblock %}
