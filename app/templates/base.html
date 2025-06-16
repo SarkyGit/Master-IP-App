@@ -52,7 +52,7 @@
     </header>
       <div id="page-content" class="w-full mt-4 opacity-0 transition-opacity duration-200" x-init="$el.classList.add('opacity-100')">
         <div class="px-6 mx-auto max-w-screen-2xl">
-          <p class="text-base text-[var(--card-text)]">{{ message }}</p>
+          <p class="text-base text-[var(--card-text)]">{{ message or '' }}</p>
           {% block content %}{% endblock %}
         </div>
       </div>
