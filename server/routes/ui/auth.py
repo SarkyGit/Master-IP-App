@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 
 from core.utils.db_session import get_db
 from core.utils import auth as auth_utils
+from core.auth import issue_token
 from core.utils.audit import log_audit
 from core.utils.ip_banning import check_ban, record_failure, clear_attempts
 from core.utils.login_events import log_login_event
@@ -75,6 +76,20 @@ async def login(
     log_login_event(db, user, ip, user_agent, True, location=location)
     response = RedirectResponse(url="/", status_code=302)
     return response
+
+
+@router.post("/token")
+async def login_token(
+    email: str = Form(...),
+    password: str = Form(...),
+    db: Session = Depends(get_db),
+):
+    """Return an access token for API authentication."""
+    user = db.query(User).filter_by(email=email, is_active=True).first()
+    if not user or not auth_utils.verify_password(password, user.hashed_password):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    token = issue_token(user.id)
+    return {"access_token": token, "token_type": "bearer"}
 
 
 @router.get("/logout")

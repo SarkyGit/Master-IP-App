@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 
 from core.utils.db_session import get_db
 from core.models.models import User, Site, SiteMembership
+from core.auth import verify_token
 
 
 ROLE_CHOICES = {"viewer", "user", "editor", "admin", "superadmin"}
@@ -23,12 +24,18 @@ def verify_password(password: str, hashed_password: str) -> bool:
 
 
 def get_current_user(request: Request, db: Session = Depends(get_db)) -> Optional[User]:
-    """Retrieve the currently logged-in user from the session."""
-    user_id = request.session.get("user_id")
+    """Retrieve the current user via session or bearer token."""
+    user_id = None
+    auth_header = request.headers.get("Authorization")
+    if auth_header and auth_header.lower().startswith("bearer "):
+        token = auth_header.split(" ", 1)[1]
+        user_id = verify_token(token)
+    if not user_id:
+        user_id = request.session.get("user_id")
     if not user_id:
         return None
 
-    return db.query(User).filter(User.id == user_id, User.is_active.is_(True)).first()
+    return db.query(User).filter_by(id=user_id, is_active=True).first()
 
 
 def require_role(minimum_role: str) -> Callable[[User], User]:
