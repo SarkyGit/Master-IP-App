@@ -40,12 +40,16 @@ from server.routes import (
     syslog_router,
     tag_manager_router,
     admin_logo_router,
+    api_devices_router,
+    api_users_router,
+    api_vlans_router,
+    api_ssh_credentials_router,
 )
-from server.routes.tunables import router as tunables_router
-from server.routes.editor import router as editor_router
+from server.routes.ui.tunables import router as tunables_router
+from server.routes.ui.editor import router as editor_router
 from server.websockets.editor import shell_ws
 from server.websockets.terminal import router as terminal_ws_router
-from server.routes.welcome import router as welcome_router, WELCOME_TEXT, INVENTORY_TEXT
+from server.routes.ui.welcome import router as welcome_router, WELCOME_TEXT, INVENTORY_TEXT
 from core.utils.auth import get_current_user
 from server.tasks import (
     start_queue_worker,
@@ -100,6 +104,10 @@ app.include_router(vlans_router)
 app.include_router(tunables_router)
 app.include_router(editor_router)
 app.include_router(api_router)
+app.include_router(api_devices_router)
+app.include_router(api_users_router)
+app.include_router(api_vlans_router)
+app.include_router(api_ssh_credentials_router)
 app.include_router(admin_profiles_router)
 app.include_router(configs_router)
 app.include_router(admin_router)

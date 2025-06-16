@@ -1,40 +1,46 @@
-from .auth import router as auth_router
-from .devices import router as devices_router
-from .vlans import router as vlans_router
-from .tunables import router as tunables_router
-from .editor import router as editor_router
-from .api import router as api_router
-from .admin_profiles import router as admin_profiles_router
-from .configs import router as configs_router
-from .admin import router as admin_router
-from .audit import router as audit_router
-from .admin_debug import router as admin_debug_router
-from .welcome import router as welcome_router
-from .device_types import router as device_types_router
-from .network import router as network_router
-from .port_config_templates import router as port_config_templates_router
-from .task_views import router as task_views_router
-from .admin_users import router as admin_users_router
-from .user_pages import router as user_pages_router
-from .locations import router as locations_router
-from .ssh_tasks import router as ssh_tasks_router
-from .ip_bans import router as ip_bans_router
-from .user_ssh import router as user_ssh_router
-from .login_events import router as login_events_router
-from .inventory import router as inventory_router
-from .add_device import router as add_device_router
-from .admin_site import router as admin_site_router
-from .bulk import router as bulk_router
-from .reports import router as reports_router
-from .export import router as export_router
-from .snmp_traps import router as snmp_traps_router
-from .syslog import router as syslog_router
-from .tag_manager import router as tag_manager_router
-from .admin_logo import router as admin_logo_router
+from .ui.auth import router as auth_router
+from .ui.devices import router as devices_router
+from .ui.vlans import router as vlans_router
+from .ui.tunables import router as tunables_router
+from .ui.editor import router as editor_router
+from .ui import devices as devices
+from .api.legacy import router as api_router
+from .ui.admin_profiles import router as admin_profiles_router
+from .ui.configs import router as configs_router
+from .ui.admin import router as admin_router
+from .ui.audit import router as audit_router
+from .ui.admin_debug import router as admin_debug_router
+from .ui.welcome import router as welcome_router
+from .ui.device_types import router as device_types_router
+from .ui.network import router as network_router
+from .ui.port_config_templates import router as port_config_templates_router
+from .ui.task_views import router as task_views_router
+from .ui.admin_users import router as admin_users_router
+from .ui.user_pages import router as user_pages_router
+from .ui.locations import router as locations_router
+from .ui.ssh_tasks import router as ssh_tasks_router
+from .ui.ip_bans import router as ip_bans_router
+from .ui.user_ssh import router as user_ssh_router
+from .ui.login_events import router as login_events_router
+from .ui.inventory import router as inventory_router
+from .ui.add_device import router as add_device_router
+from .ui.admin_site import router as admin_site_router
+from .ui.bulk import router as bulk_router
+from .ui.reports import router as reports_router
+from .ui.export import router as export_router
+from .internal.snmp_traps import router as snmp_traps_router
+from .internal.syslog import router as syslog_router
+from .ui.tag_manager import router as tag_manager_router
+from .ui.admin_logo import router as admin_logo_router
+from .api.devices import router as api_devices_router
+from .api.users import router as api_users_router
+from .api.vlans import router as api_vlans_router
+from .api.ssh_credentials import router as api_ssh_credentials_router
 
 __all__ = [
     "auth_router",
     "devices_router",
+    "devices",
     "vlans_router",
     "tunables_router",
     "editor_router",
@@ -66,4 +72,8 @@ __all__ = [
     "syslog_router",
     "tag_manager_router",
     "admin_logo_router",
+    "api_devices_router",
+    "api_users_router",
+    "api_vlans_router",
+    "api_ssh_credentials_router",
 ]

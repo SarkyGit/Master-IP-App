@@ -26,7 +26,7 @@ from core.utils.device_detect import detect_ssh_platform
 from core.utils.templates import templates
 from core.utils.audit import log_audit
 from core.utils.tags import get_or_create_tag, add_tag_to_device
-from server.routes.devices import _format_ip
+from server.routes.ui.devices import _format_ip
 
 router = APIRouter(prefix="/bulk")
 
