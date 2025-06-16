@@ -80,7 +80,7 @@ nav.bg-gray-800 .menu-right {
 }
 
 .top-header .logo-box img {
-  height: 40px;
+  height: 60px;
 }
 /* Form layout adjustments */
 form:not(.inline) {
@@ -146,4 +146,9 @@ body.col-resize {
 .form-row > .form-item {
   flex: 1;
   min-width: 240px;
+}
+
+/* Font sizing for submenu items */
+.submenu a {
+  font-size: var(--submenu-font-size);
 }
