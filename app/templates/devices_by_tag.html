@@ -14,7 +14,7 @@
   <tbody>
   {% for dev in devices %}
     <tr class="border-t border-gray-700">
-      <td class="px-4 py-2"><a href="/devices/{{ dev.id }}/edit" class="inline-block p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded transition">{{ dev.hostname }}</a></td>
+      <td class="px-4 py-2"><a href="/devices/{{ dev.id }}/edit" class="inline-block px-2 text-sm text-[var(--btn-text)] hover:text-[var(--btn-hover-text)]">{{ dev.hostname }}</a></td>
       <td class="px-4 py-2">{{ dev.ip }}</td>
       <td class="px-4 py-2">{{ dev.tags | map(attribute='name') | join(', ') }}</td>
     </tr>
