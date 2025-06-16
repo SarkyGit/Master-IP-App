@@ -7,6 +7,7 @@ from sqlalchemy import (
     DateTime,
     Text,
     Boolean,
+    Float,
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy import Table
@@ -209,6 +210,9 @@ class User(Base):
     ssh_password = Column(String, nullable=True)
     ssh_port = Column(Integer, nullable=True, default=22)
     created_at = Column(DateTime, default=datetime.utcnow)
+    last_login = Column(DateTime, nullable=True)
+    last_location_lat = Column(Float, nullable=True)
+    last_location_lon = Column(Float, nullable=True)
 
     site_memberships = relationship("SiteMembership", back_populates="user")
 

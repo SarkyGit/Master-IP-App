@@ -12,9 +12,11 @@ def log_login_event(
     ip: str,
     user_agent: str,
     success: bool,
+    location: str | None = None,
 ) -> LoginEvent:
     """Create a LoginEvent entry and return it."""
-    location = geolocate_ip(ip)
+    if location is None:
+        location, _, _ = geolocate_ip(ip)
     event = LoginEvent(
         user_id=user.id if user else None,
         ip_address=ip,

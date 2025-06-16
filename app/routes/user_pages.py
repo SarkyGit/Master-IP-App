@@ -5,13 +5,29 @@ from sqlalchemy.orm import Session
 
 from app.utils.db_session import get_db
 from app.utils.auth import get_current_user, require_role, ROLE_HIERARCHY, get_password_hash
+<<<<<<< codex/add-geolocation-with-google-maps-to-user-profile
+from app.models.models import User, SystemTunable
+=======
 from app.models.models import User, LoginEvent
+>>>>>>> main
 
 router = APIRouter()
 
 @router.get('/users/me')
 async def my_profile(
     request: Request,
+<<<<<<< codex/add-geolocation-with-google-maps-to-user-profile
+    current_user: User = Depends(require_role("viewer")),
+    db: Session = Depends(get_db),
+):
+    """Display the currently logged-in user's details."""
+    api_key_row = (
+        db.query(SystemTunable)
+        .filter(SystemTunable.name == "GOOGLE_MAPS_API_KEY")
+        .first()
+    )
+    api_key = api_key_row.value if api_key_row else None
+=======
     db: Session = Depends(get_db),
     current_user: User = Depends(require_role("viewer")),
 ):
@@ -22,13 +38,18 @@ async def my_profile(
         .order_by(LoginEvent.timestamp.desc())
         .first()
     )
+>>>>>>> main
     context = {
         "request": request,
         "user": current_user,
         "current_user": current_user,
+<<<<<<< codex/add-geolocation-with-google-maps-to-user-profile
+        "api_key": api_key,
+=======
         "last_login": last_login,
         "themes": ["dark_colourful", "dark", "light", "blue", "bw", "homebrew", "apple_glass"],
         "fonts": ["sans", "serif", "mono"],
+>>>>>>> main
     }
     return templates.TemplateResponse("user_detail.html", context)
 
@@ -125,5 +146,16 @@ async def user_detail(user_id: int, request: Request, db: Session = Depends(get_
     if current_user.id != user.id and ROLE_HIERARCHY.index(current_user.role) < ROLE_HIERARCHY.index("admin"):
         raise HTTPException(status_code=403, detail="Insufficient role")
 
-    context = {"request": request, "user": user, "current_user": current_user}
+    api_key_row = (
+        db.query(SystemTunable)
+        .filter(SystemTunable.name == "GOOGLE_MAPS_API_KEY")
+        .first()
+    )
+    api_key = api_key_row.value if api_key_row else None
+    context = {
+        "request": request,
+        "user": user,
+        "current_user": current_user,
+        "api_key": api_key,
+    }
     return templates.TemplateResponse("user_detail.html", context)
