@@ -56,6 +56,10 @@ def main():
         if not camera_type:
             camera_type = DeviceType(name="IP Camera")
             db.add(camera_type)
+
+        for dtype in ["PTP", "PTMP", "IPTV", "VOG", "IoT Device"]:
+            if not db.query(DeviceType).filter_by(name=dtype).first():
+                db.add(DeviceType(name=dtype))
         db.commit()
 
         # Seed sample switches if none exist
