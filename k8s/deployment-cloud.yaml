@@ -16,7 +16,7 @@ spec:
       - name: web
         image: master-ip:latest
         env:
-        - name: APP_ROLE
+        - name: ROLE
           value: "cloud"
         ports:
         - containerPort: 8000

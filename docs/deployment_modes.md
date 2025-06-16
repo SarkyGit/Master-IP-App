@@ -1,10 +1,10 @@
 # Deployment Modes
 
-The application can run in one of two roles controlled by the `APP_ROLE` environment variable.
+The application can run in one of two roles controlled by the `ROLE` environment variable.
 
 ## Local Mode
 
-Local mode is the default when `APP_ROLE` is omitted or set to `local`.
+Local mode is the default when `ROLE` is omitted or set to `local`.
 Background workers such as the configuration scheduler and queue processor start
 up automatically.  These workers handle SNMP polling, scheduled config pulls and
 other tasks.  When `ENABLE_CLOUD_SYNC=1` the local instance pushes updates to the
@@ -13,7 +13,7 @@ corresponding workers are enabled.
 
 ## Cloud Mode
 
-When `APP_ROLE=cloud` the server exposes REST endpoints for local sites to
+When `ROLE=cloud` the server exposes REST endpoints for local sites to
 synchronize with but does not start the heavy background workers.  Use this mode
 for the central replication point.  The sync endpoints under `/api/v1/sync` are
 only mounted in this mode.
