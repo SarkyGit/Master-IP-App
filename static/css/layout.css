@@ -127,6 +127,7 @@ th .resizer.active,
 body.col-resize th .resizer {
   background: var(--border-color);
   opacity: 0.8;
+
 }
 
 body.col-resize {
