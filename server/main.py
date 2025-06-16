@@ -9,7 +9,7 @@ except ImportError:  # Fallback for older Starlette versions
     from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 import os
 
-from app.routes import (
+from server.routes import (
     auth_router,
     devices_router,
     vlans_router,
@@ -41,13 +41,13 @@ from app.routes import (
     tag_manager_router,
     admin_logo_router,
 )
-from app.routes.tunables import router as tunables_router
-from app.routes.editor import router as editor_router
-from app.websockets.editor import shell_ws
-from app.websockets.terminal import router as terminal_ws_router
-from app.routes.welcome import router as welcome_router, WELCOME_TEXT, INVENTORY_TEXT
+from server.routes.tunables import router as tunables_router
+from server.routes.editor import router as editor_router
+from server.websockets.editor import shell_ws
+from server.websockets.terminal import router as terminal_ws_router
+from server.routes.welcome import router as welcome_router, WELCOME_TEXT, INVENTORY_TEXT
 from core.utils.auth import get_current_user
-from app.tasks import (
+from server.tasks import (
     start_queue_worker,
     start_config_scheduler,
     stop_queue_worker,

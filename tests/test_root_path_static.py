@@ -7,17 +7,17 @@ from fastapi.testclient import TestClient
 
 def get_test_app():
     os.environ.setdefault("DATABASE_URL", "postgresql://user:pass@localhost/test")
-    # Remove imported app modules to ensure patches apply
+    # Remove imported server modules to ensure patches apply
     for m in list(sys.modules):
-        if m.startswith("app"):
+        if m.startswith("server"):
             del sys.modules[m]
     with mock.patch("sqlalchemy.create_engine"), \
          mock.patch("sqlalchemy.schema.MetaData.create_all"), \
-         mock.patch("app.tasks.start_queue_worker"), \
-         mock.patch("app.tasks.start_config_scheduler"), \
-         mock.patch("app.tasks.setup_trap_listener"), \
-         mock.patch("app.tasks.setup_syslog_listener"):
-        return importlib.import_module("app.main").app
+         mock.patch("server.tasks.start_queue_worker"), \
+         mock.patch("server.tasks.start_config_scheduler"), \
+         mock.patch("server.tasks.setup_trap_listener"), \
+         mock.patch("server.tasks.setup_syslog_listener"):
+        return importlib.import_module("server.main").app
 
 
 app = get_test_app()

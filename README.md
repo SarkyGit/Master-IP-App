@@ -48,7 +48,7 @@ echo "DATABASE_URL=postgresql://masteruser:masterpass@localhost:5432/master_ip_d
 ./init_db.sh
 
 # start the development server
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+uvicorn server.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 Visit [http://localhost:8000](http://localhost:8000) and log in with the credentials created by `seed_superuser.py`:
@@ -149,7 +149,7 @@ Start the server with reasonable defaults using the provided `start.sh` script:
 This script loads variables from `.env` if present, automatically runs the seed scripts (unless `AUTO_SEED=0` or `false`) and then executes:
 
 ```bash
-gunicorn app.main:app \
+gunicorn server.main:app \
     --worker-class uvicorn.workers.UvicornWorker \
     --workers ${WORKERS:-4} \
     --timeout ${TIMEOUT:-120} \
@@ -205,7 +205,7 @@ sudo systemctl reload nginx
 
 When the application runs behind this proxy the FastAPI instance must
 honor `X-Forwarded-Proto` so generated links use HTTPS.  This repository
-includes `ProxyHeadersMiddleware` in `app/main.py`, which reads that
+includes `ProxyHeadersMiddleware` in `server/main.py`, which reads that
 header. Ensure Nginx forwards it as shown above.
 
 To serve HTTPS traffic obtain a certificate with Certbot and let it configure
@@ -230,7 +230,7 @@ sudo systemctl enable nginx
 ### Can't access the app from another machine
 If the browser shows a *connection refused* error when visiting
 `http://<server-ip>:8000`, the server is likely only listening on `127.0.0.1`.
-Start it with `uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload` and
+Start it with `uvicorn server.main:app --host 0.0.0.0 --port 8000 --reload` and
 ensure the port is allowed through any firewall.
 
 ### "*** Disconnected ***" when opening a Live Session
