@@ -9,11 +9,11 @@ body {
   --submenu-bg: #1f2937;
   --submenu-text: #e5e7eb;
   --submenu-hover-bg: #44475a;
-  --tab-bg: #1e3a8a;
-  --tab-hover: #1d4ed8;
+  --tab-bg: #4b5563;
+  --tab-hover: #6b7280;
   --tab-text: #ffffff;
-  --btn-bg:        #1e3a8a;
-  --btn-hover:     #1d4ed8;
+  --btn-bg:        #6b7280;
+  --btn-hover:     #9ca3af;
   --btn-text:      #ffffff;
   --btn-hover-text: #ffffff;
   --card-bg:       #1e293b;
@@ -23,8 +23,8 @@ body {
   --table-bg:      #1f2937;
   --code-text: #f1f5f9;
   --code-bg: #1e293b;
-  --alert-bg:      #334155;
-  --border-color:  #475569;
+  --alert-bg:      #4b5563;
+  --border-color:  #6b7280;
   --hover-muted:   #374151;
 }
 
@@ -34,15 +34,15 @@ body {
 
 /* Match navigation background to dark theme */
 nav.bg-gray-800 {
-  background-color: #222034 !important;
+  background-color: var(--nav-bg) !important;
 }
 
 .bg-black {
-  background-color: #1f1f1f !important;
+  background-color: var(--card-bg) !important;
 }
 
 .border-gray-700 {
-  border-color: #444 !important;
+  border-color: var(--border-color) !important;
 }
 
 

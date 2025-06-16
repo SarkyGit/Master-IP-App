@@ -11,11 +11,11 @@ body {
   --submenu-bg: #1f2937;
   --submenu-text: #e5e7eb;
   --submenu-hover-bg: #4b5563;
-  --tab-bg: #7c3aed;
-  --tab-hover: #a855f7;
+  --tab-bg: #06b6d4;      /* cyan */
+  --tab-hover: #22d3ee;   /* lighter cyan */
   --tab-text: #ffffff;
-  --btn-bg:        #7c3aed;
-  --btn-hover:     #a855f7;
+  --btn-bg:        #f97316; /* orange */
+  --btn-hover:     #fb923c; /* lighter orange */
   --btn-text:      #ffffff;
   --btn-hover-text: #ffffff;
   --card-bg:       #1e293b;
@@ -25,8 +25,8 @@ body {
   --table-bg:      #1f2937;
   --code-text: #f1f5f9;
   --code-bg: #1e293b;
-  --alert-bg:      #be123c;
-  --border-color:  #475569;
+  --alert-bg:      #ec4899; /* pink */
+  --border-color:  #14b8a6; /* teal */
   --hover-muted:   #374151;
 }
 
@@ -35,11 +35,11 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 nav.bg-gray-800 {
-  background-color: #1f2937 !important; /* bg-gray-800 */
+  background-color: var(--nav-bg) !important;
 }
 
 .card, .bg-gray-800 {
-  background-color: #1f2937; /* bg-gray-800 */
+  background-color: var(--card-bg);
   border-radius: 0.75rem;
   overflow: hidden;
 }
@@ -51,8 +51,8 @@ table {
 }
 
 table thead th {
-  background-color: #1f2937; /* bg-gray-800 */
-  color: #ffffff;
+  background-color: var(--nav-bg);
+  color: var(--nav-text);
   font-weight: bold;
   padding: 0.5rem 1rem;
 }
@@ -67,7 +67,7 @@ table tbody tr:nth-child(odd) {
 
 table td {
   padding: 0.5rem 1rem;      /* px-4 py-2 */
-  border-bottom: 1px solid #374151; /* border-gray-700 */
+  border-bottom: 1px solid var(--border-color);
 }
 
 .logged-in {
