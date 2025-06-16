@@ -9,30 +9,35 @@ services:
       POSTGRES_PASSWORD: masterpass
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+    expose:
+      - "5432"
 
-  web:
+  app:
     build:
       context: ../..
     command: ./start.sh
+    env_file:
+      - .env.cloud
+    environment:
+      ROLE: cloud
     depends_on:
       - db
-    environment:
-      DATABASE_URL: postgresql://masteruser:masterpass@db:5432/master_ip_cloud
-      ROLE: cloud
-    ports:
-      - "8000:8000"
+    volumes:
+      - ../../alembic:/app/alembic
+      - logs:/app/logs
+    expose:
+      - "8000"
 
   nginx:
     image: nginx:latest
     ports:
       - "443:443"
     volumes:
-      - ../../nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ../../nginx/cloud.conf:/etc/nginx/conf.d/default.conf:ro
       - ../../nginx/certs:/etc/nginx/certs:ro
     depends_on:
-      - web
+      - app
 
 volumes:
   postgres_data:
+  logs:
