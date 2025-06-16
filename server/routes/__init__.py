@@ -10,6 +10,7 @@ from .ui.configs import router as configs_router
 from .ui.admin import router as admin_router
 from .ui.audit import router as audit_router
 from .ui.admin_debug import router as admin_debug_router
+from .ui.sync_diagnostics import router as sync_diagnostics_router
 from .ui.welcome import router as welcome_router
 from .ui.device_types import router as device_types_router
 from .ui.network import router as network_router
@@ -51,6 +52,7 @@ __all__ = [
     "admin_router",
     "audit_router",
     "admin_debug_router",
+    "sync_diagnostics_router",
     "welcome_router",
     "device_types_router",
     "network_router",

@@ -86,11 +86,15 @@ _sync_task: asyncio.Task | None = None
 def start_sync_push_worker(app):
     @app.on_event("startup")
     async def start_worker():
-        if os.environ.get("ENABLE_SYNC_PUSH_WORKER") != "1":
-            return
+        enabled = os.environ.get("ENABLE_SYNC_PUSH_WORKER") == "1"
         role = os.environ.get("ROLE", "local")
-        if role == "cloud":
+        if not enabled:
+            print("Sync push worker disabled")
             return
+        if role == "cloud":
+            print("Sync push worker not started in cloud role")
+            return
+        print("Starting sync push worker")
         global _sync_task
         _sync_task = asyncio.create_task(_push_loop())
 

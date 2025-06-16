@@ -94,9 +94,15 @@ def start_cloud_sync(app):
     @app.on_event("startup")
     async def start_worker():
         role = os.environ.get("ROLE", "local")
-        if os.environ.get("ENABLE_CLOUD_SYNC") == "1" and role != "cloud":
+        enabled = os.environ.get("ENABLE_CLOUD_SYNC") == "1"
+        if enabled and role == "cloud":
+            raise RuntimeError("cloud_sync worker should not run in cloud role")
+        if enabled and role != "cloud":
+            print("Starting cloud sync worker")
             global _sync_task
             _sync_task = asyncio.create_task(_sync_loop())
+        else:
+            print("Cloud sync worker disabled")
 
 
 async def stop_cloud_sync() -> None:

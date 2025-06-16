@@ -47,6 +47,7 @@ from server.routes import (
     api_ssh_credentials_router,
 )
 from server.routes.api.sync import router as api_sync_router
+from server.routes.ui.sync_diagnostics import router as sync_diagnostics_router
 from server.routes.ui.tunables import router as tunables_router
 from server.routes.ui.editor import router as editor_router
 from server.websockets.editor import shell_ws
@@ -104,6 +105,13 @@ os.makedirs(STATIC_DIR, exist_ok=True)
 # debugging misconfigured deployments where files may not be found.
 print(f"Serving static files from: {STATIC_DIR}")
 print(f"Application role: {settings.role}")
+if settings.role == "cloud":
+    print("Cloud mode: sync API routes enabled")
+else:
+    print(f"Background workers enabled: {settings.enable_background_workers}")
+    print(f"Cloud sync worker enabled: {settings.enable_cloud_sync}")
+    print(f"Sync push worker enabled: {settings.enable_sync_push_worker}")
+    print(f"Sync pull worker enabled: {settings.enable_sync_pull_worker}")
 
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
@@ -127,6 +135,7 @@ app.include_router(api_vlans_router)
 app.include_router(api_ssh_credentials_router)
 if settings.role == "cloud":
     app.include_router(api_sync_router)
+    app.include_router(sync_diagnostics_router)
 app.include_router(admin_profiles_router)
 app.include_router(configs_router)
 app.include_router(admin_router)
