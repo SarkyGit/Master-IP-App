@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: master-ip-local
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: master-ip
+  template:
+    metadata:
+      labels:
+        app: master-ip
+    spec:
+      containers:
+      - name: web
+        image: master-ip:latest
+        env:
+        - name: ROLE
+          value: "local"
+        - name: ENABLE_CLOUD_SYNC
+          value: "1"
+        ports:
+        - containerPort: 8000

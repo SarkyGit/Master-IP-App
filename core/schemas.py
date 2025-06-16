@@ -10,6 +10,8 @@ class ColumnSelection(BaseModel):
 class VLANBase(BaseModel):
     tag: int
     description: str | None = None
+    version: int | None = 1
+    has_conflict: bool | None = False
 
 
 class VLANCreate(VLANBase):
@@ -34,6 +36,8 @@ class DeviceBase(BaseModel):
     vlan_id: int | None = None
     manufacturer: str | None = None
     model: str | None = None
+    version: int | None = 1
+    has_conflict: bool | None = False
 
 
 class DeviceCreate(DeviceBase):
@@ -60,6 +64,8 @@ class SSHCredentialBase(BaseModel):
     username: str
     password: str | None = None
     private_key: str | None = None
+    version: int | None = 1
+    has_conflict: bool | None = False
 
 
 class SSHCredentialCreate(SSHCredentialBase):
@@ -84,6 +90,8 @@ class UserBase(BaseModel):
     email: str
     role: str = "viewer"
     is_active: bool = True
+    version: int | None = 1
+    has_conflict: bool | None = False
 
 
 class UserCreate(UserBase):
