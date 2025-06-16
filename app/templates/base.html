@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="w-full h-full overflow-x-hidden">
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,7 +12,8 @@
     <link rel='stylesheet' href='{{ request.url_for('static', path='css/unocss.css') }}'>
     <link rel="stylesheet" href="{{ request.url_for('static', path='css/layout.css') }}">
   </head>
-  <body>
+  <body class="w-full h-full overflow-x-hidden">
+    <div id="app" class="min-h-screen w-full overflow-x-hidden">
     <header>
       <div class="top-header">
         <div class="container mx-auto flex items-center justify-between">
@@ -58,5 +59,6 @@
     <script src="{{ request.url_for('static', path='js/alpine.min.js') }}" defer></script>
     <script src="{{ request.url_for('static', path='js/table.js') }}" defer></script>
     {% block extra_scripts %}{% endblock %}
+    </div>
   </body>
 </html>
