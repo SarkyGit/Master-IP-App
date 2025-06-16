@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Request, Depends, Form, HTTPException
 from fastapi.responses import RedirectResponse
+from datetime import datetime
 from app.utils.templates import templates
 from sqlalchemy.orm import Session
 
@@ -8,6 +9,7 @@ from app.utils import auth as auth_utils
 from app.utils.audit import log_audit
 from app.utils.ip_banning import check_ban, record_failure, clear_attempts
 from app.utils.login_events import log_login_event
+from app.utils.geolocation import geolocate_ip
 from app.models.models import User, LoginEvent
 
 
@@ -64,8 +66,13 @@ async def login(
     )
     if not seen:
         request.session["new_device_alert"] = "New login from unfamiliar device or location"
+    location, lat, lon = geolocate_ip(ip)
+    user.last_login = datetime.utcnow()
+    user.last_location_lat = lat
+    user.last_location_lon = lon
+    db.commit()
     log_audit(db, user, "login", details=f"IP={ip}")
-    log_login_event(db, user, ip, user_agent, True)
+    log_login_event(db, user, ip, user_agent, True, location=location)
     response = RedirectResponse(url="/", status_code=302)
     return response
 

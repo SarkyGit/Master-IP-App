@@ -51,6 +51,14 @@ def main():
                 description="Target spreadsheet ID",
             ),
             SystemTunable(
+                name="GOOGLE_MAPS_API_KEY",
+                value="",
+                function="Google Maps",
+                file_type="application",
+                data_type="text",
+                description="API key for Google Maps JavaScript",
+            ),
+            SystemTunable(
                 name="Netbird API URL",
                 value="https://api.netbird.io/api",
                 function="Netbird",

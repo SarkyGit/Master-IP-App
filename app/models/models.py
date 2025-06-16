@@ -7,6 +7,7 @@ from sqlalchemy import (
     DateTime,
     Text,
     Boolean,
+    Float,
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy import Table
@@ -206,6 +207,9 @@ class User(Base):
     font = Column(String, nullable=False, default="sans")
     menu_style = Column(String, nullable=False, default="tabbed")
     created_at = Column(DateTime, default=datetime.utcnow)
+    last_login = Column(DateTime, nullable=True)
+    last_location_lat = Column(Float, nullable=True)
+    last_location_lon = Column(Float, nullable=True)
 
     site_memberships = relationship("SiteMembership", back_populates="user")
 

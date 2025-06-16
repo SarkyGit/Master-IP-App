@@ -5,14 +5,29 @@ from sqlalchemy.orm import Session
 
 from app.utils.db_session import get_db
 from app.utils.auth import get_current_user, require_role, ROLE_HIERARCHY, get_password_hash
-from app.models.models import User
+from app.models.models import User, SystemTunable
 
 router = APIRouter()
 
 @router.get('/users/me')
-async def my_profile(request: Request, current_user: User = Depends(require_role("viewer"))):
+async def my_profile(
+    request: Request,
+    current_user: User = Depends(require_role("viewer")),
+    db: Session = Depends(get_db),
+):
     """Display the currently logged-in user's details."""
-    context = {"request": request, "user": current_user, "current_user": current_user}
+    api_key_row = (
+        db.query(SystemTunable)
+        .filter(SystemTunable.name == "GOOGLE_MAPS_API_KEY")
+        .first()
+    )
+    api_key = api_key_row.value if api_key_row else None
+    context = {
+        "request": request,
+        "user": current_user,
+        "current_user": current_user,
+        "api_key": api_key,
+    }
     return templates.TemplateResponse("user_detail.html", context)
 
 
@@ -76,5 +91,16 @@ async def user_detail(user_id: int, request: Request, db: Session = Depends(get_
     if current_user.id != user.id and ROLE_HIERARCHY.index(current_user.role) < ROLE_HIERARCHY.index("admin"):
         raise HTTPException(status_code=403, detail="Insufficient role")
 
-    context = {"request": request, "user": user, "current_user": current_user}
+    api_key_row = (
+        db.query(SystemTunable)
+        .filter(SystemTunable.name == "GOOGLE_MAPS_API_KEY")
+        .first()
+    )
+    api_key = api_key_row.value if api_key_row else None
+    context = {
+        "request": request,
+        "user": user,
+        "current_user": current_user,
+        "api_key": api_key,
+    }
     return templates.TemplateResponse("user_detail.html", context)

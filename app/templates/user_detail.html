@@ -2,7 +2,8 @@
 
 {% block content %}
 <h1 class="text-xl mb-4">User Details</h1>
-<div class="w-full overflow-auto">
+<div class="flex flex-wrap gap-4 items-start">
+<div class="flex-1 min-w-[200px] overflow-auto">
 <table class="min-w-full table-fixed text-left">
   <tbody>
     <tr class="border-t border-gray-700">
@@ -24,7 +25,31 @@
   </tbody>
 </table>
 </div>
+<div class="w-96 h-64 rounded overflow-hidden" id="map-container">
+  {% if user.last_location_lat and user.last_location_lon and api_key %}
+  <div id="map" class="w-full h-full rounded"></div>
+  {% else %}
+  <div class="w-full h-full flex items-center justify-center bg-[var(--card-bg)] text-[var(--card-text)] rounded">Login location unavailable</div>
+  {% endif %}
+</div>
+</div>
 {% if current_user and current_user.id == user.id %}
-<a href="/users/me/edit" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Edit Profile</a>
+<a href="/users/me/edit" class="block px-4 py-2 mt-4 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Edit Profile</a>
+{% endif %}
+{% endblock %}
+
+{% block extra_scripts %}
+{% if user.last_location_lat and user.last_location_lon and api_key %}
+<script>
+function initMap() {
+  const loc = { lat: parseFloat("{{ user.last_location_lat }}"), lng: parseFloat("{{ user.last_location_lon }}") };
+  const map = new google.maps.Map(document.getElementById('map'), {
+    zoom: 8,
+    center: loc,
+  });
+  new google.maps.Marker({ position: loc, map: map });
+}
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&callback=initMap" async defer></script>
 {% endif %}
 {% endblock %}
