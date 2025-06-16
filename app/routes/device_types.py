@@ -25,7 +25,13 @@ async def list_device_types(
 
 @router.get("/device-types/new")
 async def new_device_type_form(request: Request, current_user=Depends(require_role("superadmin"))):
-    context = {"request": request, "dtype": None, "form_title": "New Device Type", "error": None}
+    context = {
+        "request": request,
+        "dtype": None,
+        "form_title": "New Device Type",
+        "error": None,
+        "current_user": current_user,
+    }
     return templates.TemplateResponse("device_type_form.html", context)
 
 
@@ -43,6 +49,7 @@ async def create_device_type(
             "dtype": {"name": name},
             "form_title": "New Device Type",
             "error": "Name already exists",
+            "current_user": current_user,
         }
         return templates.TemplateResponse("device_type_form.html", context)
 
@@ -62,7 +69,13 @@ async def edit_device_type_form(
     dtype = db.query(DeviceType).filter(DeviceType.id == type_id).first()
     if not dtype:
         raise HTTPException(status_code=404, detail="Device type not found")
-    context = {"request": request, "dtype": dtype, "form_title": "Edit Device Type", "error": None}
+    context = {
+        "request": request,
+        "dtype": dtype,
+        "form_title": "Edit Device Type",
+        "error": None,
+        "current_user": current_user,
+    }
     return templates.TemplateResponse("device_type_form.html", context)
 
 
@@ -80,7 +93,13 @@ async def update_device_type(
 
     existing = db.query(DeviceType).filter(DeviceType.name == name, DeviceType.id != type_id).first()
     if existing:
-        context = {"request": request, "dtype": dtype, "form_title": "Edit Device Type", "error": "Name already exists"}
+        context = {
+            "request": request,
+            "dtype": dtype,
+            "form_title": "Edit Device Type",
+            "error": "Name already exists",
+            "current_user": current_user,
+        }
         dtype.name = name
         return templates.TemplateResponse("device_type_form.html", context)
 

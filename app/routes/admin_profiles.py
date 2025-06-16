@@ -28,7 +28,13 @@ async def list_ssh_credentials(
 
 @router.get("/admin/ssh/new")
 async def new_ssh_form(request: Request, current_user=Depends(require_role("superadmin"))):
-    context = {"request": request, "cred": None, "form_title": "New SSH Profile", "error": None}
+    context = {
+        "request": request,
+        "cred": None,
+        "form_title": "New SSH Profile",
+        "error": None,
+        "current_user": current_user,
+    }
     return templates.TemplateResponse("ssh_form.html", context)
 
 
@@ -49,6 +55,7 @@ async def create_ssh_credential(
             "cred": {"name": name, "username": username, "password": password, "private_key": private_key},
             "form_title": "New SSH Profile",
             "error": "Name already exists",
+            "current_user": current_user,
         }
         return templates.TemplateResponse("ssh_form.html", context)
 
@@ -73,7 +80,13 @@ async def edit_ssh_form(
     cred = db.query(SSHCredential).filter(SSHCredential.id == cred_id).first()
     if not cred:
         raise HTTPException(status_code=404, detail="SSH credential not found")
-    context = {"request": request, "cred": cred, "form_title": "Edit SSH Profile", "error": None}
+    context = {
+        "request": request,
+        "cred": cred,
+        "form_title": "Edit SSH Profile",
+        "error": None,
+        "current_user": current_user,
+    }
     return templates.TemplateResponse("ssh_form.html", context)
 
 
@@ -99,6 +112,7 @@ async def update_ssh_credential(
             "cred": cred,
             "form_title": "Edit SSH Profile",
             "error": "Name already exists",
+            "current_user": current_user,
         }
         cred.name = name
         cred.username = username
@@ -156,7 +170,13 @@ async def list_snmp_profiles(
 
 @router.get("/admin/snmp/new")
 async def new_snmp_form(request: Request, current_user=Depends(require_role("superadmin"))):
-    context = {"request": request, "profile": None, "form_title": "New SNMP Profile", "error": None}
+    context = {
+        "request": request,
+        "profile": None,
+        "form_title": "New SNMP Profile",
+        "error": None,
+        "current_user": current_user,
+    }
     return templates.TemplateResponse("snmp_form.html", context)
 
 
@@ -176,6 +196,7 @@ async def create_snmp_profile(
             "profile": {"name": name, "community_string": community_string, "version": version},
             "form_title": "New SNMP Profile",
             "error": "Name already exists",
+            "current_user": current_user,
         }
         return templates.TemplateResponse("snmp_form.html", context)
 
@@ -195,7 +216,13 @@ async def edit_snmp_form(
     profile = db.query(SNMPCommunity).filter(SNMPCommunity.id == profile_id).first()
     if not profile:
         raise HTTPException(status_code=404, detail="SNMP profile not found")
-    context = {"request": request, "profile": profile, "form_title": "Edit SNMP Profile", "error": None}
+    context = {
+        "request": request,
+        "profile": profile,
+        "form_title": "Edit SNMP Profile",
+        "error": None,
+        "current_user": current_user,
+    }
     return templates.TemplateResponse("snmp_form.html", context)
 
 
@@ -220,6 +247,7 @@ async def update_snmp_profile(
             "profile": profile,
             "form_title": "Edit SNMP Profile",
             "error": "Name already exists",
+            "current_user": current_user,
         }
         profile.name = name
         profile.community_string = community_string

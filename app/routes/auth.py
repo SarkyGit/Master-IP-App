@@ -18,7 +18,7 @@ router = APIRouter()
 @router.get("/login")
 async def login_form(request: Request):
     """Render the login form."""
-    context = {"request": request, "error": None}
+    context = {"request": request, "error": None, "current_user": None}
     return templates.TemplateResponse("login.html", context)
 
 
