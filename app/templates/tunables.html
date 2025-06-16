@@ -21,31 +21,33 @@
     {% for file, tunables in files.items() %}
     <h3 class="mt-2">{{ file }}</h3>
       {% for tunable in tunables %}
-      <form method="post" action="/tunables/{{ tunable.id }}" class="mb-3 p-3 border rounded">
-        <div class="mb-2">
-          <label class="block fw-bold">{{ tunable.name }}</label>
-          {% if tunable.description %}
-          <p class="text-sm text-gray-400">{{ tunable.description }}</p>
-          {% endif %}
-          {% if tunable.options and tunable.data_type == 'choice' %}
-          <p class="text-sm text-gray-400">Options: {{ tunable.options }}</p>
-          {% endif %}
-        </div>
-        <div class="mb-2 flex flex-wrap items-center gap-2">
-          {% if tunable.data_type == 'bool' %}
-          <input type="checkbox" name="value" value="true" {% if tunable.value == 'true' %}checked{% endif %}>
-          {% elif tunable.data_type == 'choice' %}
-          <select name="value" class="rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
-            {% for opt in tunable.options.split(',') %}
-            <option value="{{ opt }}" {% if tunable.value == opt %}selected{% endif %}>{{ opt }}</option>
-            {% endfor %}
-          </select>
-          {% else %}
-          <input type="text" name="value" value="{{ tunable.value }}" class="rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
-          {% endif %}
-          <button type="submit" aria-label="Save" class="p-2 rounded shadow transition">{{ include_icon('save') }}</button>
-        </div>
-      </form>
+        <form method="post" action="/tunables/{{ tunable.id }}" class="mb-3 p-3 border rounded">
+          <div class="flex flex-wrap gap-4 items-start">
+            <div class="flex flex-col flex-1 min-w-[280px]">
+              <label class="mb-1 fw-bold block">{{ tunable.name }}</label>
+              {% if tunable.description %}
+              <p class="text-sm text-gray-400">{{ tunable.description }}</p>
+              {% endif %}
+              {% if tunable.options and tunable.data_type == 'choice' %}
+              <p class="text-sm text-gray-400">Options: {{ tunable.options }}</p>
+              {% endif %}
+            </div>
+            <div class="flex flex-col flex-1 min-w-[280px]">
+              {% if tunable.data_type == 'bool' %}
+              <input type="checkbox" name="value" value="true" {% if tunable.value == 'true' %}checked{% endif %}>
+              {% elif tunable.data_type == 'choice' %}
+              <select name="value" class="rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+                {% for opt in tunable.options.split(',') %}
+                <option value="{{ opt }}" {% if tunable.value == opt %}selected{% endif %}>{{ opt }}</option>
+                {% endfor %}
+              </select>
+              {% else %}
+              <input type="text" name="value" value="{{ tunable.value }}" class="rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+              {% endif %}
+            </div>
+          </div>
+          <button type="submit" class="mt-3 btn">Save</button>
+        </form>
       {% endfor %}
     {% endfor %}
   </div>
