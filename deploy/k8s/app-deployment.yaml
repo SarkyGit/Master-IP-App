@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: master-ip-app
+  namespace: master-ip
+  labels:
+    app: master-ip
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: master-ip
+  template:
+    metadata:
+      labels:
+        app: master-ip
+    spec:
+      initContainers:
+      - name: copy-migrations
+        image: master-ip:latest
+        command: ["sh", "-c", "cp -r /app/alembic /migrations"]
+        volumeMounts:
+        - name: migrations
+          mountPath: /migrations
+      containers:
+      - name: app
+        image: master-ip:latest
+        envFrom:
+        - configMapRef:
+            name: master-ip-config
+        - secretRef:
+            name: master-ip-secret
+        ports:
+        - containerPort: 8000
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8000
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "256Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+        volumeMounts:
+        - name: migrations
+          mountPath: /app/alembic
+      volumes:
+      - name: migrations
+        emptyDir: {}

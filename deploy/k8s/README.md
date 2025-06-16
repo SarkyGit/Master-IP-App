@@ -1,45 +1,38 @@
 # Kubernetes Deployment
 
-This folder contains basic manifests to run the application on a Kubernetes cluster in either **local** or **cloud** mode.
+This folder contains manifests to run the application on a Kubernetes cluster. Resources are split so you can enable the **local** or **cloud** role as needed.
 
 ## Files
 
-- `postgres.yaml` – Deployment, service and persistent volume claim for PostgreSQL
-- `configmap-local.yaml` / `configmap-cloud.yaml` – environment variables for each role
-- `deployment-local.yaml` / `deployment-cloud.yaml` – deploy the FastAPI app
-- `service-local.yaml` / `service-cloud.yaml` – expose the app via `NodePort`
+- `app-config.yaml` – ConfigMap providing `ROLE` and `DATABASE_URL`
+- `app-secret.yaml` – Secret containing `SECRET_KEY`
+- `app-deployment.yaml` – FastAPI Deployment with migrations volume
+- `app-service.yaml` – ClusterIP service exposing the app
+- `db-deployment.yaml` – PostgreSQL Deployment and PVC
+- `db-service.yaml` – ClusterIP service for PostgreSQL
+- `ingress.yaml` – Optional ingress for the cloud role
 
 ## Usage
 
-Apply the PostgreSQL resources first:
+Create the namespace if it does not exist:
 
 ```bash
-kubectl apply -f postgres.yaml
+kubectl create namespace master-ip
 ```
 
-### Local Role
+Validate the manifests:
 
 ```bash
-kubectl apply -f configmap-local.yaml
-kubectl apply -f deployment-local.yaml
-kubectl apply -f service-local.yaml
+kubectl apply --dry-run=client -f db-deployment.yaml
+kubectl apply --dry-run=client -f db-service.yaml
+kubectl apply --dry-run=client -f app-config.yaml
+kubectl apply --dry-run=client -f app-secret.yaml
+kubectl apply --dry-run=client -f app-deployment.yaml
+kubectl apply --dry-run=client -f app-service.yaml
+# Cloud role only
+kubectl apply --dry-run=client -f ingress.yaml
 ```
 
-### Cloud Role
+Edit `app-config.yaml` to set the desired `ROLE` (`local` or `cloud`) and database connection string. Apply the files without `--dry-run=client` to create the resources.
 
-```bash
-kubectl apply -f configmap-cloud.yaml
-kubectl apply -f deployment-cloud.yaml
-kubectl apply -f service-cloud.yaml
-```
-
-The service exposes port **8000**. Edit the manifests as needed to configure ingress or persistent storage classes in your cluster.
-
-## Differences
-
-| Mode  | Components                              | Persistent Volume | Exposed Port |
-|-------|-----------------------------------------|-------------------|--------------|
-| local | FastAPI Deployment, PostgreSQL          | `postgres-data`   | 8000         |
-| cloud | FastAPI Deployment, PostgreSQL          | `postgres-data`   | 8000         |
-
-Only the cloud mode exposes cloud sync endpoints and typically sits behind a dedicated ingress controller.
+The cloud role requires the ingress manifest to expose the sync API over HTTPS. Local sites run the sync workers but typically do not need ingress.
