@@ -136,7 +136,7 @@ Two front-end clients are shipped with the repository.
 ```bash
 npm run build:web
 ```
-- `mobile-client/` is currently just a scaffold. Phase 6 introduces a real mobile application that communicates with local or cloud servers.
+- `mobile-client/` contains a small React Native app built with Expo. Copy `.env.example` to `.env` and set `BASE_URL` to your FastAPI server's address, then run `npm install` followed by `npm start` in that directory. Use an emulator or the Expo Go app on a device on the same network to test it.
 
 ## Cloud & Mobile Integration
 
