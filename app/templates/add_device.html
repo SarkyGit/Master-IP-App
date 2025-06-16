@@ -3,7 +3,7 @@
 <h1 class="text-xl mb-4">Add Device</h1>
 
 <h2 class="text-lg mb-2">Import from Google Sheet</h2>
-<form method="post" action="/inventory/add-device/google" class="mb-6">
+<form method="post" action="/inventory/add-device/google" class="mb-6 full-width">
   <p class="mb-2 text-sm">Spreadsheet must include the columns below.</p>
   <table class="table-fixed text-left text-sm mb-2 border border-[var(--border-color)]">
     <thead>
@@ -37,7 +37,7 @@
 </form>
 
 <h2 class="text-lg mb-2">Import via CSV</h2>
-<form method="post" action="/inventory/add-device/csv" enctype="multipart/form-data" class="mb-6">
+<form method="post" action="/inventory/add-device/csv" enctype="multipart/form-data" class="mb-6 full-width">
   <div class="flex flex-wrap gap-x-8 gap-y-4 mb-4 items-start">
     <div class="flex flex-col flex-1 min-w-[280px]">
       <label for="csv_file" class="mb-1 fw-bold block">CSV File</label>
@@ -55,7 +55,7 @@
 </form>
 
 <h2 class="text-lg mb-2">Manual Entry</h2>
-<form method="post" action="/inventory/add-device/manual" id="manual-form">
+<form method="post" action="/inventory/add-device/manual" id="manual-form" class="full-width">
   <div class="overflow-auto mb-2">
     <table class="min-w-full table-fixed text-left" id="device-table">
       <thead>
