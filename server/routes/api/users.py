@@ -28,7 +28,8 @@ def create_user(
     db: Session = Depends(get_db),
     current_user: User = Depends(auth_utils.require_role("admin")),
 ):
-    obj = User(**user.dict())
+    obj = User(**user.dict(exclude={"version"}))
+    obj.version = 1
     db.add(obj)
     db.commit()
     db.refresh(obj)
@@ -55,8 +56,8 @@ def update_user(
     obj = db.query(User).filter_by(id=user_id).first()
     if not obj:
         raise HTTPException(status_code=404, detail="User not found")
-    update_data = update.dict(exclude_unset=True)
-    apply_update(obj, update_data)
+    update_data = update.dict(exclude_unset=True, exclude={"version"})
+    apply_update(obj, update_data, incoming_version=update.version)
     db.commit()
     db.refresh(obj)
     return obj

@@ -28,7 +28,8 @@ def create_vlan(
     db: Session = Depends(get_db),
     current_user: VLAN = Depends(auth_utils.require_role("editor")),
 ):
-    obj = VLAN(**vlan.dict())
+    obj = VLAN(**vlan.dict(exclude={"version"}))
+    obj.version = 1
     db.add(obj)
     db.commit()
     db.refresh(obj)
@@ -55,8 +56,8 @@ def update_vlan(
     obj = db.query(VLAN).filter_by(id=vlan_id).first()
     if not obj:
         raise HTTPException(status_code=404, detail="VLAN not found")
-    update_data = update.dict(exclude_unset=True)
-    apply_update(obj, update_data)
+    update_data = update.dict(exclude_unset=True, exclude={"version"})
+    apply_update(obj, update_data, incoming_version=update.version)
     db.commit()
     db.refresh(obj)
     return obj

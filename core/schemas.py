@@ -10,7 +10,7 @@ class ColumnSelection(BaseModel):
 class VLANBase(BaseModel):
     tag: int
     description: str | None = None
-    version: int | None = 1
+    version: int = 1
     conflict_data: dict | None = None
 
 
@@ -28,6 +28,7 @@ class VLANRead(VLANBase):
 class VLANUpdate(BaseModel):
     tag: int | None = None
     description: str | None = None
+    version: int | None = None
 
 
 class DeviceBase(BaseModel):
@@ -36,7 +37,7 @@ class DeviceBase(BaseModel):
     vlan_id: int | None = None
     manufacturer: str | None = None
     model: str | None = None
-    version: int | None = 1
+    version: int = 1
     conflict_data: dict | None = None
 
 
@@ -57,6 +58,7 @@ class DeviceUpdate(BaseModel):
     vlan_id: int | None = None
     manufacturer: str | None = None
     model: str | None = None
+    version: int | None = None
 
 
 class SSHCredentialBase(BaseModel):
@@ -64,7 +66,7 @@ class SSHCredentialBase(BaseModel):
     username: str
     password: str | None = None
     private_key: str | None = None
-    version: int | None = 1
+    version: int = 1
     conflict_data: dict | None = None
 
 
@@ -84,13 +86,14 @@ class SSHCredentialUpdate(BaseModel):
     username: str | None = None
     password: str | None = None
     private_key: str | None = None
+    version: int | None = None
 
 
 class UserBase(BaseModel):
     email: str
     role: str = "viewer"
     is_active: bool = True
-    version: int | None = 1
+    version: int = 1
     conflict_data: dict | None = None
 
 
@@ -110,3 +113,4 @@ class UserUpdate(BaseModel):
     hashed_password: str | None = None
     role: str | None = None
     is_active: bool | None = None
+    version: int | None = None
