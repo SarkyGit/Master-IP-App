@@ -360,6 +360,7 @@ async def new_device_form(
         "sites": sites,
         "status_options": STATUS_OPTIONS,
         "form_title": "New Device",
+        "current_user": current_user,
     }
     return templates.TemplateResponse("device_form.html", context)
 
@@ -478,6 +479,7 @@ async def edit_device_form(
         "form_title": "Edit Device",
         "syslog_logs": logs,
         "damage_photos": photos,
+        "current_user": current_user,
     }
     return templates.TemplateResponse("device_form.html", context)
 

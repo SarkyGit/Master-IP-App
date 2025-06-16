@@ -42,6 +42,7 @@ async def new_user_form(request: Request, current_user=Depends(require_role("sup
         "themes": ["dark_colourful", "dark", "light", "blue", "bw", "homebrew", "apple_glass"],
         "fonts": ["sans", "serif", "mono"],
         "menu_styles": ["tabbed", "dropdown"],
+        "current_user": current_user,
     }
     return templates.TemplateResponse("user_form.html", context)
 
@@ -71,9 +72,10 @@ async def create_user(
             "require_password": True,
             "cancel_url": "/admin/users",
             "themes": ["dark_colourful", "dark", "light", "blue", "bw", "homebrew", "apple_glass"],
-            "fonts": ["sans", "serif", "mono"],
-            "menu_styles": ["tabbed", "dropdown"],
-        }
+        "fonts": ["sans", "serif", "mono"],
+        "menu_styles": ["tabbed", "dropdown"],
+        "current_user": current_user,
+    }
         return templates.TemplateResponse("user_form.html", context)
 
     if role not in ROLE_CHOICES:
@@ -116,6 +118,7 @@ async def edit_user_form(
         "themes": ["dark_colourful", "dark", "light", "blue", "bw", "homebrew", "apple_glass"],
         "fonts": ["sans", "serif", "mono"],
         "menu_styles": ["tabbed", "dropdown"],
+        "current_user": current_user,
     }
     return templates.TemplateResponse("user_form.html", context)
 

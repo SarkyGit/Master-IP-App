@@ -29,6 +29,7 @@ async def new_location_form(request: Request, current_user=Depends(require_role(
         "form_title": "New Location",
         "error": None,
         "location_types": LOCATION_TYPES,
+        "current_user": current_user,
     }
     return templates.TemplateResponse("location_form.html", context)
 
@@ -48,6 +49,7 @@ async def create_location(
             "form_title": "New Location",
             "error": "Name already exists",
             "location_types": LOCATION_TYPES,
+            "current_user": current_user,
         }
         return templates.TemplateResponse("location_form.html", context)
     loc = Location(name=name, location_type=location_type)
@@ -66,6 +68,7 @@ async def edit_location_form(loc_id: int, request: Request, db: Session = Depend
         "form_title": "Edit Location",
         "error": None,
         "location_types": LOCATION_TYPES,
+        "current_user": current_user,
     }
     return templates.TemplateResponse("location_form.html", context)
 
@@ -89,6 +92,7 @@ async def update_location(
             "form_title": "Edit Location",
             "error": "Name already exists",
             "location_types": LOCATION_TYPES,
+            "current_user": current_user,
         }
         loc.name = name
         loc.location_type = location_type
