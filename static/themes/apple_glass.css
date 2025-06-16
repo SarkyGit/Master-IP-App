@@ -1,0 +1,45 @@
+:root {
+  --nav-bg: rgba(255, 255, 255, 0.1);
+  --nav-text: #ffffff;
+  --btn-bg: rgba(255, 255, 255, 0.15);
+  --btn-hover: rgba(255, 255, 255, 0.25);
+  --btn-text: #ffffff;
+  --tab-bg: rgba(255, 255, 255, 0.1);
+  --tab-hover: rgba(255, 255, 255, 0.25);
+  --tab-text: #ffffff;
+  --submenu-bg: rgba(255, 255, 255, 0.08);
+  --submenu-text: #ffffff;
+  --border-color: rgba(255, 255, 255, 0.2);
+  --card-bg: rgba(255, 255, 255, 0.05);
+  --card-text: #ffffff;
+  --code-bg: rgba(0, 0, 0, 0.5);
+  --code-text: #dee5ff;
+  --font-size: 0.95rem;
+  --glass-blur: blur(12px);
+}
+
+
+
+nav, .top-header, .card, .modal, .dropdown, .bg-[var(--card-bg)] {
+  backdrop-filter: var(--glass-blur);
+  background-color: var(--card-bg);
+  color: var(--card-text);
+  border-radius: 0.75rem;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 10px 15px rgba(255, 255, 255, 0.1);
+}
+
+input, select, textarea {
+  background-color: var(--card-bg);
+  color: var(--card-text);
+  border: 1px solid var(--border-color);
+}
+
+.table-row {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.table-row:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.08);
+}
