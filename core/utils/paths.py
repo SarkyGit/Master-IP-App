@@ -7,9 +7,7 @@ BASE_DIR = os.path.dirname(
 
 # Absolute path to the ``static`` directory.
 #
-# Static assets are always served from ``BASE_DIR/static``.  Earlier versions of
-# the application allowed overriding this path via the ``STATIC_DIR``
-# environment variable.  That behaviour caused inconsistencies when the
-# directory was mounted at a different location.  The path is now fixed to the
-# repository's ``static`` folder so all components refer to the same location.
-STATIC_DIR = os.path.join(BASE_DIR, "static")
+# Static assets are served from ``BASE_DIR/web-client/static``. Earlier versions
+# of the application stored them directly under ``static`` but moving them under
+# ``web-client`` keeps all client assets together.
+STATIC_DIR = os.path.join(BASE_DIR, "web-client", "static")

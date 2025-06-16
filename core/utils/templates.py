@@ -2,7 +2,8 @@ from fastapi.templating import Jinja2Templates
 from core.utils.db_session import SessionLocal
 from core.models.models import DeviceType, Tag, SystemTunable
 
-templates = Jinja2Templates(directory="server/templates")
+# Templates now reside under the ``web-client`` folder
+templates = Jinja2Templates(directory="web-client/templates")
 
 
 def format_uptime(seconds: int | None) -> str:
