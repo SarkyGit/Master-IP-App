@@ -36,7 +36,7 @@
       <td class="text-center w-[10rem] whitespace-nowrap">
         <div class="flex justify-center flex-wrap gap-1">
           <form method="post" action="/admin/ip-bans/{{ ban.id }}/unban" class="inline">
-            <button type='submit' aria-label='Unban' class='p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded' onclick="return confirm('Unban this IP?')">{{ include_icon('x-circle') }}</button>
+            <button type='submit' aria-label='Unban' class='p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition' onclick="return confirm('Unban this IP?')">{{ include_icon('x-circle') }}</button>
           </form>
         </div>
       </td>
@@ -47,8 +47,8 @@
 <div class="flex justify-between items-center mt-2">
   <span x-text="countText()" class="text-sm"></span>
   <div>
-    <button type="button" @click="prev" class="px-3 py-1 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded mr-2 text-[var(--btn-text)]">Previous</button>
-    <button type="button" @click="next" class="px-3 py-1 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded text-[var(--btn-text)]">Next</button>
+    <button type="button" @click="prev" class="px-4 py-1.5 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded shadow transition mr-2">Previous</button>
+    <button type="button" @click="next" class="px-4 py-1.5 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded shadow transition">Next</button>
   </div>
 </div>
 </div>
@@ -91,8 +91,8 @@
 <div class="flex justify-between items-center mt-2">
   <span x-text="countText()" class="text-sm"></span>
   <div>
-    <button type="button" @click="prev" class="px-3 py-1 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded mr-2 text-[var(--btn-text)]">Previous</button>
-    <button type="button" @click="next" class="px-3 py-1 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded text-[var(--btn-text)]">Next</button>
+    <button type="button" @click="prev" class="px-4 py-1.5 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded shadow transition mr-2">Previous</button>
+    <button type="button" @click="next" class="px-4 py-1.5 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded shadow transition">Next</button>
   </div>
 </div>
 </div>
