@@ -25,10 +25,10 @@ PHASE 3: CONFIG BACKUP + LOGGING
 PHASE 4: UI & TERMINAL
 
 [x] Add Live Port Status via SNMP
-[ ] Add SSH Web Terminal (xterm.js + WebSocket)
-[ ] Auto-expire Sessions
-[ ] Add Config Push Templates
-[ ] Superadmin Debug Page
+[x] Add SSH Web Terminal (xterm.js + WebSocket)
+[x] Auto-expire Sessions
+[x] Add Config Push Templates
+[x] Superadmin Debug Page
 
 PHASE 5: THEME CLEANUP
 
