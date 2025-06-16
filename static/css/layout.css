@@ -111,16 +111,22 @@ form select {
 th .resizer {
   position: absolute;
   top: 0;
-  right: 0;
-  width: 5px;
+  right: -2px;
+  width: 6px;
   height: 100%;
   cursor: col-resize;
-  border-right: 1px solid transparent;
+  z-index: 10;
 }
 
-th .resizer:hover,
+th:hover .resizer {
+  background: var(--border-color);
+  opacity: 0.5;
+}
+
+th .resizer.active,
 body.col-resize th .resizer {
-  border-right-color: var(--border-color);
+  background: var(--border-color);
+  opacity: 0.8;
 }
 
 body.col-resize {

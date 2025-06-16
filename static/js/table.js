@@ -50,6 +50,7 @@ function initResize(table, tableId) {
     handle.addEventListener('mousedown', e => {
       startX = e.pageX
       startWidth = th.offsetWidth
+      handle.classList.add('active')
       document.body.classList.add('col-resize')
       const move = e2 => {
         const w = startWidth + (e2.pageX - startX)
@@ -63,6 +64,7 @@ function initResize(table, tableId) {
         document.removeEventListener('mousemove', move)
         document.removeEventListener('mouseup', up)
         document.body.classList.remove('col-resize')
+        handle.classList.remove('active')
         saveWidths(table, tableId)
       }
       document.addEventListener('mousemove', move)
