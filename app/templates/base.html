@@ -17,10 +17,10 @@
     <header>
       <div class="top-header">
         <div class="px-6 mx-auto max-w-screen-2xl flex items-center justify-between">
-          <div class="logo-box flex items-center">
+          <a href="/" class="logo-box flex items-center">
             <img src="{{ logo_url() }}" alt="Logo" class="h-10 mr-2" />
             <span class="text-[var(--btn-text)] text-base">CEST Master IP and Config Tool</span>
-          </div>
+          </a>
           <div class="login-area flex items-center space-x-2">
             {% if current_user %}
             <div class="relative" x-data="{open:false, ready:false}" x-init="setTimeout(() => ready = true, 50)">
