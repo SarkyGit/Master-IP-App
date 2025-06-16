@@ -2,7 +2,7 @@ from fastapi.templating import Jinja2Templates
 from core.utils.db_session import SessionLocal
 from core.models.models import DeviceType, Tag, SystemTunable
 
-templates = Jinja2Templates(directory="app/templates")
+templates = Jinja2Templates(directory="server/templates")
 
 
 def format_uptime(seconds: int | None) -> str:

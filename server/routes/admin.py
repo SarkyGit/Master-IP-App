@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from fastapi.responses import RedirectResponse
 from core.utils.auth import require_role
-from app.tasks import run_push_queue_once
+from server.tasks import run_push_queue_once
 
 router = APIRouter()
 

@@ -12,20 +12,20 @@ from starlette.datastructures import Headers
 def get_test_app():
     os.environ.setdefault("DATABASE_URL", "postgresql://user:pass@localhost/test")
     for m in list(sys.modules):
-        if m.startswith("app"):
+        if m.startswith("server"):
             del sys.modules[m]
     with mock.patch("sqlalchemy.create_engine"), \
          mock.patch("sqlalchemy.schema.MetaData.create_all"), \
-         mock.patch("app.tasks.start_queue_worker"), \
-         mock.patch("app.tasks.start_config_scheduler"), \
-         mock.patch("app.tasks.setup_trap_listener"), \
-         mock.patch("app.tasks.setup_syslog_listener"):
-        return importlib.import_module("app.main").app
+         mock.patch("server.tasks.start_queue_worker"), \
+         mock.patch("server.tasks.start_config_scheduler"), \
+         mock.patch("server.tasks.setup_trap_listener"), \
+         mock.patch("server.tasks.setup_syslog_listener"):
+        return importlib.import_module("server.main").app
 
 
 def test_upload_damage_photo_sanitizes_filename(tmp_path, monkeypatch):
     app = get_test_app()
-    from app.routes import devices as devices_module
+    from server.routes import devices as devices_module
     from core.models.models import DeviceDamage, Device
 
     # Prepare dummy device and DB session
