@@ -23,6 +23,7 @@ from .models import (
     DashboardWidget,
     SiteDashboardWidget,
     ColumnPreference,
+    TablePreference,
 )
 
 __all__ = [
@@ -50,4 +51,5 @@ __all__ = [
     "DashboardWidget",
     "SiteDashboardWidget",
     "ColumnPreference",
+    "TablePreference",
 ]
