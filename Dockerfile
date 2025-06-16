@@ -15,11 +15,10 @@ RUN apt-get update \
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install Node dependencies
-COPY package.json package-lock.json ./
-RUN npm install
-
 COPY . .
+
+# Install Node dependencies
+RUN npm install
 
 # Build static assets
 RUN npm run build:css
