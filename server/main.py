@@ -68,7 +68,7 @@ app = FastAPI()
 # correct scheme when behind a reverse proxy.
 app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
 
-if settings.app_role == "local":
+if settings.role == "local":
     if settings.enable_background_workers:
         start_queue_worker(app)
         start_config_scheduler(app)
@@ -84,7 +84,7 @@ if settings.app_role == "local":
 
 @app.on_event("shutdown")
 async def shutdown_cleanup():
-    if settings.app_role == "local":
+    if settings.role == "local":
         await stop_queue_worker()
         stop_config_scheduler()
         await stop_cloud_sync()
@@ -103,6 +103,7 @@ os.makedirs(STATIC_DIR, exist_ok=True)
 # Provide visibility into where static assets are expected.  This helps with
 # debugging misconfigured deployments where files may not be found.
 print(f"Serving static files from: {STATIC_DIR}")
+print(f"Application role: {settings.role}")
 
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
@@ -124,7 +125,7 @@ app.include_router(api_devices_router)
 app.include_router(api_users_router)
 app.include_router(api_vlans_router)
 app.include_router(api_ssh_credentials_router)
-if settings.app_role == "cloud":
+if settings.role == "cloud":
     app.include_router(api_sync_router)
 app.include_router(admin_profiles_router)
 app.include_router(configs_router)

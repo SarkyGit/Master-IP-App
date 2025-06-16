@@ -93,7 +93,7 @@ _sync_task: asyncio.Task | None = None
 def start_cloud_sync(app):
     @app.on_event("startup")
     async def start_worker():
-        role = os.environ.get("APP_ROLE", "local")
+        role = os.environ.get("ROLE", "local")
         if os.environ.get("ENABLE_CLOUD_SYNC") == "1" and role != "cloud":
             global _sync_task
             _sync_task = asyncio.create_task(_sync_loop())
