@@ -36,3 +36,14 @@ PHASE 5: THEME CLEANUP
 [ ] Replace colour utilities with theme-aware button classes
 [ ] Add or update theme rules for common colours
 [ ] Review templates across all themes for consistent layout
+
+PHASE 6: CLOUD & MOBILE INTEGRATION
+
+[ ] Design architecture for cloud server with site-level replicas
+[ ] Implement record versioning and conflict resolution fields
+[ ] Add sync endpoints and background jobs for local/cloud replication
+[ ] Provide configuration options for cloud vs. local deployment
+[ ] Expand mobile-client folder into functional app connecting to local servers
+[ ] Supply Docker/Kubernetes configs for cloud and local roles
+[ ] Write tests for synchronization and mobile interactions
+[ ] Update README with setup instructions for cloud/local servers and mobile app
