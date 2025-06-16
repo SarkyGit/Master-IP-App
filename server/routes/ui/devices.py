@@ -57,7 +57,10 @@ from datetime import datetime
 from puresnmp import Client, PyWrapper, V2C
 from puresnmp.exc import SnmpError
 import re
-from server.tasks import schedule_device_config_pull, unschedule_device_config_pull
+from server.workers.config_scheduler import (
+    schedule_device_config_pull,
+    unschedule_device_config_pull,
+)
 from core.utils.paths import STATIC_DIR
 
 
