@@ -113,3 +113,7 @@ def get_tunable_categories():
 
 
 templates.env.globals["get_tunable_categories"] = get_tunable_categories
+
+from settings import settings
+
+templates.env.globals["app_role"] = settings.app_role

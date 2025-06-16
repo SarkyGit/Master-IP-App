@@ -140,10 +140,10 @@ npm run build:web
 
 ## Cloud & Mobile Integration
 
-The [cloud architecture](docs/cloud-architecture.md) document describes the planned replication model for running multiple sites with a central server. Two compose files are now provided:
+The [cloud architecture](docs/cloud-architecture.md) document describes the planned replication model for running multiple sites with a central server. Configuration differences between the modes are covered in [docs/deployment_modes.md](docs/deployment_modes.md). Two compose files are now provided:
 
-- `docker-compose.yml` – run a **local** instance with `ROLE=local`.
-- `docker-compose.cloud.yml` – run the **cloud** server with `ROLE=cloud`.
+- `docker-compose.yml` – run a **local** instance with `APP_ROLE=local`.
+- `docker-compose.cloud.yml` – run the **cloud** server with `APP_ROLE=cloud`.
 
 Kubernetes manifests under `k8s/` mirror this setup. Set `ENABLE_CLOUD_SYNC=1` on local servers to start the background worker that pushes updates to the cloud.
 
@@ -225,10 +225,11 @@ The application reads several options from the environment. Important variables 
 - `ENABLE_SYSLOG_LISTENER` and `SYSLOG_PORT` – enable and configure the syslog listener.
 - `QUEUE_INTERVAL` and `PORT_HISTORY_RETENTION_DAYS` – worker scheduling values.
 - `WORKERS`, `TIMEOUT`, `PORT` and `AUTO_SEED` – options used by `start.sh`.
-- `ROLE` – set to `local` or `cloud` to control sync behaviour.
+- `APP_ROLE` – set to `local` or `cloud` to control sync behaviour.
 - `ENABLE_CLOUD_SYNC` – when `1`, start the background sync worker (local role).
 - `ENABLE_SYNC_PUSH_WORKER` – start the worker that pushes local changes.
 - `ENABLE_SYNC_PULL_WORKER` – start the worker that pulls updates from the cloud.
+- `ENABLE_BACKGROUND_WORKERS` – disable to skip queue and scheduler startup.
 ## Nginx reverse proxy with SSL
 
 Install Nginx on the host and create a server block that proxies requests to

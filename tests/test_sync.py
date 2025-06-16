@@ -59,6 +59,9 @@ def override_get_db():
 
 def get_test_app():
     os.environ.setdefault("DATABASE_URL", "postgresql://user:pass@localhost/test")
+    os.environ["APP_ROLE"] = "cloud"
+    if "settings" in sys.modules:
+        del sys.modules["settings"]
     for m in list(sys.modules):
         if m.startswith("server"):
             del sys.modules[m]

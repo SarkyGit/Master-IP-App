@@ -8,6 +8,7 @@ try:
 except ImportError:  # Fallback for older Starlette versions
     from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 import os
+from settings import settings
 
 from server.routes import (
     auth_router,
@@ -44,8 +45,8 @@ from server.routes import (
     api_users_router,
     api_vlans_router,
     api_ssh_credentials_router,
-    api_sync_router,
 )
+from server.routes.api.sync import router as api_sync_router
 from server.routes.ui.tunables import router as tunables_router
 from server.routes.ui.editor import router as editor_router
 from server.websockets.editor import shell_ws
@@ -66,22 +67,29 @@ app = FastAPI()
 # Respect headers like X-Forwarded-Proto so generated URLs use the
 # correct scheme when behind a reverse proxy.
 app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
-start_queue_worker(app)
-start_config_scheduler(app)
-setup_trap_listener(app)
-setup_syslog_listener(app)
-start_cloud_sync(app)
-start_sync_push_worker(app)
-start_sync_pull_worker(app)
+
+if settings.app_role == "local":
+    if settings.enable_background_workers:
+        start_queue_worker(app)
+        start_config_scheduler(app)
+        setup_trap_listener(app)
+        setup_syslog_listener(app)
+    if settings.enable_cloud_sync:
+        start_cloud_sync(app)
+    if settings.enable_sync_push_worker:
+        start_sync_push_worker(app)
+    if settings.enable_sync_pull_worker:
+        start_sync_pull_worker(app)
 
 
 @app.on_event("shutdown")
 async def shutdown_cleanup():
-    await stop_queue_worker()
-    stop_config_scheduler()
-    await stop_cloud_sync()
-    await stop_sync_push_worker()
-    await stop_sync_pull_worker()
+    if settings.app_role == "local":
+        await stop_queue_worker()
+        stop_config_scheduler()
+        await stop_cloud_sync()
+        await stop_sync_push_worker()
+        await stop_sync_pull_worker()
 
 
 # Path to the ``static`` directory under ``web-client``
@@ -116,7 +124,8 @@ app.include_router(api_devices_router)
 app.include_router(api_users_router)
 app.include_router(api_vlans_router)
 app.include_router(api_ssh_credentials_router)
-app.include_router(api_sync_router)
+if settings.app_role == "cloud":
+    app.include_router(api_sync_router)
 app.include_router(admin_profiles_router)
 app.include_router(configs_router)
 app.include_router(admin_router)
