@@ -88,7 +88,7 @@ def start_sync_push_worker(app):
     async def start_worker():
         if os.environ.get("ENABLE_SYNC_PUSH_WORKER") != "1":
             return
-        role = os.environ.get("ROLE", "local")
+        role = os.environ.get("APP_ROLE", "local")
         if role == "cloud":
             return
         global _sync_task

@@ -16,7 +16,7 @@ services:
       - db
     environment:
       DATABASE_URL: postgresql://masteruser:masterpass@db:5432/master_ip_cloud
-      ROLE: cloud
+      APP_ROLE: cloud
     ports:
       - "8000:8000"
 volumes:
