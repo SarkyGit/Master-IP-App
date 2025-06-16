@@ -1,21 +1,16 @@
-import React, {useEffect, useState} from 'react';
-import {SafeAreaView, Text, FlatList} from 'react-native';
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import HomeScreen from './screens/HomeScreen';
+
+const Stack = createNativeStackNavigator();
 
 export default function App() {
-  const [devices, setDevices] = useState([]);
-  useEffect(() => {
-    fetch('http://localhost:8000/api/v1/devices')
-      .then(res => res.json())
-      .then(data => setDevices(data))
-      .catch(() => {});
-  }, []);
   return (
-    <SafeAreaView>
-      <FlatList
-        data={devices}
-        keyExtractor={item => String(item.id)}
-        renderItem={({item}) => <Text>{item.hostname}</Text>}
-      />
-    </SafeAreaView>
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name="Home" component={HomeScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }

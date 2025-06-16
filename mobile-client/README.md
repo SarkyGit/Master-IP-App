@@ -1,15 +1,21 @@
-# Mobile Client (Scaffold)
+# Mobile Client
 
-This folder will host a future mobile application built with a framework such as
-React Native or Flutter. The app will authenticate against the FastAPI backend
-and consume the REST endpoints exposed under `/api/v1/`.
+This directory contains a lightweight React Native application using Expo. It performs a simple health check against the FastAPI server on launch.
 
-Typical requests will look like:
+## Setup
 
-```python
-GET https://<server>/api/v1/devices
-POST https://<server>/api/v1/users/login
-```
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+2. Copy the environment file and set the server address:
+   ```bash
+   cp .env.example .env
+   # edit .env and set BASE_URL
+   ```
+3. Start the development server:
+   ```bash
+   npm start
+   ```
 
-The mobile client will handle token storage, perform API calls and present a
-mobile-friendly interface for managing devices and VLANs.
+Use an Android or iOS emulator, or the Expo Go app on a device connected to the same LAN, to open the project. The home screen will display whether the API server responded to `/api/ping`.
