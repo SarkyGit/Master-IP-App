@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <title>{% block title %}CEST Master IP Tool{% endblock %}</title>
-    {% set theme = (current_user.theme if current_user else 'dark_colourful') if current_user is defined else 'dark_colourful' %}
+    {% set theme = (current_user.theme if current_user and current_user.theme else 'bw') %}
     {% set font = (current_user.font if current_user else 'sans') if current_user is defined else 'sans' %}
     <link rel="stylesheet" href="{{ request.url_for('static', path='themes/' ~ theme ~ '.css') }}">
     <link rel="stylesheet" href="{{ request.url_for('static', path='fonts/' ~ font ~ '.css') }}">
@@ -18,9 +18,7 @@
       <div class="top-header">
         <div class="px-6 mx-auto max-w-screen-2xl flex items-center justify-between">
           <div class="logo-box flex items-center">
-            {% if logo_url() %}
             <img src="{{ logo_url() }}" alt="Logo" class="h-10 mr-2" />
-            {% endif %}
             <span class="text-[var(--btn-text)] text-base">CEST Master IP and Config Tool</span>
           </div>
           <div class="login-area flex items-center space-x-2">

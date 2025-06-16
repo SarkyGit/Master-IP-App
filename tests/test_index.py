@@ -24,12 +24,12 @@ app = get_test_app()
 client = TestClient(app)
 
 
-def test_index_references_dark_colourful():
+def test_index_references_bw():
     response = client.get("/")
     assert response.status_code == 200
-    assert "dark_colourful.css" in response.text
+    assert "bw.css" in response.text
 
 
-def test_dark_colourful_css_served():
-    response = client.get("/static/themes/dark_colourful.css")
+def test_bw_css_served():
+    response = client.get("/static/themes/bw.css")
     assert response.status_code == 200

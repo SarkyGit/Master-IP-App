@@ -46,12 +46,12 @@ import os
 from app.utils.paths import STATIC_DIR
 
 
-def logo_url() -> str | None:
-    """Return the URL for the uploaded logo if it exists."""
+def logo_url() -> str:
+    """Return the URL for the site logo, falling back to the default."""
     path = os.path.join(STATIC_DIR, "logo.png")
     if os.path.exists(path):
         return "/static/logo.png"
-    return None
+    return "/static/uploads/logo/CEST-Square.png"
 
 
 templates.env.globals["logo_url"] = logo_url
