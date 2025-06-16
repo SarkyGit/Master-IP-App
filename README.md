@@ -227,6 +227,8 @@ The application reads several options from the environment. Important variables 
 - `WORKERS`, `TIMEOUT`, `PORT` and `AUTO_SEED` – options used by `start.sh`.
 - `ROLE` – set to `local` or `cloud` to control sync behaviour.
 - `ENABLE_CLOUD_SYNC` – when `1`, start the background sync worker (local role).
+- `ENABLE_SYNC_PUSH_WORKER` – start the worker that pushes local changes.
+- `ENABLE_SYNC_PULL_WORKER` – start the worker that pulls updates from the cloud.
 ## Nginx reverse proxy with SSL
 
 Install Nginx on the host and create a server block that proxies requests to

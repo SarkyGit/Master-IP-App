@@ -58,6 +58,7 @@ from server.workers.trap_listener import setup_trap_listener
 from server.workers.syslog_listener import setup_syslog_listener
 from server.workers.cloud_sync import start_cloud_sync, stop_cloud_sync
 from server.workers.sync_push_worker import start_sync_push_worker, stop_sync_push_worker
+from server.workers.sync_pull_worker import start_sync_pull_worker, stop_sync_pull_worker
 from core.utils.templates import templates
 
 # Allow deploying the app under a URL prefix by setting ROOT_PATH.
@@ -71,6 +72,7 @@ setup_trap_listener(app)
 setup_syslog_listener(app)
 start_cloud_sync(app)
 start_sync_push_worker(app)
+start_sync_pull_worker(app)
 
 
 @app.on_event("shutdown")
@@ -79,6 +81,7 @@ async def shutdown_cleanup():
     stop_config_scheduler()
     await stop_cloud_sync()
     await stop_sync_push_worker()
+    await stop_sync_pull_worker()
 
 
 # Path to the ``static`` directory under ``web-client``

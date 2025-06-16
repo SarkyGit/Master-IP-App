@@ -5,6 +5,7 @@ from . import (
     syslog_listener,
     cloud_sync,
     sync_push_worker,
+    sync_pull_worker,
 )
 
 __all__ = [
@@ -14,4 +15,5 @@ __all__ = [
     "syslog_listener",
     "cloud_sync",
     "sync_push_worker",
+    "sync_pull_worker",
 ]
