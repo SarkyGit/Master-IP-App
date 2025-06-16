@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from core.utils.db_session import get_db
 from core.models.models import SSHCredential
 from core import schemas
+from core.utils.versioning import apply_update
 from core.utils import auth as auth_utils
 
 router = APIRouter(prefix="/api/v1/ssh-credentials", tags=["ssh_credentials"])
@@ -54,8 +55,8 @@ def update_cred(
     obj = db.query(SSHCredential).filter_by(id=cred_id).first()
     if not obj:
         raise HTTPException(status_code=404, detail="Credential not found")
-    for key, value in update.dict(exclude_unset=True).items():
-        setattr(obj, key, value)
+    update_data = update.dict(exclude_unset=True)
+    apply_update(obj, update_data)
     db.commit()
     db.refresh(obj)
     return obj
