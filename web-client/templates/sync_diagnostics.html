@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-xl mb-4">Sync Diagnostics</h1>
+<ul class="list-disc ml-6">
+  <li>Last Push: {{ tunables.get('Last Sync Push', 'never') }}</li>
+  <li>Last Pull: {{ tunables.get('Last Sync Pull', 'never') }}</li>
+  <li>Last Push Worker: {{ tunables.get('Last Sync Push Worker', 'never') }}</li>
+  <li>Last Pull Worker: {{ tunables.get('Last Sync Pull Worker', 'never') }}</li>
+</ul>
+{% endblock %}
