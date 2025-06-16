@@ -44,7 +44,7 @@
     </tbody>
   </table>
   </div>
-  <button type="submit" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Save Changes</button>
+  <button type="submit" aria-label="Save" class="p-2 rounded transition">{{ include_icon('save') }}</button>
   <a href="/devices/{{ device.id }}/port-map" class="ml-2 underline">Back</a>
 </form>
 {% endblock %}

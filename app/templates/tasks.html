@@ -32,7 +32,7 @@
     <option value="{{ dev.id }}">{{ dev.hostname }} ({{ dev.ip }})</option>
     {% endfor %}
   </select>
-  <button type="submit" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Connect</button>
+  <button type="submit" aria-label="Connect" class="p-2 rounded transition">{{ include_icon('log-in') }}</button>
 </form>
 
 <hr class="my-4">
@@ -48,12 +48,12 @@
       <option value="snmp_communities">SNMP Communities</option>
       <option value="port_config_templates">Port Config Templates</option>
     </select>
-    <a href="#" id="download-template" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition ml-2">Download CSV template</a>
+    <a href="#" id="download-template" class="block px-4 py-2 rounded transition ml-2">Download CSV template</a>
   </div>
   <div>
     <input type="file" name="csv_file" accept=".csv" class="rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" required />
   </div>
-  <button type="submit" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Upload</button>
+  <button type="submit" aria-label="Upload" class="p-2 rounded transition">{{ include_icon('upload','text-orange-500') }}</button>
 </form>
 
 

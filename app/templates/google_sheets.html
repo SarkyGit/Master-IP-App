@@ -14,7 +14,7 @@
       <input id="spreadsheet_id" type="text" name="spreadsheet_id" value="{{ config.sheet_id }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
     </div>
   </div>
-  <button type="submit" class="px-4 py-1.5 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded shadow transition">Save</button>
+  <button type="submit" aria-label="Save" class="p-2 rounded shadow transition">{{ include_icon('save') }}</button>
 </form>
 
 <hr class="my-4">
@@ -28,7 +28,7 @@
     <option value="snmp_communities">SNMP Communities</option>
     <option value="port_config_templates">Port Config Templates</option>
   </select>
-  <button type="submit" class="px-4 py-1.5 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded shadow transition">Export</button>
+  <button type="submit" aria-label="Export" class="p-2 rounded shadow transition">{{ include_icon('download','text-orange-500') }}</button>
 </form>
 
 <hr class="my-4">
@@ -42,6 +42,6 @@
     <option value="snmp_communities">SNMP Communities</option>
     <option value="port_config_templates">Port Config Templates</option>
   </select>
-  <button type="submit" class="px-4 py-1.5 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded shadow transition">Import</button>
+  <button type="submit" aria-label="Import" class="p-2 rounded shadow transition">{{ include_icon('upload','text-orange-500') }}</button>
 </form>
 {% endblock %}

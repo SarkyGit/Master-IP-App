@@ -11,9 +11,9 @@
       {% endfor %}
     </select>
   </div>
-  <button type="submit" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Fetch Config</button>
+  <button type="submit" aria-label="Fetch Config" class="p-2 rounded transition">{{ include_icon('download','text-orange-500') }}</button>
 </form>
-{% if error %}<p class="p-2 rounded bg-[var(--alert-bg)] text-[var(--btn-text)] mt-2">{{ error }}</p>{% endif %}
+{% if error %}<p class="p-2 rounded bg-[var(--alert-bg)] mt-2">{{ error }}</p>{% endif %}
 {% if output %}
 <h2 class="text-lg mt-4">Running Config</h2>
 <pre class="bg-[var(--code-bg)] text-[var(--code-text)] rounded px-2 py-1 text-sm whitespace-pre-wrap overflow-auto my-2">{{ output }}</pre>

@@ -4,7 +4,7 @@
 <h1 class="text-xl mb-4">IP Search</h1>
 <form method="get" class="mb-4">
   <input type="text" name="ip" value="{{ ip or '' }}" class="text-[var(--input-text)] px-2" placeholder="Enter IP">
-  <button type="submit" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition">Search</button>
+  <button type="submit" aria-label="Search" class="p-2 rounded transition">{{ include_icon('search') }}</button>
 </form>
 {% if ip %}
 <h2 class="text-lg mb-2">Results for '{{ ip }}'</h2>
