@@ -136,7 +136,11 @@ Two front-end clients are shipped with the repository.
 ```bash
 npm run build:web
 ```
-- `mobile-client/` is currently just a scaffold. A future release will contain a React Native or Flutter application.
+- `mobile-client/` is currently just a scaffold. Phase 6 introduces a real mobile application that communicates with local or cloud servers.
+
+## Cloud & Mobile Integration
+
+The [cloud architecture](docs/cloud_architecture.md) document describes the planned replication model for running multiple sites with a central server. Docker Compose examples for both roles will be added as the implementation progresses. The mobile client will authenticate against either the local site or the cloud depending on connectivity.
 
 ## Interface Themes
 
