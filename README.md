@@ -140,7 +140,7 @@ npm run build:web
 
 ## Cloud & Mobile Integration
 
-The [cloud architecture](docs/cloud_architecture.md) document describes the planned replication model for running multiple sites with a central server. Two compose files are now provided:
+The [cloud architecture](docs/cloud-architecture.md) document describes the planned replication model for running multiple sites with a central server. Two compose files are now provided:
 
 - `docker-compose.yml` – run a **local** instance with `ROLE=local`.
 - `docker-compose.cloud.yml` – run the **cloud** server with `ROLE=cloud`.
