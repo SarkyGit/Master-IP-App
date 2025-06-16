@@ -5,6 +5,7 @@ import HomeScreen from './screens/HomeScreen';
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import ProfileScreen from './screens/ProfileScreen';
+import DeviceListScreen from './screens/DeviceListScreen';
 import { AuthProvider } from './context/AuthContext';
 import AuthContext from './context/AuthContext';
 
@@ -28,6 +29,7 @@ function AppNavigator() {
         ) : (
           <>
             <Stack.Screen name="Home" component={HomeScreen} />
+            <Stack.Screen name="Devices" component={DeviceListScreen} />
             <Stack.Screen name="Profile" component={ProfileScreen} />
           </>
         )}

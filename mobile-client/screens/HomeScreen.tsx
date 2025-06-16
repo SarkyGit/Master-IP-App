@@ -17,6 +17,10 @@ export default function HomeScreen() {
   return (
     <View style={{ flex: 1 }}>
       <StatusMessage status={status} />
+      <Button
+        title="Devices"
+        onPress={() => navigation.navigate('Devices' as never)}
+      />
       <Button title="Profile" onPress={() => navigation.navigate('Profile' as never)} />
     </View>
   );
