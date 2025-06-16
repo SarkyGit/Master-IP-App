@@ -39,7 +39,11 @@
         </div>
       </div>
       {% block nav %}
-      {% set ms = (current_user.menu_style if current_user and current_user.menu_style in ['tabbed','dropdown'] else 'tabbed') %}
+      {% set ms = (
+        current_user.menu_style if current_user is defined and current_user
+        and current_user.menu_style in ['tabbed','dropdown']
+        else 'tabbed'
+      ) %}
       {% if ms == 'dropdown' %}
         {% include 'nav_dropdown.html' %}
       {% else %}
