@@ -3,68 +3,84 @@
 {% block content %}
 <h1 class="text-xl mb-4">{{ form_title or 'Edit Profile' }}</h1>
 <form method="post" class="space-y-4">
-  <div>
-    <label for="email" class="block">Email</label>
-    <input id="email" type="email" name="email" value="{{ user.email if user else '' }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" {% if email_readonly %}readonly{% endif %} required />
+  <div class="form-row">
+    <div class="form-item">
+      <label for="email" class="block">Email</label>
+      <input id="email" type="email" name="email" value="{{ user.email if user else '' }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" {% if email_readonly %}readonly{% endif %} required />
+    </div>
   </div>
-  <div>
-    <label for="password" class="block">Password{% if not require_password %} (leave blank to keep current){% endif %}</label>
-    <input id="password" type="password" name="password" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" {% if require_password %}required{% endif %} />
+  <div class="form-row">
+    <div class="form-item">
+      <label for="password" class="block">Password{% if not require_password %} (leave blank to keep current){% endif %}</label>
+      <input id="password" type="password" name="password" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" {% if require_password %}required{% endif %} />
+    </div>
   </div>
   {% if roles %}
-  <div>
-    <label for="role" class="block">Role</label>
-    <select id="role" name="role" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
-      {% for r in roles %}
-      <option value="{{ r }}" {% if user and user.role == r %}selected{% endif %}>{{ r }}</option>
-      {% endfor %}
-    </select>
+  <div class="form-row">
+    <div class="form-item">
+      <label for="role" class="block">Role</label>
+      <select id="role" name="role" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+        {% for r in roles %}
+        <option value="{{ r }}" {% if user and user.role == r %}selected{% endif %}>{{ r }}</option>
+        {% endfor %}
+      </select>
+    </div>
   </div>
   {% endif %}
   {% if themes %}
-  <div>
-    <label for="theme" class="block">Theme</label>
-    <select id="theme" name="theme" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
-      {% for t in themes %}
-      <option value="{{ t }}" {% if user and user.theme == t %}selected{% endif %}>{{ t }}</option>
-      {% endfor %}
-    </select>
+  <div class="form-row">
+    <div class="form-item">
+      <label for="theme" class="block">Theme</label>
+      <select id="theme" name="theme" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+        {% for t in themes %}
+        <option value="{{ t }}" {% if user and user.theme == t %}selected{% endif %}>{{ t }}</option>
+        {% endfor %}
+      </select>
+    </div>
   </div>
   {% endif %}
   {% if fonts %}
-  <div>
-    <label for="font" class="block">Font</label>
-    <select id="font" name="font" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
-      {% for f in fonts %}
-      <option value="{{ f }}" {% if user and user.font == f %}selected{% endif %}>{{ f }}</option>
-      {% endfor %}
-    </select>
+  <div class="form-row">
+    <div class="form-item">
+      <label for="font" class="block">Font</label>
+      <select id="font" name="font" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+        {% for f in fonts %}
+        <option value="{{ f }}" {% if user and user.font == f %}selected{% endif %}>{{ f }}</option>
+        {% endfor %}
+      </select>
+    </div>
   </div>
   {% endif %}
   {% if menu_styles %}
-  <div>
-    <label for="menu_style" class="block">Menu Layout</label>
-    <select id="menu_style" name="menu_style" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
-      {% for m in menu_styles %}
-      <option value="{{ m }}" {% if user and user.menu_style == m %}selected{% endif %}>{{ 'Tabbed Navigation' if m == 'tabbed' else 'Dropdown Navigation' }}</option>
-      {% endfor %}
-    </select>
+  <div class="form-row">
+    <div class="form-item">
+      <label for="menu_style" class="block">Menu Layout</label>
+      <select id="menu_style" name="menu_style" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+        {% for m in menu_styles %}
+        <option value="{{ m }}" {% if user and user.menu_style == m %}selected{% endif %}>{{ 'Tabbed Navigation' if m == 'tabbed' else 'Dropdown Navigation' }}</option>
+        {% endfor %}
+      </select>
+    </div>
   </div>
   {% endif %}
   {% if show_active %}
-  <div>
-    <label for="is_active" class="inline-flex items-center">
-      <input id="is_active" type="checkbox" name="is_active" value="1" class="mr-2" {% if user and user.is_active %}checked{% endif %}>
-      Active
-    </label>
+  <div class="form-row">
+    <div class="form-item">
+      <label for="is_active" class="inline-flex items-center">
+        <input id="is_active" type="checkbox" name="is_active" value="1" class="mr-2" {% if user and user.is_active %}checked{% endif %}>
+        Active
+      </label>
+    </div>
   </div>
   {% endif %}
   {% if error %}
   <p class="p-2 rounded bg-[var(--alert-bg)]">{{ error }}</p>
   {% endif %}
-  <div>
-    <button type="submit" aria-label="Submit" class="p-2 rounded transition">{{ include_icon('check') }}</button>
-    <a href="{{ cancel_url or '/users/me' }}" class="ml-2 underline">Cancel</a>
+  <div class="form-row">
+    <div class="form-item">
+      <button type="submit" aria-label="Submit" class="p-2 rounded transition">{{ include_icon('check') }}</button>
+      <a href="{{ cancel_url or '/users/me' }}" class="ml-2 underline">Cancel</a>
+    </div>
   </div>
 </form>
 {% endblock %}

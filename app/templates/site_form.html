@@ -1,16 +1,24 @@
 {% extends "base.html" %}
 {% block content %}
 <h1 class="text-xl mb-4">{{ form_title }}</h1>
-<form method="post">
-  <div>
-    <label for="name" class="block">Name</label>
-    <input id="name" name="name" value="{{ site.name if site }}" class="text-[var(--input-text)] w-full p-2" required>
+<form method="post" class="space-y-4">
+  <div class="form-row">
+    <div class="form-item">
+      <label for="name" class="block">Name</label>
+      <input id="name" name="name" value="{{ site.name if site }}" class="text-[var(--input-text)] w-full p-2" required>
+    </div>
   </div>
-  <div>
-    <label for="description" class="block">Description</label>
-    <textarea id="description" name="description" class="text-[var(--input-text)] w-full p-2">{{ site.description if site }}</textarea>
+  <div class="form-row">
+    <div class="form-item">
+      <label for="description" class="block">Description</label>
+      <textarea id="description" name="description" class="text-[var(--input-text)] w-full p-2">{{ site.description if site }}</textarea>
+    </div>
   </div>
   {% if error %}<p class="p-2 rounded bg-[var(--alert-bg)]">{{ error }}</p>{% endif %}
-  <button type="submit" aria-label="Submit" class="p-2 rounded transition">{{ include_icon('check') }}</button>
+  <div class="form-row">
+    <div class="form-item">
+      <button type="submit" aria-label="Submit" class="p-2 rounded transition">{{ include_icon('check') }}</button>
+    </div>
+  </div>
 </form>
 {% endblock %}

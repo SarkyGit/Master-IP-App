@@ -136,3 +136,14 @@ body.col-resize th .resizer {
 body.col-resize {
   cursor: col-resize;
 }
+/* Universal form row layout */
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.form-row > .form-item {
+  flex: 1;
+  min-width: 240px;
+}
