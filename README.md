@@ -136,8 +136,68 @@ Two front-end clients are shipped with the repository.
 ```bash
 npm run build:web
 ```
-- `mobile-client/` contains a small React Native app built with Expo. Copy `.env.example` to `.env` and set `BASE_URL` to your FastAPI server's address, then run `npm install` followed by `npm start` in that directory. Use an emulator or the Expo Go app on a device on the same network to test it.
 
+# Deployment Modes
+
+This application can run either as a standalone local instance or as the central cloud server. Example environment files and Compose definitions live under `deploy/`.
+
+## Local Mode
+1. Clone the repository
+2. Copy `.env.local` to `.env` and ensure `ROLE=local`
+3. Start the stack:
+```bash
+docker compose -f deploy/docker/docker-compose.local.yml up --build
+```
+4. Visit [http://localhost:8000](http://localhost:8000)
+
+## Cloud Mode
+1. Copy `.env.cloud` to `.env` and set `ROLE=cloud`
+2. Launch with:
+```bash
+docker compose -f deploy/docker/docker-compose.cloud.yml up --build -d
+```
+3. Configure a reverse proxy such as **Nginx**
+4. Expose port **443** for sync clients
+
+### Component Matrix
+| Component | Local Mode | Cloud Mode |
+|-----------|-----------|-----------|
+| FastAPI application | ✅ | ✅ |
+| PostgreSQL database | ✅ | ✅ |
+| Background workers | ✅ | ❌ |
+| `/api/v1/sync` endpoints | ❌ | ✅ |
+| Nginx reverse proxy | optional | ✅ |
+
+### Command Cheatsheet
+- **Build containers**
+```bash
+docker compose -f deploy/docker/docker-compose.local.yml build
+```
+  *(replace `local` with `cloud` for the cloud stack)*
+- **Run Alembic migrations**
+```bash
+alembic upgrade head
+```
+- **Test sync API manually**
+```bash
+curl -X POST http://localhost:8000/api/v1/sync/push \
+     -H 'Content-Type: application/json' \
+     -d '{"model":"devices","records":[]}'
+```
+
+
+# Mobile Client
+
+Prerequisites: **Node.js** and either the **Expo CLI** or React Native CLI.
+
+1. Set `BASE_URL` in `/mobile-client/config.ts` to your server address.
+2. From the `mobile-client/` directory run:
+   ```bash
+   npm install && npm start
+   ```
+3. Scan the QR code with Expo Go or launch the app on an emulator.
+
+See [mobile-client](mobile-client/) for additional configuration details.
 ## Cloud & Mobile Integration
 
 The [cloud architecture](docs/cloud-architecture.md) document describes the planned replication model for running multiple sites with a central server. Configuration differences between the modes are covered in [docs/deployment_modes.md](docs/deployment_modes.md). Two compose files are now provided:
