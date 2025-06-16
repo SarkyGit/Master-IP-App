@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Request, Depends, HTTPException, Form
 from fastapi.responses import RedirectResponse
-from app.utils.templates import templates
+from core.utils.templates import templates
 from sqlalchemy.orm import Session
 
-from app.utils.db_session import get_db
-from app.utils.auth import require_role
-from app.models.models import DeviceType
+from core.utils.db_session import get_db
+from core.utils.auth import require_role
+from core.models.models import DeviceType
 
 
 

@@ -4,10 +4,10 @@ from sqlalchemy.orm import Session
 import csv
 import io
 
-from app.utils.db_session import get_db
-from app.utils.auth import require_role, get_user_site_ids
-from app.models.models import VLAN, Device
-from app.utils.templates import templates
+from core.utils.db_session import get_db
+from core.utils.auth import require_role, get_user_site_ids
+from core.models.models import VLAN, Device
+from core.utils.templates import templates
 
 router = APIRouter(prefix="/reports")
 

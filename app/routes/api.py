@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from app.utils.db_session import get_db
-from app.utils.auth import get_current_user
+from core.utils.db_session import get_db
+from core.utils.auth import get_current_user
 from app.routes.devices import suggest_vlan_from_ip
-from app.models.models import VLAN, TablePreference
+from core.models.models import VLAN, TablePreference
 import json
 
 router = APIRouter()

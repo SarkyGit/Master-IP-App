@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from puresnmp import PyWrapper
-from app.models.models import Device, SSHCredential
-from app.utils.audit import log_audit
+from core.models.models import Device, SSHCredential
+from core.utils.audit import log_audit
 
 PLATFORM_MAP = {
     "cisco ios": "Cisco IOS",

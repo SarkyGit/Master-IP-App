@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional
 from sqlalchemy.orm import Session
 
-from app.models.models import LoginEvent, User
+from core.models.models import LoginEvent, User
 from .geolocation import geolocate_ip
 
 

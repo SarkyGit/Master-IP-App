@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Request, Depends, HTTPException
-from app.utils.templates import templates
+from core.utils.templates import templates
 from sqlalchemy.orm import Session
 
-from app.utils.db_session import get_db
+from core.utils.db_session import get_db
 from fastapi.responses import RedirectResponse, Response
 from fastapi import UploadFile, File, Form
-from app.utils.auth import get_current_user, require_role
-from app.models.models import (
+from core.utils.auth import get_current_user, require_role
+from core.models.models import (
     ConfigBackup,
     Device,
     VLAN,
@@ -22,7 +22,7 @@ import io
 import urllib.parse
 import gspread
 from google.oauth2.service_account import Credentials
-from app.utils.tags import (
+from core.utils.tags import (
     update_device_complete_tag,
     update_device_attribute_tags,
     get_or_create_tag,

@@ -11,7 +11,7 @@ import openpyxl
 from sqlalchemy.orm import Session
 import asyncssh
 
-from app.models.models import (
+from core.models.models import (
     Device,
     VLAN,
     ConfigBackup,
@@ -19,13 +19,13 @@ from app.models.models import (
     ImportLog,
     Site,
 )
-from app.utils.db_session import get_db
-from app.utils.auth import require_role, get_user_site_ids
-from app.utils.ssh import build_conn_kwargs, resolve_ssh_credential
-from app.utils.device_detect import detect_ssh_platform
-from app.utils.templates import templates
-from app.utils.audit import log_audit
-from app.utils.tags import get_or_create_tag, add_tag_to_device
+from core.utils.db_session import get_db
+from core.utils.auth import require_role, get_user_site_ids
+from core.utils.ssh import build_conn_kwargs, resolve_ssh_credential
+from core.utils.device_detect import detect_ssh_platform
+from core.utils.templates import templates
+from core.utils.audit import log_audit
+from core.utils.tags import get_or_create_tag, add_tag_to_device
 from app.routes.devices import _format_ip
 
 router = APIRouter(prefix="/bulk")
@@ -201,7 +201,7 @@ async def device_import_form(
 ):
     sites = []
     if current_user.role == "superadmin":
-        from app.models.models import Site
+        from core.models.models import Site
 
         sites = db.query(Site).all()
     context = {"request": request, "current_user": current_user, "sites": sites}

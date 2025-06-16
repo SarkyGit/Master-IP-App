@@ -1,6 +1,6 @@
 from fastapi.templating import Jinja2Templates
-from app.utils.db_session import SessionLocal
-from app.models.models import DeviceType, Tag, SystemTunable
+from core.utils.db_session import SessionLocal
+from core.models.models import DeviceType, Tag, SystemTunable
 
 templates = Jinja2Templates(directory="app/templates")
 
@@ -43,7 +43,7 @@ def get_tags():
 templates.env.globals["get_tags"] = get_tags
 
 import os
-from app.utils.paths import STATIC_DIR
+from core.utils.paths import STATIC_DIR
 
 
 def logo_url() -> str:

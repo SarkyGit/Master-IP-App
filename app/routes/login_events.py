@@ -3,10 +3,10 @@ from fastapi import APIRouter, Request, Depends
 from sqlalchemy.orm import Session
 from typing import Optional
 
-from app.utils.templates import templates
-from app.utils.db_session import get_db
-from app.utils.auth import require_role
-from app.models.models import LoginEvent, User
+from core.utils.templates import templates
+from core.utils.db_session import get_db
+from core.utils.auth import require_role
+from core.models.models import LoginEvent, User
 
 router = APIRouter()
 

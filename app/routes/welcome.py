@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Request, Depends, Form, HTTPException
 from fastapi.responses import RedirectResponse
-from app.utils.templates import templates
+from core.utils.templates import templates
 from sqlalchemy.orm import Session
 
 from sqlalchemy import func
-from app.utils.auth import get_current_user, get_user_site_ids
-from app.utils.db_session import get_db
-from app.models.models import (
+from core.utils.auth import get_current_user, get_user_site_ids
+from core.utils.db_session import get_db
+from core.models.models import (
     LoginEvent,
     Device,
     DeviceType,
@@ -17,7 +17,7 @@ from app.models.models import (
     Site,
     DashboardWidget,
 )
-from app.utils.dashboard import (
+from core.utils.dashboard import (
     load_widget_preferences,
     DEFAULT_WIDGETS,
     WIDGET_LABELS,

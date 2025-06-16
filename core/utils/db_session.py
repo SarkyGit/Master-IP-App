@@ -2,10 +2,10 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import os
 
-from app.utils.database import Base
+from core.utils.database import Base
 
 # Import models so that Base.metadata is aware of them before creating tables
-from app import models  # noqa: F401
+from core import models  # noqa: F401
 
 DATABASE_URL = os.environ.get("DATABASE_URL")
 if not DATABASE_URL:

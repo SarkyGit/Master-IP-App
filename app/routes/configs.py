@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Request, Depends, HTTPException
-from app.utils.templates import templates
+from core.utils.templates import templates
 from sqlalchemy.orm import Session
 import difflib
 
-from app.utils.db_session import get_db
-from app.utils.auth import get_current_user
-from app.models.models import Device, ConfigBackup
-from app.utils.audit import log_audit
+from core.utils.db_session import get_db
+from core.utils.auth import get_current_user
+from core.models.models import Device, ConfigBackup
+from core.utils.audit import log_audit
 
 
 

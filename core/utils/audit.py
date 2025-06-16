@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from typing import Optional
 
-from app.models.models import AuditLog, User, Device
+from core.models.models import AuditLog, User, Device
 
 
 def log_audit(

@@ -1,5 +1,5 @@
-from app.utils.db_session import SessionLocal
-from app.models.models import (
+from core.utils.db_session import SessionLocal
+from core.models.models import (
     DeviceType,
     SSHCredential,
     SNMPCommunity,

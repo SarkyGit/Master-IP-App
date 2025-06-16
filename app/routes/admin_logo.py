@@ -2,9 +2,9 @@ from fastapi import APIRouter, Request, Depends, UploadFile, File, HTTPException
 from fastapi.responses import RedirectResponse
 import os
 
-from app.utils.auth import require_role
-from app.utils.templates import templates
-from app.utils.paths import STATIC_DIR
+from core.utils.auth import require_role
+from core.utils.templates import templates
+from core.utils.paths import STATIC_DIR
 
 router = APIRouter()
 

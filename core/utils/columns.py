@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from app.models.models import ColumnPreference
+from core.models.models import ColumnPreference
 
 DEFAULT_DEVICE_COLUMNS = [
     "hostname",

@@ -1,6 +1,6 @@
-from app.utils.db_session import SessionLocal
-from app.models.models import User, Site, SiteMembership
-from app.utils.auth import get_password_hash, verify_password
+from core.utils.db_session import SessionLocal
+from core.models.models import User, Site, SiteMembership
+from core.utils.auth import get_password_hash, verify_password
 
 
 def main():

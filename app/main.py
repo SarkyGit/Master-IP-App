@@ -46,7 +46,7 @@ from app.routes.editor import router as editor_router
 from app.websockets.editor import shell_ws
 from app.websockets.terminal import router as terminal_ws_router
 from app.routes.welcome import router as welcome_router, WELCOME_TEXT, INVENTORY_TEXT
-from app.utils.auth import get_current_user
+from core.utils.auth import get_current_user
 from app.tasks import (
     start_queue_worker,
     start_config_scheduler,
@@ -55,7 +55,7 @@ from app.tasks import (
     setup_trap_listener,
     setup_syslog_listener,
 )
-from app.utils.templates import templates
+from core.utils.templates import templates
 
 # Allow deploying the app under a URL prefix by setting ROOT_PATH.
 app = FastAPI()
@@ -75,7 +75,7 @@ async def shutdown_cleanup():
 
 
 # Path to the ``static`` directory at the repository root
-from app.utils.paths import STATIC_DIR
+from core.utils.paths import STATIC_DIR
 
 # Ensure the static directory exists to avoid startup errors when it has been
 # mounted from outside the repository (for example at ``/static`` in Docker

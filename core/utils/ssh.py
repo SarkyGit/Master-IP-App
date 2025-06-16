@@ -49,7 +49,7 @@ def resolve_ssh_credential(db, device, user=None):
     cred = device.ssh_credential
     source = "device"
     if user and cred:
-        from app.models.models import UserSSHCredential
+        from core.models.models import UserSSHCredential
 
         user_cred = (
             db.query(UserSSHCredential)
