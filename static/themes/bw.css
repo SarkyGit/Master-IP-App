@@ -6,14 +6,14 @@ body {
 :root {
   --nav-bg: #000000;
   --nav-text: #ffffff;
-  --submenu-bg: #1a1a1a;
-  --submenu-text: #e5e7eb;
+  --submenu-bg: #000000;
+  --submenu-text: #ffffff;
   --submenu-hover-bg: #333333;
-  --tab-bg: #333333;
+  --tab-bg: #000000;
   --tab-hover: #444444;
   --tab-text: #ffffff;
-  --btn-bg:        #333333;
-  --btn-hover:     #555555;
+  --btn-bg:        #000000;
+  --btn-hover:     #444444;
   --btn-text:      #ffffff;
   --btn-hover-text: #ffffff;
   --card-bg:       #111111;
@@ -23,8 +23,8 @@ body {
   --table-bg:      #1a1a1a;
   --code-text: #f1f5f9;
   --code-bg: #111111;
-  --alert-bg:      #333333;
-  --border-color:  #444444;
+  --alert-bg:      #222222;
+  --border-color:  #666666;
   --hover-muted:   #222222;
 }
 
@@ -33,15 +33,15 @@ body {
 }
 
 nav.bg-gray-800 {
-  background-color: #000000 !important;
+  background-color: var(--nav-bg) !important;
 }
 
 .bg-black {
-  background-color: #000000 !important;
+  background-color: var(--card-bg) !important;
 }
 
 .border-gray-700 {
-  border-color: #333333 !important;
+  border-color: var(--border-color) !important;
 }
 
 
