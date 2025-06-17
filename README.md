@@ -182,8 +182,21 @@ alembic upgrade head
 ```bash
 curl -X POST http://localhost:8000/api/v1/sync/push \
      -H 'Content-Type: application/json' \
-     -d '{"model":"devices","records":[]}'
+    -d '{"model":"devices","records":[]}'
 ```
+
+## Running Tests
+
+To verify the application works as expected, run the unit test suite after
+installing the Python requirements:
+
+```bash
+pip install -r requirements.txt
+pytest -q
+```
+
+All tests should pass without errors. Node.js packages are not required when
+running the tests.
 
 
 # Mobile Client
