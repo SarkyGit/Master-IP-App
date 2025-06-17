@@ -90,7 +90,6 @@ async def update_my_profile(
     font: str = Form("sans"),
     menu_style: str = Form("tabbed"),
     icon_style: str = Form("lucide"),
-    icon_style: str = Form("lucide"),
     scroll_handoff_enabled: str = Form(None),
     db: Session = Depends(get_db),
     current_user: User = Depends(require_role("viewer")),
@@ -124,7 +123,6 @@ async def update_my_profile(
     current_user.theme = theme
     current_user.font = font
     current_user.menu_style = menu_style
-    current_user.icon_style = icon_style
     current_user.icon_style = icon_style
     current_user.scroll_handoff_enabled = bool(scroll_handoff_enabled)
     if password:
