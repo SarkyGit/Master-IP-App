@@ -437,6 +437,20 @@ python -m pip install -r requirements.txt
 ### `venv/bin/python: No such file or directory`
 This message appears when the `venv` directory has not been created. Run the commands above to create the virtual environment before installing the dependencies.
 
+## Automated Installer
+
+For unattended deployments on a fresh server run the interactive installer.
+It installs system packages, configures PostgreSQL, builds static assets and
+optionally sets up Nginx as a reverse proxy.
+
+```bash
+sudo python3 installer.py
+```
+
+Follow the on-screen questions to choose **local** or **cloud** mode, database
+credentials and the admin user password. The script writes a `.env` file and
+starts the application once installation completes.
+
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
