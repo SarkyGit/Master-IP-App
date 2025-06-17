@@ -54,7 +54,7 @@
           <td class="table-cell">
             {% for k in key_map.get(site.site_id, []) %}
             <div x-data="{show:false}" class="mb-1">
-              <button type="button" @click="show=!show" class="underline text-sm mr-1">{{ show ? 'Hide' : 'Show' }}</button>
+              <button type="button" @click="show=!show" class="underline text-sm mr-1" x-text="show ? 'Hide' : 'Show'"></button>
               <span x-show="show" x-text="'{{ k.api_key }}'"></span>
             </div>
             {% endfor %}
@@ -75,7 +75,7 @@
           <td class="table-cell">
             {% if api_key %}
             <div x-data="{show:false}">
-              <button type="button" @click="show=!show" class="underline text-sm mr-1">{{ show ? 'Hide' : 'Show' }}</button>
+              <button type="button" @click="show=!show" class="underline text-sm mr-1" x-text="show ? 'Hide' : 'Show'"></button>
               <span x-show="show" x-text="'{{ api_key }}'"></span>
             </div>
             {% endif %}
