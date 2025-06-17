@@ -187,3 +187,8 @@ table.devices-table tbody tr {
   margin: 0;
   cursor: pointer;
 }
+
+/* Layout for folder style sidebar */
+.folder-sidebar {
+  flex-shrink: 0;
+}

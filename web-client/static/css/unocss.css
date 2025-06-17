@@ -29,6 +29,7 @@
 .ml-4{margin-left:1rem;}
 .ml-6{margin-left:1.5rem;}
 .ml-auto{margin-left:auto;}
+.mr-1{margin-right:0.25rem;}
 .mr-2{margin-right:0.5rem;}
 .ms{margin-inline-start:1rem;}
 .mt-1{margin-top:0.25rem;}
@@ -47,6 +48,7 @@
 .h-\[0\.375rem\]{height:0.375rem;}
 .h-\[3\.9rem\]{height:3.9rem;}
 .h-\[500px\]{height:500px;}
+.h-\[calc\(100vh-4rem\)\]{height:calc(100vh - 4rem);}
 .h-10{height:2.5rem;}
 .h-14{height:3.5rem;}
 .h-20{height:5rem;}
@@ -79,6 +81,7 @@
 .w-48{width:12rem;}
 .w-5{width:1.25rem;}
 .w-6{width:1.5rem;}
+.w-64{width:16rem;}
 .w-96{width:24rem;}
 .w-auto{width:auto;}
 .w-full{width:100%;}
@@ -151,6 +154,7 @@
 .bg-black{--un-bg-opacity:1;background-color:rgb(0 0 0 / var(--un-bg-opacity)) /* #000 */;}
 .bg-black\/50{background-color:rgb(0 0 0 / 0.5) /* #000 */;}
 .hover\:bg-\[var\(--btn-hover\)\]:hover{background-color:var(--btn-hover) /* var(--btn-hover) */;}
+.hover\:bg-\[var\(--submenu-hover-bg\)\]:hover{background-color:var(--submenu-hover-bg) /* var(--submenu-hover-bg) */;}
 .hover\:bg-\[var\(--tab-hover\)\]:hover{background-color:var(--tab-hover) /* var(--tab-hover) */;}
 .bg-opacity-50{--un-bg-opacity:0.5;}
 .p-1{padding:0.25rem;}
@@ -169,6 +173,7 @@
 .py-2{padding-top:0.5rem;padding-bottom:0.5rem;}
 .py-3{padding-top:0.75rem;padding-bottom:0.75rem;}
 .pb-2{padding-bottom:0.5rem;}
+.pl-4{padding-left:1rem;}
 .text-center{text-align:center;}
 .text-left{text-align:left;}
 .text-right{text-align:right;}

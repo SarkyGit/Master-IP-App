@@ -35,22 +35,33 @@
       {% block nav %}
       {% set ms = (
         current_user.menu_style if current_user is defined and current_user
-        and current_user.menu_style in ['tabbed','dropdown']
+        and current_user.menu_style in ['tabbed','dropdown','folder']
         else 'tabbed'
       ) %}
       {% if ms == 'dropdown' %}
         {% include 'nav_dropdown.html' %}
+      {% elif ms == 'folder' %}
+        {# folder navigation rendered below header #}
       {% else %}
         {% include 'nav_tabbed.html' %}
       {% endif %}
       {% endblock %}
     </header>
+      {% if ms == 'folder' %}
+      <div class="flex">
+        {% include 'nav_folder.html' %}
+        <div id="page-content" class="flex-1 mt-4 opacity-0 transition-opacity duration-200" x-init="$el.classList.add('opacity-100')">
+      {% else %}
       <div id="page-content" class="w-full mt-4 opacity-0 transition-opacity duration-200" x-init="$el.classList.add('opacity-100')">
+      {% endif %}
         <div class="px-6 mx-auto max-w-screen-2xl">
           <p class="text-base text-[var(--card-text)]">{{ message or '' }}</p>
           {% block content %}{% endblock %}
         </div>
       </div>
+      {% if ms == 'folder' %}
+      </div>
+      {% endif %}
     <div id="modal"></div>
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <script src="{{ request.url_for('static', path='js/alpine.min.js') }}" defer></script>

@@ -1,0 +1,156 @@
+<nav x-data="folderMenu()" class="folder-sidebar h-[calc(100vh-4rem)] overflow-y-auto w-64 bg-[var(--nav-bg)] text-[var(--nav-text)] p-2">
+  <div class="space-y-1">
+    <div>
+      <div class="flex items-center cursor-pointer px-2 py-1 rounded hover:bg-[var(--tab-hover)]" @click="toggle('network')">
+        <span class="flex-1">Network</span>
+        <button @click.stop="pin('network')" class="mr-1 text-xs" x-text="isPinned('network') ? '★' : '☆'"></button>
+        <span x-html="isOpen('network') ? minusIcon : plusIcon"></span>
+      </div>
+      <div x-show="isOpen('network')" x-transition class="mt-1 pl-4 flex flex-col space-y-1">
+        <a href="/dashboard" :class="active('/dashboard')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Dashboard</a>
+        <a href="/network/ip-search" :class="active('/network/ip-search')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">IP Search</a>
+        <a href="/vlans" :class="active('/vlans')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">VLAN MGMT</a>
+        <a href="/network/port-configs" :class="active('/network/port-configs')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Port Configs</a>
+      </div>
+    </div>
+    <div>
+      <div class="flex items-center cursor-pointer px-2 py-1 rounded hover:bg-[var(--tab-hover)]" @click="toggle('tasks')">
+        <span class="flex-1">Tasks</span>
+        <button @click.stop="pin('tasks')" class="mr-1 text-xs" x-text="isPinned('tasks') ? '★' : '☆'"></button>
+        <span x-html="isOpen('tasks') ? minusIcon : plusIcon"></span>
+      </div>
+      <div x-show="isOpen('tasks')" x-transition class="mt-1 pl-4 flex flex-col space-y-1">
+        <a href="/tasks" :class="active('/tasks')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Task Queue</a>
+        <a href="/reports/vlan-usage" :class="active('/reports/vlan-usage')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">VLAN Usage</a>
+        {% if current_user.role in ['admin','superadmin'] %}
+        <a href="/tasks/google-sheets" :class="active('/tasks/google-sheets')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Google Sheets</a>
+        {% endif %}
+      </div>
+    </div>
+    <div>
+      <div class="flex items-center cursor-pointer px-2 py-1 rounded hover:bg-[var(--tab-hover)]" @click="toggle('inventory')">
+        <span class="flex-1">Inventory</span>
+        <button @click.stop="pin('inventory')" class="mr-1 text-xs" x-text="isPinned('inventory') ? '★' : '☆'"></button>
+        <span x-html="isOpen('inventory') ? minusIcon : plusIcon"></span>
+      </div>
+      <div x-show="isOpen('inventory')" x-transition class="mt-1 pl-4 flex flex-col space-y-1">
+        <a href="/devices" :class="active('/devices')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Devices</a>
+      </div>
+    </div>
+    <div>
+      <div class="flex items-center cursor-pointer px-2 py-1 rounded hover:bg-[var(--tab-hover)]" @click="toggle('inventory-admin')">
+        <span class="flex-1">Inventory Admin</span>
+        <button @click.stop="pin('inventory-admin')" class="mr-1 text-xs" x-text="isPinned('inventory-admin') ? '★' : '☆'"></button>
+        <span x-html="isOpen('inventory-admin') ? minusIcon : plusIcon"></span>
+      </div>
+      <div x-show="isOpen('inventory-admin')" x-transition class="mt-1 pl-4 flex flex-col space-y-1">
+        <a href="/tasks/edit-tags" :class="active('/tasks/edit-tags')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Edit Tags</a>
+        <a href="/device-types" :class="active('/device-types')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Device Types</a>
+        <a href="/inventory/sites" :class="active('/inventory/sites')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Site Inventory</a>
+        <a href="/inventory/trailers" :class="active('/inventory/trailers')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Trailer Inventory</a>
+        {% if current_user.role in ['editor','admin','superadmin'] %}
+        <a href="/inventory/add-device" :class="active('/inventory/add-device')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Add Device</a>
+        {% endif %}
+      </div>
+    </div>
+    <div>
+      <div class="flex items-center cursor-pointer px-2 py-1 rounded hover:bg-[var(--tab-hover)]" @click="toggle('netdev')">
+        <span class="flex-1">Network Devices</span>
+        <button @click.stop="pin('netdev')" class="mr-1 text-xs" x-text="isPinned('netdev') ? '★' : '☆'"></button>
+        <span x-html="isOpen('netdev') ? minusIcon : plusIcon"></span>
+      </div>
+      <div x-show="isOpen('netdev')" x-transition class="mt-1 pl-4 flex flex-col space-y-1">
+        <a href="/ssh/port-config" :class="active('/ssh/port-config')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Port Config</a>
+        <a href="/ssh/port-check" :class="active('/ssh/port-check')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Port Check</a>
+        <a href="/ssh/config-check" :class="active('/ssh/config-check')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Config Check</a>
+        <a href="/ssh/port-search" :class="active('/ssh/port-search')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Port Search</a>
+        <a href="/ssh/bulk-port-update" :class="active('/ssh/bulk-port-update')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Bulk Port Update</a>
+        <a href="/bulk/vlan-push" :class="active('/bulk/vlan-push')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">VLAN Bulk Push</a>
+      </div>
+    </div>
+    {% if current_user.role in ['admin','superadmin'] %}
+    <div>
+      <div class="flex items-center cursor-pointer px-2 py-1 rounded hover:bg-[var(--tab-hover)]" @click="toggle('tunables')">
+        <span class="flex-1">Tunables</span>
+        <button @click.stop="pin('tunables')" class="mr-1 text-xs" x-text="isPinned('tunables') ? '★' : '☆'"></button>
+        <span x-html="isOpen('tunables') ? minusIcon : plusIcon"></span>
+      </div>
+      <div x-show="isOpen('tunables')" x-transition class="mt-1 pl-4 flex flex-col space-y-1">
+        {% for cat in get_tunable_categories() %}
+        <a href="/tunables?category={{ cat | urlencode }}" :class="active('/tunables?category={{ cat | urlencode }}')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">{{ cat }}</a>
+        {% endfor %}
+        <a href="/admin/logo" :class="active('/admin/logo')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Upload Logo</a>
+        {% if allow_self_update() %}
+        <a href="/admin/update" :class="active('/admin/update')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Update System</a>
+        {% endif %}
+      </div>
+    </div>
+    <div>
+      <div class="flex items-center cursor-pointer px-2 py-1 rounded hover:bg-[var(--tab-hover)]" @click="toggle('admin')">
+        <span class="flex-1">{{ 'Super Admin' if current_user.role == 'superadmin' else 'Admin' }}</span>
+        <button @click.stop="pin('admin')" class="mr-1 text-xs" x-text="isPinned('admin') ? '★' : '☆'"></button>
+        <span x-html="isOpen('admin') ? minusIcon : plusIcon"></span>
+      </div>
+      <div x-show="isOpen('admin')" x-transition class="mt-1 pl-4 flex flex-col space-y-1">
+        {% if current_user.role == 'superadmin' %}
+        {% set admin_items = [
+          {'label':'SSH Credentials','href':'/admin/ssh'},
+          {'label':'SNMP Credentials','href':'/admin/snmp'},
+          {'label':'Tag Manager','href':'/admin/tags'},
+          {'label':'Locations','href':'/admin/locations'},
+          {'label':'Device Import','href':'/bulk/device-import'},
+          {'label':'Audit Log','href':'/admin/audit'},
+          {'label':'IP Bans','href':'/admin/ip-bans'},
+          {'label':'User Management','href':'/admin/users'},
+          {'label':'Debug Logs','href':'/admin/debug'},
+          {'label':'Site Keys','href':'/admin/site-keys'}
+        ] %}
+        {% else %}
+        {% set admin_items = [
+          {'label':'SSH Credentials','href':'/admin/ssh'},
+          {'label':'SNMP Credentials','href':'/admin/snmp'},
+          {'label':'Locations','href':'/admin/locations'},
+          {'label':'Device Import','href':'/bulk/device-import'}
+        ] %}
+        {% endif %}
+        {% for item in admin_items %}
+        <a href="{{ item.href }}" :class="active('{{ item.href }}')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">{{ item.label }}</a>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+  <script>
+    function folderMenu() {
+      const savedOpen = JSON.parse(localStorage.getItem('folderOpen') || '{}');
+      const savedPinned = JSON.parse(localStorage.getItem('folderPinned') || '{}');
+      return {
+        open: savedOpen,
+        pinned: savedPinned,
+        activeUrl: window.location.pathname,
+        plusIcon: `{{ include_icon('plus')|replace('\n','') }}`,
+        minusIcon: `{{ include_icon('minus')|replace('\n','') }}`,
+        isOpen(id) { return this.open[id]; },
+        isPinned(id) { return this.pinned[id]; },
+        toggle(id) {
+          if(this.open[id]) {
+            this.open[id] = false;
+          } else {
+            for(const k in this.open){ if(k !== id && !this.pinned[k]) this.open[k] = false }
+            this.open[id] = true;
+          }
+          this.save();
+        },
+        pin(id) {
+          this.pinned[id] = !this.pinned[id];
+          this.save();
+        },
+        save() {
+          localStorage.setItem('folderOpen', JSON.stringify(this.open));
+          localStorage.setItem('folderPinned', JSON.stringify(this.pinned));
+        },
+        active(href){ return this.activeUrl === href ? 'bg-[var(--submenu-hover-bg)] font-bold' : '' }
+      }
+    }
+  </script>
+</nav>

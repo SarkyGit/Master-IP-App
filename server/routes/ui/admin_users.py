@@ -41,7 +41,7 @@ async def new_user_form(request: Request, current_user=Depends(require_role("sup
         "cancel_url": "/admin/users",
         "themes": ["dark_colourful", "dark", "light", "blue", "bw", "homebrew", "apple_glass"],
         "fonts": ["sans", "serif", "mono"],
-        "menu_styles": ["tabbed", "dropdown"],
+        "menu_styles": ["tabbed", "dropdown", "folder"],
         "icon_sets": ["lucide", "fontawesome", "material", "bootstrap"],
         "current_user": current_user,
     }
@@ -75,7 +75,7 @@ async def create_user(
             "cancel_url": "/admin/users",
             "themes": ["dark_colourful", "dark", "light", "blue", "bw", "homebrew", "apple_glass"],
         "fonts": ["sans", "serif", "mono"],
-        "menu_styles": ["tabbed", "dropdown"],
+        "menu_styles": ["tabbed", "dropdown", "folder"],
         "icon_sets": ["lucide", "fontawesome", "material", "bootstrap"],
         "current_user": current_user,
     }
@@ -121,7 +121,7 @@ async def edit_user_form(
         "cancel_url": "/admin/users",
         "themes": ["dark_colourful", "dark", "light", "blue", "bw", "homebrew", "apple_glass"],
         "fonts": ["sans", "serif", "mono"],
-        "menu_styles": ["tabbed", "dropdown"],
+        "menu_styles": ["tabbed", "dropdown", "folder"],
         "icon_sets": ["lucide", "fontawesome", "material", "bootstrap"],
         "current_user": current_user,
     }
