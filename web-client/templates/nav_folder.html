@@ -35,6 +35,8 @@
       </div>
       <div x-show="isOpen('inventory')" x-transition class="mt-1 pl-4 flex flex-col space-y-1">
         <a href="/devices" :class="active('/devices')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Devices</a>
+        <a href="/inventory/show-pad" :class="active('/inventory/show-pad')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Show Pad</a>
+        <a href="/inventory/reports" :class="active('/inventory/reports')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Reports</a>
       </div>
     </div>
     <div>
