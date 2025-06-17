@@ -109,7 +109,10 @@ def get_tunable_categories():
     db = SessionLocal()
     rows = db.query(SystemTunable.function).distinct().order_by(SystemTunable.function).all()
     db.close()
-    return [r[0] for r in rows]
+    categories = [r[0] for r in rows]
+    if "sysctl" not in categories:
+        categories.append("sysctl")
+    return categories
 
 
 templates.env.globals["get_tunable_categories"] = get_tunable_categories
