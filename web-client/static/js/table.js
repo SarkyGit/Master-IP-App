@@ -51,6 +51,7 @@ function setupTablePrefs() {
 
 function initResize(table, tableId) {
   table.querySelectorAll('th').forEach((th, idx) => {
+    if (th.classList.contains('no-resize') || th.classList.contains('checkbox-col') || th.classList.contains('actions-col')) return
     th.dataset.colIndex = idx
     th.style.position = 'relative'
     const handle = document.createElement('div')
@@ -146,6 +147,12 @@ function loadPrefs(table, tableId) {
           if (cell) cell.style.display = 'none'
         })
       })
+      if (Object.keys(p.column_widths).length === 0) {
+        setTimeout(() => {
+          autoscale(table)
+          saveWidths(table, tableId)
+        })
+      }
     })
 }
 
@@ -179,6 +186,28 @@ function getHidden(table) {
   const arr = []
   table.querySelectorAll('th').forEach((th,i)=>{ if (th.style.display==='none') arr.push(String(i)) })
   return arr
+}
+
+function autoscale(table) {
+  const rows = table.querySelectorAll('tbody tr')
+  table.querySelectorAll('th').forEach((th, i) => {
+    if (th.classList.contains('checkbox-col') || th.classList.contains('actions-col') || th.classList.contains('no-resize')) return
+    if (th.style.display === 'none') return
+    let max = th.scrollWidth
+    rows.forEach(row => {
+      const cell = row.children[i]
+      if (cell && cell.style.display !== 'none') {
+        const width = cell.scrollWidth
+        if (width > max) max = width
+      }
+    })
+    const final = max + 16
+    th.style.width = final + 'px'
+    rows.forEach(row => {
+      const cell = row.children[i]
+      if (cell) cell.style.width = final + 'px'
+    })
+  })
 }
 
 document.addEventListener('DOMContentLoaded', setupTablePrefs)

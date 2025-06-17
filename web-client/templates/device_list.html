@@ -31,7 +31,7 @@
 <table class="min-w-full table-fixed text-left border-collapse devices-table">
   <thead>
     <tr>
-      <th class="table-cell"><input type="checkbox" id="select-all" @change="toggleAll($event.target.checked)"></th>
+      <th class="table-cell checkbox-col no-resize"><input type="checkbox" id="select-all" @change="toggleAll($event.target.checked)"></th>
       {% if column_prefs.hostname %}<th class="table-cell table-header">{{ column_labels['hostname'] }}</th>{% endif %}
       {% if column_prefs.ip %}<th class="table-cell table-header">{{ column_labels['ip'] }}</th>{% endif %}
       {% if column_prefs.mac %}<th class="table-cell table-header">{{ column_labels['mac'] }}</th>{% endif %}
@@ -51,13 +51,13 @@
       {% if column_prefs.status %}<th class="table-cell table-header">{{ column_labels['status'] }}</th>{% endif %}
       {% if column_prefs.tags %}<th class="table-cell table-header">{{ column_labels['tags'] }}</th>{% endif %}
       <th class="table-cell table-header">Ver</th>
-      <th class="table-header text-right actions-col">Actions</th>
+      <th class="table-header text-right actions-col no-resize">Actions</th>
     </tr>
   </thead>
   <tbody>
   {% for device in devices %}
     <tr {% if device.conflict_data %}style="background-color:#7f1d1d"{% endif %}>
-      <td class="table-cell"><input type="checkbox" name="selected" value="{{ device.id }}" x-model="selectedIds"></td>
+      <td class="table-cell checkbox-col no-resize"><input type="checkbox" name="selected" value="{{ device.id }}" x-model="selectedIds"></td>
       {% if column_prefs.hostname %}<td class="table-cell">{{ device.hostname }}</td>{% endif %}
       {% if column_prefs.ip %}<td class="table-cell {% if device.ip and duplicate_ips.get(device.ip) %}duplicate{% endif %}" title="{{ duplicate_ips.get(device.ip)|join(', ') if duplicate_ips.get(device.ip) }}">{{ device.ip }}</td>{% endif %}
       {% if column_prefs.mac %}<td class="table-cell {% if device.mac and duplicate_macs.get(device.mac) %}duplicate{% endif %}" title="{{ duplicate_macs.get(device.mac)|join(', ') if duplicate_macs.get(device.mac) }}">{{ device.mac or '' }}</td>{% endif %}
@@ -93,7 +93,7 @@
         {{ device.version }}
         {% if device.conflict_data %}{{ include_icon('alert-triangle','text-red-500','1.5') }}{% endif %}
       </td>
-      <td class="actions-col text-right whitespace-nowrap">
+      <td class="actions-col text-right whitespace-nowrap no-resize">
         <div class="flex justify-end gap-1">
           {% if device.ssh_credential or personal_creds.get(device.id) %}
           <a href="/ssh/port-config?device_id={{ device.id }}" title="View in Network Devices" aria-label="Live Config" class="icon-btn">{{ include_icon('eye') }}</a>
@@ -112,7 +112,7 @@
   </tbody>
   <tfoot x-show="selectedIds.length > 0" x-cloak>
     <tr class="bg-[var(--card-bg)]">
-      <td class="table-cell"></td>
+      <td class="table-cell checkbox-col no-resize"></td>
       {% if column_prefs.hostname %}<td class="table-cell"><input name="hostname" class="w-full bg-[var(--input-bg)] text-[var(--input-text)] rounded" /></td>{% endif %}
       {% if column_prefs.ip %}<td class="table-cell"><input name="ip" class="w-full bg-[var(--input-bg)] text-[var(--input-text)] rounded" /></td>{% endif %}
       {% if column_prefs.mac %}<td class="table-cell"><input name="mac" class="w-full bg-[var(--input-bg)] text-[var(--input-text)] rounded" /></td>{% endif %}
@@ -132,7 +132,7 @@
       {% if column_prefs.status %}<td class="table-cell"></td>{% endif %}
       {% if column_prefs.tags %}<td class="table-cell"><input name="tag_names" class="w-full bg-[var(--input-bg)] text-[var(--input-text)] rounded" /></td>{% endif %}
       <td class="table-cell"></td>
-      <td class="actions-col text-right"><button type="button" @click="bulkUpdate" aria-label="Apply" class="icon-btn">{{ include_icon('check','text-green-500','1.5') }}</button></td>
+      <td class="actions-col text-right no-resize"><button type="button" @click="bulkUpdate" aria-label="Apply" class="icon-btn">{{ include_icon('check','text-green-500','1.5') }}</button></td>
     </tr>
   </tfoot>
 </table>
