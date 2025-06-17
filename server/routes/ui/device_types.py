@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request, Depends, HTTPException, Form
+from fastapi import APIRouter, Request, Depends, HTTPException, Form, UploadFile, File
 from fastapi.responses import RedirectResponse
 from core.utils.templates import templates
 from sqlalchemy.orm import Session
@@ -6,6 +6,8 @@ from sqlalchemy.orm import Session
 from core.utils.db_session import get_db
 from core.utils.auth import require_role
 from core.models.models import DeviceType
+import os
+from core.utils.paths import STATIC_DIR
 
 
 
@@ -39,6 +41,8 @@ async def new_device_type_form(request: Request, current_user=Depends(require_ro
 async def create_device_type(
     request: Request,
     name: str = Form(...),
+    upload_icon: UploadFile | None = File(None),
+    upload_image: UploadFile | None = File(None),
     db: Session = Depends(get_db),
     current_user=Depends(require_role("superadmin")),
 ):
@@ -55,6 +59,25 @@ async def create_device_type(
 
     dtype = DeviceType(name=name)
     db.add(dtype)
+    db.commit()
+    db.refresh(dtype)
+
+    upload_dir = os.path.join(STATIC_DIR, "uploads", "device-types")
+    os.makedirs(upload_dir, exist_ok=True)
+    if upload_icon and upload_icon.filename:
+        if not upload_icon.content_type.startswith("image/"):
+            raise HTTPException(status_code=400, detail="Invalid icon type")
+        icon_name = f"{dtype.id}_icon_{os.path.basename(upload_icon.filename)}"
+        with open(os.path.join(upload_dir, icon_name), "wb") as f:
+            f.write(await upload_icon.read())
+        dtype.upload_icon = icon_name
+    if upload_image and upload_image.filename:
+        if not upload_image.content_type.startswith("image/"):
+            raise HTTPException(status_code=400, detail="Invalid image type")
+        image_name = f"{dtype.id}_img_{os.path.basename(upload_image.filename)}"
+        with open(os.path.join(upload_dir, image_name), "wb") as f:
+            f.write(await upload_image.read())
+        dtype.upload_image = image_name
     db.commit()
     return RedirectResponse(url="/device-types", status_code=302)
 
@@ -84,6 +107,8 @@ async def update_device_type(
     type_id: int,
     request: Request,
     name: str = Form(...),
+    upload_icon: UploadFile | None = File(None),
+    upload_image: UploadFile | None = File(None),
     db: Session = Depends(get_db),
     current_user=Depends(require_role("superadmin")),
 ):
@@ -104,6 +129,22 @@ async def update_device_type(
         return templates.TemplateResponse("device_type_form.html", context)
 
     dtype.name = name
+    upload_dir = os.path.join(STATIC_DIR, "uploads", "device-types")
+    os.makedirs(upload_dir, exist_ok=True)
+    if upload_icon and upload_icon.filename:
+        if not upload_icon.content_type.startswith("image/"):
+            raise HTTPException(status_code=400, detail="Invalid icon type")
+        icon_name = f"{dtype.id}_icon_{os.path.basename(upload_icon.filename)}"
+        with open(os.path.join(upload_dir, icon_name), "wb") as f:
+            f.write(await upload_icon.read())
+        dtype.upload_icon = icon_name
+    if upload_image and upload_image.filename:
+        if not upload_image.content_type.startswith("image/"):
+            raise HTTPException(status_code=400, detail="Invalid image type")
+        image_name = f"{dtype.id}_img_{os.path.basename(upload_image.filename)}"
+        with open(os.path.join(upload_dir, image_name), "wb") as f:
+            f.write(await upload_image.read())
+        dtype.upload_image = image_name
     db.commit()
     return RedirectResponse(url="/device-types", status_code=302)
 

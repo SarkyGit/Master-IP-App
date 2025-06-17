@@ -2,7 +2,7 @@
 
 {% block content %}
 <h1 class="text-xl mb-2">Port Status for {{ device.hostname }}</h1>
-<a href="/devices" class="underline inline-block mb-4">Back to Devices</a>
+<a href="/devices/table" class="underline inline-block mb-4">Back to Devices</a>
 {% if device.last_snmp_check %}
 <p class="mb-4 text-base text-[var(--card-text)]">
   {% if device.snmp_reachable %}
