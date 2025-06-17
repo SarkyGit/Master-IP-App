@@ -2,6 +2,7 @@ import os
 import sys
 import importlib
 from unittest import mock
+from datetime import datetime
 
 import pytest
 from fastapi.testclient import TestClient
@@ -14,6 +15,18 @@ class DummyQuery:
     def filter_by(self, **kw):
         for k, v in kw.items():
             self.items = [i for i in self.items if getattr(i, k) == v]
+        return self
+
+    def filter(self, expr):
+        from sqlalchemy.sql import operators
+        col = expr.left.key
+        val = expr.right.value
+        if expr.operator == operators.gt:
+            self.items = [i for i in self.items if getattr(i, col, None) and getattr(i, col) > val]
+        elif expr.operator == operators.eq:
+            self.items = [i for i in self.items if getattr(i, col, None) == val]
+        else:
+            self.items = []
         return self
 
     def first(self):
@@ -120,9 +133,9 @@ def client_local():
 def test_push_valid_update_and_conflict(client_cloud):
     models = client_cloud.db.models
     payload = {
-        "model": models.User.__tablename__,
         "records": [
             {
+                "model": models.User.__tablename__,
                 "id": 1,
                 "email": "viewer2@example.com",
                 "hashed_password": "x",
@@ -131,6 +144,7 @@ def test_push_valid_update_and_conflict(client_cloud):
                 "version": 1,
             },
             {
+                "model": models.User.__tablename__,
                 "id": 2,
                 "email": "new@example.com",
                 "hashed_password": "x",
@@ -138,7 +152,7 @@ def test_push_valid_update_and_conflict(client_cloud):
                 "is_active": True,
                 "version": 0,
             },
-        ],
+        ]
     }
     resp = client_cloud.post("/api/v1/sync/push", json=payload)
     assert resp.status_code == 200
@@ -153,7 +167,7 @@ def test_push_valid_update_and_conflict(client_cloud):
 
 @pytest.mark.integration
 def test_push_missing_fields(client_cloud):
-    payload = {"model": client_cloud.db.models.User.__tablename__, "records": [{"id": 1}]}
+    payload = {"records": [{"model": client_cloud.db.models.User.__tablename__, "id": 1}]}
     resp = client_cloud.post("/api/v1/sync/push", json=payload)
     assert resp.status_code == 200
     assert resp.json()["skipped"] == 1
@@ -161,18 +175,25 @@ def test_push_missing_fields(client_cloud):
 
 @pytest.mark.integration
 def test_push_invalid_model(client_cloud):
-    resp = client_cloud.post("/api/v1/sync/push", json={"model": "bad", "records": []})
+    resp = client_cloud.post("/api/v1/sync/push", json={"records": [{"model": "bad"}]})
     assert resp.status_code == 400
 
 
 @pytest.mark.integration
 def test_pull_endpoint_cloud(client_cloud):
-    resp = client_cloud.post("/api/v1/sync/pull", json={"since": "now"})
+    ts = datetime.utcnow().isoformat()
+    resp = client_cloud.post(
+        "/api/v1/sync/pull", json={"since": ts, "models": [client_cloud.db.models.User.__tablename__]}
+    )
     assert resp.status_code == 200
 
 
 @pytest.mark.integration
 @pytest.mark.cloud_only
 def test_pull_endpoint_hidden_in_local_role(client_local):
-    resp = client_local.post("/api/v1/sync/pull", json={"since": "now"})
+    ts = datetime.utcnow().isoformat()
+    resp = client_local.post(
+        "/api/v1/sync/pull",
+        json={"since": ts, "models": [client_local.db.models.User.__tablename__]},
+    )
     assert resp.status_code == 404

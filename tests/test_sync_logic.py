@@ -2,6 +2,7 @@ import os
 import sys
 import importlib
 from unittest import mock
+from datetime import datetime
 
 os.environ.setdefault("DATABASE_URL", "postgresql://user:pass@localhost/test")
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -17,6 +18,16 @@ class DummyQuery:
     def filter_by(self, **kw):
         for k, v in kw.items():
             self.items = [i for i in self.items if getattr(i, k) == v]
+        return self
+
+    def filter(self, expr):
+        from sqlalchemy.sql import operators
+        col = expr.left.key
+        val = expr.right.value
+        if expr.operator == operators.gt:
+            self.items = [i for i in self.items if getattr(i, col, None) and getattr(i, col) > val]
+        elif expr.operator == operators.eq:
+            self.items = [i for i in self.items if getattr(i, col, None) == val]
         return self
 
     def first(self):
@@ -113,9 +124,9 @@ def client_local():
 
 def test_push_updates_version_and_records(client_cloud):
     payload = {
-        "model": "users",
         "records": [
             {
+                "model": "users",
                 "id": 1,
                 "email": "viewer@example.com",
                 "hashed_password": "x",
@@ -123,7 +134,7 @@ def test_push_updates_version_and_records(client_cloud):
                 "is_active": True,
                 "version": 1,
             }
-        ],
+        ]
     }
     resp = client_cloud.post("/api/v1/sync/push", json=payload)
     assert resp.status_code == 200
@@ -137,9 +148,9 @@ def test_push_updates_version_and_records(client_cloud):
 
 def test_push_conflict_and_skip(client_cloud):
     payload = {
-        "model": "users",
         "records": [
             {
+                "model": "users",
                 "id": 1,
                 "email": "changed@example.com",
                 "hashed_password": "x",
@@ -148,13 +159,14 @@ def test_push_conflict_and_skip(client_cloud):
                 "version": 0,
             },
             {
+                "model": "users",
                 "id": 2,
                 "role": "viewer",
                 "hashed_password": "x",
                 "is_active": True,
                 "version": 1,
             },
-        ],
+        ]
     }
     resp = client_cloud.post("/api/v1/sync/push", json=payload)
     assert resp.status_code == 200
@@ -168,11 +180,17 @@ def test_push_conflict_and_skip(client_cloud):
 
 
 def test_pull_endpoint_cloud(client_cloud):
-    resp = client_cloud.post("/api/v1/sync/pull", json={"since": "now"})
+    ts = datetime.utcnow().isoformat()
+    resp = client_cloud.post(
+        "/api/v1/sync/pull", json={"since": ts, "models": ["users"]}
+    )
     assert resp.status_code == 200
-    assert resp.json()["status"] == "pulled"
+    assert isinstance(resp.json(), list)
 
 
 def test_pull_endpoint_hidden_in_local_role(client_local):
-    resp = client_local.post("/api/v1/sync/pull", json={"since": "now"})
+    ts = datetime.utcnow().isoformat()
+    resp = client_local.post(
+        "/api/v1/sync/pull", json={"since": ts, "models": ["users"]}
+    )
     assert resp.status_code == 404

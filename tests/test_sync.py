@@ -3,6 +3,7 @@ import sys
 import importlib
 from unittest import mock
 from fastapi.testclient import TestClient
+from datetime import datetime
 
 
 class DummyQuery:
@@ -12,6 +13,16 @@ class DummyQuery:
     def filter_by(self, **kw):
         for k, v in kw.items():
             self.items = [i for i in self.items if getattr(i, k) == v]
+        return self
+
+    def filter(self, expr):
+        from sqlalchemy.sql import operators
+        col = expr.left.key
+        val = expr.right.value
+        if expr.operator == operators.gt:
+            self.items = [i for i in self.items if getattr(i, col, None) and getattr(i, col) > val]
+        elif expr.operator == operators.eq:
+            self.items = [i for i in self.items if getattr(i, col, None) == val]
         return self
 
     def first(self):
@@ -113,9 +124,9 @@ def test_sync_endpoint_processes_payload():
 
 def test_sync_push_endpoint():
     payload = {
-        "model": "users",
         "records": [
             {
+                "model": "users",
                 "id": 2,
                 "email": "new@example.com",
                 "hashed_password": "x",
@@ -124,6 +135,7 @@ def test_sync_push_endpoint():
                 "version": 1,
             },
             {
+                "model": "users",
                 "id": 1,
                 "email": "admin@example.com",
                 "hashed_password": "x",
@@ -131,7 +143,7 @@ def test_sync_push_endpoint():
                 "is_active": True,
                 "version": 0,
             },
-        ],
+        ]
     }
     resp = client.post("/api/v1/sync/push", json=payload)
     assert resp.status_code == 200
@@ -142,6 +154,7 @@ def test_sync_push_endpoint():
 
 
 def test_sync_pull_endpoint():
-    resp = client.post("/api/v1/sync/pull", json={"since": "now"})
+    ts = datetime.utcnow().isoformat()
+    resp = client.post("/api/v1/sync/pull", json={"since": ts, "models": ["users"]})
     assert resp.status_code == 200
-    assert resp.json()["status"] == "pulled"
+    assert isinstance(resp.json(), list)
