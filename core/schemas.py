@@ -139,3 +139,89 @@ class UserUpdate(BaseModel):
     role: str | None = None
     is_active: bool | None = None
     version: int | None = None
+
+
+class TagBase(BaseSchema):
+    name: str
+
+
+class TagCreate(BaseModel):
+    name: str
+
+
+class TagRead(TagBase):
+    id: int
+
+    class Config:
+        orm_mode = True
+
+
+class TagUpdate(BaseModel):
+    name: str | None = None
+    version: int | None = None
+
+
+class DeviceTypeBase(BaseSchema):
+    name: str
+
+
+class DeviceTypeCreate(BaseModel):
+    name: str
+
+
+class DeviceTypeRead(DeviceTypeBase):
+    id: int
+
+    class Config:
+        orm_mode = True
+
+
+class DeviceTypeUpdate(BaseModel):
+    name: str | None = None
+    version: int | None = None
+
+
+class LocationBase(BaseSchema):
+    name: str
+    location_type: str = "Fixed"
+
+
+class LocationCreate(BaseModel):
+    name: str
+    location_type: str = "Fixed"
+
+
+class LocationRead(LocationBase):
+    id: int
+
+    class Config:
+        orm_mode = True
+
+
+class LocationUpdate(BaseModel):
+    name: str | None = None
+    location_type: str | None = None
+    version: int | None = None
+
+
+class SiteBase(BaseSchema):
+    name: str
+    description: str | None = None
+
+
+class SiteCreate(BaseModel):
+    name: str
+    description: str | None = None
+
+
+class SiteRead(SiteBase):
+    id: int
+
+    class Config:
+        orm_mode = True
+
+
+class SiteUpdate(BaseModel):
+    name: str | None = None
+    description: str | None = None
+    version: int | None = None
