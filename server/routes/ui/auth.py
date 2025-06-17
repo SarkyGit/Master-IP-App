@@ -39,7 +39,7 @@ async def login(
     if check_ban(db, ip):
         log_audit(db, None, "failed_login", details=f"IP={ip} banned")
         log_login_event(db, None, ip, user_agent, False)
-        context = {"request": request, "error": "Invalid credentials"}
+        context = {"request": request, "error": "Invalid credentials", "current_user": None}
         return templates.TemplateResponse("login.html", context)
 
     user = db.query(User).filter(User.email == email, User.is_active.is_(True)).first()
@@ -49,7 +49,7 @@ async def login(
         log_login_event(db, user, ip, user_agent, False)
         if banned_now:
             log_audit(db, None, "auto_ban_ip", details=f"{ip}")
-        context = {"request": request, "error": "Invalid credentials"}
+        context = {"request": request, "error": "Invalid credentials", "current_user": None}
         return templates.TemplateResponse("login.html", context)
 
     clear_attempts(ip)
