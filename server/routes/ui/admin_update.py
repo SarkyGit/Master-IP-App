@@ -121,6 +121,7 @@ def _render_update(request: Request, db: Session, current_user, message: str = "
     unsynced = _unsynced_records_exist(db)
     cloud_url = db.query(SystemTunable).filter(SystemTunable.name == "Cloud Base URL").first()
     site_id_row = db.query(SystemTunable).filter(SystemTunable.name == "Cloud Site ID").first()
+    api_key_row = db.query(SystemTunable).filter(SystemTunable.name == "Cloud API Key").first()
     enabled_row = db.query(SystemTunable).filter(SystemTunable.name == "Enable Cloud Sync").first()
     last_contact = db.query(SystemTunable).filter(SystemTunable.name == "Last Cloud Contact").first()
     last_contact_val = last_contact.value if last_contact else None
@@ -145,6 +146,7 @@ def _render_update(request: Request, db: Session, current_user, message: str = "
         "cloud_enabled": enabled_row.value.lower() == "true" if enabled_row else False,
         "cloud_url": cloud_url.value if cloud_url else "",
         "site_id": site_id_row.value if site_id_row else "",
+        "api_key": api_key_row.value if api_key_row else "",
         "last_contact": last_contact_val,
         "connection_status": connection_status,
         "cloud_message": message,
