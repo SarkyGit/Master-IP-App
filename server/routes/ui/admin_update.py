@@ -14,6 +14,7 @@ from core.models.models import SystemTunable, Device, User
 from core.utils.audit import log_audit
 from server.workers.sync_push_worker import _load_last_sync
 from server.workers.heartbeat import send_heartbeat_once
+from settings import settings
 
 router = APIRouter()
 
@@ -27,6 +28,14 @@ def _broadcast(msg: str) -> None:
 
 
 def _unsynced_records_exist(db: Session) -> bool:
+    """Return True if there are unsynced device records.
+
+    When running in cloud mode updates should not be blocked by this
+    check because sync workers never run. In that case always return
+    False so the admin can update without needing a dummy sync.
+    """
+    if settings.role == "cloud":
+        return False
     since = _load_last_sync(db)
     return (
         db.query(Device)
@@ -44,7 +53,15 @@ def _git(cmd: list[str]) -> str:
 
 
 def _determine_reboot(changed: list[str], force: bool) -> bool:
-    critical = ["init_db.sh", "deploy/", "nginx/", "start.sh", "installer.py", "Dockerfile", "docker-compose"]
+    critical = [
+        "init_db.sh",
+        "deploy/",
+        "nginx/",
+        "start.sh",
+        "installer.py",
+        "Dockerfile",
+        "docker-compose",
+    ]
     if force:
         return True
     for path in changed:
@@ -110,7 +127,11 @@ async def update_ws(websocket):
 
 
 def _render_update(request: Request, db: Session, current_user, message: str = ""):
-    allow_row = db.query(SystemTunable).filter(SystemTunable.name == "ALLOW_SELF_UPDATE").first()
+    allow_row = (
+        db.query(SystemTunable)
+        .filter(SystemTunable.name == "ALLOW_SELF_UPDATE")
+        .first()
+    )
     if allow_row and str(allow_row.value).lower() in {"false", "0", "no"}:
         raise HTTPException(status_code=404)
     branch = _git(["git", "rev-parse", "--abbrev-ref", "HEAD"])
@@ -119,11 +140,25 @@ def _render_update(request: Request, db: Session, current_user, message: str = "
     remote = _git(["git", "rev-parse", "--short", "origin/main"])
     update_available = commit != remote
     unsynced = _unsynced_records_exist(db)
-    cloud_url = db.query(SystemTunable).filter(SystemTunable.name == "Cloud Base URL").first()
-    site_id_row = db.query(SystemTunable).filter(SystemTunable.name == "Cloud Site ID").first()
-    api_key_row = db.query(SystemTunable).filter(SystemTunable.name == "Cloud API Key").first()
-    enabled_row = db.query(SystemTunable).filter(SystemTunable.name == "Enable Cloud Sync").first()
-    last_contact = db.query(SystemTunable).filter(SystemTunable.name == "Last Cloud Contact").first()
+    cloud_url = (
+        db.query(SystemTunable).filter(SystemTunable.name == "Cloud Base URL").first()
+    )
+    site_id_row = (
+        db.query(SystemTunable).filter(SystemTunable.name == "Cloud Site ID").first()
+    )
+    api_key_row = (
+        db.query(SystemTunable).filter(SystemTunable.name == "Cloud API Key").first()
+    )
+    enabled_row = (
+        db.query(SystemTunable)
+        .filter(SystemTunable.name == "Enable Cloud Sync")
+        .first()
+    )
+    last_contact = (
+        db.query(SystemTunable)
+        .filter(SystemTunable.name == "Last Cloud Contact")
+        .first()
+    )
     last_contact_val = last_contact.value if last_contact else None
     connection_status = "Disconnected"
     if last_contact_val:
@@ -155,17 +190,28 @@ def _render_update(request: Request, db: Session, current_user, message: str = "
 
 
 @router.get("/admin/update")
-async def update_page(request: Request, db: Session = Depends(get_db), current_user=Depends(require_role("admin"))):
+async def update_page(
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("admin")),
+):
     return _render_update(request, db, current_user)
 
 
 @router.get("/admin/check-update")
-async def check_update(db: Session = Depends(get_db), current_user=Depends(require_role("admin"))):
+async def check_update(
+    db: Session = Depends(get_db), current_user=Depends(require_role("admin"))
+):
     _git(["git", "fetch", "origin"])
     local = _git(["git", "rev-parse", "--short", "HEAD"])
     remote = _git(["git", "rev-parse", "--short", "origin/main"])
     unsynced = _unsynced_records_exist(db)
-    return {"update_available": local != remote, "unsynced": unsynced, "commit": local, "remote": remote}
+    return {
+        "update_available": local != remote,
+        "unsynced": unsynced,
+        "commit": local,
+        "remote": remote,
+    }
 
 
 @router.post("/admin/test-cloud")
@@ -182,28 +228,78 @@ async def test_cloud_connection(
     msg = ""
     if cloud_url and site_id and api_key:
         try:
-            await send_heartbeat_once(logging.getLogger(__name__), cloud_url, site_id, api_key)
-            row = db.query(SystemTunable).filter(SystemTunable.name == "Cloud Base URL").first()
+            await send_heartbeat_once(
+                logging.getLogger(__name__), cloud_url, site_id, api_key
+            )
+            row = (
+                db.query(SystemTunable)
+                .filter(SystemTunable.name == "Cloud Base URL")
+                .first()
+            )
             if row:
                 row.value = cloud_url
             else:
-                db.add(SystemTunable(name="Cloud Base URL", value=cloud_url, function="Sync", file_type="application", data_type="text"))
-            row = db.query(SystemTunable).filter(SystemTunable.name == "Cloud Site ID").first()
+                db.add(
+                    SystemTunable(
+                        name="Cloud Base URL",
+                        value=cloud_url,
+                        function="Sync",
+                        file_type="application",
+                        data_type="text",
+                    )
+                )
+            row = (
+                db.query(SystemTunable)
+                .filter(SystemTunable.name == "Cloud Site ID")
+                .first()
+            )
             if row:
                 row.value = site_id
             else:
-                db.add(SystemTunable(name="Cloud Site ID", value=site_id, function="Sync", file_type="application", data_type="text"))
-            row = db.query(SystemTunable).filter(SystemTunable.name == "Cloud API Key").first()
+                db.add(
+                    SystemTunable(
+                        name="Cloud Site ID",
+                        value=site_id,
+                        function="Sync",
+                        file_type="application",
+                        data_type="text",
+                    )
+                )
+            row = (
+                db.query(SystemTunable)
+                .filter(SystemTunable.name == "Cloud API Key")
+                .first()
+            )
             if row:
                 row.value = api_key
             else:
-                db.add(SystemTunable(name="Cloud API Key", value=api_key, function="Sync", file_type="application", data_type="text"))
+                db.add(
+                    SystemTunable(
+                        name="Cloud API Key",
+                        value=api_key,
+                        function="Sync",
+                        file_type="application",
+                        data_type="text",
+                    )
+                )
 
-            row = db.query(SystemTunable).filter(SystemTunable.name == "Enable Cloud Sync").first()
+            row = (
+                db.query(SystemTunable)
+                .filter(SystemTunable.name == "Enable Cloud Sync")
+                .first()
+            )
             if row:
                 row.value = "true" if enabled else "false"
             else:
-                db.add(SystemTunable(name="Enable Cloud Sync", value="true" if enabled else "false", function="Sync", file_type="application", data_type="bool"))
+                db.add(
+                    SystemTunable(
+                        name="Enable Cloud Sync",
+                        value="true" if enabled else "false",
+                        function="Sync",
+                        file_type="application",
+                        data_type="bool",
+                    )
+                )
             db.commit()
             msg = "Connection successful"
         except Exception as exc:
@@ -214,23 +310,42 @@ async def test_cloud_connection(
 
 
 @router.post("/admin/update")
-async def start_update(request: Request, db: Session = Depends(get_db), current_user=Depends(require_role("admin"))):
-    allow_row = db.query(SystemTunable).filter(SystemTunable.name == "ALLOW_SELF_UPDATE").first()
+async def start_update(
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("admin")),
+):
+    allow_row = (
+        db.query(SystemTunable)
+        .filter(SystemTunable.name == "ALLOW_SELF_UPDATE")
+        .first()
+    )
     if allow_row and str(allow_row.value).lower() in {"false", "0", "no"}:
         raise HTTPException(status_code=404)
     _git(["git", "fetch", "origin"])
     head = _git(["git", "rev-parse", "HEAD"])
     remote = _git(["git", "rev-parse", "origin/main"])
     if head == remote:
-        return templates.TemplateResponse("update_modal.html", {"request": request, "message": "Already up to date"})
+        return templates.TemplateResponse(
+            "update_modal.html", {"request": request, "message": "Already up to date"}
+        )
     if _unsynced_records_exist(db):
-        return templates.TemplateResponse("update_modal.html", {"request": request, "unsynced": True})
+        return templates.TemplateResponse(
+            "update_modal.html", {"request": request, "unsynced": True}
+        )
     force = False
-    row = db.query(SystemTunable).filter(SystemTunable.name == "FORCE_REBOOT_ON_UPDATE").first()
+    row = (
+        db.query(SystemTunable)
+        .filter(SystemTunable.name == "FORCE_REBOOT_ON_UPDATE")
+        .first()
+    )
     if row and str(row.value).lower() in {"true", "1", "yes"}:
         force = True
     if _update_lock.locked():
-        return templates.TemplateResponse("update_modal.html", {"request": request, "message": "Update already running"})
+        return templates.TemplateResponse(
+            "update_modal.html",
+            {"request": request, "message": "Update already running"},
+        )
     asyncio.create_task(_do_update(current_user, force))
     return templates.TemplateResponse("update_modal.html", {"request": request})
 
@@ -238,4 +353,3 @@ async def start_update(request: Request, db: Session = Depends(get_db), current_
 async def _do_update(user: User, force: bool) -> None:
     async with _update_lock:
         await _run_update(user, force)
-
