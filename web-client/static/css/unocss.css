@@ -56,6 +56,7 @@
 .max-w-lg{max-width:32rem;}
 .max-w-sm{max-width:24rem;}
 .min-h-\[50vh\]{min-height:50vh;}
+.min-h-\[60vh\]{min-height:60vh;}
 .min-h-screen{min-height:100vh;}
 .min-w-\[200px\]{min-width:200px;}
 .min-w-\[20rem\]{min-width:20rem;}
@@ -143,6 +144,7 @@
 .p-2{padding:0.5rem;}
 .p-3{padding:0.75rem;}
 .p-4{padding:1rem;}
+.p-6{padding:1.5rem;}
 .px-1{padding-left:0.25rem;padding-right:0.25rem;}
 .px-2{padding-left:0.5rem;padding-right:0.5rem;}
 .px-3{padding-left:0.75rem;padding-right:0.75rem;}
@@ -160,6 +162,7 @@
 .text-\[0\.65rem\]{font-size:0.65rem;}
 .text-\[0\.6rem\]{font-size:0.6rem;}
 .text-2xl{font-size:1.5rem;line-height:2rem;}
+.text-3xl{font-size:1.875rem;line-height:2.25rem;}
 .text-base{font-size:1rem;line-height:1.5rem;}
 .text-lg{font-size:1.125rem;line-height:1.75rem;}
 .text-sm{font-size:0.875rem;line-height:1.25rem;}

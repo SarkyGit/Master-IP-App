@@ -1,16 +1,20 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1 class="text-2xl mb-4">Welcome to the CEST Master IP Tool</h1>
-<p class="text-base text-[var(--card-text)]">This application lets you browse network devices and review configuration history.</p>
-<p class="mt-2 text-base text-[var(--card-text)]">As a viewer you can:</p>
-<ul class="list-disc list-inside ml-4">
-  <li>See the list of registered devices</li>
-  <li>Browse saved configuration backups</li>
-  <li>Review audit information</li>
-</ul>
-<p class="mt-4 text-base text-[var(--card-text)]">Log in to access additional features.</p>
-{% if not current_user %}
-<p class="mt-4 text-base text-[var(--card-text)]"><a href="/auth/login" class="underline">Login</a></p>
-{% endif %}
+<div class="flex flex-col items-center justify-center text-center min-h-[60vh]">
+  <div class="bg-[var(--card-bg)] text-[var(--card-text)] p-6 rounded shadow max-w-lg">
+    <h1 class="text-3xl font-bold mb-4">Welcome to the CEST Master IP Tool</h1>
+    <p>This application lets you browse network devices and review configuration history.</p>
+    <p class="mt-4">As a viewer you can:</p>
+    <ul class="list-disc list-inside text-left mt-2">
+      <li>See the list of registered devices</li>
+      <li>Browse saved configuration backups</li>
+      <li>Review audit information</li>
+    </ul>
+    <p class="mt-4">Log in to access additional features.</p>
+    {% if not current_user %}
+    <a href="/auth/login" class="mt-6 inline-block px-4 py-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded transition">Login</a>
+    {% endif %}
+  </div>
+</div>
 {% endblock %}
