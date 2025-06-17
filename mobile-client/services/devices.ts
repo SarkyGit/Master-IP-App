@@ -8,7 +8,7 @@ export interface Device {
 }
 
 export async function fetchDevices(search?: string): Promise<Device[]> {
-  let path = '/api/v1/devices';
+  let path = '/api/devices';
   if (search) {
     const params = new URLSearchParams({ search });
     path += `?${params.toString()}`;

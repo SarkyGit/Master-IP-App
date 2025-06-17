@@ -63,7 +63,7 @@ export default function DeviceListScreen() {
   if (error) {
     return (
       <View style={styles.center}>
-        <Text>{error}</Text>
+        <Text style={styles.error}>{error}</Text>
       </View>
     );
   }
@@ -100,31 +100,40 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
+    backgroundColor: '#000',
   },
   center: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: '#000',
   },
   card: {
     padding: 12,
     marginBottom: 8,
     borderRadius: 6,
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: '#14b8a6',
+    backgroundColor: '#1e293b',
   },
   host: {
     fontWeight: 'bold',
     marginBottom: 4,
+    color: '#f97316',
   },
   detail: {
-    color: '#555',
+    color: '#f1f5f9',
   },
   search: {
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: '#14b8a6',
+    backgroundColor: '#1f2937',
+    color: '#f9fafb',
     padding: 8,
     marginBottom: 12,
     borderRadius: 4,
+  },
+  error: {
+    color: '#ec4899',
   },
 });
