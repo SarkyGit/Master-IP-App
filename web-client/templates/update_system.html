@@ -27,7 +27,12 @@
   </div>
   <div>
     <label class="block mb-1">API Key</label>
-    <input type="text" name="api_key" value="" placeholder="Enter key" class="w-full p-1 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+    <input type="text" name="api_key" value="{{ api_key }}" placeholder="Enter key" class="w-full p-1 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+    {% if api_key %}
+    <p class="text-sm mt-1">Current key: <code>{{ api_key }}</code></p>
+    {% else %}
+    <p class="text-sm mt-1">No API key configured</p>
+    {% endif %}
   </div>
   <button type="submit" class="btn">Test Connection</button>
   {% if cloud_message %}
