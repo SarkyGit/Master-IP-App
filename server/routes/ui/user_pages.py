@@ -75,7 +75,7 @@ async def edit_my_profile_form(
             "apple_glass",
         ],
         "fonts": ["sans", "serif", "mono"],
-        "menu_styles": ["tabbed", "dropdown"],
+        "menu_styles": ["tabbed", "dropdown", "folder"],
         "icon_sets": ["lucide", "fontawesome", "material", "bootstrap"],
     }
     return templates.TemplateResponse("user_form.html", context)
@@ -114,7 +114,7 @@ async def update_my_profile(
                 "apple_glass",
             ],
             "fonts": ["sans", "serif", "mono"],
-            "menu_styles": ["tabbed", "dropdown"],
+            "menu_styles": ["tabbed", "dropdown", "folder"],
             "icon_sets": ["lucide", "fontawesome", "material", "bootstrap"],
         }
         return templates.TemplateResponse("user_form.html", context)

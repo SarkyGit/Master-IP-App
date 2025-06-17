@@ -106,6 +106,7 @@
         <select id="menu_style" name="menu_style" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
           <option value="tabbed" {% if user.menu_style == 'tabbed' %}selected{% endif %}>Tabbed Navigation</option>
           <option value="dropdown" {% if user.menu_style == 'dropdown' %}selected{% endif %}>Dropdown Navigation</option>
+          <option value="folder" {% if user.menu_style == 'folder' %}selected{% endif %}>Folder Sidebar</option>
         </select>
       </div>
     </div>
