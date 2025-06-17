@@ -14,7 +14,7 @@ async def validate_site_key(request: Request, db: Session = Depends(get_db)) -> 
         entry = db.query(SiteKey).filter(SiteKey.site_id == site_id).first()
     except Exception:
         return SiteKey(site_id=site_id or "", site_name="", api_key=api_key or "")
-    if not entry:
+    if not entry or not isinstance(entry, SiteKey):
         return SiteKey(site_id=site_id, site_name="", api_key=api_key)
     if entry.api_key != api_key or not entry.active:
         try:
