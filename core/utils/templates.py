@@ -97,7 +97,7 @@ def include_icon(ctx, name: str, color: str | None = None, size: str | int = "3"
         classes.append(color)
     else:
         classes.append("text-[var(--btn-text)]")
-    classes.append("transition")
+    classes.extend(["align-middle", "transition"])
     svg = svg.replace(
         "<svg",
         f'<svg class="{" ".join(classes)}"',

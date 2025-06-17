@@ -21,10 +21,12 @@
       <td class="px-4 py-2">{{ loc.name }}</td>
       <td class="px-4 py-2">{{ loc.location_type }}</td>
       <td class="actions-col px-4 py-2">
-        <a href="/admin/locations/{{ loc.id }}/edit" aria-label="Edit" class="icon-btn mr-1">{{ include_icon('pencil','text-blue-500','1.5') }}</a>
-        <form method="post" action="/admin/locations/{{ loc.id }}/delete" class="inline">
-          <button type="submit" aria-label="Delete" class="icon-btn" onclick="return confirm('Delete location?')">{{ include_icon('trash-2','text-red-500','1.5') }}</button>
-        </form>
+        <div class="flex gap-1">
+          <a href="/admin/locations/{{ loc.id }}/edit" aria-label="Edit" class="icon-btn">{{ include_icon('pencil','text-blue-500','5') }}</a>
+          <form method="post" action="/admin/locations/{{ loc.id }}/delete" class="inline">
+            <button type="submit" aria-label="Delete" class="icon-btn" onclick="return confirm('Delete location?')">{{ include_icon('trash-2','text-red-500','5') }}</button>
+          </form>
+        </div>
       </td>
     </tr>
   {% endfor %}

@@ -105,8 +105,10 @@
       </td>
       <td class="px-4 py-2">{{ port.alias or '' }}</td>
       <td class="px-4 py-2 actions-col">
-        <a href="/devices/{{ device.id }}/ports/{{ port.name }}/config" aria-label="Config" class="icon-btn">{{ include_icon('zap','text-yellow-400','1.5') }}</a>
-        <a href="/devices/{{ device.id }}/ports/{{ port.name }}/apply-template" aria-label="Template" class="icon-btn ml-1">{{ include_icon('pencil','text-blue-500','1.5') }}</a>
+        <div class="flex gap-1">
+          <a href="/devices/{{ device.id }}/ports/{{ port.name }}/config" aria-label="Config" class="icon-btn">{{ include_icon('zap','text-yellow-400','5') }}</a>
+          <a href="/devices/{{ device.id }}/ports/{{ port.name }}/apply-template" aria-label="Template" class="icon-btn">{{ include_icon('pencil','text-blue-500','5') }}</a>
+        </div>
       </td>
     </tr>
   {% endfor %}

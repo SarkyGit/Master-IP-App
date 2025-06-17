@@ -39,9 +39,9 @@
       <td class="actions-col text-center">
         <form method="post" action="/admin/site-keys/{{ key.id }}/toggle">
           {% if key.active %}
-          <button type="submit" aria-label="Disable" class="icon-btn" onclick="return confirm('Disable key?')">{{ include_icon('x-circle','text-red-500','1.5') }}</button>
+          <button type="submit" aria-label="Disable" class="icon-btn" onclick="return confirm('Disable key?')">{{ include_icon('x-circle','text-red-500','5') }}</button>
           {% else %}
-          <button type="submit" aria-label="Enable" class="icon-btn">{{ include_icon('check-circle','text-green-500','1.5') }}</button>
+          <button type="submit" aria-label="Enable" class="icon-btn">{{ include_icon('check-circle','text-green-500','5') }}</button>
           {% endif %}
         </form>
       </td>
