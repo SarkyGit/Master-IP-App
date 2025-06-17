@@ -21,3 +21,10 @@ spec:
             name: master-ip-app
             port:
               number: 8000
+      - path: /api/v1/sync
+        pathType: Prefix
+        backend:
+          service:
+            name: master-ip-app
+            port:
+              number: 8000
