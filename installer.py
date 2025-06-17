@@ -35,12 +35,16 @@ def run(cmd: str) -> None:
 
 
 def install():
+    global questionary
     if os.geteuid() != 0:
         print("This installer must be run as root.")
         return
 
     if questionary is None:
-        raise SystemExit("Please install questionary with 'pip install questionary'")
+        run("apt-get update")
+        run("apt-get install -y python3-pip")
+        run("pip3 install questionary")
+        import questionary
 
     mode = questionary.select(
         "Server mode", choices=["local", "cloud"], default="local"
@@ -75,7 +79,7 @@ def install():
     write_env_file(env_content)
 
     run("apt-get update")
-    run("apt-get install -y git python3 python3-venv python3-pip postgresql curl")
+    run("apt-get install -y git python3 python3-venv python3-pip postgresql curl python-is-python3")
     if install_nginx:
         run("apt-get install -y nginx")
     run("curl -fsSL https://deb.nodesource.com/setup_20.x | bash -")
