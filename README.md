@@ -279,6 +279,14 @@ Several visual themes are bundled under `web-client/static/themes`.  The availab
 
 To switch themes, open **My Profile** from the user menu (or visit `/users/me`) and click **Edit Profile**.  Select a theme from the **Theme** drop‑down and submit the form to save the preference.
 
+## Menu Layout Options
+
+Users can also change how navigation is presented.  The default **Tabbed** layout
+shows horizontal menus across the top.  Selecting **Dropdown** collapses the menu
+into a single button.  Choosing **Folder Sidebar** enables a collapsible sidebar
+styled like a folder tree.  This preference is stored per user and can be
+adjusted from the same **Edit Profile** form.
+
 ## System Tunables
 
 The application stores various settings in the `system_tunables` table. These are seeded with default values by `seed_tunables.py` and can be adjusted from the **System Tunables** page in the web UI (admin role required).
