@@ -48,17 +48,13 @@ async def install_step2(
 async def install_step3(
     request: Request,
     nginx_install: str = Form("no"),
-    domain: str = Form(""),
-    ssl_cert: str = Form(""),
-    ssl_key: str = Form(""),
+    install_domain: str = Form(""),
 ):
     data = request.session.get("install", {})
     data.update(
         {
             "nginx_install": nginx_install,
-            "domain": domain,
-            "ssl_cert": ssl_cert,
-            "ssl_key": ssl_key,
+            "install_domain": install_domain,
         }
     )
     request.session["install"] = data
@@ -85,6 +81,7 @@ async def install_finish(request: Request, seed: str = Form("no")):
         f"DATABASE_URL={data['database_url']}",
         f"SECRET_KEY={data['secret_key']}",
         f"SITE_ID={data.get('site_id','1')}",
+        f"INSTALL_DOMAIN={data.get('install_domain','')}",
     ]
     with open(".env", "w", encoding="utf-8") as f:
         f.write("\n".join(lines) + "\n")

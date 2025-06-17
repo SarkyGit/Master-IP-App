@@ -7,6 +7,7 @@ def test_build_env_content_handles_quotes():
         "database_url": "postgresql://user:pass@localhost/test",
         "secret_key": "pa's\"wd",
         "site_id": "1",
+        "install_domain": "",
     }
     content = build_env_content(data)
     assert "SECRET_KEY=pa's\"wd" in content
