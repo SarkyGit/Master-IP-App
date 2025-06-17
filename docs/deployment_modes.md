@@ -25,5 +25,7 @@ Example environment files are provided at the repository root:
 - `.env.local` – sample settings for a local site
 - `.env.cloud` – sample settings for the cloud server
 
+Both files include `SECRET_KEY=change-me`. **Change this to a random value before deploying.**
+
 See the [README](../README.md) for a complete list of available environment
 variables.

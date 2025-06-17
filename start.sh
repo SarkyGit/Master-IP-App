@@ -9,6 +9,12 @@ if [ -z "${DATABASE_URL}" ] && [ -f .env ]; then
     set +a
 fi
 
+# Fail fast if SECRET_KEY was not changed
+if [ "${SECRET_KEY}" = "change-me" ] || [ -z "${SECRET_KEY}" ]; then
+    echo "ERROR: SECRET_KEY must be set to a unique value before deployment" >&2
+    exit 1
+fi
+
 # Build static assets
 npm run build:web
 

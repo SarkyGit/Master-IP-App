@@ -5,7 +5,7 @@ This folder contains manifests to run the application on a Kubernetes cluster. R
 ## Files
 
 - `app-config.yaml` – ConfigMap providing `ROLE` and `DATABASE_URL`
-- `app-secret.yaml` – Secret containing `SECRET_KEY`
+- `app-secret.yaml` – Secret containing `SECRET_KEY` (edit this to a random value before deployment)
 - `app-deployment.yaml` – FastAPI Deployment with migrations volume
 - `app-service.yaml` – ClusterIP service exposing the app
 - `db-deployment.yaml` – PostgreSQL Deployment and PVC
