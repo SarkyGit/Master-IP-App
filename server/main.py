@@ -49,6 +49,7 @@ from server.routes import (
     install_router,
 )
 from server.routes.api.sync import router as api_sync_router
+from server.routes.api.register_site import router as register_site_router
 from server.routes.ui.sync_diagnostics import router as sync_diagnostics_router
 from server.routes.ui.tunables import router as tunables_router
 from server.routes.ui.editor import router as editor_router
@@ -63,6 +64,7 @@ from server.workers.syslog_listener import setup_syslog_listener
 from server.workers.cloud_sync import start_cloud_sync, stop_cloud_sync
 from server.workers.sync_push_worker import start_sync_push_worker, stop_sync_push_worker
 from server.workers.sync_pull_worker import start_sync_pull_worker, stop_sync_pull_worker
+from server.workers.heartbeat import start_heartbeat, stop_heartbeat
 from core.utils.templates import templates
 from core.utils.db_session import engine, SessionLocal
 from core.models.models import SystemTunable
@@ -99,6 +101,7 @@ async def lifespan(app: FastAPI):
             setup_syslog_listener()
         if settings.enable_cloud_sync:
             start_cloud_sync()
+            start_heartbeat()
         if settings.enable_sync_push_worker:
             start_sync_push_worker()
         if settings.enable_sync_pull_worker:
@@ -110,6 +113,7 @@ async def lifespan(app: FastAPI):
         await stop_cloud_sync()
         await stop_sync_push_worker()
         await stop_sync_pull_worker()
+        await stop_heartbeat()
 
 app = FastAPI(lifespan=lifespan)
 # Respect headers like X-Forwarded-Proto so generated URLs use the
@@ -169,6 +173,7 @@ app.include_router(api_vlans_router)
 app.include_router(api_ssh_credentials_router)
 if settings.role == "cloud":
     app.include_router(api_sync_router)
+    app.include_router(register_site_router)
     app.include_router(sync_diagnostics_router)
 app.include_router(admin_profiles_router)
 app.include_router(configs_router)

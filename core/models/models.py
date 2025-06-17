@@ -496,3 +496,24 @@ class ImportLog(Base):
 
     user = relationship("User")
     site = relationship("Site")
+
+
+
+class ConnectedSite(Base):
+    """Cloud server record of registered local sites."""
+
+    __tablename__ = "connected_sites"
+
+    id = Column(Integer, primary_key=True)
+    site_id = Column(String, unique=True, nullable=False)
+    last_seen = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    last_version = Column(String, nullable=True)
+    sync_status = Column(String, nullable=True)
+    last_update_status = Column(String, nullable=True)
+    ip_address = Column(String, nullable=True)
+    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    updated_at = Column(
+        DateTime(timezone=True),
+        default=datetime.now(timezone.utc),
+        onupdate=datetime.now(timezone.utc),
+    )
