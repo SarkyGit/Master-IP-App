@@ -67,21 +67,6 @@ async def list_tunables(
     return templates.TemplateResponse("tunables.html", context)
 
 
-@router.post("/tunables/{tunable_id}")
-async def update_tunable(
-    tunable_id: int,
-    request: Request,
-    value: str = Form(...),
-    db: Session = Depends(get_db),
-    current_user=Depends(require_role("admin")),
-):
-    tunable = db.query(SystemTunable).filter(SystemTunable.id == tunable_id).first()
-    if tunable:
-        tunable.value = value
-        db.commit()
-    return RedirectResponse(url="/tunables", status_code=302)
-
-
 @router.post("/tunables/group")
 async def update_tunables_group(
     request: Request,
@@ -100,4 +85,19 @@ async def update_tunables_group(
         if tunable:
             tunable.value = value
     db.commit()
+    return RedirectResponse(url="/tunables", status_code=302)
+
+
+@router.post("/tunables/{tunable_id}")
+async def update_tunable(
+    tunable_id: int,
+    request: Request,
+    value: str = Form(...),
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("admin")),
+):
+    tunable = db.query(SystemTunable).filter(SystemTunable.id == tunable_id).first()
+    if tunable:
+        tunable.value = value
+        db.commit()
     return RedirectResponse(url="/tunables", status_code=302)
