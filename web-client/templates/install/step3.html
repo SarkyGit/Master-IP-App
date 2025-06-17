@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="text-xl mb-4">Step 3: Proxy Setup</h1>
+<form method="post" action="/install/step3" x-data="{proxy:'no'}" class="space-y-4">
+  <label class="block"><input type="radio" name="nginx_install" value="yes" x-model="proxy" class="mr-2">Install Nginx</label>
+  <label class="block"><input type="radio" name="nginx_install" value="no" x-model="proxy" class="mr-2">Skip</label>
+  <div x-show="proxy=='yes'" class="space-y-2">
+    <input type="text" name="domain" placeholder="Domain" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+    <input type="text" name="ssl_cert" placeholder="SSL Certificate Path" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+    <input type="text" name="ssl_key" placeholder="SSL Key Path" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+  </div>
+  <button type="submit" aria-label="Next" class="p-2 rounded transition">{{ include_icon('chevron-right') }}</button>
+</form>
+{% endblock %}

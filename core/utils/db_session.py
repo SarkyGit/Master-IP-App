@@ -8,18 +8,14 @@ from core.utils.database import Base
 from core import models  # noqa: F401
 
 DATABASE_URL = os.environ.get("DATABASE_URL")
-if not DATABASE_URL:
-    raise RuntimeError("DATABASE_URL environment variable is required and must point to a PostgreSQL database")
-
-if not DATABASE_URL.startswith("postgresql"):
+if DATABASE_URL and not DATABASE_URL.startswith("postgresql"):
     raise RuntimeError("Only PostgreSQL is supported. DATABASE_URL must begin with 'postgresql'.")
-
-engine = create_engine(DATABASE_URL)
-
+engine = create_engine(DATABASE_URL) if DATABASE_URL else None
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Ensure all tables are created
-Base.metadata.create_all(bind=engine)
+if engine:
+    # Ensure all tables are created
+    Base.metadata.create_all(bind=engine)
 
 
 def get_db():
