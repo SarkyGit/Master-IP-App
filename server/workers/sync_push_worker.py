@@ -9,11 +9,9 @@ from sqlalchemy import inspect, or_
 
 from core.utils.db_session import SessionLocal
 from core.models.models import Device, SystemTunable
-from .cloud_sync import _request_with_retry
+from .cloud_sync import _request_with_retry, _get_sync_config
 
-SYNC_PUSH_URL = os.environ.get("SYNC_PUSH_URL", "http://cloud/api/v1/sync/push")
 SYNC_PUSH_INTERVAL = int(os.environ.get("SYNC_PUSH_INTERVAL", "60"))
-SYNC_TIMEOUT = int(os.environ.get("SYNC_TIMEOUT", "10"))
 
 
 def _serialize(obj: Any) -> dict[str, Any]:
@@ -50,6 +48,7 @@ def _update_last_sync(db) -> None:
 
 
 async def push_once(log: logging.Logger) -> None:
+    push_url, _, api_key = _get_sync_config()
     db = SessionLocal()
     try:
         since = _load_last_sync(db)
@@ -65,7 +64,7 @@ async def push_once(log: logging.Logger) -> None:
                 {**_serialize(r), "model": Device.__tablename__} for r in records
             ]
         }
-        await _request_with_retry("POST", SYNC_PUSH_URL, payload, log)
+        await _request_with_retry("POST", push_url, payload, log, api_key)
         _update_last_sync(db)
     finally:
         db.close()

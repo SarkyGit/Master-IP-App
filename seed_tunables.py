@@ -74,6 +74,22 @@ def main():
                 data_type="text",
                 description="Bearer token for Netbird API access",
             ),
+            SystemTunable(
+                name="Cloud Base URL",
+                value="http://cloud",
+                function="Sync",
+                file_type="application",
+                data_type="text",
+                description="Base URL of the cloud server",
+            ),
+            SystemTunable(
+                name="Cloud API Key",
+                value="",
+                function="Sync",
+                file_type="application",
+                data_type="text",
+                description="API key used for cloud synchronization",
+            ),
             # ----- Newly added tunables -----
             SystemTunable(
                 name="Queue Interval",
