@@ -167,7 +167,12 @@ table.devices-table tbody tr {
 }
 
 /* Pinned actions column */
+.checkbox-col {
+  width: 3rem;
+}
+
 .actions-col {
+  width: 6rem;
   position: sticky;
   right: 0;
   background: var(--card-bg);
