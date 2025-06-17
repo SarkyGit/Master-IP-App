@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Request, WebSocket, Depends, HTTPException
+from contextlib import asynccontextmanager
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse, RedirectResponse
 
@@ -88,7 +89,29 @@ def check_install_required() -> bool:
 INSTALL_REQUIRED = check_install_required()
 
 # Allow deploying the app under a URL prefix by setting ROOT_PATH.
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    if settings.role == "local" and not INSTALL_REQUIRED:
+        if settings.enable_background_workers:
+            start_queue_worker()
+            start_config_scheduler()
+            setup_trap_listener()
+            setup_syslog_listener()
+        if settings.enable_cloud_sync:
+            start_cloud_sync()
+        if settings.enable_sync_push_worker:
+            start_sync_push_worker()
+        if settings.enable_sync_pull_worker:
+            start_sync_pull_worker()
+    yield
+    if settings.role == "local" and not INSTALL_REQUIRED:
+        await stop_queue_worker()
+        stop_config_scheduler()
+        await stop_cloud_sync()
+        await stop_sync_push_worker()
+        await stop_sync_pull_worker()
+
+app = FastAPI(lifespan=lifespan)
 # Respect headers like X-Forwarded-Proto so generated URLs use the
 # correct scheme when behind a reverse proxy.
 app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
@@ -100,28 +123,6 @@ async def install_redirect(request: Request, call_next):
         return RedirectResponse("/install")
     return await call_next(request)
 
-if settings.role == "local" and not INSTALL_REQUIRED:
-    if settings.enable_background_workers:
-        start_queue_worker(app)
-        start_config_scheduler(app)
-        setup_trap_listener(app)
-        setup_syslog_listener(app)
-    if settings.enable_cloud_sync:
-        start_cloud_sync(app)
-    if settings.enable_sync_push_worker:
-        start_sync_push_worker(app)
-    if settings.enable_sync_pull_worker:
-        start_sync_pull_worker(app)
-
-
-@app.on_event("shutdown")
-async def shutdown_cleanup():
-    if settings.role == "local" and not INSTALL_REQUIRED:
-        await stop_queue_worker()
-        stop_config_scheduler()
-        await stop_cloud_sync()
-        await stop_sync_push_worker()
-        await stop_sync_pull_worker()
 
 
 # Path to the ``static`` directory under ``web-client``

@@ -1,7 +1,7 @@
 import asyncio
 import logging
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 import httpx
@@ -32,7 +32,7 @@ def _load_last_sync(db) -> datetime:
 
 
 def _update_last_sync(db) -> None:
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     entry = db.query(SystemTunable).filter(SystemTunable.name == "Last Sync Push Worker").first()
     if entry:
         entry.value = now
@@ -87,20 +87,19 @@ async def _push_loop() -> None:
 _sync_task: asyncio.Task | None = None
 
 
-def start_sync_push_worker(app):
-    @app.on_event("startup")
-    async def start_worker():
-        enabled = os.environ.get("ENABLE_SYNC_PUSH_WORKER") == "1"
-        role = os.environ.get("ROLE", "local")
-        if not enabled:
-            print("Sync push worker disabled")
-            return
-        if role == "cloud":
-            print("Sync push worker not started in cloud role")
-            return
-        print("Starting sync push worker")
-        global _sync_task
-        _sync_task = asyncio.create_task(_push_loop())
+def start_sync_push_worker() -> None:
+    """Start the periodic sync push worker if enabled."""
+    enabled = os.environ.get("ENABLE_SYNC_PUSH_WORKER") == "1"
+    role = os.environ.get("ROLE", "local")
+    if not enabled:
+        print("Sync push worker disabled")
+        return
+    if role == "cloud":
+        print("Sync push worker not started in cloud role")
+        return
+    print("Starting sync push worker")
+    global _sync_task
+    _sync_task = asyncio.create_task(_push_loop())
 
 
 async def stop_sync_push_worker() -> None:

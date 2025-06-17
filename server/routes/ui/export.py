@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 import csv
 import io
 import os
@@ -93,7 +93,7 @@ async def export_inventory_pdf(
 
     styles = getSampleStyleSheet()
     title = Paragraph("Device Inventory", styles["Title"])
-    date = Paragraph(datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC"), styles["Normal"])
+    date = Paragraph(datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"), styles["Normal"])
 
     logo_path = os.path.join(STATIC_DIR, "logo.png")
     if os.path.exists(logo_path):

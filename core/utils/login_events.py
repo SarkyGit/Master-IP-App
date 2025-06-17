@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 from sqlalchemy.orm import Session
 
@@ -22,7 +22,7 @@ def log_login_event(
         ip_address=ip,
         user_agent=user_agent[:200],
         success=success,
-        timestamp=datetime.utcnow(),
+        timestamp=datetime.now(timezone.utc),
         location=location,
     )
     db.add(event)

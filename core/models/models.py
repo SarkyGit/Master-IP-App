@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy import (
     Column,
     Integer,
@@ -85,7 +85,7 @@ class Site(Base):
     name = Column(String, unique=True, nullable=False)
     description = Column(Text, nullable=True)
     created_by_id = Column(Integer, ForeignKey("users.id"), nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
 
     created_by = relationship("User")
     devices = relationship("Device", back_populates="site")
@@ -144,14 +144,14 @@ class Device(Base):
     vlan_id = Column(Integer, ForeignKey("vlans.id"))
     ssh_credential_id = Column(Integer, ForeignKey("ssh_credentials.id"))
     snmp_community_id = Column(Integer, ForeignKey("snmp_communities.id"))
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
     created_by_id = Column(Integer, ForeignKey("users.id"), nullable=True)
-    updated_at = Column(DateTime, default=datetime.utcnow)
-    last_seen = Column(DateTime, nullable=True)
+    updated_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    last_seen = Column(DateTime(timezone=True), nullable=True)
 
     # SNMP status polling
     uptime_seconds = Column(Integer, nullable=True)
-    last_snmp_check = Column(DateTime, nullable=True)
+    last_snmp_check = Column(DateTime(timezone=True), nullable=True)
     snmp_reachable = Column(Boolean, nullable=True)
 
     # Auto-detection metadata
@@ -163,7 +163,7 @@ class Device(Base):
     config_pull_interval = Column(String, nullable=False, default="none")
 
     # Timestamp of the last successful scheduled pull
-    last_config_pull = Column(DateTime, nullable=True)
+    last_config_pull = Column(DateTime(timezone=True), nullable=True)
 
     # Free-form notes about the device
     notes = Column(Text, nullable=True)
@@ -198,7 +198,7 @@ class ConfigBackup(Base):
 
     id = Column(Integer, primary_key=True)
     device_id = Column(Integer, ForeignKey("devices.id"), nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
     config_text = Column(Text, nullable=False)
     source = Column(String, nullable=False)
     queued = Column(Boolean, default=False)
@@ -227,8 +227,8 @@ class User(Base):
     ssh_username = Column(String, nullable=True)
     ssh_password = Column(String, nullable=True)
     ssh_port = Column(Integer, nullable=True, default=22)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    last_login = Column(DateTime, nullable=True)
+    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    last_login = Column(DateTime(timezone=True), nullable=True)
     last_location_lat = Column(Float, nullable=True)
     last_location_lon = Column(Float, nullable=True)
 
@@ -244,7 +244,7 @@ class UserSSHCredential(Base):
     username = Column(String, nullable=False)
     password = Column(String, nullable=True)
     private_key = Column(Text, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
 
     user = relationship("User")
 
@@ -273,7 +273,7 @@ class AuditLog(Base):
     user_id = Column(Integer, ForeignKey("users.id"))
     action_type = Column(String, nullable=False)
     device_id = Column(Integer, ForeignKey("devices.id"), nullable=True)
-    timestamp = Column(DateTime, default=datetime.utcnow)
+    timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
     details = Column(Text, nullable=True)
 
     user = relationship("User")
@@ -288,7 +288,7 @@ class PortConfigTemplate(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True, nullable=False)
     config_text = Column(Text, nullable=False)
-    last_edited = Column(DateTime, default=datetime.utcnow)
+    last_edited = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
     edited_by_id = Column(Integer, ForeignKey("users.id"), nullable=True)
 
     edited_by = relationship("User")
@@ -300,7 +300,7 @@ class DeviceEditLog(Base):
     id = Column(Integer, primary_key=True)
     device_id = Column(Integer, ForeignKey("devices.id"), nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    timestamp = Column(DateTime, default=datetime.utcnow)
+    timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
     changes = Column(Text, nullable=True)
 
     device = relationship("Device", back_populates="edit_logs")
@@ -313,7 +313,7 @@ class DeviceDamage(Base):
     id = Column(Integer, primary_key=True)
     device_id = Column(Integer, ForeignKey("devices.id"), nullable=False)
     filename = Column(String, nullable=False)
-    uploaded_at = Column(DateTime, default=datetime.utcnow)
+    uploaded_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
 
     device = relationship("Device", back_populates="damage_reports")
 
@@ -324,7 +324,7 @@ class BannedIP(Base):
     id = Column(Integer, primary_key=True)
     ip_address = Column(String, unique=True, nullable=False)
     ban_reason = Column(String, nullable=False)
-    banned_until = Column(DateTime, nullable=False)
+    banned_until = Column(DateTime(timezone=True), nullable=False)
     attempt_count = Column(Integer, default=0)
 
 
@@ -335,7 +335,7 @@ class LoginEvent(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     ip_address = Column(String, nullable=False)
     user_agent = Column(String, nullable=True)
-    timestamp = Column(DateTime, default=datetime.utcnow)
+    timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
     success = Column(Boolean, default=False)
     location = Column(String, nullable=True)
 
@@ -349,7 +349,7 @@ class EmailLog(Base):
 
     id = Column(Integer, primary_key=True)
     site_id = Column(Integer, ForeignKey("sites.id"), nullable=False)
-    date_sent = Column(DateTime, default=datetime.utcnow)
+    date_sent = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
     recipient_count = Column(Integer, nullable=False)
     success = Column(Boolean, default=True)
     details = Column(Text, nullable=True)
@@ -367,7 +367,7 @@ class PortStatusHistory(Base):
     admin_status = Column(String, nullable=True)
     speed = Column(Integer, nullable=True)
     poe_draw = Column(Integer, nullable=True)
-    timestamp = Column(DateTime, default=datetime.utcnow)
+    timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
 
     device = relationship("Device")
 
@@ -376,7 +376,7 @@ class SNMPTrapLog(Base):
     __tablename__ = "snmp_trap_logs"
 
     id = Column(Integer, primary_key=True)
-    timestamp = Column(DateTime, default=datetime.utcnow)
+    timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
     source_ip = Column(String, nullable=False)
     trap_oid = Column(String, nullable=True)
     message = Column(Text, nullable=True)
@@ -391,7 +391,7 @@ class SyslogEntry(Base):
     __tablename__ = "syslog_entries"
 
     id = Column(Integer, primary_key=True)
-    timestamp = Column(DateTime, default=datetime.utcnow)
+    timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
     device_id = Column(Integer, ForeignKey("devices.id"), nullable=True)
     site_id = Column(Integer, ForeignKey("sites.id"), nullable=True)
     source_ip = Column(String, nullable=False)
@@ -427,7 +427,7 @@ class InterfaceChangeLog(Base):
     new_desc = Column(String, nullable=True)
     old_vlan = Column(Integer, nullable=True)
     new_vlan = Column(Integer, nullable=True)
-    timestamp = Column(DateTime, default=datetime.utcnow)
+    timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
 
     user = relationship("User")
     device = relationship("Device")
@@ -487,7 +487,7 @@ class ImportLog(Base):
 
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    timestamp = Column(DateTime, default=datetime.utcnow)
+    timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
     file_name = Column(String, nullable=False)
     device_count = Column(Integer, default=0)
     site_id = Column(Integer, ForeignKey("sites.id"), nullable=True)

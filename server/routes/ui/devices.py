@@ -53,7 +53,7 @@ import asyncio
 
 from core.utils.ssh import build_conn_kwargs, resolve_ssh_credential
 from core.utils.device_detect import detect_ssh_platform, detect_snmp_platform
-from datetime import datetime
+from datetime import datetime, timezone
 from puresnmp import Client, PyWrapper, V2C
 from puresnmp.exc import SnmpError
 import re
@@ -577,7 +577,7 @@ async def update_device(
         device.detected_platform = detected_platform or None
         device.detected_via = "manual override"
 
-    device.updated_at = datetime.utcnow()
+    device.updated_at = datetime.now(timezone.utc)
     update_device_complete_tag(db, device, current_user)
     update_device_attribute_tags(db, device, old, user=current_user)
     names = {n.strip().lower() for n in tag_names.split(',') if n.strip()}
@@ -633,7 +633,7 @@ async def upload_damage_photo(
     damage_dir = os.path.join(STATIC_DIR, "damage")
     os.makedirs(damage_dir, exist_ok=True)
     safe_name = os.path.basename(photo.filename)
-    filename = f"{device_id}_{int(datetime.utcnow().timestamp())}_{safe_name}"
+    filename = f"{device_id}_{int(datetime.now(timezone.utc).timestamp())}_{safe_name}"
     path = os.path.join(damage_dir, filename)
     with open(path, "wb") as f:
         f.write(await photo.read())
@@ -701,8 +701,8 @@ async def pull_device_config(
             # Retrieve the device's running configuration
             result = await conn.run("show running-config", check=False)
             output = result.stdout
-            device.last_seen = datetime.utcnow()
-            device.last_config_pull = datetime.utcnow()
+            device.last_seen = datetime.now(timezone.utc)
+            device.last_config_pull = datetime.now(timezone.utc)
     except Exception as exc:
         log_audit(db, current_user, "debug", device, f"SSH pull error: {exc}")
         return RedirectResponse(
@@ -796,7 +796,7 @@ async def push_device_config(
             session.stdin.write("exit\n")
             await session.wait_closed()
             success = True
-            device.last_seen = datetime.utcnow()
+            device.last_seen = datetime.now(timezone.utc)
     except Exception as exc:
         success = False
         log_audit(db, current_user, "debug", device, f"SSH push error: {exc}")
@@ -914,7 +914,7 @@ async def push_template_config(
             session.stdin.write("exit\n")
             await session.wait_closed()
             success = True
-            device.last_seen = datetime.utcnow()
+            device.last_seen = datetime.now(timezone.utc)
     except Exception as exc:
         success = False
         log_audit(db, current_user, "debug", device, f"SSH template push error: {exc}")
@@ -1032,7 +1032,7 @@ async def port_status(
         alias = await _gather_snmp_table(client, "1.3.6.1.2.1.31.1.1.1.18")
         bridge_ifindex = await _gather_snmp_table(client, "1.3.6.1.2.1.17.1.4.1.2")
         pvids = await _gather_snmp_table(client, "1.3.6.1.2.1.17.7.1.4.5.1.1")
-        device.last_seen = datetime.utcnow()
+        device.last_seen = datetime.now(timezone.utc)
     except SnmpError as exc:
         log_audit(db, current_user, "debug", device, f"SNMP error: {exc}")
         context = {
@@ -1086,7 +1086,7 @@ async def port_status(
         }
         ports.append(port)
 
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     for port in ports:
         name = (port.get("name") or "").strip()
         if not name:
@@ -1179,7 +1179,7 @@ async def port_map(
             bridge_ifindex = await _gather_snmp_table(client, "1.3.6.1.2.1.17.1.4.1.2")
             pvids = await _gather_snmp_table(client, "1.3.6.1.2.1.17.7.1.4.5.1.1")
             alias = await _gather_snmp_table(client, "1.3.6.1.2.1.31.1.1.1.18")
-            device.last_seen = datetime.utcnow()
+            device.last_seen = datetime.now(timezone.utc)
         except SnmpError as exc:
             error = f"SNMP error: {exc}"
             names = {}
@@ -1292,7 +1292,7 @@ async def edit_ports_form(
                     live_desc = m.group(1).strip() if m else ""
                     if (intf.description or "") != live_desc:
                         mismatch[intf.id] = True
-                device.last_seen = datetime.utcnow()
+                device.last_seen = datetime.now(timezone.utc)
         except Exception:
             cred = None
     if not cred:
@@ -1381,7 +1381,7 @@ async def save_ports(
                 session.stdin.write("exit\n")
                 await session.wait_closed()
                 success = True
-                device.last_seen = datetime.utcnow()
+                device.last_seen = datetime.now(timezone.utc)
             except Exception:
                 success = False
 
@@ -1445,7 +1445,7 @@ async def port_rates(
         await asyncio.sleep(1)
         in2 = await _gather_snmp_table(client, "1.3.6.1.2.1.31.1.1.1.6")
         out2 = await _gather_snmp_table(client, "1.3.6.1.2.1.31.1.1.1.10")
-        device.last_seen = datetime.utcnow()
+        device.last_seen = datetime.now(timezone.utc)
     except SnmpError as exc:
         raise HTTPException(status_code=502, detail=f"SNMP error: {exc}")
 
@@ -1562,7 +1562,7 @@ async def port_config(
                 f"show running-config interface {port_name}", check=False
             )
             output = result.stdout
-            device.last_seen = datetime.utcnow()
+            device.last_seen = datetime.now(timezone.utc)
     except Exception as exc:
         log_audit(db, current_user, "debug", device, f"Port config error: {exc}")
         context = {
@@ -1706,7 +1706,7 @@ async def apply_port_template(
                 session.stdin.write("exit\n")
                 await session.wait_closed()
                 success = True
-                device.last_seen = datetime.utcnow()
+                device.last_seen = datetime.now(timezone.utc)
         except Exception as exc:
             log_audit(db, current_user, "debug", device, f"Port template error: {exc}")
             error = str(exc)

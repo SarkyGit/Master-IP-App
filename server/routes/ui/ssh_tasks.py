@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 import asyncssh
 import requests
 import asyncio
-from datetime import datetime
+from datetime import datetime, timezone
 
 from core.utils.db_session import get_db
 from core.utils.auth import require_role, user_in_site
@@ -158,7 +158,7 @@ async def port_config_action(
                     f"show running-config interface {port_name}", check=False
                 )
                 output = result.stdout
-                device.last_seen = datetime.utcnow()
+                device.last_seen = datetime.now(timezone.utc)
         except Exception as exc:
             error = str(exc)
     else:
@@ -214,7 +214,7 @@ async def port_check_action(
                 await detect_ssh_platform(db, device, conn, current_user)
                 result = await conn.run(f"show interface {port_name}", check=False)
                 output = result.stdout
-                device.last_seen = datetime.utcnow()
+                device.last_seen = datetime.now(timezone.utc)
         except Exception as exc:
             error = str(exc)
     else:
@@ -269,7 +269,7 @@ async def config_check_action(
                 await detect_ssh_platform(db, device, conn, current_user)
                 result = await conn.run("show running-config", check=False)
                 output = result.stdout
-                device.last_seen = datetime.utcnow()
+                device.last_seen = datetime.now(timezone.utc)
         except Exception as exc:
             error = str(exc)
     else:
@@ -336,7 +336,7 @@ async def port_search_action(
                         f"show running-config | inc {search}", check=False
                     )
                     output = result.stdout
-                    device.last_seen = datetime.utcnow()
+                    device.last_seen = datetime.now(timezone.utc)
             except Exception as exc:
                 error = str(exc)
         else:
@@ -405,7 +405,7 @@ async def bulk_port_update_action(
                     session.stdin.write("exit\n")
                     await session.wait_closed()
                     success = True
-                    device.last_seen = datetime.utcnow()
+                    device.last_seen = datetime.now(timezone.utc)
             except Exception:
                 success = False
             backup = ConfigBackup(

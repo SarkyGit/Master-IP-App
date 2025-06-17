@@ -1,5 +1,5 @@
 from functools import lru_cache
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, field_validator
 import os
 
 class Settings(BaseModel):
@@ -12,7 +12,7 @@ class Settings(BaseModel):
     enable_background_workers: bool = True
 
 
-    @validator("role")
+    @field_validator("role")
     def validate_role(cls, value: str) -> str:
         if value not in {"local", "cloud"}:
             raise ValueError("ROLE must be 'local' or 'cloud'")

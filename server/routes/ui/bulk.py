@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 import csv
 import io
@@ -138,7 +138,7 @@ async def bulk_vlan_push_action(
                 session.stdin.write("exit\n")
                 await session.wait_closed()
                 success = True
-                device.last_seen = datetime.utcnow()
+                device.last_seen = datetime.now(timezone.utc)
         except Exception:
             success = False
         backup = ConfigBackup(

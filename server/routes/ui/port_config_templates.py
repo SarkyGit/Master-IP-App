@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Request, Depends, HTTPException, Form
-from datetime import datetime
+from datetime import datetime, timezone
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 
@@ -47,7 +47,7 @@ async def create_port_config(request: Request, name: str = Form(...), config_tex
     tpl = PortConfigTemplate(
         name=name,
         config_text=config_text,
-        last_edited=datetime.utcnow(),
+        last_edited=datetime.now(timezone.utc),
         edited_by_id=current_user.id,
     )
     db.add(tpl)
@@ -77,7 +77,7 @@ async def update_port_config(tpl_id: int, request: Request, name: str = Form(...
         return templates.TemplateResponse("port_config_template_form.html", context)
     tpl.name = name
     tpl.config_text = config_text
-    tpl.last_edited = datetime.utcnow()
+    tpl.last_edited = datetime.now(timezone.utc)
     tpl.edited_by_id = current_user.id
     db.commit()
     return RedirectResponse(url="/network/port-configs", status_code=302)

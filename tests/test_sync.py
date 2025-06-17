@@ -3,7 +3,7 @@ import sys
 import importlib
 from unittest import mock
 from fastapi.testclient import TestClient
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 class DummyQuery:
@@ -68,7 +68,7 @@ def override_get_db():
         pass
 
 
-def get_test_app():
+def get_test_client():
     os.environ.setdefault("DATABASE_URL", "postgresql://user:pass@localhost/test")
     os.environ["ROLE"] = "cloud"
     if "settings" in sys.modules:
@@ -85,12 +85,12 @@ def get_test_app():
          mock.patch("server.workers.sync_push_worker.start_sync_push_worker"), \
          mock.patch("server.workers.sync_pull_worker.start_sync_pull_worker"), \
          mock.patch("server.workers.cloud_sync.start_cloud_sync"):
-        return importlib.import_module("server.main").app
+        app = importlib.import_module("server.main").app
+        app.dependency_overrides[importlib.import_module("core.utils.db_session").get_db] = override_get_db
+        return TestClient(app)
 
 
-app = get_test_app()
-app.dependency_overrides[importlib.import_module("core.utils.db_session").get_db] = override_get_db
-client = TestClient(app)
+client = get_test_client()
 
 
 def test_sync_endpoint_processes_payload():
@@ -154,7 +154,7 @@ def test_sync_push_endpoint():
 
 
 def test_sync_pull_endpoint():
-    ts = datetime.utcnow().isoformat()
+    ts = datetime.now(timezone.utc).isoformat()
     resp = client.post("/api/v1/sync/pull", json={"since": ts, "models": ["users"]})
     assert resp.status_code == 200
     assert isinstance(resp.json(), list)

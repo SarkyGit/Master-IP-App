@@ -5,7 +5,7 @@ from unittest import mock
 from fastapi.testclient import TestClient
 
 
-def get_test_app():
+def get_test_client():
     os.environ.setdefault("DATABASE_URL", "postgresql://user:pass@localhost/test")
     # Remove imported server modules to ensure patches apply
     for m in list(sys.modules):
@@ -19,11 +19,11 @@ def get_test_app():
          mock.patch("server.workers.syslog_listener.setup_syslog_listener"), \
          mock.patch("server.workers.sync_push_worker.start_sync_push_worker"), \
          mock.patch("server.workers.sync_pull_worker.start_sync_pull_worker"):
-        return importlib.import_module("server.main").app
+        app = importlib.import_module("server.main").app
+        return TestClient(app)
 
 
-app = get_test_app()
-client = TestClient(app)
+client = get_test_client()
 
 
 def test_index_references_bw():

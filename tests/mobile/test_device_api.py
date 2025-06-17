@@ -83,7 +83,7 @@ def override_get_db(db):
     return _override
 
 
-def get_app(role: str, db: DummyDB):
+def get_client(role: str, db: DummyDB):
     os.environ.setdefault("DATABASE_URL", "postgresql://user:pass@localhost/test")
     os.environ["ROLE"] = role
     if "settings" in sys.modules:
@@ -101,15 +101,15 @@ def get_app(role: str, db: DummyDB):
          mock.patch("server.workers.sync_pull_worker.start_sync_pull_worker"), \
          mock.patch("server.workers.cloud_sync.start_cloud_sync"):
         app = importlib.import_module("server.main").app
-    app.dependency_overrides[importlib.import_module("core.utils.db_session").get_db] = override_get_db(db)
-    return app
+        app.dependency_overrides[importlib.import_module("core.utils.db_session").get_db] = override_get_db(db)
+        client = TestClient(app)
+        return client
 
 
 @pytest.mark.parametrize("role", ["local", "cloud"])
 def test_mobile_login_and_fetch_devices(role):
     db = DummyDB(devices=True)
-    app = get_app(role, db)
-    client = TestClient(app)
+    client = get_client(role, db)
     resp = client.post("/auth/token", data={"email": "viewer@example.com", "password": "secret"})
     assert resp.status_code == 200
     token = resp.json()["access_token"]
@@ -120,8 +120,7 @@ def test_mobile_login_and_fetch_devices(role):
 
 def test_mobile_fetch_devices_empty():
     db = DummyDB(devices=False)
-    app = get_app("local", db)
-    client = TestClient(app)
+    client = get_client("local", db)
     resp = client.post("/auth/token", data={"email": "viewer@example.com", "password": "secret"})
     token = resp.json()["access_token"]
     resp = client.get("/api/v1/devices", headers={"Authorization": f"Bearer {token}"})
@@ -131,7 +130,6 @@ def test_mobile_fetch_devices_empty():
 
 def test_mobile_unauthenticated():
     db = DummyDB(devices=True)
-    app = get_app("local", db)
-    client = TestClient(app)
+    client = get_client("local", db)
     resp = client.get("/api/v1/devices")
     assert resp.status_code == 401

@@ -1,7 +1,7 @@
 import asyncio
 import importlib
 from unittest import mock
-from datetime import datetime, timedelta
+from datetime import datetime, timezone, timedelta
 
 import httpx
 import pytest
@@ -57,7 +57,7 @@ class DummyDB:
             models.SystemTunable: [
                 models.SystemTunable(
                     name="Last Sync Push Worker",
-                    value=(datetime.utcnow() - timedelta(days=1)).isoformat(),
+                    value=(datetime.now(timezone.utc) - timedelta(days=1)).isoformat(),
                     function="Sync",
                     file_type="application",
                     data_type="text",
@@ -88,7 +88,7 @@ class DummyDB:
 def test_push_once_sends_unsynced_records(monkeypatch):
     db = DummyDB()
     models = db.models
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     dev = models.Device(
         id=1,
         hostname="dev",

@@ -1,7 +1,7 @@
 import asyncio
 import importlib
 from unittest import mock
-from datetime import datetime, timedelta
+from datetime import datetime, timezone, timedelta
 
 import pytest
 
@@ -54,7 +54,7 @@ class DummyDB:
             models.SystemTunable: [
                 models.SystemTunable(
                     name="Last Sync Pull Worker",
-                    value=(datetime.utcnow() - timedelta(days=1)).isoformat(),
+                    value=(datetime.now(timezone.utc) - timedelta(days=1)).isoformat(),
                     function="Sync",
                     file_type="application",
                     data_type="text",
