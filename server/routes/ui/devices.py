@@ -517,6 +517,7 @@ async def update_device(
     vlan_id: str = Form(None),
     ssh_credential_id: str = Form(None),
     snmp_community_id: str = Form(None),
+    detected_platform: str = Form(None),
     notes: str = Form(None),
     tag_names: str = Form(""),
     db: Session = Depends(get_db),
