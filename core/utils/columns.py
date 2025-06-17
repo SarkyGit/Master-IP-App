@@ -23,6 +23,16 @@ DEFAULT_DEVICE_COLUMNS = [
     "tags",
 ]
 
+# Columns shown by default on the device list view
+DEFAULT_VISIBLE_DEVICE_COLUMNS = [
+    "hostname",
+    "ip",
+    "mac",
+    "asset_tag",
+    "location",
+    "status",
+]
+
 DEVICE_COLUMN_LABELS = {
     "hostname": "Hostname",
     "ip": "IP",
@@ -47,7 +57,7 @@ DEVICE_COLUMN_LABELS = {
 
 def load_column_preferences(db: Session, user_id: int, view: str) -> dict[str, bool]:
     if view == "device_list":
-        prefs = {name: True for name in DEFAULT_DEVICE_COLUMNS}
+        prefs = {name: name in DEFAULT_VISIBLE_DEVICE_COLUMNS for name in DEFAULT_DEVICE_COLUMNS}
     else:
         prefs = {}
     for row in db.query(ColumnPreference).filter_by(user_id=user_id, view=view).all():
