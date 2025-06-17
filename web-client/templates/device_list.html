@@ -37,7 +37,7 @@
       {% if column_prefs.status %}<th class="table-cell table-header">{{ column_labels['status'] }}</th>{% endif %}
       {% if column_prefs.tags %}<th class="table-cell table-header">{{ column_labels['tags'] }}</th>{% endif %}
       <th class="table-cell table-header">Ver</th>
-      <th class="text-right w-[10rem]">Actions</th>
+      <th class="table-header text-right actions-col">Actions</th>
     </tr>
   </thead>
   <tbody>
@@ -79,15 +79,15 @@
         {{ device.version }}
         {% if device.conflict_data %}{{ include_icon('alert-triangle','text-red-500','1.5') }}{% endif %}
       </td>
-      <td class="text-right w-[10rem] whitespace-nowrap">
-        <div class="flex justify-end flex-wrap gap-1">
+      <td class="actions-col text-right whitespace-nowrap">
+        <div class="flex justify-end gap-1">
           {% if device.ssh_credential or personal_creds.get(device.id) %}
-          <a href="/ssh/port-config?device_id={{ device.id }}" title="View in Network Devices" aria-label="Live Config" class="p-2 rounded transition">{{ include_icon('eye') }}</a>
+          <a href="/ssh/port-config?device_id={{ device.id }}" title="View in Network Devices" aria-label="Live Config" class="icon-btn">{{ include_icon('eye') }}</a>
           {% endif %}
           {% if current_user and current_user.role in ['editor','admin','superadmin'] %}
-          <a href="/devices/{{ device.id }}/edit" aria-label="Edit" class="p-2 rounded transition">{{ include_icon('pencil','text-blue-500','1.5') }}</a>
+          <a href="/devices/{{ device.id }}/edit" aria-label="Edit" class="icon-btn">{{ include_icon('pencil','text-blue-500','1.5') }}</a>
           <form method="post" action="/devices/{{ device.id }}/delete" class="inline">
-            <button type="submit" aria-label="Delete" class="p-2 rounded transition" onclick="return confirm('Delete device?')">{{ include_icon('trash-2','text-red-500','1.5') }}</button>
+            <button type="submit" aria-label="Delete" class="icon-btn" onclick="return confirm('Delete device?')">{{ include_icon('trash-2','text-red-500','1.5') }}</button>
           </form>
           {% endif %}
         </div>

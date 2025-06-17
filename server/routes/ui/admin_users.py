@@ -42,6 +42,7 @@ async def new_user_form(request: Request, current_user=Depends(require_role("sup
         "themes": ["dark_colourful", "dark", "light", "blue", "bw", "homebrew", "apple_glass"],
         "fonts": ["sans", "serif", "mono"],
         "menu_styles": ["tabbed", "dropdown"],
+        "icon_sets": ["lucide", "fontawesome", "material", "bootstrap"],
         "current_user": current_user,
     }
     return templates.TemplateResponse("user_form.html", context)
@@ -57,6 +58,8 @@ async def create_user(
     theme: str = Form("dark_colourful"),
     font: str = Form("sans"),
     menu_style: str = Form("tabbed"),
+    icon_style: str = Form("lucide"),
+    icon_style: str = Form("lucide"),
     db: Session = Depends(get_db),
     current_user=Depends(require_role("superadmin")),
 ):
@@ -74,6 +77,7 @@ async def create_user(
             "themes": ["dark_colourful", "dark", "light", "blue", "bw", "homebrew", "apple_glass"],
         "fonts": ["sans", "serif", "mono"],
         "menu_styles": ["tabbed", "dropdown"],
+        "icon_sets": ["lucide", "fontawesome", "material", "bootstrap"],
         "current_user": current_user,
     }
         return templates.TemplateResponse("user_form.html", context)
@@ -89,6 +93,7 @@ async def create_user(
         theme=theme,
         font=font,
         menu_style=menu_style,
+        icon_style=icon_style,
     )
     db.add(user)
     db.commit()
@@ -118,6 +123,7 @@ async def edit_user_form(
         "themes": ["dark_colourful", "dark", "light", "blue", "bw", "homebrew", "apple_glass"],
         "fonts": ["sans", "serif", "mono"],
         "menu_styles": ["tabbed", "dropdown"],
+        "icon_sets": ["lucide", "fontawesome", "material", "bootstrap"],
         "current_user": current_user,
     }
     return templates.TemplateResponse("user_form.html", context)
@@ -146,6 +152,7 @@ async def update_user(
     user.theme = theme
     user.font = font
     user.menu_style = menu_style
+    user.icon_style = icon_style
     if password:
         user.hashed_password = get_password_hash(password)
     db.commit()

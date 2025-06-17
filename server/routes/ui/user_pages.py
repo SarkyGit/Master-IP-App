@@ -50,6 +50,7 @@ async def my_profile(
             "apple_glass",
         ],
         "fonts": ["sans", "serif", "mono"],
+        "icon_sets": ["lucide", "fontawesome", "material", "bootstrap"],
     }
     return templates.TemplateResponse("user_detail.html", context)
 
@@ -75,6 +76,7 @@ async def edit_my_profile_form(
         ],
         "fonts": ["sans", "serif", "mono"],
         "menu_styles": ["tabbed", "dropdown"],
+        "icon_sets": ["lucide", "fontawesome", "material", "bootstrap"],
     }
     return templates.TemplateResponse("user_form.html", context)
 
@@ -87,6 +89,8 @@ async def update_my_profile(
     theme: str = Form("dark_colourful"),
     font: str = Form("sans"),
     menu_style: str = Form("tabbed"),
+    icon_style: str = Form("lucide"),
+    icon_style: str = Form("lucide"),
     scroll_handoff_enabled: str = Form(None),
     db: Session = Depends(get_db),
     current_user: User = Depends(require_role("viewer")),
@@ -112,6 +116,7 @@ async def update_my_profile(
             ],
             "fonts": ["sans", "serif", "mono"],
             "menu_styles": ["tabbed", "dropdown"],
+            "icon_sets": ["lucide", "fontawesome", "material", "bootstrap"],
         }
         return templates.TemplateResponse("user_form.html", context)
 
@@ -119,6 +124,8 @@ async def update_my_profile(
     current_user.theme = theme
     current_user.font = font
     current_user.menu_style = menu_style
+    current_user.icon_style = icon_style
+    current_user.icon_style = icon_style
     current_user.scroll_handoff_enabled = bool(scroll_handoff_enabled)
     if password:
         current_user.hashed_password = get_password_hash(password)

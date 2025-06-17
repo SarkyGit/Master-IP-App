@@ -24,7 +24,7 @@
       <th class="table-cell table-header">Active</th>
       <th class="table-cell table-header">Last Used</th>
       <th class="table-cell table-header">Status</th>
-      <th class="text-center w-[6rem]">Actions</th>
+      <th class="table-header text-center actions-col">Actions</th>
     </tr>
   </thead>
   <tbody>
@@ -36,9 +36,13 @@
       <td class="table-cell">{{ key.last_used_at or 'never' }}</td>
       {% set stale = key.last_used_at is none or (now - key.last_used_at > timedelta(hours=24)) %}
       <td class="table-cell">{{ 'stale' if stale else 'ok' }}</td>
-      <td class="text-center">
+      <td class="actions-col text-center">
         <form method="post" action="/admin/site-keys/{{ key.id }}/toggle">
-          <button type="submit" class="underline">{{ 'Disable' if key.active else 'Enable' }}</button>
+          {% if key.active %}
+          <button type="submit" aria-label="Disable" class="icon-btn" onclick="return confirm('Disable key?')">{{ include_icon('x-circle','text-red-500','1.5') }}</button>
+          {% else %}
+          <button type="submit" aria-label="Enable" class="icon-btn">{{ include_icon('check-circle','text-green-500','1.5') }}</button>
+          {% endif %}
         </form>
       </td>
     </tr>
