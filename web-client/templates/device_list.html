@@ -1,38 +1,17 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1 class="text-xl mb-4">Devices</h1>
-{% if current_user and current_user.role in ['editor','admin','superadmin'] %}
-  <a href="/devices/new" class="inline-block p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded transition">Add Device</a>
-{% endif %}
-{% if current_user and current_user.role in ['editor','admin','superadmin'] %}
-  <div class="relative inline-block ml-2" x-data="{open:false, ready:false}" x-init="setTimeout(() => ready = true, 50)">
-    <button aria-label="Export" class="bg-[var(--card-bg)] p-2 text-[var(--btn-text)] rounded" @click="open = !open">{{ include_icon('download','text-orange-500','1.5') }}</button>
-    <ul x-show="ready && open" x-transition.opacity.duration.150ms @click.away="open = false" class="absolute bg-[var(--card-bg)] py-2 w-48" x-cloak>
-      <li><a class="block px-4 py-2 hover:bg-[var(--btn-hover)]" href="/export/inventory.csv">Export to CSV</a></li>
-      <li><a class="block px-4 py-2 hover:bg-[var(--btn-hover)]" href="/export/inventory.pdf">Export to PDF</a></li>
-      <li><a class="block px-4 py-2 hover:bg-[var(--btn-hover)]" href="/export/config-snapshot.zip">Download Config Snapshot</a></li>
-    </ul>
-  </div>
-  <button hx-get="/devices/column-prefs" hx-target="#modal" hx-swap="innerHTML" class="ml-2 p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded transition">Customize Columns</button>
-{% endif %}
 {% if current_user and current_user.role == 'superadmin' %}
-  <form method="post" action="/admin/run-push-queue" class="inline">
-    <button type="submit" aria-label="Run Push Queue" class="ml-2 p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded transition">{{ include_icon('refresh-ccw', None, '1.5') }}</button>
+  {% set refresh_button %}
+  <form method="post" action="/admin/run-push-queue" class="inline-block ml-2">
+    <button type="submit" aria-label="Run Push Queue" class="p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded transition">{{ include_icon('refresh-ccw', None, '1.5') }}</button>
   </form>
+  {% endset %}
 {% endif %}
 <form method="post" action="/devices/bulk-delete" x-data="tableControls()" class="space-y-2 full-width">
-<div class="flex justify-between items-center">
-  <label>Show
-    <select x-model="perPage" class="rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)] mx-1">
-      <option>10</option>
-      <option>25</option>
-      <option>50</option>
-      <option>100</option>
-    </select>
-    entries
-  </label>
+<div class="flex justify-end items-center">
   <input x-model="search" type="text" placeholder="Search" class="rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)] px-2 py-1" />
+  {% if refresh_button is defined %}{{ refresh_button }}{% endif %}
 </div>
 <div class="w-full overflow-auto">
 <table class="min-w-full table-fixed text-left border-collapse devices-table">
@@ -120,9 +99,28 @@
 </table>
 <div class="flex justify-between items-center mt-2">
   <span x-text="countText()" class="text-sm"></span>
-  <div>
+  <div class="flex items-center">
     <button type="button" @click="prev" class="px-3 py-1 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded mr-2 text-[var(--btn-text)]">Previous</button>
-    <button type="button" @click="next" class="px-3 py-1 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded text-[var(--btn-text)]">Next</button>
+    <label class="mx-2">Show
+      <select x-model="perPage" class="rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)] mx-1">
+        <option>10</option>
+        <option>25</option>
+        <option>50</option>
+        <option>100</option>
+      </select>
+      entries
+    </label>
+    {% if current_user and current_user.role in ['editor','admin','superadmin'] %}
+    <div class="relative inline-block ml-2" x-data="{open:false, ready:false}" x-init="setTimeout(() => ready = true, 50)">
+      <button aria-label="Export" class="bg-[var(--card-bg)] p-2 text-[var(--btn-text)] rounded" @click="open = !open">{{ include_icon('download','text-orange-500','1.5') }}</button>
+      <ul x-show="ready && open" x-transition.opacity.duration.150ms @click.away="open = false" class="absolute bg-[var(--card-bg)] py-2 w-48" x-cloak>
+        <li><a class="block px-4 py-2 hover:bg-[var(--btn-hover)]" href="/export/inventory.csv">Export to CSV</a></li>
+        <li><a class="block px-4 py-2 hover:bg-[var(--btn-hover)]" href="/export/inventory.pdf">Export to PDF</a></li>
+        <li><a class="block px-4 py-2 hover:bg-[var(--btn-hover)]" href="/export/config-snapshot.zip">Download Config Snapshot</a></li>
+      </ul>
+    </div>
+    {% endif %}
+    <button type="button" @click="next" class="px-3 py-1 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded ml-2 text-[var(--btn-text)]">Next</button>
   </div>
 </div>
 </div>
