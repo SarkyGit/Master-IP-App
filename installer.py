@@ -35,6 +35,7 @@ def run(cmd: str) -> None:
 
 
 def install():
+    global questionary
     if os.geteuid() != 0:
         print("This installer must be run as root.")
         return
