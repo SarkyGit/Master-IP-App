@@ -152,7 +152,7 @@ The application can run either as a standalone **local** instance or as the cent
    npm install
    npm run build:web  # build UnoCSS styles
    ```
-2. Copy `.env.local` to `.env` and verify `ROLE=local` and your `DATABASE_URL` settings.
+2. Copy `.env.local` to `.env`, verify `ROLE=local` and your `DATABASE_URL` settings, and change `SECRET_KEY` to a unique value.
 3. Start the services:
    ```bash
    docker compose -f deploy/docker/docker-compose.local.yml up --build
@@ -164,7 +164,7 @@ The application can run either as a standalone **local** instance or as the cent
 
 ## Cloud Setup
 
-1. Copy `.env.cloud` to `.env` and set any required secrets such as `SECRET_KEY`.
+1. Copy `.env.cloud` to `.env` and replace the default `SECRET_KEY` with a secure random value.
 2. Ensure `ROLE=cloud` inside the file then launch:
    ```bash
    docker compose -f deploy/docker/docker-compose.cloud.yml up --build -d
@@ -309,7 +309,7 @@ including static asset URLs use the correct path.
 
 The application reads several options from the environment. Important variables include:
 - `DATABASE_URL` – PostgreSQL connection string.
-- `SECRET_KEY` – signing key for sessions and API tokens.
+- `SECRET_KEY` – signing key for sessions and API tokens. **Change this from the default before deploying.**
 - `TOKEN_TTL` – token lifetime in seconds (default 3600).
 - `SESSION_TTL` – session cookie lifetime in seconds (default 43200).
 - `ROOT_PATH` – optional URL prefix when served behind a proxy.
