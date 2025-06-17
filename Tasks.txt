@@ -40,24 +40,24 @@ PHASE 5: THEME CLEANUP
 PHASE 6: CLOUD & MOBILE INTEGRATION
 
 [x] Design architecture for cloud server with site-level replicas
-[ ] Implement record versioning and conflict resolution fields
-  - [ ] Add version columns to models and schemas
-  - [ ] Track unresolved conflicts in a dedicated field
-  - [ ] Generate Alembic migration scripts
-[ ] Add sync endpoints and background jobs for local/cloud replication
-  - [ ] POST `/api/v1/sync` to accept batched updates
-  - [ ] Background worker to push local changes
-  - [ ] Background worker to pull updates from cloud
-[ ] Provide configuration options for cloud vs. local deployment
-  - [ ] `ROLE` environment variable controls cloud or local behaviour
-  - [ ] Conditional startup of cloud sync components
-[ ] Expand mobile-client folder into functional app connecting to local servers
-  - [ ] Scaffold React Native project with authentication
-  - [ ] Implement device list view backed by REST API
-[ ] Supply Docker/Kubernetes configs for cloud and local roles
-  - [ ] `docker-compose.cloud.yml` for the central server
-  - [ ] Kubernetes manifests under `k8s/`
-[ ] Write tests for synchronization and mobile interactions
-  - [ ] Unit tests for sync worker and API endpoints
-  - [ ] Integration tests simulating mobile app requests
-[ ] Update README with setup instructions for cloud/local servers and mobile app
+[x] Implement record versioning and conflict resolution fields
+  - [x] Add version columns to models and schemas
+  - [x] Track unresolved conflicts in a dedicated field
+  - [x] Generate Alembic migration scripts
+[x] Add sync endpoints and background jobs for local/cloud replication
+  - [x] POST `/api/v1/sync` to accept batched updates
+  - [x] Background worker to push local changes
+  - [x] Background worker to pull updates from cloud
+[x] Provide configuration options for cloud vs. local deployment
+  - [x] `ROLE` environment variable controls cloud or local behaviour
+  - [x] Conditional startup of cloud sync components
+[x] Expand mobile-client folder into functional app connecting to local servers
+  - [x] Scaffold React Native project with authentication
+  - [x] Implement device list view backed by REST API
+[x] Supply Docker/Kubernetes configs for cloud and local roles
+  - [x] `docker-compose.cloud.yml` for the central server
+  - [x] Kubernetes manifests under `k8s/`
+[x] Write tests for synchronization and mobile interactions
+  - [x] Unit tests for sync worker and API endpoints
+  - [x] Integration tests simulating mobile app requests
+[x] Update README with setup instructions for cloud/local servers and mobile app
