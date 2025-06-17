@@ -13,52 +13,59 @@ Tailwind CSS has been removed from the project. Styling and components now rely 
 - `web-client/` stores HTML templates and static assets served by the app.
 - `mobile-client/` is a placeholder for a future mobile application.
 
-## Quick Installation
+## Quick Start for Beginners
 
-The steps below assume a brand new system with no tools installed. Commands are written so they can be copied and pasted directly into a terminal.
+The instructions below assume you are starting on a fresh Ubuntu system. Every command can be copied directly into a terminal. No previous knowledge of Python or Node.js is required.
 
-> **Note**: The CSS build process requires **Node.js 18 or newer**. The steps below install Node.js 20 from the NodeSource repository.
+> **Note**: Building the CSS requires **Node.js 18 or newer**. The example below installs Node.js 20 from the NodeSource repository.
 
 ### Ubuntu Development Setup
 
-```bash
-# install required system packages
-sudo apt update
-sudo apt install -y git python3 python3-venv python3-pip postgresql curl
+1. **Install system tools**:
+   ```bash
+   sudo apt update
+   sudo apt install -y git python3 python3-venv python3-pip postgresql curl
+   ```
 
-# install Node.js (version 20.x) from NodeSource (skip if Node.js ≥18 is already installed)
-curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-sudo apt install -y nodejs
+2. **Install Node.js** (skip if Node.js 18+ is already installed):
+   ```bash
+   curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+   sudo apt install -y nodejs
+   ```
 
-# clone the repository and enter the folder
-git clone https://github.com/youruser/Master-IP-App.git
-cd Master-IP-App
+3. **Clone this repository**:
+   ```bash
+   git clone https://github.com/youruser/Master-IP-App.git
+   cd Master-IP-App
+   ```
 
-# create and activate a virtual environment
-python3 -m venv venv
-source venv/bin/activate
+4. **Create and activate a virtual environment**:
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
 
-# install Python and Node dependencies
-pip install -r requirements.txt
-# install Node packages (required before running the CSS build step)
-npm install
-npm run build:web
+5. **Install dependencies and build the CSS**:
+   ```bash
+   pip install -r requirements.txt
+   npm install
+   npm run build:web
+   ```
 
-# create the application database
-sudo -u postgres psql -c "CREATE USER masteruser WITH PASSWORD 'masterpass';"
-sudo -u postgres psql -c "CREATE DATABASE master_ip_db OWNER masteruser;"
+6. **Create the database and set the connection string**:
+   ```bash
+   sudo -u postgres psql -c "CREATE USER masteruser WITH PASSWORD 'masterpass';"
+   sudo -u postgres psql -c "CREATE DATABASE master_ip_db OWNER masteruser;"
+   echo "DATABASE_URL=postgresql://masteruser:masterpass@localhost:5432/master_ip_db" > .env
+   ```
 
-# configure the connection string
-echo "DATABASE_URL=postgresql://masteruser:masterpass@localhost:5432/master_ip_db" > .env
+7. **Seed default data and start the server**:
+   ```bash
+   ./init_db.sh
+   uvicorn server.main:app --host 0.0.0.0 --port 8000 --reload
+   ```
 
-# seed default data
-./init_db.sh
-
-# start the development server
-uvicorn server.main:app --host 0.0.0.0 --port 8000 --reload
-```
-
-Visit [http://localhost:8000](http://localhost:8000) and log in with the credentials created by `seed_superuser.py`:
+Visit [http://localhost:8000](http://localhost:8000) and log in using the superuser credentials created by `seed_superuser.py`:
 
 - **Email:** `Barny@CESTechnologies.com`
 - **Password:** `C0pperpa!r`
