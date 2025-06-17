@@ -60,7 +60,11 @@ async def push_once(log: logging.Logger) -> None:
         )
         if not records:
             return
-        payload = {"model": Device.__tablename__, "records": [_serialize(r) for r in records]}
+        payload = {
+            "records": [
+                {**_serialize(r), "model": Device.__tablename__} for r in records
+            ]
+        }
         await _request_with_retry("POST", SYNC_PUSH_URL, payload, log)
         _update_last_sync(db)
     finally:

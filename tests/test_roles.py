@@ -3,6 +3,7 @@ import sys
 import importlib
 from unittest import mock
 from fastapi.testclient import TestClient
+from datetime import datetime
 
 
 def get_app(role: str):
@@ -33,7 +34,11 @@ def test_cloud_role_disables_workers_and_mounts_routes():
     assert start_push.call_count == 0
     assert start_pull.call_count == 0
     client = TestClient(app)
-    resp = client.post("/api/v1/sync/pull", json={"since": "now"})
+    ts = datetime.utcnow().isoformat()
+    resp = client.post(
+        "/api/v1/sync/pull",
+        json={"since": ts, "models": ["users"]},
+    )
     assert resp.status_code == 200
 
 
@@ -42,5 +47,6 @@ def test_local_role_starts_workers_and_hides_sync_routes():
     assert start_push.called
     assert start_pull.called
     client = TestClient(app)
-    resp = client.post("/api/v1/sync/pull", json={"since": "now"})
+    ts = datetime.utcnow().isoformat()
+    resp = client.post("/api/v1/sync/pull", json={"since": ts, "models": ["users"]})
     assert resp.status_code == 404

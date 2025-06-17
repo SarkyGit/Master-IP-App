@@ -112,8 +112,8 @@ def test_push_once_sends_unsynced_records(monkeypatch):
 
     asyncio.run(sync_push_worker.push_once(mock.Mock()))
 
-    assert sent["payload"]["model"] == models.Device.__tablename__
     assert len(sent["payload"]["records"]) == 1
+    assert sent["payload"]["records"][0]["model"] == models.Device.__tablename__
     assert db.data[models.SystemTunable][0].value != old_value
 
 

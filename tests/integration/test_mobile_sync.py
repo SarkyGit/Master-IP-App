@@ -2,6 +2,7 @@ import os
 import sys
 import importlib
 from unittest import mock
+from datetime import datetime
 
 import pytest
 from fastapi.testclient import TestClient
@@ -131,8 +132,17 @@ def test_mobile_sync_flow(role):
     assert resp.status_code == 200
 
     payload = {
-        "model": db.models.User.__tablename__,
-        "records": [{"id": 1, "email": "viewer@example.com", "hashed_password": "x", "role": "viewer", "is_active": True, "version": 1}],
+        "records": [
+            {
+                "model": db.models.User.__tablename__,
+                "id": 1,
+                "email": "viewer@example.com",
+                "hashed_password": "x",
+                "role": "viewer",
+                "is_active": True,
+                "version": 1,
+            }
+        ]
     }
     resp = client.post("/api/v1/sync/push", json=payload, headers={"Authorization": f"Bearer {token}"})
     if role == "cloud":
@@ -140,7 +150,12 @@ def test_mobile_sync_flow(role):
     else:
         assert resp.status_code == 404
 
-    resp = client.post("/api/v1/sync/pull", json={"since": "now"}, headers={"Authorization": f"Bearer {token}"})
+    ts = datetime.utcnow().isoformat()
+    resp = client.post(
+        "/api/v1/sync/pull",
+        json={"since": ts, "models": [db.models.User.__tablename__]},
+        headers={"Authorization": f"Bearer {token}"},
+    )
     if role == "cloud":
         assert resp.status_code == 200
     else:
