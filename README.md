@@ -56,10 +56,24 @@ The instructions below assume you are starting on a fresh Ubuntu system. Every c
    ```bash
    sudo -u postgres psql -c "CREATE USER masteruser WITH PASSWORD 'masterpass';"
    sudo -u postgres psql -c "CREATE DATABASE master_ip_db OWNER masteruser;"
-   echo "DATABASE_URL=postgresql://masteruser:masterpass@localhost:5432/master_ip_db" > .env
+   echo "DATABASE_URL=postgresql://masteruser:masterpass@localhost:5432/master_ip_db?sslmode=require" > .env
    ```
 
-7. **Seed default data and start the server**:
+7. **Enable SSL for PostgreSQL**:
+   Add the following lines to `/etc/postgresql/*/main/pg_hba.conf`:
+   ```
+   hostssl all all 127.0.0.1/32 scram-sha-256
+   hostssl all all ::1/128 scram-sha-256
+   ```
+   Ensure `ssl = on` in `postgresql.conf` with certificate paths:
+   `/etc/ssl/certs/ssl-cert-snakeoil.pem` and
+   `/etc/ssl/private/ssl-cert-snakeoil.key`.
+   Restart PostgreSQL after saving:
+   ```bash
+   sudo systemctl restart postgresql
+   ```
+
+8. **Seed default data and start the server**:
    ```bash
    ./init_db.sh
    uvicorn server.main:app --host 0.0.0.0 --port 8000 --reload
