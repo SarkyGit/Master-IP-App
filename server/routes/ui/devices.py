@@ -130,6 +130,17 @@ async def list_devices(
     column_prefs = load_column_preferences(db, current_user.id, "device_list")
     column_count = 1 + sum(1 for v in column_prefs.values() if v)
     message = request.query_params.get("message")
+    complete_count = sum(1 for d in devices if any(t.name == "complete" for t in d.tags))
+    incomplete_count = sum(1 for d in devices if any(t.name == "incomplete" for t in d.tags))
+    (
+        device_types,
+        vlans,
+        ssh_credentials,
+        snmp_communities,
+        locations,
+        _models,
+        sites,
+    ) = _load_form_options(db)
     context = {
         "request": request,
         "devices": devices,
@@ -144,6 +155,15 @@ async def list_devices(
         "column_prefs": column_prefs,
         "column_labels": DEVICE_COLUMN_LABELS,
         "column_count": column_count,
+        "device_types": device_types,
+        "vlans": vlans,
+        "ssh_credentials": ssh_credentials,
+        "snmp_communities": snmp_communities,
+        "locations": locations,
+        "sites": sites,
+        "status_options": STATUS_OPTIONS,
+        "complete_count": complete_count,
+        "incomplete_count": incomplete_count,
     }
     return templates.TemplateResponse("device_list.html", context)
 
@@ -286,6 +306,17 @@ async def list_devices_by_type(
                 personal_map[d.id] = True
     column_prefs = load_column_preferences(db, current_user.id, "device_list")
     column_count = 1 + sum(1 for v in column_prefs.values() if v)
+    complete_count = sum(1 for d in devices if any(t.name == "complete" for t in d.tags))
+    incomplete_count = sum(1 for d in devices if any(t.name == "incomplete" for t in d.tags))
+    (
+        device_types,
+        vlans,
+        ssh_credentials,
+        snmp_communities,
+        locations,
+        _models,
+        sites,
+    ) = _load_form_options(db)
     context = {
         "request": request,
         "devices": devices,
@@ -299,6 +330,15 @@ async def list_devices_by_type(
         "column_prefs": column_prefs,
         "column_labels": DEVICE_COLUMN_LABELS,
         "column_count": column_count,
+        "device_types": device_types,
+        "vlans": vlans,
+        "ssh_credentials": ssh_credentials,
+        "snmp_communities": snmp_communities,
+        "locations": locations,
+        "sites": sites,
+        "status_options": STATUS_OPTIONS,
+        "complete_count": complete_count,
+        "incomplete_count": incomplete_count,
     }
     return templates.TemplateResponse("device_list.html", context)
 
@@ -684,6 +724,76 @@ async def bulk_delete_devices(
         if device:
             unschedule_device_config_pull(device.id)
             db.delete(device)
+    db.commit()
+    return RedirectResponse(url="/devices/table", status_code=302)
+
+
+@router.post("/devices/bulk-update")
+async def bulk_update_devices(
+    selected: list[int] = Form(...),
+    hostname: str | None = Form(None),
+    ip: str | None = Form(None),
+    mac: str | None = Form(None),
+    asset_tag: str | None = Form(None),
+    model: str | None = Form(None),
+    manufacturer: str | None = Form(None),
+    device_type_id: str | None = Form(None),
+    serial_number: str | None = Form(None),
+    location_id: str | None = Form(None),
+    on_lasso: str | None = Form(None),
+    on_r1: str | None = Form(None),
+    site_id: str | None = Form(None),
+    status: str | None = Form(None),
+    vlan_id: str | None = Form(None),
+    ssh_credential_id: str | None = Form(None),
+    snmp_community_id: str | None = Form(None),
+    tag_names: str | None = Form(None),
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("editor")),
+):
+    for device_id in selected:
+        device = db.query(Device).filter(Device.id == device_id).first()
+        if not device:
+            continue
+        if hostname:
+            device.hostname = hostname
+        if ip:
+            device.ip = _format_ip(ip)
+        if mac:
+            device.mac = mac
+        if asset_tag:
+            device.asset_tag = asset_tag
+        if model:
+            device.model = model
+        if manufacturer:
+            device.manufacturer = manufacturer
+        if device_type_id:
+            device.device_type_id = int(device_type_id)
+        if serial_number:
+            device.serial_number = serial_number
+        if location_id:
+            device.location_id = int(location_id)
+        if on_lasso is not None:
+            device.on_lasso = bool(on_lasso)
+        if on_r1 is not None:
+            device.on_r1 = bool(on_r1)
+        if site_id:
+            device.site_id = int(site_id)
+        if status:
+            device.status = status
+        if vlan_id:
+            device.vlan_id = int(vlan_id)
+        if ssh_credential_id:
+            device.ssh_credential_id = int(ssh_credential_id)
+        if snmp_community_id:
+            device.snmp_community_id = int(snmp_community_id)
+        if tag_names:
+            names = {n.strip().lower() for n in tag_names.split(',') if n.strip()}
+            for name in names:
+                tag = get_or_create_tag(db, name)
+                add_tag_to_device(db, device, tag, current_user)
+        update_device_complete_tag(db, device, current_user)
+        update_device_attribute_tags(db, device, user=current_user)
     db.commit()
     return RedirectResponse(url="/devices/table", status_code=302)
 
