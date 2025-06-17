@@ -3,6 +3,7 @@ function tableControls() {
     search: '',
     perPage: 10,
     page: 0,
+    selectedIds: [],
     init() {
       this.$watch('search', () => { this.page = 0; this.update() })
       this.$watch('perPage', () => { this.page = 0; this.update() })
@@ -21,6 +22,15 @@ function tableControls() {
     next() { if (this.end < this.filteredRows.length) { this.page++; this.update() } },
     prev() { if (this.page > 0) { this.page--; this.update() } },
     countText() { if (this.filteredRows.length===0) return 'No entries' ; return `Showing ${this.start+1}-${this.end} of ${this.filteredRows.length} entries` },
+    toggleAll(state) {
+      this.selectedIds = []
+      this.$el.querySelectorAll('input[name="selected"]').forEach(cb => {
+        cb.checked = state
+        if (state) this.selectedIds.push(cb.value)
+      })
+    },
+    bulkDelete() { this.$el.action = '/devices/bulk-delete'; this.$el.submit() },
+    bulkUpdate() { this.$el.action = '/devices/bulk-update'; this.$el.submit() },
     update() {
       const start = this.start, end = this.end
       this.filteredRows.forEach((row, i) => { row.style.display = (i>=start && i<end)?'' : 'none' })

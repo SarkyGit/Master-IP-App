@@ -8,16 +8,30 @@
   </form>
   {% endset %}
 {% endif %}
-<form method="post" action="/devices/bulk-delete" x-data="tableControls()" class="space-y-2 full-width">
+<form method="post" action="/devices/bulk-delete" x-data="tableControls()" id="device-table-form" class="space-y-2 full-width">
 <div class="flex justify-end items-center">
   <input x-model="search" type="text" placeholder="Search" class="rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)] px-2 py-1" />
   {% if refresh_button is defined %}{{ refresh_button }}{% endif %}
+</div>
+<div class="flex justify-between items-center bg-[var(--card-bg)] px-2 py-1 rounded">
+  <div class="flex items-center gap-2">
+    {% if device_type and device_type.upload_icon %}
+    <img src="{{ request.url_for('static', path='uploads/device-types/' ~ device_type.upload_icon) }}" class="w-6 h-6" alt="" />
+    {% else %}
+    {{ include_icon('hard-drive') }}
+    {% endif %}
+    <span>{{ device_type.name if device_type else 'All Devices' }}</span>
+    <span class="ml-4">{{ devices|length }} total</span>
+    <span class="ml-2">{{ complete_count }} complete</span>
+    <span class="ml-2">{{ incomplete_count }} incomplete</span>
+  </div>
+  <a href="" aria-label="Refresh">{{ include_icon('refresh-ccw','', '1.5') }}</a>
 </div>
 <div class="w-full overflow-auto">
 <table class="min-w-full table-fixed text-left border-collapse devices-table">
   <thead>
     <tr>
-      <th class="table-cell"><input type="checkbox" id="select-all"></th>
+      <th class="table-cell"><input type="checkbox" id="select-all" @change="toggleAll($event.target.checked)"></th>
       {% if column_prefs.hostname %}<th class="table-cell table-header">{{ column_labels['hostname'] }}</th>{% endif %}
       {% if column_prefs.ip %}<th class="table-cell table-header">{{ column_labels['ip'] }}</th>{% endif %}
       {% if column_prefs.mac %}<th class="table-cell table-header">{{ column_labels['mac'] }}</th>{% endif %}
@@ -43,7 +57,7 @@
   <tbody>
   {% for device in devices %}
     <tr {% if device.conflict_data %}style="background-color:#7f1d1d"{% endif %}>
-      <td class="table-cell"><input type="checkbox" name="selected" value="{{ device.id }}"></td>
+      <td class="table-cell"><input type="checkbox" name="selected" value="{{ device.id }}" x-model="selectedIds"></td>
       {% if column_prefs.hostname %}<td class="table-cell">{{ device.hostname }}</td>{% endif %}
       {% if column_prefs.ip %}<td class="table-cell {% if device.ip and duplicate_ips.get(device.ip) %}duplicate{% endif %}" title="{{ duplicate_ips.get(device.ip)|join(', ') if duplicate_ips.get(device.ip) }}">{{ device.ip }}</td>{% endif %}
       {% if column_prefs.mac %}<td class="table-cell {% if device.mac and duplicate_macs.get(device.mac) %}duplicate{% endif %}" title="{{ duplicate_macs.get(device.mac)|join(', ') if duplicate_macs.get(device.mac) }}">{{ device.mac or '' }}</td>{% endif %}
@@ -96,6 +110,31 @@
     
   {% endfor %}
   </tbody>
+  <tfoot x-show="selectedIds.length > 0" x-cloak>
+    <tr class="bg-[var(--card-bg)]">
+      <td class="table-cell"></td>
+      {% if column_prefs.hostname %}<td class="table-cell"><input name="hostname" class="w-full bg-[var(--input-bg)] text-[var(--input-text)] rounded" /></td>{% endif %}
+      {% if column_prefs.ip %}<td class="table-cell"><input name="ip" class="w-full bg-[var(--input-bg)] text-[var(--input-text)] rounded" /></td>{% endif %}
+      {% if column_prefs.mac %}<td class="table-cell"><input name="mac" class="w-full bg-[var(--input-bg)] text-[var(--input-text)] rounded" /></td>{% endif %}
+      {% if column_prefs.asset_tag %}<td class="table-cell"><input name="asset_tag" class="w-full bg-[var(--input-bg)] text-[var(--input-text)] rounded" /></td>{% endif %}
+      {% if column_prefs.model %}<td class="table-cell"><input name="model" class="w-full bg-[var(--input-bg)] text-[var(--input-text)] rounded" /></td>{% endif %}
+      {% if column_prefs.manufacturer %}<td class="table-cell"><input name="manufacturer" class="w-full bg-[var(--input-bg)] text-[var(--input-text)] rounded" /></td>{% endif %}
+      {% if column_prefs.platform %}<td class="table-cell"><input name="detected_platform" class="w-full bg-[var(--input-bg)] text-[var(--input-text)] rounded" /></td>{% endif %}
+      {% if column_prefs.serial %}<td class="table-cell"><input name="serial_number" class="w-full bg-[var(--input-bg)] text-[var(--input-text)] rounded" /></td>{% endif %}
+      {% if column_prefs.location %}<td class="table-cell"><select name="location_id" class="w-full bg-[var(--input-bg)] text-[var(--input-text)] rounded"><option value=""></option>{% for loc in locations %}<option value="{{ loc.id }}">{{ loc.name }}</option>{% endfor %}</select></td>{% endif %}
+      {% if column_prefs.on_lasso %}<td class="table-cell text-center"><input type="checkbox" name="on_lasso" value="1" /></td>{% endif %}
+      {% if column_prefs.on_r1 %}<td class="table-cell text-center"><input type="checkbox" name="on_r1" value="1" /></td>{% endif %}
+      {% if column_prefs.type %}<td class="table-cell"><select name="device_type_id" class="w-full bg-[var(--input-bg)] text-[var(--input-text)] rounded"><option value=""></option>{% for dt in device_types %}<option value="{{ dt.id }}">{{ dt.name }}</option>{% endfor %}</select></td>{% endif %}
+      {% if column_prefs.state %}<td class="table-cell"><select name="status" class="w-full bg-[var(--input-bg)] text-[var(--input-text)] rounded"><option value=""></option>{% for st in status_options %}<option value="{{ st }}">{{ st }}</option>{% endfor %}</select></td>{% endif %}
+      {% if column_prefs.vlan %}<td class="table-cell"><select name="vlan_id" class="w-full bg-[var(--input-bg)] text-[var(--input-text)] rounded"><option value=""></option>{% for v in vlans %}<option value="{{ v.id }}">{{ v.tag }}</option>{% endfor %}</select></td>{% endif %}
+      {% if column_prefs.ssh_profile %}<td class="table-cell"><select name="ssh_credential_id" class="w-full bg-[var(--input-bg)] text-[var(--input-text)] rounded"><option value=""></option>{% for c in ssh_credentials %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}</select></td>{% endif %}
+      {% if column_prefs.snmp_profile %}<td class="table-cell"><select name="snmp_community_id" class="w-full bg-[var(--input-bg)] text-[var(--input-text)] rounded"><option value=""></option>{% for s in snmp_communities %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}</select></td>{% endif %}
+      {% if column_prefs.status %}<td class="table-cell"></td>{% endif %}
+      {% if column_prefs.tags %}<td class="table-cell"><input name="tag_names" class="w-full bg-[var(--input-bg)] text-[var(--input-text)] rounded" /></td>{% endif %}
+      <td class="table-cell"></td>
+      <td class="actions-col text-right"><button type="button" @click="bulkUpdate" aria-label="Apply" class="icon-btn">{{ include_icon('check','text-green-500','1.5') }}</button></td>
+    </tr>
+  </tfoot>
 </table>
 <div class="flex justify-between items-center mt-2">
   <span x-text="countText()" class="text-sm"></span>
@@ -124,11 +163,6 @@
   </div>
 </div>
 </div>
-<button type="submit" aria-label="Delete Selected" class="px-2 text-sm text-[var(--btn-text)] hover:text-[var(--btn-hover-text)] mt-2">{{ include_icon('trash-2','text-red-500','1.5') }}</button>
+<button type="button" @click="bulkDelete" aria-label="Delete Selected" class="px-2 text-sm text-[var(--btn-text)] hover:text-[var(--btn-hover-text)] mt-2">{{ include_icon('trash-2','text-red-500','1.5') }}</button>
 </form>
-<script>
-document.getElementById('select-all').addEventListener('change', function(e){
-  document.querySelectorAll('input[name="selected"]').forEach(cb => cb.checked = e.target.checked);
-});
-</script>
 {% endblock %}
