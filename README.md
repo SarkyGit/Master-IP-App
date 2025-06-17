@@ -283,6 +283,13 @@ To switch themes, open **My Profile** from the user menu (or visit `/users/me`) 
 
 The application stores various settings in the `system_tunables` table. These are seeded with default values by `seed_tunables.py` and can be adjusted from the **System Tunables** page in the web UI (admin role required).
 
+After installation you can configure the cloud connection from this page. Look for the following tunables under the **Sync** function:
+
+- **Cloud Base URL** – base URL of the cloud server used for synchronization
+- **Cloud API Key** – token passed with sync requests
+
+Updating these values in the UI takes effect the next time the sync workers run.
+
 ## Server Workers
 
 Several background workers run alongside the FastAPI app.
