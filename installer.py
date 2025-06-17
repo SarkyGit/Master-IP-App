@@ -36,6 +36,28 @@ def run(cmd: str) -> None:
     subprocess.run(cmd, shell=True, check=True)
 
 
+def pg_role_exists(role: str) -> bool:
+    """Return True if the given PostgreSQL role already exists."""
+    result = subprocess.run(
+        f"sudo -u postgres psql -tAc \"SELECT 1 FROM pg_roles WHERE rolname='{role}'\"",
+        shell=True,
+        capture_output=True,
+        text=True,
+    )
+    return result.stdout.strip() == "1"
+
+
+def pg_database_exists(name: str) -> bool:
+    """Return True if the given PostgreSQL database already exists."""
+    result = subprocess.run(
+        f"sudo -u postgres psql -tAc \"SELECT 1 FROM pg_database WHERE datname='{name}'\"",
+        shell=True,
+        capture_output=True,
+        text=True,
+    )
+    return result.stdout.strip() == "1"
+
+
 def install():
     global questionary
     if os.geteuid() != 0:
@@ -97,8 +119,19 @@ def install():
     run("npm run build:web")
 
     # set up postgres
-    run(f"sudo -u postgres psql -c \"CREATE USER {db_user} WITH PASSWORD '{db_pass}';\"")
-    run(f"sudo -u postgres psql -c \"CREATE DATABASE {db_name} OWNER {db_user};\"")
+    if pg_role_exists(db_user):
+        print(f"PostgreSQL role '{db_user}' already exists; skipping creation.")
+    else:
+        run(
+            f"sudo -u postgres psql -c \"CREATE USER {db_user} WITH PASSWORD '{db_pass}';\""
+        )
+
+    if pg_database_exists(db_name):
+        print(f"PostgreSQL database '{db_name}' already exists; skipping creation.")
+    else:
+        run(
+            f"sudo -u postgres psql -c \"CREATE DATABASE {db_name} OWNER {db_user};\""
+        )
 
     if install_nginx:
         domain = install_domain.strip().lower()
