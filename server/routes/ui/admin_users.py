@@ -59,7 +59,6 @@ async def create_user(
     font: str = Form("sans"),
     menu_style: str = Form("tabbed"),
     icon_style: str = Form("lucide"),
-    icon_style: str = Form("lucide"),
     db: Session = Depends(get_db),
     current_user=Depends(require_role("superadmin")),
 ):
