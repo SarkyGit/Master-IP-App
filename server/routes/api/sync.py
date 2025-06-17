@@ -210,3 +210,9 @@ async def pull_changes(
             results.append({"model": model_name, **data})
 
     return results
+
+
+@router.get("/ping")
+async def sync_ping():
+    """Simple health check used by local sites."""
+    return {"status": "ok"}

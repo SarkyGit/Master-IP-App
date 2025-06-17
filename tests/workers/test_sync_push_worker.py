@@ -103,9 +103,10 @@ def test_push_once_sends_unsynced_records(monkeypatch):
     old_value = db.data[models.SystemTunable][0].value
 
     monkeypatch.setattr(sync_push_worker, "SessionLocal", lambda: db)
+    monkeypatch.setattr(sync_push_worker, "_get_sync_config", lambda: ("http://push", "http://pull", ""))
     sent = {}
 
-    async def fake_request(method, url, payload, log):
+    async def fake_request(method, url, payload, log, api_key):
         sent["payload"] = payload
 
     monkeypatch.setattr(sync_push_worker, "_request_with_retry", fake_request)
@@ -142,5 +143,5 @@ async def test_request_with_retry_retries(monkeypatch):
 
     monkeypatch.setattr(httpx, "AsyncClient", lambda timeout=None: FakeClient())
     log = mock.Mock()
-    await cloud_sync._request_with_retry("POST", "http://example", {}, log)
+    await cloud_sync._request_with_retry("POST", "http://example", {}, log, "key")
     assert len(calls) == 2
