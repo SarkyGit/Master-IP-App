@@ -258,6 +258,19 @@ python -m server.workers.sync_push_worker
 python -m server.workers.sync_pull_worker
 ```
 
+### Connecting a Local Site to the Cloud
+
+After installation you can configure cloud sync parameters using the
+`setup_cloud_connection.py` helper. This stores the cloud URL and API key in the
+`system_tunables` table and verifies connectivity via a simple ping request:
+
+```bash
+python setup_cloud_connection.py https://cloud.example.com my-api-key
+```
+
+If the connection succeeds the script prints `Connection successful` and the
+background workers will use these values on the next run.
+
 The `mobile-client/` folder now contains a minimal React Native app that lists devices from the REST API. Use `npm install` then `npm start` inside that directory to launch it with Expo.
 
 ## Interface Themes
@@ -269,6 +282,13 @@ To switch themes, open **My Profile** from the user menu (or visit `/users/me`) 
 ## System Tunables
 
 The application stores various settings in the `system_tunables` table. These are seeded with default values by `seed_tunables.py` and can be adjusted from the **System Tunables** page in the web UI (admin role required).
+
+After installation you can configure the cloud connection from this page. Look for the following tunables under the **Sync** function:
+
+- **Cloud Base URL** – base URL of the cloud server used for synchronization
+- **Cloud API Key** – token passed with sync requests
+
+Updating these values in the UI takes effect the next time the sync workers run.
 
 ## Server Workers
 
@@ -343,6 +363,9 @@ The application reads several options from the environment. Important variables 
 - `ENABLE_SYNC_PUSH_WORKER` – start the worker that pushes local changes.
 - `ENABLE_SYNC_PULL_WORKER` – start the worker that pulls updates from the cloud.
 - `ENABLE_BACKGROUND_WORKERS` – disable to skip queue and scheduler startup.
+- `CLOUD_BASE_URL` – base URL of the cloud server (overrides tunable).
+- `SYNC_PUSH_URL` and `SYNC_PULL_URL` – custom endpoints for synchronization.
+- `SYNC_API_KEY` – bearer token sent with sync requests.
 ## Nginx reverse proxy with SSL
 
 Install Nginx on the host and create a server block that proxies requests to
