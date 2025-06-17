@@ -399,6 +399,14 @@ static files load correctly. Finally make sure Nginx starts on boot:
 sudo systemctl enable nginx
 ```
 
+### Domain and SSL Options
+
+The installer now supports two SSL flows controlled by the `INSTALL_DOMAIN`
+variable in the `.env` file or during the wizard. Provide a real domain name to
+request certificates from Let's Encrypt. Leave it blank or set it to `none` to
+generate a self‑signed certificate instead. In both cases Nginx serves a fallback
+HTTP block on port `80` that redirects to HTTPS once SSL is available.
+
 
 ## Troubleshooting
 
@@ -448,8 +456,9 @@ sudo python3 installer.py
 ```
 
 Follow the on-screen questions to choose **local** or **cloud** mode, database
-credentials and the admin user password. The script writes a `.env` file and
-starts the application once installation completes.
+credentials, whether you want a real domain or a self-signed certificate and the
+admin user password. The script writes a `.env` file and starts the application
+once installation completes.
 
 ## License
 
