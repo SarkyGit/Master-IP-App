@@ -136,28 +136,40 @@ Two front-end clients are shipped with the repository.
 ```bash
 npm run build:web
 ```
+Run this command whenever templates or `uno.config.ts` change. The `start.sh` script executes it automatically in production.
 
-# Deployment Modes
+# Setup Guides
 
-This application can run either as a standalone local instance or as the central cloud server. Example environment files and Compose definitions live under `deploy/`.
+The application can run either as a standalone **local** instance or as the central **cloud** server. Example environment files and Compose definitions live under `deploy/`.
 
-## Local Mode
-1. Clone the repository
-2. Copy `.env.local` to `.env` and ensure `ROLE=local`
-3. Start the stack:
-```bash
-docker compose -f deploy/docker/docker-compose.local.yml up --build
-```
-4. Visit [http://localhost:8000](http://localhost:8000)
+## Local Setup
 
-## Cloud Mode
-1. Copy `.env.cloud` to `.env` and set `ROLE=cloud`
-2. Launch with:
-```bash
-docker compose -f deploy/docker/docker-compose.cloud.yml up --build -d
-```
-3. Configure a reverse proxy such as **Nginx**
-4. Expose port **443** for sync clients
+1. Clone the repository and install the dependencies:
+   ```bash
+   git clone https://github.com/youruser/Master-IP-App.git
+   cd Master-IP-App
+   pip install -r requirements.txt
+   npm install
+   npm run build:web  # build UnoCSS styles
+   ```
+2. Copy `.env.local` to `.env` and verify `ROLE=local` and your `DATABASE_URL` settings.
+3. Start the services:
+   ```bash
+   docker compose -f deploy/docker/docker-compose.local.yml up --build
+   ```
+4. Workers start automatically when `ROLE=local`. To run a worker manually for debugging:
+   ```bash
+   python -m server.workers.queue_worker
+   ```
+
+## Cloud Setup
+
+1. Copy `.env.cloud` to `.env` and set any required secrets such as `SECRET_KEY`.
+2. Ensure `ROLE=cloud` inside the file then launch:
+   ```bash
+   docker compose -f deploy/docker/docker-compose.cloud.yml up --build -d
+   ```
+3. The cloud server exposes `/api/v1/sync` for local sites. Background workers are disabled by default but can be started with `ENABLE_SYNC_PULL_WORKER=1` and `ENABLE_SYNC_PUSH_WORKER=1`.
 
 ### Component Matrix
 | Component | Local Mode | Cloud Mode |
@@ -203,22 +215,27 @@ running the tests.
 
 Prerequisites: **Node.js** and either the **Expo CLI** or React Native CLI.
 
-1. Set `BASE_URL` in `/mobile-client/config.ts` to your server address.
+1. Copy `.env.example` to `.env` and set `BASE_URL` to your server address.
 2. From the `mobile-client/` directory run:
    ```bash
-   npm install && npm start
+   npm install
+   npm start
    ```
 3. Scan the QR code with Expo Go or launch the app on an emulator.
 
 See [mobile-client](mobile-client/) for additional configuration details.
 ## Cloud & Mobile Integration
 
-The [cloud architecture](docs/cloud-architecture.md) document describes the planned replication model for running multiple sites with a central server. Configuration differences between the modes are covered in [docs/deployment_modes.md](docs/deployment_modes.md). Two compose files are now provided:
+The [cloud architecture](docs/cloud-architecture.md) document describes how local sites replicate to a central server. Behaviour changes between roles are covered in [docs/deployment_modes.md](docs/deployment_modes.md). Two compose files are now provided:
 
 - `docker-compose.yml` – run a **local** instance with `ROLE=local`.
 - `docker-compose.cloud.yml` – run the **cloud** server with `ROLE=cloud`.
 
-Kubernetes manifests under `k8s/` mirror this setup. Set `ENABLE_CLOUD_SYNC=1` on local servers to start the background worker that pushes updates to the cloud.
+Kubernetes manifests under `k8s/` mirror this setup. Set `ENABLE_CLOUD_SYNC=1` on local servers to start the background worker that pushes updates to the cloud. The push and pull workers can also be launched manually:
+```bash
+python -m server.workers.sync_push_worker
+python -m server.workers.sync_pull_worker
+```
 
 The `mobile-client/` folder now contains a minimal React Native app that lists devices from the REST API. Use `npm install` then `npm start` inside that directory to launch it with Expo.
 
@@ -239,6 +256,8 @@ Several background workers run alongside the FastAPI app.
 - `config_scheduler` schedules periodic configuration pulls and cleanup tasks.
 - `trap_listener` listens for SNMP traps when `ENABLE_TRAP_LISTENER=1`.
 - `syslog_listener` collects syslog messages when `ENABLE_SYSLOG_LISTENER=1`.
+- `sync_push_worker` sends local updates to the cloud when `ENABLE_SYNC_PUSH_WORKER=1`.
+- `sync_pull_worker` retrieves remote changes when `ENABLE_SYNC_PULL_WORKER=1`.
 These workers start automatically when `server.main` is launched but can also be executed directly with `python -m server.workers.<name>` for debugging.
 
 ## Token-based API Authentication
