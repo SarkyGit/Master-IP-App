@@ -42,6 +42,7 @@ from server.routes import (
     syslog_router,
     tag_manager_router,
     admin_logo_router,
+    admin_site_keys_router,
     api_devices_router,
     api_users_router,
     api_vlans_router,
@@ -203,6 +204,7 @@ app.include_router(snmp_traps_router)
 app.include_router(syslog_router)
 app.include_router(tag_manager_router)
 app.include_router(admin_logo_router)
+app.include_router(admin_site_keys_router)
 
 
 @app.exception_handler(HTTPException)

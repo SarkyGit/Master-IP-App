@@ -34,6 +34,7 @@ from .internal.syslog import router as syslog_router
 from .ui.tag_manager import router as tag_manager_router
 from .ui.admin_logo import router as admin_logo_router
 from .ui.admin_update import router as admin_update_router
+from .ui.admin_site_keys import router as admin_site_keys_router
 from .api.devices import router as api_devices_router
 from .api.users import router as api_users_router
 from .api.vlans import router as api_vlans_router
@@ -79,6 +80,7 @@ __all__ = [
     "tag_manager_router",
     "admin_logo_router",
     "admin_update_router",
+    "admin_site_keys_router",
     "api_devices_router",
     "api_users_router",
     "api_vlans_router",

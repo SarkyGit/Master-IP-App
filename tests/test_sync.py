@@ -42,6 +42,7 @@ class DummyDB:
             models.User: [
                 models.User(id=1, email="admin@example.com", hashed_password="x", role="admin", is_active=True, version=1),
             ],
+            models.SiteKey: [models.SiteKey(site_id="1", site_name="test", api_key="key", active=True)],
         }
 
     def query(self, model):
@@ -114,7 +115,8 @@ def test_sync_endpoint_processes_payload():
             },
         ]
     }
-    resp = client.post("/api/v1/sync", json=payload)
+    headers = {"Site-ID": "1", "API-Key": "key"}
+    resp = client.post("/api/v1/sync", json=payload, headers=headers)
     assert resp.status_code == 200
     data = resp.json()
     assert data["accepted"] == 1
@@ -145,7 +147,8 @@ def test_sync_push_endpoint():
             },
         ]
     }
-    resp = client.post("/api/v1/sync/push", json=payload)
+    headers = {"Site-ID": "1", "API-Key": "key"}
+    resp = client.post("/api/v1/sync/push", json=payload, headers=headers)
     assert resp.status_code == 200
     data = resp.json()
     assert data["accepted"] == 1
@@ -155,6 +158,7 @@ def test_sync_push_endpoint():
 
 def test_sync_pull_endpoint():
     ts = datetime.now(timezone.utc).isoformat()
-    resp = client.post("/api/v1/sync/pull", json={"since": ts, "models": ["users"]})
+    headers = {"Site-ID": "1", "API-Key": "key"}
+    resp = client.post("/api/v1/sync/pull", json={"since": ts, "models": ["users"]}, headers=headers)
     assert resp.status_code == 200
     assert isinstance(resp.json(), list)

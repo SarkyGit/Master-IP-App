@@ -25,6 +25,10 @@
     <label class="block mb-1">Site ID</label>
     <input type="text" name="site_id" value="{{ site_id }}" class="w-full p-1 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
   </div>
+  <div>
+    <label class="block mb-1">API Key</label>
+    <input type="text" name="api_key" value="" placeholder="Enter key" class="w-full p-1 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+  </div>
   <button type="submit" class="btn">Test Connection</button>
   {% if cloud_message %}
   <p class="mt-2">{{ cloud_message }}</p>

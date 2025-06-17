@@ -13,8 +13,8 @@ SYNC_TIMEOUT = int(os.environ.get("SYNC_TIMEOUT", "10"))
 SYNC_RETRIES = int(os.environ.get("SYNC_RETRIES", "3"))
 
 
-def _get_sync_config() -> tuple[str, str, str]:
-    """Return push URL, pull URL and API key from env or tunables."""
+def _get_sync_config() -> tuple[str, str, str, str]:
+    """Return push URL, pull URL, site id and API key from env or tunables."""
     db = SessionLocal()
     try:
         base = os.environ.get("CLOUD_BASE_URL")
@@ -36,7 +36,11 @@ def _get_sync_config() -> tuple[str, str, str]:
                 .first()
             )
             api_key = row.value if row else ""
-        return push, pull, api_key
+        site_id = os.environ.get("SITE_ID")
+        if not site_id:
+            row = db.query(SystemTunable).filter(SystemTunable.name == "Cloud Site ID").first()
+            site_id = row.value if row else ""
+        return push, pull, site_id, api_key
     finally:
         db.close()
 
@@ -59,8 +63,8 @@ async def _update_timestamp(db, name: str) -> None:
     db.commit()
 
 
-async def _request_with_retry(method: str, url: str, payload: dict, log: logging.Logger, api_key: str) -> None:
-    headers = {"Authorization": f"Bearer {api_key}"} if api_key else {}
+async def _request_with_retry(method: str, url: str, payload: dict, log: logging.Logger, site_id: str, api_key: str) -> None:
+    headers = {"Site-ID": site_id, "API-Key": api_key}
     delay = 1
     for attempt in range(SYNC_RETRIES):
         try:
@@ -77,11 +81,11 @@ async def _request_with_retry(method: str, url: str, payload: dict, log: logging
 
 
 async def push_once(log: logging.Logger) -> None:
-    push_url, _, api_key = _get_sync_config()
+    push_url, _, site_id, api_key = _get_sync_config()
     db = SessionLocal()
     payload = {"timestamp": datetime.now(timezone.utc).isoformat()}
     try:
-        await _request_with_retry("POST", push_url, payload, log, api_key)
+        await _request_with_retry("POST", push_url, payload, log, site_id, api_key)
         await _update_timestamp(db, "Last Sync Push")
     except Exception as exc:
         log.error("Push failed: %s", exc)
@@ -90,11 +94,11 @@ async def push_once(log: logging.Logger) -> None:
 
 
 async def pull_once(log: logging.Logger) -> None:
-    _, pull_url, api_key = _get_sync_config()
+    _, pull_url, site_id, api_key = _get_sync_config()
     db = SessionLocal()
     payload: dict[str, str] = {}
     try:
-        await _request_with_retry("POST", pull_url, payload, log, api_key)
+        await _request_with_retry("POST", pull_url, payload, log, site_id, api_key)
         await _update_timestamp(db, "Last Sync Pull")
     except Exception as exc:
         log.error("Pull failed: %s", exc)

@@ -171,15 +171,16 @@ async def test_cloud_connection(
     request: Request,
     cloud_url: str = Form(""),
     site_id: str = Form(""),
+    api_key: str = Form(""),
     enable: str = Form("off"),
     db: Session = Depends(get_db),
     current_user=Depends(require_role("admin")),
 ):
     enabled = enable == "on" or enable.lower() in {"true", "1", "yes"}
     msg = ""
-    if cloud_url and site_id:
+    if cloud_url and site_id and api_key:
         try:
-            await send_heartbeat_once(logging.getLogger(__name__), cloud_url, site_id)
+            await send_heartbeat_once(logging.getLogger(__name__), cloud_url, site_id, api_key)
             row = db.query(SystemTunable).filter(SystemTunable.name == "Cloud Base URL").first()
             if row:
                 row.value = cloud_url
@@ -190,6 +191,12 @@ async def test_cloud_connection(
                 row.value = site_id
             else:
                 db.add(SystemTunable(name="Cloud Site ID", value=site_id, function="Sync", file_type="application", data_type="text"))
+            row = db.query(SystemTunable).filter(SystemTunable.name == "Cloud API Key").first()
+            if row:
+                row.value = api_key
+            else:
+                db.add(SystemTunable(name="Cloud API Key", value=api_key, function="Sync", file_type="application", data_type="text"))
+
             row = db.query(SystemTunable).filter(SystemTunable.name == "Enable Cloud Sync").first()
             if row:
                 row.value = "true" if enabled else "false"
@@ -200,7 +207,7 @@ async def test_cloud_connection(
         except Exception as exc:
             msg = f"Connection failed: {exc}"
     else:
-        msg = "Cloud URL and Site ID required"
+        msg = "Cloud URL, Site ID and API key required"
     return _render_update(request, db, current_user, msg)
 
 

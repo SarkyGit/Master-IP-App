@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="text-xl mb-4">Site Keys</h1>
+<form method="post" action="/admin/site-keys/new" class="space-y-2 mb-4">
+  <div>
+    <label class="block mb-1">Site Name</label>
+    <input type="text" name="site_name" required class="w-full p-1 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+  </div>
+  <div>
+    <label class="block mb-1">Site ID (optional)</label>
+    <input type="text" name="site_id" class="w-full p-1 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+  </div>
+  <button type="submit" class="btn">Create Key</button>
+</form>
+{% if new_key %}
+<p class="p-2 mb-4 rounded bg-[var(--alert-bg)]">API Key for {{ new_site_id }}: <code>{{ new_key }}</code></p>
+{% endif %}
+<div class="w-full overflow-auto">
+<table class="min-w-full table-fixed text-left border-collapse">
+  <thead>
+    <tr>
+      <th class="table-cell table-header">Site Name</th>
+      <th class="table-cell table-header">Site ID</th>
+      <th class="table-cell table-header">Active</th>
+      <th class="table-cell table-header">Last Used</th>
+      <th class="table-cell table-header">Status</th>
+      <th class="text-center w-[6rem]">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for key in keys %}
+    <tr class="border-t border-gray-700">
+      <td class="table-cell">{{ key.site_name }}</td>
+      <td class="table-cell">{{ key.site_id }}</td>
+      <td class="table-cell">{{ 'yes' if key.active else 'no' }}</td>
+      <td class="table-cell">{{ key.last_used_at or 'never' }}</td>
+      {% set stale = key.last_used_at is none or (now - key.last_used_at > timedelta(hours=24)) %}
+      <td class="table-cell">{{ 'stale' if stale else 'ok' }}</td>
+      <td class="text-center">
+        <form method="post" action="/admin/site-keys/{{ key.id }}/toggle">
+          <button type="submit" class="underline">{{ 'Disable' if key.active else 'Enable' }}</button>
+        </form>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock %}

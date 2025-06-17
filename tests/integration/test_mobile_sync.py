@@ -65,6 +65,7 @@ class DummyDB:
             models.Device: [
                 models.Device(id=1, hostname="s1", ip="1.1.1.1", manufacturer="cisco", device_type_id=1, version=1),
             ],
+            models.SiteKey: [models.SiteKey(site_id="1", site_name="test", api_key="key", active=True)],
         }
 
     def query(self, model):
@@ -144,7 +145,8 @@ def test_mobile_sync_flow(role):
             }
         ]
     }
-    resp = client.post("/api/v1/sync/push", json=payload, headers={"Authorization": f"Bearer {token}"})
+    headers = {"Site-ID": "1", "API-Key": "key"}
+    resp = client.post("/api/v1/sync/push", json=payload, headers=headers)
     if role == "cloud":
         assert resp.status_code == 200
     else:
@@ -154,7 +156,7 @@ def test_mobile_sync_flow(role):
     resp = client.post(
         "/api/v1/sync/pull",
         json={"since": ts, "models": [db.models.User.__tablename__]},
-        headers={"Authorization": f"Bearer {token}"},
+        headers=headers,
     )
     if role == "cloud":
         assert resp.status_code == 200
