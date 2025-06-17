@@ -117,6 +117,23 @@ def get_tunable_categories():
 
 templates.env.globals["get_tunable_categories"] = get_tunable_categories
 
+
+def allow_self_update() -> bool:
+    """Return True if self updates are enabled via tunable."""
+    db = SessionLocal()
+    row = (
+        db.query(SystemTunable)
+        .filter(SystemTunable.name == "ALLOW_SELF_UPDATE")
+        .first()
+    )
+    db.close()
+    if row and str(row.value).lower() in {"false", "0", "no"}:
+        return False
+    return True
+
+
+templates.env.globals["allow_self_update"] = allow_self_update
+
 from settings import settings
 
 templates.env.globals["app_role"] = settings.role

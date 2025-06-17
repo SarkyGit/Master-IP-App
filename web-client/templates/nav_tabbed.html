@@ -106,6 +106,9 @@
           <a href="/tunables?category={{ cat | urlencode }}" @click="setSub('/tunables?category={{ cat | urlencode }}')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/tunables?category={{ cat | urlencode }}'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">{{ cat }}</a>
           {% endfor %}
           <a href="/admin/logo" @click="setSub('/admin/logo')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/admin/logo'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Upload Logo</a>
+          {% if allow_self_update() %}
+          <a href="/admin/update" @click="setSub('/admin/update')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/admin/update'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Update System</a>
+          {% endif %}
         </div>
       </div>
       {% endif %}

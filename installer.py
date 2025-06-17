@@ -58,11 +58,26 @@ def pg_database_exists(name: str) -> bool:
     return result.stdout.strip() == "1"
 
 
+def ensure_ipapp_user() -> None:
+    """Create ipapp user and sudoers rules if needed."""
+    if subprocess.run(["id", "ipapp"], capture_output=True).returncode != 0:
+        run("useradd -m ipapp")
+    sudoers = "/etc/sudoers.d/ipapp-updater"
+    if not os.path.exists(sudoers):
+        Path(sudoers).write_text(
+            "ipapp ALL=(root) NOPASSWD: /usr/bin/git, /usr/bin/npm, /bin/systemctl, /sbin/reboot\n",
+            encoding="utf-8",
+        )
+        os.chmod(sudoers, 0o440)
+
+
 def install():
     global questionary
     if os.geteuid() != 0:
         print("This installer must be run as root.")
         return
+
+    ensure_ipapp_user()
 
     if questionary is None:
         run("apt-get update")
