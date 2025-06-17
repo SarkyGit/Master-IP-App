@@ -383,7 +383,8 @@ includes `ProxyHeadersMiddleware` in `server/main.py`, which reads that
 header. Ensure Nginx forwards it as shown above.
 
 To serve HTTPS traffic obtain a certificate with Certbot and let it configure
-Nginx automatically:
+Nginx automatically. On Debian/Ubuntu, install Certbot and the Nginx plugin
+with `sudo apt install certbot python3-certbot-nginx` (or use Snap):
 
 ```bash
 sudo certbot --nginx -d example.com
