@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from core.utils.templates import templates
 from core.utils.auth import require_role
 from core.utils.db_session import get_db
-from core.models.models import Device, DeviceType
+from core.models.models import Device, DeviceType, SystemTunable
 
 router = APIRouter()
 
@@ -108,3 +108,76 @@ async def inventory_ip_cameras(request: Request, current_user=Depends(require_ro
 @router.get('/inventory/iot-devices')
 async def inventory_iot_devices(request: Request, current_user=Depends(require_role("viewer")), db: Session = Depends(get_db)):
     return _render_inventory(request, current_user, db, device_type="IoT Device", title="IoT Devices")
+
+
+def _get_tunable(db: Session, name: str) -> str | None:
+    row = db.query(SystemTunable).filter(SystemTunable.name == name).first()
+    return row.value if row else None
+
+
+@router.get('/inventory/show-pad')
+async def show_pad_grid(
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("viewer")),
+):
+    images = {
+        "consumables_order": _get_tunable(db, "SHOW_PAD_CONSUMABLES_ORDER_IMAGE") or "",
+        "end_show_consumables": _get_tunable(db, "SHOW_PAD_EOS_CONSUMABLES_IMAGE") or "",
+        "trailer_inventory": _get_tunable(db, "SHOW_PAD_TRAILER_INVENTORY_IMAGE") or "",
+        "site_inventory": _get_tunable(db, "SHOW_PAD_SITE_INVENTORY_IMAGE") or "",
+    }
+    items = [
+        {"label": "Consumables Order", "href": "/inventory/consumables-order", "img": images["consumables_order"]},
+        {"label": "End of Show Consumables", "href": "/inventory/end-of-show-consumables", "img": images["end_show_consumables"]},
+        {"label": "Trailer Inventory", "href": "/inventory/trailers", "img": images["trailer_inventory"]},
+        {"label": "Site Inventory", "href": "/inventory/sites", "img": images["site_inventory"]},
+    ]
+    context = {"request": request, "items": items, "current_user": current_user}
+    return templates.TemplateResponse('show_pad_grid.html', context)
+
+
+@router.get('/inventory/consumables-order')
+async def consumables_order(request: Request, current_user=Depends(require_role("viewer"))):
+    context = {"request": request, "current_user": current_user}
+    return templates.TemplateResponse('consumables_order.html', context)
+
+
+@router.get('/inventory/end-of-show-consumables')
+async def end_show_consumables(request: Request, current_user=Depends(require_role("viewer"))):
+    context = {"request": request, "current_user": current_user}
+    return templates.TemplateResponse('end_show_consumables.html', context)
+
+
+@router.get('/inventory/reports')
+async def inventory_reports(
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("viewer")),
+):
+    images = {
+        "duplicate_checker": _get_tunable(db, "REPORT_DUPLICATE_CHECKER_IMAGE") or "",
+        "consumables_report": _get_tunable(db, "REPORT_CONSUMABLES_REPORT_IMAGE") or "",
+        "audit": _get_tunable(db, "REPORT_AUDIT_IMAGE") or "",
+        "current_kits": _get_tunable(db, "REPORT_CURRENT_KITS_IMAGE") or "",
+    }
+    items = [
+        {"label": "Duplicate Checker", "href": "/devices/duplicates", "img": images["duplicate_checker"]},
+        {"label": "Consumables Report", "href": "/inventory/consumables-report", "img": images["consumables_report"]},
+        {"label": "Audit", "href": "/inventory/audit", "img": images["audit"]},
+        {"label": "Current Kits", "href": "/inventory/current-kits", "img": images["current_kits"]},
+    ]
+    context = {"request": request, "items": items, "current_user": current_user}
+    return templates.TemplateResponse('reports_grid.html', context)
+
+
+@router.get('/inventory/consumables-report')
+async def consumables_report(request: Request, current_user=Depends(require_role("viewer"))):
+    context = {"request": request, "current_user": current_user}
+    return templates.TemplateResponse('consumables_report.html', context)
+
+
+@router.get('/inventory/current-kits')
+async def current_kits(request: Request, current_user=Depends(require_role("viewer"))):
+    context = {"request": request, "current_user": current_user}
+    return templates.TemplateResponse('current_kits.html', context)
