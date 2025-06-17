@@ -96,12 +96,12 @@
       <td class="actions-col text-right whitespace-nowrap no-resize">
         <div class="flex justify-end gap-1">
           {% if device.ssh_credential or personal_creds.get(device.id) %}
-          <a href="/ssh/port-config?device_id={{ device.id }}" title="View in Network Devices" aria-label="Live Config" class="icon-btn">{{ include_icon('eye') }}</a>
+          <a href="/ssh/port-config?device_id={{ device.id }}" title="View in Network Devices" aria-label="Live Config" class="icon-btn">{{ include_icon('eye', '', '5') }}</a>
           {% endif %}
           {% if current_user and current_user.role in ['editor','admin','superadmin'] %}
-          <a href="/devices/{{ device.id }}/edit" aria-label="Edit" class="icon-btn">{{ include_icon('pencil','text-blue-500','1.5') }}</a>
+          <a href="/devices/{{ device.id }}/edit" aria-label="Edit" class="icon-btn">{{ include_icon('pencil','text-blue-500','5') }}</a>
           <form method="post" action="/devices/{{ device.id }}/delete" class="inline">
-            <button type="submit" aria-label="Delete" class="icon-btn" onclick="return confirm('Delete device?')">{{ include_icon('trash-2','text-red-500','1.5') }}</button>
+            <button type="submit" aria-label="Delete" class="icon-btn" onclick="return confirm('Delete device?')">{{ include_icon('trash-2','text-red-500','5') }}</button>
           </form>
           {% endif %}
         </div>
@@ -132,7 +132,7 @@
       {% if column_prefs.status %}<td class="table-cell"></td>{% endif %}
       {% if column_prefs.tags %}<td class="table-cell"><input name="tag_names" class="w-full bg-[var(--input-bg)] text-[var(--input-text)] rounded" /></td>{% endif %}
       <td class="table-cell"></td>
-      <td class="actions-col text-right no-resize"><button type="button" @click="bulkUpdate" aria-label="Apply" class="icon-btn">{{ include_icon('check','text-green-500','1.5') }}</button></td>
+      <td class="actions-col text-right no-resize"><button type="button" @click="bulkUpdate" aria-label="Apply" class="icon-btn">{{ include_icon('check','text-green-500','5') }}</button></td>
     </tr>
   </tfoot>
 </table>
