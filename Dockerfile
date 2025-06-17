@@ -21,7 +21,7 @@ COPY . .
 RUN npm install
 
 # Build static assets
-RUN npm run build:css
+RUN npm run build:web
 
 RUN chmod +x start.sh init_db.sh
 
