@@ -2,13 +2,17 @@
 
 This document proposes an architecture where each site runs an independent local replica that synchronizes with a central cloud server. The local instances cache data and continue functioning if the connection to the cloud is lost.
 
+This document outlines the proposed design for Phase 6 of the project. The goal is to support optional cloud replication so that multiple sites can synchronize their data with a central server.
+
 ## Core Components
 
 - **Load Balancer** – distributes inbound traffic to multiple cloud API instances for high availability.
-- **Cloud API** – public FastAPI workers that expose authentication and synchronization endpoints.
+- **Cloud Server / API** – a public FastAPI service that aggregates data from many local servers and exposes authentication and synchronization endpoints.
 - **Central Database** – stores authoritative records. Rows include a `version` column so conflicts can be detected.
 - **Sync Gateway** – a background service that processes incoming batches from sites and sends back new updates.
 - **Local Replica** – an on-site FastAPI instance with its own database. Changes are queued in a local **worker queue** when offline.
+- **Background Sync Jobs** – workers that push changes from local sites to the cloud and pull updates down.
+- **Versioned Records** – database rows contain a monotonically increasing `version` field. Updates increment the version so conflicts can be detected.
 
 ## Data Flow and Resilience
 
@@ -33,9 +37,11 @@ This document proposes an architecture where each site runs an independent local
 </div>
 
 1. Local replicas queue updates in their worker queue.
-2. When connectivity allows, batches post to the cloud API via the load balancer.
-3. The sync gateway processes updates and replies with new records for the site.
-4. If the connection fails, the queue keeps retrying until the cloud is reachable.
+2. When connectivity allows, a periodic job posts batched updates to the cloud `/sync` API via the load balancer.
+3. The sync gateway processes updates and responds with any newer records for the site.
+4. If conflicts occur (matching IDs with different versions), the cloud marks the record as needing manual resolution.
+5. If the connection fails, the queue keeps retrying until the cloud is reachable.
+6. Mobile clients communicate with either the local or cloud server depending on connectivity.
 
 ## Failover and Reconciliation
 
@@ -48,4 +54,8 @@ This document proposes an architecture where each site runs an independent local
 - Sites connect to the cloud over HTTPS. The load balancer terminates TLS and forwards to API workers.
 - Local replicas retry requests with exponential backoff if the connection drops.
 - The sync protocol is designed for limited bandwidth so it transfers small deltas rather than entire records.
+
+## Deployment
+
+Docker Compose files will be provided for both local and cloud roles. Kubernetes manifests will follow the same pattern with dedicated deployments for the database and web application.
 
