@@ -204,6 +204,22 @@ def main():
                 data_type="text",
                 description="Deployed application version",
             ),
+            SystemTunable(
+                name="ALLOW_SELF_UPDATE",
+                value="true",
+                function="General",
+                file_type="application",
+                data_type="bool",
+                description="Allow updating the app from the UI",
+            ),
+            SystemTunable(
+                name="FORCE_REBOOT_ON_UPDATE",
+                value="false",
+                function="General",
+                file_type="application",
+                data_type="bool",
+                description="Reboot after update when system files change",
+            ),
         ]
         db.add_all(samples)
         db.commit()

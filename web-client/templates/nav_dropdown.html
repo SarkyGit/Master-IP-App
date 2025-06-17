@@ -41,6 +41,9 @@
         <a href="/tunables?category={{ cat | urlencode }}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">{{ cat }}</a>
         {% endfor %}
         <a href="/admin/logo" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Upload Logo</a>
+        {% if allow_self_update() %}
+        <a href="/admin/update" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Update System</a>
+        {% endif %}
         {% endif %}
         {% if current_user.role in ['admin','superadmin'] %}
           {% if current_user.role == 'superadmin' %}

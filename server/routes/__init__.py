@@ -33,6 +33,7 @@ from .internal.snmp_traps import router as snmp_traps_router
 from .internal.syslog import router as syslog_router
 from .ui.tag_manager import router as tag_manager_router
 from .ui.admin_logo import router as admin_logo_router
+from .ui.admin_update import router as admin_update_router
 from .api.devices import router as api_devices_router
 from .api.users import router as api_users_router
 from .api.vlans import router as api_vlans_router
@@ -76,6 +77,7 @@ __all__ = [
     "syslog_router",
     "tag_manager_router",
     "admin_logo_router",
+    "admin_update_router",
     "api_devices_router",
     "api_users_router",
     "api_vlans_router",

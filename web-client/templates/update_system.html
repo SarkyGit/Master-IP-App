@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-xl mb-4">Update System</h1>
+<p class="mb-2">Branch: {{ branch }}</p>
+<p class="mb-2">Current Commit: {{ commit }}</p>
+{% if update_available %}
+<p class="mb-2 text-green-600">Update available (remote {{ remote }})</p>
+{% else %}
+<p class="mb-2">System is up to date.</p>
+{% endif %}
+{% if unsynced %}
+<p class="text-red-600 mb-2">Unsynced local data detected. Please sync with the cloud before updating.</p>
+{% endif %}
+<button hx-post="/admin/update" hx-target="#modal" hx-swap="innerHTML" class="btn" {% if unsynced %}disabled{% endif %}>Update to latest version</button>
+{% endblock %}
