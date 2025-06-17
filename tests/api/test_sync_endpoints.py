@@ -55,6 +55,7 @@ class DummyDB:
                     version=1,
                 )
             ],
+            models.SiteKey: [models.SiteKey(site_id="1", site_name="test", api_key="key", active=True)],
         }
 
     def query(self, model):
@@ -152,7 +153,8 @@ def test_push_valid_update_and_conflict(client_cloud):
             },
         ]
     }
-    resp = client_cloud.post("/api/v1/sync/push", json=payload)
+    headers = {"Site-ID": "1", "API-Key": "key"}
+    resp = client_cloud.post("/api/v1/sync/push", json=payload, headers=headers)
     assert resp.status_code == 200
     data = resp.json()
     assert data["accepted"] == 2
@@ -166,22 +168,25 @@ def test_push_valid_update_and_conflict(client_cloud):
 @pytest.mark.integration
 def test_push_missing_fields(client_cloud):
     payload = {"records": [{"model": client_cloud.db.models.User.__tablename__, "id": 1}]}
-    resp = client_cloud.post("/api/v1/sync/push", json=payload)
+    headers = {"Site-ID": "1", "API-Key": "key"}
+    resp = client_cloud.post("/api/v1/sync/push", json=payload, headers=headers)
     assert resp.status_code == 200
     assert resp.json()["skipped"] == 1
 
 
 @pytest.mark.integration
 def test_push_invalid_model(client_cloud):
-    resp = client_cloud.post("/api/v1/sync/push", json={"records": [{"model": "bad"}]})
+    headers = {"Site-ID": "1", "API-Key": "key"}
+    resp = client_cloud.post("/api/v1/sync/push", json={"records": [{"model": "bad"}]}, headers=headers)
     assert resp.status_code == 400
 
 
 @pytest.mark.integration
 def test_pull_endpoint_cloud(client_cloud):
     ts = datetime.now(timezone.utc).isoformat()
+    headers = {"Site-ID": "1", "API-Key": "key"}
     resp = client_cloud.post(
-        "/api/v1/sync/pull", json={"since": ts, "models": [client_cloud.db.models.User.__tablename__]}
+        "/api/v1/sync/pull", json={"since": ts, "models": [client_cloud.db.models.User.__tablename__]}, headers=headers
     )
     assert resp.status_code == 200
 
@@ -190,8 +195,10 @@ def test_pull_endpoint_cloud(client_cloud):
 @pytest.mark.cloud_only
 def test_pull_endpoint_hidden_in_local_role(client_local):
     ts = datetime.now(timezone.utc).isoformat()
+    headers = {"Site-ID": "1", "API-Key": "key"}
     resp = client_local.post(
         "/api/v1/sync/pull",
         json={"since": ts, "models": [client_local.db.models.User.__tablename__]},
+        headers=headers,
     )
     assert resp.status_code == 404

@@ -9,6 +9,7 @@ from core.models import models as model_module
 from core.utils.versioning import apply_update
 
 from core.utils.db_session import get_db
+from core.utils.site_auth import validate_site_key
 
 router = APIRouter(prefix="/api/v1/sync", tags=["sync"])
 
@@ -16,6 +17,7 @@ router = APIRouter(prefix="/api/v1/sync", tags=["sync"])
 async def sync_payload(
     payload: dict[str, Any] = Body(...),
     db: Session = Depends(get_db),
+    key=Depends(validate_site_key),
 ):
     """Accept a batch of updates for multiple models."""
     if not isinstance(payload, dict):
@@ -73,6 +75,7 @@ async def sync_payload(
 async def push_changes(
     payload: dict[str, Any] = Body(...),
     db: Session = Depends(get_db),
+    key=Depends(validate_site_key),
 ):
     """Receive a batch of updates from another site."""
     log = logging.getLogger(__name__)
@@ -158,6 +161,7 @@ async def push_changes(
 async def pull_changes(
     payload: dict[str, Any] = Body(...),
     db: Session = Depends(get_db),
+    key=Depends(validate_site_key),
 ):
     """Return records updated since the provided timestamp."""
     log = logging.getLogger(__name__)
@@ -167,7 +171,6 @@ async def pull_changes(
 
     since_str = payload.get("since")
     models = payload.get("models")
-    site_id = payload.get("site_id")
 
     if not since_str or not isinstance(models, list):
         raise HTTPException(status_code=400, detail="Missing since or models")
@@ -202,8 +205,8 @@ async def pull_changes(
         else:
             continue  # no timestamp columns to filter
 
-        if site_id is not None and hasattr(model_cls, "site_id"):
-            query = query.filter(getattr(model_cls, "site_id") == site_id)
+        if hasattr(model_cls, "site_id"):
+            query = query.filter(getattr(model_cls, "site_id") == key.site_id)
 
         for obj in query.all():
             data = {c.key: getattr(obj, c.key) for c in insp.mapper.column_attrs}

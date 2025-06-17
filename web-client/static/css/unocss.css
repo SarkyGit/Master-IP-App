@@ -68,9 +68,10 @@
 .w-\[10rem\]{width:10rem;}
 .w-\[21\.5rem\]{width:21.5rem;}
 .w-\[6\.5rem\]{width:6.5rem;}
+.w-\[6rem\],
+.w-24{width:6rem;}
 .w-1\/2{width:50%;}
 .w-16{width:4rem;}
-.w-24{width:6rem;}
 .w-32{width:8rem;}
 .w-48{width:12rem;}
 .w-96{width:24rem;}

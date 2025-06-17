@@ -35,7 +35,10 @@ class DummyDB:
         with mock.patch("sqlalchemy.create_engine"), mock.patch("sqlalchemy.schema.MetaData.create_all"):
             models = importlib.import_module("core.models.models")
         self.models = models
-        self.data = {models.ConnectedSite: []}
+        self.data = {
+            models.ConnectedSite: [],
+            models.SiteKey: [models.SiteKey(site_id="A", site_name="Test", api_key="key", active=True)],
+        }
 
     def query(self, model):
         return DummyQuery(self.data.get(model, []))
@@ -103,10 +106,11 @@ def test_register_site_upserts():
         "sync_status": "enabled",
         "last_update_status": "ok",
     }
-    resp = client.post("/api/v1/register-site", json=payload)
+    headers = {"Site-ID": "A", "API-Key": "key"}
+    resp = client.post("/api/v1/register-site", json=payload, headers=headers)
     assert resp.status_code == 200
     assert len(db.data[models.ConnectedSite]) == 1
-    resp = client.post("/api/v1/register-site", json=payload)
+    resp = client.post("/api/v1/register-site", json=payload, headers=headers)
     assert resp.status_code == 200
     assert len(db.data[models.ConnectedSite]) == 1
     client.app.dependency_overrides[key] = override_get_db

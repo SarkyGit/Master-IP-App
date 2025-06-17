@@ -5,6 +5,7 @@ import logging
 
 from core.utils.db_session import get_db
 from core.models.models import ConnectedSite
+from core.utils.site_auth import validate_site_key
 
 router = APIRouter(prefix="/api/v1", tags=["cloud"])
 
@@ -14,8 +15,9 @@ async def register_site(
     request: Request,
     payload: dict = Body(...),
     db: Session = Depends(get_db),
+    key=Depends(validate_site_key),
 ):
-    site_id = payload.get("site_id")
+    site_id = key.site_id
     if not site_id:
         raise HTTPException(status_code=400, detail="Missing site_id")
     ip = request.headers.get("x-forwarded-for") or (request.client.host if request.client else "")

@@ -39,6 +39,7 @@ def test_cloud_role_disables_workers_and_mounts_routes():
     resp = client.post(
         "/api/v1/sync/pull",
         json={"since": ts, "models": ["users"]},
+        headers={"Site-ID": "1", "API-Key": "key"},
     )
     assert resp.status_code == 200
     client.__exit__(None, None, None)
@@ -49,6 +50,6 @@ def test_local_role_starts_workers_and_hides_sync_routes():
     assert start_push.called
     assert start_pull.called
     ts = datetime.now(timezone.utc).isoformat()
-    resp = client.post("/api/v1/sync/pull", json={"since": ts, "models": ["users"]})
+    resp = client.post("/api/v1/sync/pull", json={"since": ts, "models": ["users"]}, headers={"Site-ID": "1", "API-Key": "key"})
     assert resp.status_code == 404
     client.__exit__(None, None, None)

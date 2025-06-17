@@ -227,6 +227,10 @@ async def send_site_summaries():
 
 def start_config_scheduler() -> None:
     """Start the APScheduler and schedule device tasks."""
+    try:
+        asyncio.get_running_loop()
+    except RuntimeError:
+        return
     scheduler.start()
     db = SessionLocal()
     devices = (
@@ -268,7 +272,7 @@ def start_config_scheduler() -> None:
 
 def stop_config_scheduler() -> None:
     if scheduler.running:
-        scheduler.shutdown(wait=True)
+        scheduler.shutdown(wait=False)
 
 
 async def main():

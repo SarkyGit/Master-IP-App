@@ -517,3 +517,17 @@ class ConnectedSite(Base):
         default=datetime.now(timezone.utc),
         onupdate=datetime.now(timezone.utc),
     )
+
+
+class SiteKey(Base):
+    """API key used by local sites to authenticate with the cloud."""
+
+    __tablename__ = "site_keys"
+
+    id = Column(Integer, primary_key=True)
+    site_id = Column(String, unique=True, nullable=False)
+    site_name = Column(String, nullable=False)
+    api_key = Column(String, nullable=False)
+    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    last_used_at = Column(DateTime(timezone=True), nullable=True)
+    active = Column(Boolean, default=True)

@@ -55,6 +55,7 @@ class DummyDB:
                     version=1,
                 ),
             ],
+            models.SiteKey: [models.SiteKey(site_id="1", site_name="test", api_key="key", active=True)],
         }
 
     def query(self, model):
@@ -134,7 +135,8 @@ def test_push_updates_version_and_records(client_cloud):
             }
         ]
     }
-    resp = client_cloud.post("/api/v1/sync/push", json=payload)
+    headers = {"Site-ID": "1", "API-Key": "key"}
+    resp = client_cloud.post("/api/v1/sync/push", json=payload, headers=headers)
     assert resp.status_code == 200
     data = resp.json()
     assert data["accepted"] == 1
@@ -166,7 +168,8 @@ def test_push_conflict_and_skip(client_cloud):
             },
         ]
     }
-    resp = client_cloud.post("/api/v1/sync/push", json=payload)
+    headers = {"Site-ID": "1", "API-Key": "key"}
+    resp = client_cloud.post("/api/v1/sync/push", json=payload, headers=headers)
     assert resp.status_code == 200
     data = resp.json()
     assert data["accepted"] == 0
@@ -179,8 +182,9 @@ def test_push_conflict_and_skip(client_cloud):
 
 def test_pull_endpoint_cloud(client_cloud):
     ts = datetime.now(timezone.utc).isoformat()
+    headers = {"Site-ID": "1", "API-Key": "key"}
     resp = client_cloud.post(
-        "/api/v1/sync/pull", json={"since": ts, "models": ["users"]}
+        "/api/v1/sync/pull", json={"since": ts, "models": ["users"]}, headers=headers
     )
     assert resp.status_code == 200
     assert isinstance(resp.json(), list)
@@ -188,7 +192,8 @@ def test_pull_endpoint_cloud(client_cloud):
 
 def test_pull_endpoint_hidden_in_local_role(client_local):
     ts = datetime.now(timezone.utc).isoformat()
+    headers = {"Site-ID": "1", "API-Key": "key"}
     resp = client_local.post(
-        "/api/v1/sync/pull", json={"since": ts, "models": ["users"]}
+        "/api/v1/sync/pull", json={"since": ts, "models": ["users"]}, headers=headers
     )
     assert resp.status_code == 404
