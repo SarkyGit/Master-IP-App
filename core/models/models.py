@@ -72,6 +72,8 @@ class DeviceType(Base):
     version = Column(Integer, default=1, nullable=False)
     conflict_data = Column(JSON, nullable=True)
     name = Column(String, unique=True, nullable=False)
+    upload_icon = Column(String, nullable=True)
+    upload_image = Column(String, nullable=True)
 
     devices = relationship("Device", back_populates="device_type")
 

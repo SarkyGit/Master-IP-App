@@ -80,7 +80,7 @@ TEMPLATE_OPTIONS = [
 ]
 
 
-@router.get("/devices")
+@router.get("/devices/table")
 async def list_devices(
     request: Request,
     sort: str | None = None,
@@ -148,6 +148,19 @@ async def list_devices(
     return templates.TemplateResponse("device_list.html", context)
 
 
+@router.get("/devices")
+async def devices_grid(
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    if not current_user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    types = db.query(DeviceType).all()
+    context = {"request": request, "types": types, "current_user": current_user}
+    return templates.TemplateResponse("devices_grid.html", context)
+
+
 @router.get("/devices/column-prefs")
 async def device_column_prefs(
     request: Request,
@@ -191,7 +204,7 @@ async def save_device_column_prefs(
     db.commit()
     if request.headers.get("HX-Request"):
         return HTMLResponse("", status_code=204)
-    return RedirectResponse(url="/devices", status_code=302)
+    return RedirectResponse(url="/devices/table", status_code=302)
 
 
 @router.get("/devices/duplicates")
@@ -436,7 +449,7 @@ async def create_device(
     db.commit()
     if device.site_id is not None and device.config_pull_interval != "none":
         schedule_device_config_pull(device)
-    return RedirectResponse(url="/devices", status_code=302)
+    return RedirectResponse(url="/devices/table", status_code=302)
 
 
 @router.get("/devices/{device_id}/edit")
@@ -614,7 +627,7 @@ async def update_device(
         )
         db.commit()
 
-    return RedirectResponse(url="/devices", status_code=302)
+    return RedirectResponse(url="/devices/table", status_code=302)
 
 
 @router.post("/devices/{device_id}/damage")
@@ -657,7 +670,7 @@ async def delete_device(
     unschedule_device_config_pull(device.id)
     db.delete(device)
     db.commit()
-    return RedirectResponse(url="/devices", status_code=302)
+    return RedirectResponse(url="/devices/table", status_code=302)
 
 
 @router.post("/devices/bulk-delete")
@@ -672,7 +685,7 @@ async def bulk_delete_devices(
             unschedule_device_config_pull(device.id)
             db.delete(device)
     db.commit()
-    return RedirectResponse(url="/devices", status_code=302)
+    return RedirectResponse(url="/devices/table", status_code=302)
 
 
 @router.post("/devices/{device_id}/pull-config")
@@ -690,7 +703,7 @@ async def pull_device_config(
     cred, _ = resolve_ssh_credential(db, device, current_user)
     if not cred:
         return RedirectResponse(
-            url="/devices?message=No+SSH+credentials", status_code=302
+            url="/devices/table?message=No+SSH+credentials", status_code=302
         )
 
     conn_kwargs = build_conn_kwargs(cred)
@@ -707,7 +720,7 @@ async def pull_device_config(
     except Exception as exc:
         log_audit(db, current_user, "debug", device, f"SSH pull error: {exc}")
         return RedirectResponse(
-            url=f"/devices?message=SSH+error:+{str(exc)}", status_code=302
+            url=f"/devices/table?message=SSH+error:+{str(exc)}", status_code=302
         )
 
     backup = ConfigBackup(device_id=device.id, source="ssh", config_text=output)
@@ -733,7 +746,7 @@ async def pull_device_config(
             log_audit(db, current_user, "delete", device, f"Deleted backup {old.id}")
         db.commit()
 
-    return RedirectResponse(url="/devices?message=Config+pulled", status_code=302)
+    return RedirectResponse(url="/devices/table?message=Config+pulled", status_code=302)
 
 
 @router.get("/devices/{device_id}/push-config")
@@ -829,7 +842,7 @@ async def push_device_config(
         db.commit()
 
     message = "Config+pushed" if success else "Config+queued"
-    return RedirectResponse(url=f"/devices?message={message}", status_code=302)
+    return RedirectResponse(url=f"/devices/table?message={message}", status_code=302)
 
 
 @router.get("/devices/{device_id}/template-config")

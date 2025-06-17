@@ -178,12 +178,16 @@ class TagUpdate(BaseModel):
 
 class DeviceTypeBase(BaseSchema):
     name: str
+    upload_icon: str | None = None
+    upload_image: str | None = None
 
 
 class DeviceTypeCreate(BaseModel):
     name: str
     version: int = Field(1, ge=1)
     conflict_data: list[ConflictEntry] | None = None
+    upload_icon: str | None = None
+    upload_image: str | None = None
 
 
 class DeviceTypeRead(DeviceTypeBase):
@@ -197,6 +201,8 @@ class DeviceTypeUpdate(BaseModel):
     name: str | None = None
     version: int | None = Field(None, ge=1)
     conflict_data: list[ConflictEntry] | None = None
+    upload_icon: str | None = None
+    upload_image: str | None = None
 
 
 class LocationBase(BaseSchema):
