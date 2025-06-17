@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="text-xl mb-4">Step 2: Server Settings</h1>
+<form method="post" action="/install/step2" class="space-y-4">
+  <input type="text" name="server_name" placeholder="Server Name" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" required>
+  <input type="text" name="site_id" placeholder="Site ID" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" required>
+  <input type="text" name="timezone" placeholder="Timezone" value="UTC" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" required>
+  <input type="text" name="database_url" placeholder="Database URL" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" required>
+  <input type="text" name="secret_key" placeholder="Secret Key" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" required>
+  <button type="submit" aria-label="Next" class="p-2 rounded transition">{{ include_icon('chevron-right') }}</button>
+</form>
+{% endblock %}

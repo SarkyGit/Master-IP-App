@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Request, WebSocket, Depends, HTTPException
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 
 from starlette.middleware.sessions import SessionMiddleware
 try:
@@ -45,6 +45,7 @@ from server.routes import (
     api_users_router,
     api_vlans_router,
     api_ssh_credentials_router,
+    install_router,
 )
 from server.routes.api.sync import router as api_sync_router
 from server.routes.ui.sync_diagnostics import router as sync_diagnostics_router
@@ -62,6 +63,29 @@ from server.workers.cloud_sync import start_cloud_sync, stop_cloud_sync
 from server.workers.sync_push_worker import start_sync_push_worker, stop_sync_push_worker
 from server.workers.sync_pull_worker import start_sync_pull_worker, stop_sync_pull_worker
 from core.utils.templates import templates
+from core.utils.db_session import engine, SessionLocal
+from core.models.models import SystemTunable
+
+
+def check_install_required() -> bool:
+    if not os.path.exists(".env") and not os.environ.get("DATABASE_URL"):
+        return True
+    required = ["DATABASE_URL"]
+    if any(not os.environ.get(k) for k in required):
+        return True
+    if engine is None:
+        return True
+    try:
+        db = SessionLocal()
+        count = db.query(SystemTunable).count()
+        db.close()
+        return count == 0
+    except Exception:
+        # If database is unavailable assume installation already performed
+        return False
+
+
+INSTALL_REQUIRED = check_install_required()
 
 # Allow deploying the app under a URL prefix by setting ROOT_PATH.
 app = FastAPI()
@@ -69,7 +93,14 @@ app = FastAPI()
 # correct scheme when behind a reverse proxy.
 app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
 
-if settings.role == "local":
+
+@app.middleware("http")
+async def install_redirect(request: Request, call_next):
+    if INSTALL_REQUIRED and not request.url.path.startswith("/install") and not request.url.path.startswith("/static"):
+        return RedirectResponse("/install")
+    return await call_next(request)
+
+if settings.role == "local" and not INSTALL_REQUIRED:
     if settings.enable_background_workers:
         start_queue_worker(app)
         start_config_scheduler(app)
@@ -85,7 +116,7 @@ if settings.role == "local":
 
 @app.on_event("shutdown")
 async def shutdown_cleanup():
-    if settings.role == "local":
+    if settings.role == "local" and not INSTALL_REQUIRED:
         await stop_queue_worker()
         stop_config_scheduler()
         await stop_cloud_sync()
@@ -105,9 +136,10 @@ os.makedirs(STATIC_DIR, exist_ok=True)
 # debugging misconfigured deployments where files may not be found.
 print(f"Serving static files from: {STATIC_DIR}")
 print(f"Application role: {settings.role}")
+print(f"Install required: {INSTALL_REQUIRED}")
 if settings.role == "cloud":
     print("Cloud mode: sync API routes enabled")
-else:
+elif not INSTALL_REQUIRED:
     print(f"Background workers enabled: {settings.enable_background_workers}")
     print(f"Cloud sync worker enabled: {settings.enable_cloud_sync}")
     print(f"Sync push worker enabled: {settings.enable_sync_push_worker}")
@@ -123,6 +155,7 @@ app.add_middleware(
     max_age=int(os.environ.get("SESSION_TTL", "43200")),
 )
 
+app.include_router(install_router)
 app.include_router(auth_router, prefix="/auth")
 app.include_router(devices_router)
 app.include_router(vlans_router)
