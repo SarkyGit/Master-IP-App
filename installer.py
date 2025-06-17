@@ -166,7 +166,10 @@ def install():
         run("systemctl reload nginx")
 
     run("./init_db.sh")
-    run("./start.sh")
+    try:
+        run("./start.sh")
+    except KeyboardInterrupt:
+        print("Start script interrupted; exiting installer")
 
     print("Installation complete.")
 
