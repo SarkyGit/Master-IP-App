@@ -118,8 +118,9 @@ def test_pull_once_updates_and_inserts(monkeypatch):
     ]
 
     monkeypatch.setattr(sync_pull_worker, "SessionLocal", lambda: db)
+    monkeypatch.setattr(sync_pull_worker, "_get_sync_config", lambda: ("http://push", "http://pull", ""))
 
-    async def fake_fetch(url, payload, log):
+    async def fake_fetch(url, payload, log, api_key):
         return sample
 
     monkeypatch.setattr(sync_pull_worker, "_fetch_with_retry", fake_fetch)
