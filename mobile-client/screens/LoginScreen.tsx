@@ -34,7 +34,7 @@ export default function LoginScreen() {
         onChangeText={setPassword}
       />
       {error && <Text style={styles.error}>{error}</Text>}
-      <Button title="Login" onPress={handleLogin} />
+      <Button title="Login" color="#f97316" onPress={handleLogin} />
     </View>
   );
 }
@@ -44,15 +44,19 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 16,
+    backgroundColor: '#000',
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: '#14b8a6',
+    backgroundColor: '#1f2937',
+    color: '#f9fafb',
     padding: 8,
     marginBottom: 12,
+    borderRadius: 4,
   },
   error: {
-    color: 'red',
+    color: '#ec4899',
     marginBottom: 12,
     textAlign: 'center',
   },
