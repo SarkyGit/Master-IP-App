@@ -57,6 +57,8 @@ class Location(Base):
     __tablename__ = "locations"
 
     id = Column(Integer, primary_key=True)
+    version = Column(Integer, default=1, nullable=False)
+    conflict_data = Column(JSON, nullable=True)
     name = Column(String, unique=True, nullable=False)
     location_type = Column(String, nullable=False, default="Fixed")
 
@@ -67,6 +69,8 @@ class DeviceType(Base):
     __tablename__ = "device_types"
 
     id = Column(Integer, primary_key=True)
+    version = Column(Integer, default=1, nullable=False)
+    conflict_data = Column(JSON, nullable=True)
     name = Column(String, unique=True, nullable=False)
 
     devices = relationship("Device", back_populates="device_type")
@@ -76,6 +80,8 @@ class Site(Base):
     __tablename__ = "sites"
 
     id = Column(Integer, primary_key=True)
+    version = Column(Integer, default=1, nullable=False)
+    conflict_data = Column(JSON, nullable=True)
     name = Column(String, unique=True, nullable=False)
     description = Column(Text, nullable=True)
     created_by_id = Column(Integer, ForeignKey("users.id"), nullable=True)
@@ -108,6 +114,8 @@ class Tag(Base):
     __tablename__ = "tags"
 
     id = Column(Integer, primary_key=True)
+    version = Column(Integer, default=1, nullable=False)
+    conflict_data = Column(JSON, nullable=True)
     name = Column(String, unique=True, nullable=False)
 
     devices = relationship("Device", secondary=device_tags, back_populates="tags")

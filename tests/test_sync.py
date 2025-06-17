@@ -82,10 +82,33 @@ app.dependency_overrides[importlib.import_module("core.utils.db_session").get_db
 client = TestClient(app)
 
 
-def test_sync_endpoint_accepts_payload():
-    resp = client.post("/api/v1/sync", json={"devices": []})
+def test_sync_endpoint_processes_payload():
+    payload = {
+        "users": [
+            {
+                "id": 2,
+                "email": "new@example.com",
+                "hashed_password": "x",
+                "role": "viewer",
+                "is_active": True,
+                "version": 1,
+            },
+            {
+                "id": 1,
+                "email": "admin@example.com",
+                "hashed_password": "x",
+                "role": "admin",
+                "is_active": True,
+                "version": 0,
+            },
+        ]
+    }
+    resp = client.post("/api/v1/sync", json=payload)
     assert resp.status_code == 200
-    assert resp.json()["status"] == "received"
+    data = resp.json()
+    assert data["accepted"] == 1
+    assert data["conflicts"] == 1
+    assert data["skipped"] == 0
 
 
 def test_sync_push_endpoint():

@@ -1,6 +1,6 @@
 # Mobile Client
 
-This directory contains a lightweight React Native application using Expo. It performs a simple health check against the FastAPI server on launch.
+This directory contains a lightweight React Native application built with Expo. It allows logging in to the API server and viewing devices.
 
 ## Setup
 
@@ -18,4 +18,4 @@ This directory contains a lightweight React Native application using Expo. It pe
    npm start
    ```
 
-Use an Android or iOS emulator, or the Expo Go app on a device connected to the same LAN, to open the project. The home screen will display whether the API server responded to `/api/ping`.
+Use an Android or iOS emulator, or the Expo Go app on a device connected to the same LAN, to open the project. After logging in you can browse the device list which is loaded from the FastAPI `/api/v1/devices` endpoint.
