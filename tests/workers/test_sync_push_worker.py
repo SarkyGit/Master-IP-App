@@ -119,8 +119,7 @@ def test_push_once_sends_unsynced_records(monkeypatch):
 
 
 @pytest.mark.unit
-@pytest.mark.asyncio
-async def test_request_with_retry_retries(monkeypatch):
+def test_request_with_retry_retries(monkeypatch):
     calls = []
 
     class FakeClient:
@@ -143,5 +142,5 @@ async def test_request_with_retry_retries(monkeypatch):
 
     monkeypatch.setattr(httpx, "AsyncClient", lambda timeout=None: FakeClient())
     log = mock.Mock()
-    await cloud_sync._request_with_retry("POST", "http://example", {}, log, "key")
+    asyncio.run(cloud_sync._request_with_retry("POST", "http://example", {}, log, "site1", "key"))
     assert len(calls) == 2
