@@ -346,7 +346,8 @@ The application reads several options from the environment. Important variables 
 ## Nginx reverse proxy with SSL
 
 Install Nginx on the host and create a server block that proxies requests to
-the Gunicorn/Uvicorn backend. A minimal configuration looks like this:
+the Gunicorn/Uvicorn backend. Save the following block as
+`/etc/nginx/sites-available/master-ip-app`:
 
 ```nginx
 server {
@@ -367,7 +368,7 @@ server {
 }
 ```
 
-Enable the configuration and reload Nginx:
+Enable the configuration by linking it into `sites-enabled` and reload Nginx:
 
 ```bash
 sudo ln -s /etc/nginx/sites-available/master-ip-app \
