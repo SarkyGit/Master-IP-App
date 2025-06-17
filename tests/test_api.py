@@ -6,7 +6,7 @@ from fastapi.testclient import TestClient
 import pytest
 
 
-def get_test_app():
+def get_test_client():
     os.environ.setdefault("DATABASE_URL", "postgresql://user:pass@localhost/test")
     for m in list(sys.modules):
         if m.startswith("server"):
@@ -20,7 +20,10 @@ def get_test_app():
          mock.patch("server.workers.sync_push_worker.start_sync_push_worker"), \
          mock.patch("server.workers.sync_pull_worker.start_sync_pull_worker"), \
          mock.patch("server.workers.cloud_sync.start_cloud_sync"):
-        return importlib.import_module("server.main").app
+        app = importlib.import_module("server.main").app
+        client = TestClient(app)
+        client.app.dependency_overrides[importlib.import_module("core.utils.db_session").get_db] = override_get_db
+        return client
 
 
 class DummyQuery:
@@ -107,10 +110,7 @@ def override_get_db():
         pass
 
 
-app = get_test_app()
-app.dependency_overrides[importlib.import_module("core.utils.db_session").get_db] = override_get_db
-
-client = TestClient(app)
+client = get_test_client()
 
 
 def _token():

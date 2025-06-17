@@ -1,5 +1,5 @@
 import asyncio
-from datetime import datetime
+from datetime import datetime, timezone
 import os
 from aiosnmp import SnmpV2TrapServer
 from aiosnmp.snmp import SnmpMessage
@@ -37,7 +37,7 @@ async def _trap_handler(host, port, message):
     db = SessionLocal()
     device = db.query(Device).filter(Device.ip == host).first()
     log = SNMPTrapLog(
-        timestamp=datetime.utcnow(),
+        timestamp=datetime.now(timezone.utc),
         source_ip=host,
         trap_oid=trap_oid,
         message=text,
@@ -72,11 +72,10 @@ def trap_listener_running() -> bool:
     return _trap_running
 
 
-def setup_trap_listener(app):
-    @app.on_event("startup")
-    async def _start():
-        if os.environ.get("ENABLE_TRAP_LISTENER") == "1":
-            await start_trap_listener()
+def setup_trap_listener() -> None:
+    """Start the trap listener if enabled."""
+    if os.environ.get("ENABLE_TRAP_LISTENER") == "1":
+        asyncio.create_task(start_trap_listener())
 
 
 async def main():

@@ -1,5 +1,5 @@
 from collections import defaultdict, deque
-from datetime import datetime, timedelta
+from datetime import datetime, timezone, timedelta
 from sqlalchemy.orm import Session
 
 from core.models.models import BannedIP
@@ -25,14 +25,14 @@ def _prune(queue: deque, window: timedelta, now: datetime) -> None:
 def check_ban(db: Session, ip: str) -> bool:
     """Return True if IP is currently banned."""
     record = db.query(BannedIP).filter(BannedIP.ip_address == ip).first()
-    if record and record.banned_until and record.banned_until > datetime.utcnow():
+    if record and record.banned_until and record.banned_until > datetime.now(timezone.utc):
         return True
     return False
 
 
 def record_failure(db: Session, ip: str) -> bool:
     """Record a failed login attempt and return True if a ban was triggered."""
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     short_q = _FAILED_SHORT[ip]
     long_q = _FAILED_LONG[ip]
     _prune(short_q, SHORT_WINDOW, now)
@@ -45,7 +45,7 @@ def record_failure(db: Session, ip: str) -> bool:
         record = BannedIP(
             ip_address=ip,
             ban_reason="",
-            banned_until=datetime.utcnow(),
+            banned_until=datetime.now(timezone.utc),
             attempt_count=0,
         )
         db.add(record)

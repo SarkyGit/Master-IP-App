@@ -1,5 +1,5 @@
 import asyncio
-from datetime import datetime, timedelta
+from datetime import datetime, timezone, timedelta
 from collections import defaultdict
 import asyncssh
 import os
@@ -38,7 +38,7 @@ INTERVAL_MAP = {
 
 def cleanup_port_history():
     db = SessionLocal()
-    cutoff = datetime.utcnow() - timedelta(days=PORT_HISTORY_RETENTION_DAYS)
+    cutoff = datetime.now(timezone.utc) - timedelta(days=PORT_HISTORY_RETENTION_DAYS)
     db.query(PortStatusHistory).filter(PortStatusHistory.timestamp < cutoff).delete()
     db.commit()
     db.close()
@@ -61,8 +61,8 @@ async def run_config_pull(device_id: int):
             await detect_ssh_platform(db, device, conn)
             result = await conn.run("show running-config", check=False)
             output = result.stdout
-            device.last_seen = datetime.utcnow()
-            device.last_config_pull = datetime.utcnow()
+            device.last_seen = datetime.now(timezone.utc)
+            device.last_config_pull = datetime.now(timezone.utc)
             backup = ConfigBackup(
                 device_id=device.id,
                 source="scheduled",
@@ -132,7 +132,7 @@ async def _poll_device_snmp_status(db, device: Device) -> None:
     except Exception:
         device.snmp_reachable = False
         device.uptime_seconds = None
-    device.last_snmp_check = datetime.utcnow()
+    device.last_snmp_check = datetime.now(timezone.utc)
     db.commit()
 
 
@@ -146,7 +146,7 @@ async def poll_all_device_status() -> None:
 
 async def send_site_summaries():
     db = SessionLocal()
-    since = datetime.utcnow() - timedelta(days=1)
+    since = datetime.now(timezone.utc) - timedelta(days=1)
     sites = db.query(Site).all()
     template = templates.env.get_template("email_summary.txt")
 
@@ -210,7 +210,7 @@ async def send_site_summaries():
         if not recipients:
             continue
 
-        body = template.render(site=site, rows=rows, date_sent=datetime.utcnow())
+        body = template.render(site=site, rows=rows, date_sent=datetime.now(timezone.utc))
         success, error = send_email(recipients, f"Config Changes for {site.name}", body)
 
         log_entry = EmailLog(
@@ -225,46 +225,45 @@ async def send_site_summaries():
     db.close()
 
 
-def start_config_scheduler(app):
-    @app.on_event("startup")
-    async def start_sched():
-        scheduler.start()
-        db = SessionLocal()
-        devices = (
-            db.query(Device)
-            .filter(
-                Device.site_id.is_not(None),
-                Device.config_pull_interval != "none",
-            )
-            .all()
+def start_config_scheduler() -> None:
+    """Start the APScheduler and schedule device tasks."""
+    scheduler.start()
+    db = SessionLocal()
+    devices = (
+        db.query(Device)
+        .filter(
+            Device.site_id.is_not(None),
+            Device.config_pull_interval != "none",
         )
-        for dev in devices:
-            schedule_device_config_pull(dev)
-        db.close()
+        .all()
+    )
+    for dev in devices:
+        schedule_device_config_pull(dev)
+    db.close()
 
-        scheduler.add_job(
-            send_site_summaries,
-            trigger="cron",
-            hour=0,
-            id="daily_site_summary",
-            replace_existing=True,
-        )
+    scheduler.add_job(
+        send_site_summaries,
+        trigger="cron",
+        hour=0,
+        id="daily_site_summary",
+        replace_existing=True,
+    )
 
-        scheduler.add_job(
-            cleanup_port_history,
-            trigger="cron",
-            hour=3,
-            id="cleanup_port_history",
-            replace_existing=True,
-        )
+    scheduler.add_job(
+        cleanup_port_history,
+        trigger="cron",
+        hour=3,
+        id="cleanup_port_history",
+        replace_existing=True,
+    )
 
-        scheduler.add_job(
-            poll_all_device_status,
-            trigger="interval",
-            minutes=30,
-            id="snmp_status_poll",
-            replace_existing=True,
-        )
+    scheduler.add_job(
+        poll_all_device_status,
+        trigger="interval",
+        minutes=30,
+        id="snmp_status_poll",
+        replace_existing=True,
+    )
 
 
 def stop_config_scheduler() -> None:

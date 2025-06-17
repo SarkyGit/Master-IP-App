@@ -1,5 +1,5 @@
 import asyncio
-from datetime import datetime
+from datetime import datetime, timezone
 import asyncssh
 import os
 
@@ -34,7 +34,7 @@ async def run_push_queue_once():
                 await session.wait_closed()
             backup.queued = False
             backup.status = "pushed"
-            backup.created_at = datetime.utcnow()
+            backup.created_at = datetime.now(timezone.utc)
             log_audit(db, None, "push", device, f"Queued config pushed to {device.ip}")
         except Exception as exc:
             backup.status = "pending"
@@ -52,11 +52,10 @@ async def queue_worker():
         await asyncio.sleep(QUEUE_INTERVAL)
 
 
-def start_queue_worker(app):
-    @app.on_event("startup")
-    async def start_worker():
-        global _queue_worker_task
-        _queue_worker_task = asyncio.create_task(queue_worker())
+def start_queue_worker() -> None:
+    """Launch the push queue worker in the background."""
+    global _queue_worker_task
+    _queue_worker_task = asyncio.create_task(queue_worker())
 
 
 async def stop_queue_worker():

@@ -1,7 +1,7 @@
 import asyncio
 import logging
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 import httpx
@@ -33,7 +33,7 @@ def _load_last_sync(db: Session) -> datetime:
 
 
 def _update_last_sync(db: Session) -> None:
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     entry = db.query(SystemTunable).filter(SystemTunable.name == "Last Sync Pull Worker").first()
     if entry:
         entry.value = now
@@ -126,20 +126,19 @@ async def _pull_loop() -> None:
 _sync_task: asyncio.Task | None = None
 
 
-def start_sync_pull_worker(app):
-    @app.on_event("startup")
-    async def start_worker():
-        enabled = os.environ.get("ENABLE_SYNC_PULL_WORKER") == "1"
-        role = os.environ.get("ROLE", "local")
-        if not enabled:
-            print("Sync pull worker disabled")
-            return
-        if role == "cloud":
-            print("Sync pull worker not started in cloud role")
-            return
-        print("Starting sync pull worker")
-        global _sync_task
-        _sync_task = asyncio.create_task(_pull_loop())
+def start_sync_pull_worker() -> None:
+    """Start the periodic sync pull worker if enabled."""
+    enabled = os.environ.get("ENABLE_SYNC_PULL_WORKER") == "1"
+    role = os.environ.get("ROLE", "local")
+    if not enabled:
+        print("Sync pull worker disabled")
+        return
+    if role == "cloud":
+        print("Sync pull worker not started in cloud role")
+        return
+    print("Starting sync pull worker")
+    global _sync_task
+    _sync_task = asyncio.create_task(_pull_loop())
 
 
 async def stop_sync_pull_worker() -> None:

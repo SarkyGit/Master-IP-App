@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from fastapi import APIRouter, Request, Depends, Form
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
@@ -20,7 +20,7 @@ async def list_bans(
 ):
     bans = (
         db.query(BannedIP)
-        .filter(BannedIP.banned_until > datetime.utcnow())
+        .filter(BannedIP.banned_until > datetime.now(timezone.utc))
         .order_by(BannedIP.banned_until.desc())
         .all()
     )

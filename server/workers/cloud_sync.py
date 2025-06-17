@@ -1,7 +1,7 @@
 import asyncio
 import os
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 
 import httpx
 
@@ -17,7 +17,7 @@ SYNC_API_KEY = os.environ.get("SYNC_API_KEY", "")
 
 
 async def _update_timestamp(db, name: str) -> None:
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     entry = db.query(SystemTunable).filter(SystemTunable.name == name).first()
     if entry:
         entry.value = now
@@ -53,7 +53,7 @@ async def _request_with_retry(method: str, url: str, payload: dict, log: logging
 
 async def push_once(log: logging.Logger) -> None:
     db = SessionLocal()
-    payload = {"timestamp": datetime.utcnow().isoformat()}
+    payload = {"timestamp": datetime.now(timezone.utc).isoformat()}
     try:
         await _request_with_retry("POST", SYNC_PUSH_URL, payload, log)
         await _update_timestamp(db, "Last Sync Push")
@@ -90,19 +90,18 @@ async def _sync_loop() -> None:
 _sync_task: asyncio.Task | None = None
 
 
-def start_cloud_sync(app):
-    @app.on_event("startup")
-    async def start_worker():
-        role = os.environ.get("ROLE", "local")
-        enabled = os.environ.get("ENABLE_CLOUD_SYNC") == "1"
-        if enabled and role == "cloud":
-            raise RuntimeError("cloud_sync worker should not run in cloud role")
-        if enabled and role != "cloud":
-            print("Starting cloud sync worker")
-            global _sync_task
-            _sync_task = asyncio.create_task(_sync_loop())
-        else:
-            print("Cloud sync worker disabled")
+def start_cloud_sync() -> None:
+    """Start the cloud sync worker if enabled."""
+    role = os.environ.get("ROLE", "local")
+    enabled = os.environ.get("ENABLE_CLOUD_SYNC") == "1"
+    if enabled and role == "cloud":
+        raise RuntimeError("cloud_sync worker should not run in cloud role")
+    if enabled and role != "cloud":
+        print("Starting cloud sync worker")
+        global _sync_task
+        _sync_task = asyncio.create_task(_sync_loop())
+    else:
+        print("Cloud sync worker disabled")
 
 
 async def stop_cloud_sync() -> None:

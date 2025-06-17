@@ -2,7 +2,7 @@ import os
 import sys
 import importlib
 from unittest import mock
-from datetime import datetime
+from datetime import datetime, timezone
 
 import pytest
 from fastapi.testclient import TestClient
@@ -83,7 +83,7 @@ def override_get_db(db):
     return _override
 
 
-def get_app(role: str, db: DummyDB):
+def get_client(role: str, db: DummyDB):
     os.environ.setdefault("DATABASE_URL", "postgresql://user:pass@localhost/test")
     os.environ["ROLE"] = role
     if "settings" in sys.modules:
@@ -107,25 +107,23 @@ def get_app(role: str, db: DummyDB):
         "server.workers.cloud_sync.start_cloud_sync"
     ):
         app = importlib.import_module("server.main").app
-    app.dependency_overrides[importlib.import_module("core.utils.db_session").get_db] = override_get_db(db)
-    return app
+        app.dependency_overrides[importlib.import_module("core.utils.db_session").get_db] = override_get_db(db)
+        client = TestClient(app)
+        client.db = db
+        return client
 
 
 @pytest.fixture
 def client_cloud():
     db = DummyDB()
-    app = get_app("cloud", db)
-    client = TestClient(app)
-    client.db = db
+    client = get_client("cloud", db)
     return client
 
 
 @pytest.fixture
 def client_local():
     db = DummyDB()
-    app = get_app("local", db)
-    client = TestClient(app)
-    client.db = db
+    client = get_client("local", db)
     return client
 
 
@@ -181,7 +179,7 @@ def test_push_invalid_model(client_cloud):
 
 @pytest.mark.integration
 def test_pull_endpoint_cloud(client_cloud):
-    ts = datetime.utcnow().isoformat()
+    ts = datetime.now(timezone.utc).isoformat()
     resp = client_cloud.post(
         "/api/v1/sync/pull", json={"since": ts, "models": [client_cloud.db.models.User.__tablename__]}
     )
@@ -191,7 +189,7 @@ def test_pull_endpoint_cloud(client_cloud):
 @pytest.mark.integration
 @pytest.mark.cloud_only
 def test_pull_endpoint_hidden_in_local_role(client_local):
-    ts = datetime.utcnow().isoformat()
+    ts = datetime.now(timezone.utc).isoformat()
     resp = client_local.post(
         "/api/v1/sync/pull",
         json={"since": ts, "models": [client_local.db.models.User.__tablename__]},

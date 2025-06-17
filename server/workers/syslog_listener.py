@@ -1,5 +1,5 @@
 import asyncio
-from datetime import datetime
+from datetime import datetime, timezone
 import os
 from syslog_rfc5424_parser import SyslogMessage
 import syslogmp
@@ -19,7 +19,7 @@ class _SyslogProtocol(asyncio.DatagramProtocol):
         except Exception:
             return
 
-        timestamp = datetime.utcnow()
+        timestamp = datetime.now(timezone.utc)
         severity = None
         facility = None
         message = text
@@ -80,11 +80,10 @@ def syslog_listener_running() -> bool:
     return _syslog_running
 
 
-def setup_syslog_listener(app):
-    @app.on_event("startup")
-    async def _start_syslog():
-        if os.environ.get("ENABLE_SYSLOG_LISTENER") == "1":
-            await start_syslog_listener()
+def setup_syslog_listener() -> None:
+    """Start the syslog listener if enabled."""
+    if os.environ.get("ENABLE_SYSLOG_LISTENER") == "1":
+        asyncio.create_task(start_syslog_listener())
 
 
 async def main():

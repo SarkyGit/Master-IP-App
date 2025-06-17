@@ -2,7 +2,7 @@ import os
 import sys
 import importlib
 from unittest import mock
-from datetime import datetime
+from datetime import datetime, timezone
 
 import pytest
 from fastapi.testclient import TestClient
@@ -89,7 +89,7 @@ def override_get_db(db):
     return _override
 
 
-def get_app(role: str, db: DummyDB):
+def get_client(role: str, db: DummyDB):
     os.environ["ROLE"] = role
     if "settings" in sys.modules:
         del sys.modules["settings"]
@@ -112,15 +112,15 @@ def get_app(role: str, db: DummyDB):
         "server.workers.cloud_sync.start_cloud_sync"
     ):
         app = importlib.import_module("server.main").app
-    app.dependency_overrides[importlib.import_module("core.utils.db_session").get_db] = override_get_db(db)
-    return app
+        app.dependency_overrides[importlib.import_module("core.utils.db_session").get_db] = override_get_db(db)
+        client = TestClient(app)
+        return client
 
 
 @pytest.mark.parametrize("role", ["local", "cloud"])
 def test_mobile_sync_flow(role):
     db = DummyDB()
-    app = get_app(role, db)
-    client = TestClient(app)
+    client = get_client(role, db)
 
     resp = client.get("/api/v1/devices")
     assert resp.status_code == 401
@@ -150,7 +150,7 @@ def test_mobile_sync_flow(role):
     else:
         assert resp.status_code == 404
 
-    ts = datetime.utcnow().isoformat()
+    ts = datetime.now(timezone.utc).isoformat()
     resp = client.post(
         "/api/v1/sync/pull",
         json={"since": ts, "models": [db.models.User.__tablename__]},

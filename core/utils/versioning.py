@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 
@@ -21,7 +21,7 @@ def apply_update(
                     "field": field,
                     "local_value": getattr(obj, field, None),
                     "remote_value": remote_value,
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                     "source": source,
                 }
             )

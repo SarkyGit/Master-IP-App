@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Request, Depends, Form, HTTPException
 from fastapi.responses import RedirectResponse
-from datetime import datetime
+from datetime import datetime, timezone
 from core.utils.templates import templates
 from sqlalchemy.orm import Session
 
@@ -68,7 +68,7 @@ async def login(
     if not seen:
         request.session["new_device_alert"] = "New login from unfamiliar device or location"
     location, lat, lon = geolocate_ip(ip)
-    user.last_login = datetime.utcnow()
+    user.last_login = datetime.now(timezone.utc)
     user.last_location_lat = lat
     user.last_location_lon = lon
     db.commit()
