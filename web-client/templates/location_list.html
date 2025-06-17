@@ -11,7 +11,7 @@
       <th class="px-2"><input type="checkbox" id="select-all"></th>
       <th class="px-4 py-2 text-left">Name</th>
       <th class="px-4 py-2 text-left">Type</th>
-      <th></th>
+      <th class="table-header actions-col"></th>
     </tr>
   </thead>
   <tbody>
@@ -20,10 +20,10 @@
       <td class="px-2"><input type="checkbox" name="selected" value="{{ loc.id }}"></td>
       <td class="px-4 py-2">{{ loc.name }}</td>
       <td class="px-4 py-2">{{ loc.location_type }}</td>
-      <td class="px-4 py-2">
-        <a href="/admin/locations/{{ loc.id }}/edit" aria-label="Edit" class="p-2 rounded transition mr-2">{{ include_icon('pencil','text-blue-500','1.5') }}</a>
+      <td class="actions-col px-4 py-2">
+        <a href="/admin/locations/{{ loc.id }}/edit" aria-label="Edit" class="icon-btn mr-1">{{ include_icon('pencil','text-blue-500','1.5') }}</a>
         <form method="post" action="/admin/locations/{{ loc.id }}/delete" class="inline">
-          <button type="submit" aria-label="Delete" class="p-2 rounded transition" onclick="return confirm('Delete location?')">{{ include_icon('trash-2','text-red-500','1.5') }}</button>
+          <button type="submit" aria-label="Delete" class="icon-btn" onclick="return confirm('Delete location?')">{{ include_icon('trash-2','text-red-500','1.5') }}</button>
         </form>
       </td>
     </tr>

@@ -225,6 +225,7 @@ class User(Base):
     theme = Column(String, nullable=False, default="dark_colourful")
     font = Column(String, nullable=False, default="sans")
     menu_style = Column(String, nullable=False, default="tabbed")
+    icon_style = Column(String, nullable=False, default="lucide")
     scroll_handoff_enabled = Column(Boolean, nullable=False, default=True)
     ssh_username = Column(String, nullable=True)
     ssh_password = Column(String, nullable=True)

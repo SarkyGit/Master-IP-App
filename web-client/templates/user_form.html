@@ -63,6 +63,18 @@
     </div>
   </div>
   {% endif %}
+  {% if icon_sets %}
+  <div class="form-row">
+    <div class="form-item">
+      <label for="icon_style" class="block">Icon Style</label>
+      <select id="icon_style" name="icon_style" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+        {% for s in icon_sets %}
+        <option value="{{ s }}" {% if user and user.icon_style == s %}selected{% endif %}>{{ s }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+  {% endif %}
   <div class="form-row">
     <div class="form-item">
       <label for="scroll_handoff_enabled" class="inline-flex items-center">

@@ -65,9 +65,11 @@ def include_icon(ctx, name: str, color: str | None = None, size: str | int = "3"
     """Return markup for the given icon respecting the selected theme."""
     request = ctx.get("request")
     theme = None
+    icon_style = "lucide"
     user = ctx.get("current_user")
     if user:
         theme = getattr(user, "theme", None)
+        icon_style = getattr(user, "icon_style", "lucide")
     if theme == "apple_glass":
         url = (
             request.url_for("static", path=f"icons/glass/{name}.svg")
@@ -81,9 +83,11 @@ def include_icon(ctx, name: str, color: str | None = None, size: str | int = "3"
         markup = f'<img src="{url}" class="{" ".join(classes)}" alt="{name}" />'
         return Markup(markup)
 
-    path = os.path.join(STATIC_DIR, "icons", f"{name}.svg")
+    path = os.path.join(STATIC_DIR, "icons", icon_style, f"{name}.svg")
     if not os.path.exists(path):
-        return ""
+        path = os.path.join(STATIC_DIR, "icons", f"{name}.svg")
+        if not os.path.exists(path):
+            return ""
     svg = open(path, "r", encoding="utf-8").read()
     if str(size) == "1.5":
         classes = ["w-[0.375rem]", "h-[0.375rem]"]

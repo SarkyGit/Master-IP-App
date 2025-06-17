@@ -23,7 +23,7 @@
       <th class="table-cell table-header">Banned Until</th>
       <th class="table-cell table-header">Attempts</th>
       <th class="table-cell table-header">Reason</th>
-      <th class="text-center w-[10rem]">Actions</th>
+      <th class="table-header text-center actions-col">Actions</th>
     </tr>
   </thead>
   <tbody>
@@ -33,10 +33,10 @@
       <td class="table-cell">{{ ban.banned_until }}</td>
       <td class="table-cell">{{ ban.attempt_count }}</td>
       <td class="table-cell">{{ ban.ban_reason }}</td>
-      <td class="text-center w-[10rem] whitespace-nowrap">
-        <div class="flex justify-center flex-wrap gap-1">
+      <td class="actions-col text-center whitespace-nowrap">
+        <div class="flex justify-center gap-1">
           <form method="post" action="/admin/ip-bans/{{ ban.id }}/unban" class="inline">
-          <button type='submit' aria-label='Unban' class='p-2 rounded transition' onclick="return confirm('Unban this IP?')">{{ include_icon('x-circle') }}</button>
+          <button type='submit' aria-label='Unban' class='icon-btn' onclick="return confirm('Unban this IP?')">{{ include_icon('x-circle') }}</button>
           </form>
         </div>
       </td>
