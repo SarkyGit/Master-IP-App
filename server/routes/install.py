@@ -99,15 +99,24 @@ async def install_finish(request: Request, seed: str = Form("no")):
     subprocess.run(["python", "seed_tunables.py"], check=True, env=env)
     if seed == "yes":
         subprocess.run(["python", "seed_data.py"], check=True, env=env)
+
+    import json, base64
+    payload = {
+        "email": data["admin_email"],
+        "password": data["admin_password"],
+    }
+    encoded = base64.b64encode(json.dumps(payload).encode()).decode()
     create_admin = (
-        f"from core.utils.db_session import SessionLocal;"
-        f"from core.models.models import User;"
-        f"from core.utils.auth import get_password_hash;"
-        f"db=SessionLocal();"
-        f"user=User(email='{data['admin_email']}',"
-        f"hashed_password=get_password_hash('{data['admin_password']}'),"
-        f"role='superadmin',is_active=True);"
-        f"db.add(user);db.commit();db.close()"
+        "import base64, json;"
+        "from core.utils.db_session import SessionLocal;"
+        "from core.models.models import User;"
+        "from core.utils.auth import get_password_hash;"
+        f"data=json.loads(base64.b64decode('{encoded}'));"
+        "db=SessionLocal();"
+        "user=User(email=data['email'],"
+        "hashed_password=get_password_hash(data['password']),"
+        "role='superadmin',is_active=True);"
+        "db.add(user);db.commit();db.close()"
     )
     subprocess.run(["python", "-c", create_admin], check=True, env=env)
     request.session.clear()
