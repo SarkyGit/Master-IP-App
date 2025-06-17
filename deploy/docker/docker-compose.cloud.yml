@@ -18,8 +18,6 @@ services:
     command: ./start.sh
     env_file:
       - .env.cloud
-    environment:
-      ROLE: cloud
     depends_on:
       - db
     volumes:
