@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Request, WebSocket, Depends, HTTPException
 from contextlib import asynccontextmanager
+import logging
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse, RedirectResponse
 
@@ -116,6 +117,7 @@ async def lifespan(app: FastAPI):
         await stop_sync_push_worker()
         await stop_sync_pull_worker()
         await stop_heartbeat()
+    logging.shutdown()
 
 app = FastAPI(lifespan=lifespan)
 # Respect headers like X-Forwarded-Proto so generated URLs use the
