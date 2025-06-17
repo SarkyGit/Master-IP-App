@@ -90,6 +90,22 @@ def main():
                 data_type="text",
                 description="API key used for cloud synchronization",
             ),
+            SystemTunable(
+                name="Cloud Site ID",
+                value="1",
+                function="Sync",
+                file_type="application",
+                data_type="text",
+                description="Unique identifier for this local site",
+            ),
+            SystemTunable(
+                name="Enable Cloud Sync",
+                value="false",
+                function="Sync",
+                file_type="application",
+                data_type="bool",
+                description="Toggle periodic cloud heartbeat and sync",
+            ),
             # ----- Newly added tunables -----
             SystemTunable(
                 name="Queue Interval",
