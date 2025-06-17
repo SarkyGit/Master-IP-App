@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class ConflictEntry(BaseModel):
@@ -19,7 +19,7 @@ class ConflictEntry(BaseModel):
 class BaseSchema(BaseModel):
     """Common attributes for versioned models."""
 
-    version: int = 1
+    version: int = Field(1, ge=1)
     conflict_data: list[ConflictEntry] | None = None
 
 
@@ -37,6 +37,8 @@ class VLANBase(BaseSchema):
 class VLANCreate(BaseModel):
     tag: int
     description: str | None = None
+    version: int = Field(1, ge=1)
+    conflict_data: list[ConflictEntry] | None = None
 
 
 class VLANRead(VLANBase):
@@ -49,7 +51,8 @@ class VLANRead(VLANBase):
 class VLANUpdate(BaseModel):
     tag: int | None = None
     description: str | None = None
-    version: int | None = None
+    version: int | None = Field(None, ge=1)
+    conflict_data: list[ConflictEntry] | None = None
 
 
 class DeviceBase(BaseSchema):
@@ -66,6 +69,8 @@ class DeviceCreate(BaseModel):
     vlan_id: int | None = None
     manufacturer: str | None = None
     model: str | None = None
+    version: int = Field(1, ge=1)
+    conflict_data: list[ConflictEntry] | None = None
 
 
 class DeviceRead(DeviceBase):
@@ -81,7 +86,8 @@ class DeviceUpdate(BaseModel):
     vlan_id: int | None = None
     manufacturer: str | None = None
     model: str | None = None
-    version: int | None = None
+    version: int | None = Field(None, ge=1)
+    conflict_data: list[ConflictEntry] | None = None
 
 
 class SSHCredentialBase(BaseSchema):
@@ -96,6 +102,8 @@ class SSHCredentialCreate(BaseModel):
     username: str
     password: str | None = None
     private_key: str | None = None
+    version: int = Field(1, ge=1)
+    conflict_data: list[ConflictEntry] | None = None
 
 
 class SSHCredentialRead(SSHCredentialBase):
@@ -110,7 +118,8 @@ class SSHCredentialUpdate(BaseModel):
     username: str | None = None
     password: str | None = None
     private_key: str | None = None
-    version: int | None = None
+    version: int | None = Field(None, ge=1)
+    conflict_data: list[ConflictEntry] | None = None
 
 
 class UserBase(BaseSchema):
@@ -124,6 +133,8 @@ class UserCreate(BaseModel):
     role: str = "viewer"
     is_active: bool = True
     hashed_password: str
+    version: int = Field(1, ge=1)
+    conflict_data: list[ConflictEntry] | None = None
 
 
 class UserRead(UserBase):
@@ -138,7 +149,8 @@ class UserUpdate(BaseModel):
     hashed_password: str | None = None
     role: str | None = None
     is_active: bool | None = None
-    version: int | None = None
+    version: int | None = Field(None, ge=1)
+    conflict_data: list[ConflictEntry] | None = None
 
 
 class TagBase(BaseSchema):
@@ -147,6 +159,8 @@ class TagBase(BaseSchema):
 
 class TagCreate(BaseModel):
     name: str
+    version: int = Field(1, ge=1)
+    conflict_data: list[ConflictEntry] | None = None
 
 
 class TagRead(TagBase):
@@ -158,7 +172,8 @@ class TagRead(TagBase):
 
 class TagUpdate(BaseModel):
     name: str | None = None
-    version: int | None = None
+    version: int | None = Field(None, ge=1)
+    conflict_data: list[ConflictEntry] | None = None
 
 
 class DeviceTypeBase(BaseSchema):
@@ -167,6 +182,8 @@ class DeviceTypeBase(BaseSchema):
 
 class DeviceTypeCreate(BaseModel):
     name: str
+    version: int = Field(1, ge=1)
+    conflict_data: list[ConflictEntry] | None = None
 
 
 class DeviceTypeRead(DeviceTypeBase):
@@ -178,7 +195,8 @@ class DeviceTypeRead(DeviceTypeBase):
 
 class DeviceTypeUpdate(BaseModel):
     name: str | None = None
-    version: int | None = None
+    version: int | None = Field(None, ge=1)
+    conflict_data: list[ConflictEntry] | None = None
 
 
 class LocationBase(BaseSchema):
@@ -189,6 +207,8 @@ class LocationBase(BaseSchema):
 class LocationCreate(BaseModel):
     name: str
     location_type: str = "Fixed"
+    version: int = Field(1, ge=1)
+    conflict_data: list[ConflictEntry] | None = None
 
 
 class LocationRead(LocationBase):
@@ -201,7 +221,8 @@ class LocationRead(LocationBase):
 class LocationUpdate(BaseModel):
     name: str | None = None
     location_type: str | None = None
-    version: int | None = None
+    version: int | None = Field(None, ge=1)
+    conflict_data: list[ConflictEntry] | None = None
 
 
 class SiteBase(BaseSchema):
@@ -212,6 +233,8 @@ class SiteBase(BaseSchema):
 class SiteCreate(BaseModel):
     name: str
     description: str | None = None
+    version: int = Field(1, ge=1)
+    conflict_data: list[ConflictEntry] | None = None
 
 
 class SiteRead(SiteBase):
@@ -224,4 +247,5 @@ class SiteRead(SiteBase):
 class SiteUpdate(BaseModel):
     name: str | None = None
     description: str | None = None
-    version: int | None = None
+    version: int | None = Field(None, ge=1)
+    conflict_data: list[ConflictEntry] | None = None

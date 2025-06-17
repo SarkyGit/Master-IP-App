@@ -3,6 +3,7 @@ import sys
 import importlib
 from unittest import mock
 from fastapi.testclient import TestClient
+import pytest
 
 
 def get_test_app():
@@ -153,3 +154,42 @@ def test_device_update_increments_version():
     data = resp.json()
     assert data["version"] == 2
     assert data["hostname"] == "switch-one"
+
+
+@pytest.mark.parametrize(
+    "url, payload1, payload2, field",
+    [
+        ("/api/v1/devices/1", {"hostname": "switch-one"}, {"hostname": "switch-two"}, "hostname"),
+        ("/api/v1/vlans/1", {"tag": 15}, {"tag": 16}, "tag"),
+        ("/api/v1/ssh-credentials/1", {"username": "admin"}, {"username": "guest"}, "username"),
+        ("/api/v1/users/1", {"email": "admin2@example.com"}, {"email": "bad@example.com"}, "email"),
+    ],
+)
+def test_update_conflict_tracking(url, payload1, payload2, field):
+    token = _token()
+    db = DummyDB()
+
+    def _override():
+        try:
+            yield db
+        finally:
+            pass
+
+    key = importlib.import_module("core.utils.db_session").get_db
+    client.app.dependency_overrides[key] = _override
+    try:
+        resp = client.put(url, json={**payload1, "version": 1}, headers={"Authorization": f"Bearer {token}"})
+        assert resp.status_code == 200
+        first = resp.json()
+        assert first["version"] == 2
+        assert first[field] == payload1[field]
+
+        resp = client.put(url, json={**payload2, "version": 1}, headers={"Authorization": f"Bearer {token}"})
+        assert resp.status_code == 200
+        second = resp.json()
+        assert second["version"] == 3
+        assert second[field] == payload1[field]
+        assert second["conflict_data"] is not None
+        assert second["conflict_data"][0]["field"] == field
+    finally:
+        client.app.dependency_overrides[key] = override_get_db
