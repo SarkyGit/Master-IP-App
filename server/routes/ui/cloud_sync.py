@@ -9,6 +9,7 @@ from core.utils.auth import require_role
 from core.utils.db_session import get_db
 from core.models.models import ConnectedSite, SiteKey, SystemTunable
 from core.utils.templates import templates
+from core.utils.env_file import set_env_vars
 
 router = APIRouter()
 
@@ -97,4 +98,10 @@ async def update_cloud_config(
     _set_tunable(db, "Cloud Base URL", cloud_url)
     _set_tunable(db, "Cloud Site ID", site_id)
     _set_tunable(db, "Cloud API Key", api_key)
+    _set_tunable(db, "Enable Cloud Sync", "true")
+    set_env_vars(
+        ENABLE_CLOUD_SYNC="1",
+        ENABLE_SYNC_PUSH_WORKER="1",
+        ENABLE_SYNC_PULL_WORKER="1",
+    )
     return RedirectResponse("/admin/cloud-sync", status_code=302)

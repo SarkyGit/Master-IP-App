@@ -302,6 +302,7 @@ After installation you can configure the cloud connection from this page. Look f
 - **Cloud API Key** – token passed with sync requests
 
 Updating these values in the UI takes effect the next time the sync workers run.
+Saving the form also updates `.env` to enable the sync workers automatically.
 
 ## Server Workers
 
