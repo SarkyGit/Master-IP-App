@@ -15,20 +15,6 @@
       </div>
     </div>
     <div>
-      <div class="flex items-center cursor-pointer px-2 py-1 rounded hover:bg-[var(--tab-hover)]" @click="toggle('tasks')">
-        <span class="flex-1">Tasks</span>
-        <button @click.stop="pin('tasks')" class="mr-1 text-xs" x-text="isPinned('tasks') ? '★' : '☆'"></button>
-        <span x-html="isOpen('tasks') ? minusIcon : plusIcon"></span>
-      </div>
-      <div x-show="isOpen('tasks')" x-transition class="mt-1 pl-4 flex flex-col space-y-1">
-        <a href="/tasks" :class="active('/tasks')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Task Queue</a>
-        <a href="/reports/vlan-usage" :class="active('/reports/vlan-usage')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">VLAN Usage</a>
-        {% if current_user.role in ['admin','superadmin'] %}
-        <a href="/tasks/google-sheets" :class="active('/tasks/google-sheets')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Google Sheets</a>
-        {% endif %}
-      </div>
-    </div>
-    <div>
       <div class="flex items-center cursor-pointer px-2 py-1 rounded hover:bg-[var(--tab-hover)]" @click="toggle('inventory')">
         <span class="flex-1">Inventory</span>
         <button @click.stop="pin('inventory')" class="mr-1 text-xs" x-text="isPinned('inventory') ? '★' : '☆'"></button>
@@ -39,21 +25,6 @@
         <a href="/inventory/show-pad" :class="active('/inventory/show-pad')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Show Pad</a>
         <a href="/inventory/reports" :class="active('/inventory/reports')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Reports</a>
         <a href="/inventory/settings" :class="active('/inventory/settings')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Inventory Settings</a>
-      </div>
-    </div>
-    <div>
-      <div class="flex items-center cursor-pointer px-2 py-1 rounded hover:bg-[var(--tab-hover)]" @click="toggle('netdev')">
-        <span class="flex-1">Network Devices</span>
-        <button @click.stop="pin('netdev')" class="mr-1 text-xs" x-text="isPinned('netdev') ? '★' : '☆'"></button>
-        <span x-html="isOpen('netdev') ? minusIcon : plusIcon"></span>
-      </div>
-      <div x-show="isOpen('netdev')" x-transition class="mt-1 pl-4 flex flex-col space-y-1">
-        <a href="/ssh/port-config" :class="active('/ssh/port-config')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Port Config</a>
-        <a href="/ssh/port-check" :class="active('/ssh/port-check')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Port Check</a>
-        <a href="/ssh/config-check" :class="active('/ssh/config-check')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Config Check</a>
-        <a href="/ssh/port-search" :class="active('/ssh/port-search')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Port Search</a>
-        <a href="/ssh/bulk-port-update" :class="active('/ssh/bulk-port-update')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Bulk Port Update</a>
-        <a href="/bulk/vlan-push" :class="active('/bulk/vlan-push')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">VLAN Bulk Push</a>
       </div>
     </div>
     {% if current_user.role in ['admin','superadmin'] %}
@@ -82,8 +53,7 @@
       <div x-show="isOpen('admin')" x-transition class="mt-1 pl-4 flex flex-col space-y-1">
         {% if current_user.role == 'superadmin' %}
         {% set admin_items = [
-          {'label':'SSH Credentials','href':'/admin/ssh'},
-          {'label':'SNMP Credentials','href':'/admin/snmp'},
+          {'label':'My Profile','href':'/users/me'},
           {'label':'Tag Manager','href':'/admin/tags'},
           {'label':'Locations','href':'/admin/locations'},
           {'label':'Device Import','href':'/bulk/device-import'},
@@ -96,8 +66,7 @@
         ] %}
         {% else %}
         {% set admin_items = [
-          {'label':'SSH Credentials','href':'/admin/ssh'},
-          {'label':'SNMP Credentials','href':'/admin/snmp'},
+          {'label':'My Profile','href':'/users/me'},
           {'label':'Locations','href':'/admin/locations'},
           {'label':'Device Import','href':'/bulk/device-import'}
         ] %}

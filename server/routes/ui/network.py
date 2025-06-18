@@ -58,6 +58,9 @@ async def network_show_menu(request: Request, current_user=Depends(get_current_u
         {'label': 'Port Config', 'href': '/ssh/port-config', 'img': ''},
         {'label': 'Switch Config', 'href': '/network/switch-config', 'img': ''},
         {'label': 'Port Search', 'href': '/ssh/port-search', 'img': ''},
+        {'label': 'Logging', 'href': '/admin/debug', 'img': ''},
+        {'label': 'VLAN Usage', 'href': '/reports/vlan-usage', 'img': ''},
+        {'label': 'IP Search', 'href': '/network/ip-search', 'img': ''},
     ]
     context = {'request': request, 'items': items, 'current_user': current_user}
     return templates.TemplateResponse('network_show_grid.html', context)
@@ -81,7 +84,6 @@ async def network_settings_menu(request: Request, current_user=Depends(get_curre
         {'label': 'VLAN MGMT', 'href': '/vlans', 'img': ''},
         {'label': 'SSH Credentials (Global)', 'href': '/admin/ssh', 'img': ''},
         {'label': 'SNMP', 'href': '/admin/snmp', 'img': ''},
-        {'label': 'Logging', 'href': '/admin/debug', 'img': ''},
     ]
     context = {'request': request, 'items': items, 'current_user': current_user}
     return templates.TemplateResponse('network_settings_grid.html', context)

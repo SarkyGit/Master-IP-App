@@ -23,8 +23,6 @@
           </a>
           <div class="login-area flex items-center space-x-2">
             {% if current_user %}
-            <a href="/users/me" class="px-4 py-1.5 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded shadow transition">My Profile</a>
-            <a href="/user/ssh" class="px-4 py-1.5 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded shadow transition">SSH Profiles</a>
             <a href="/auth/logout" class="px-4 py-1.5 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded shadow transition logged-in">Logout</a>
             {% else %}
             <a href="/auth/login" class="px-4 py-1.5 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded shadow transition logged-out">Login</a>
