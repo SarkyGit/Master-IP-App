@@ -22,7 +22,13 @@ async def list_user_creds(request: Request, db: Session = Depends(get_db), curre
 
 @router.get("/user/ssh/new")
 async def new_user_cred_form(request: Request, current_user=Depends(require_role("viewer"))):
-    context = {"request": request, "cred": None, "form_title": "New SSH Profile", "error": None}
+    context = {
+        "request": request,
+        "cred": None,
+        "form_title": "New SSH Profile",
+        "error": None,
+        "current_user": current_user,
+    }
     return templates.TemplateResponse("ssh_form.html", context)
 
 
@@ -34,7 +40,18 @@ async def create_user_cred(request: Request, name: str = Form(...), username: st
         .first()
     )
     if existing:
-        context = {"request": request, "cred": {"name": name, "username": username, "password": password, "private_key": private_key}, "form_title": "New SSH Profile", "error": "Name already exists"}
+        context = {
+            "request": request,
+            "cred": {
+                "name": name,
+                "username": username,
+                "password": password,
+                "private_key": private_key,
+            },
+            "form_title": "New SSH Profile",
+            "error": "Name already exists",
+            "current_user": current_user,
+        }
         return templates.TemplateResponse("ssh_form.html", context)
     cred = UserSSHCredential(user_id=current_user.id, name=name, username=username, password=password or None, private_key=private_key or None)
     db.add(cred)
@@ -47,7 +64,13 @@ async def edit_user_cred_form(cred_id: int, request: Request, db: Session = Depe
     cred = db.query(UserSSHCredential).filter(UserSSHCredential.id == cred_id, UserSSHCredential.user_id == current_user.id).first()
     if not cred:
         raise HTTPException(status_code=404, detail="Credential not found")
-    context = {"request": request, "cred": cred, "form_title": "Edit SSH Profile", "error": None}
+    context = {
+        "request": request,
+        "cred": cred,
+        "form_title": "Edit SSH Profile",
+        "error": None,
+        "current_user": current_user,
+    }
     return templates.TemplateResponse("ssh_form.html", context)
 
 
@@ -58,7 +81,13 @@ async def update_user_cred(cred_id: int, request: Request, name: str = Form(...)
         raise HTTPException(status_code=404, detail="Credential not found")
     existing = db.query(UserSSHCredential).filter(UserSSHCredential.user_id == current_user.id, UserSSHCredential.name == name, UserSSHCredential.id != cred_id).first()
     if existing:
-        context = {"request": request, "cred": cred, "form_title": "Edit SSH Profile", "error": "Name already exists"}
+        context = {
+            "request": request,
+            "cred": cred,
+            "form_title": "Edit SSH Profile",
+            "error": "Name already exists",
+            "current_user": current_user,
+        }
         cred.name = name
         cred.username = username
         cred.password = password

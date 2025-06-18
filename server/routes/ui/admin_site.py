@@ -37,7 +37,12 @@ async def list_sites(
 
 @router.get("/sites/new")
 async def new_site_form(request: Request, current_user=Depends(require_role("admin"))):
-    context = {"request": request, "site": None, "form_title": "New Site"}
+    context = {
+        "request": request,
+        "site": None,
+        "form_title": "New Site",
+        "current_user": current_user,
+    }
     return templates.TemplateResponse("site_form.html", context)
 
 
@@ -56,6 +61,7 @@ async def create_site(
             "site": {"name": name, "description": description},
             "form_title": "New Site",
             "error": "Name exists",
+            "current_user": current_user,
         }
         return templates.TemplateResponse("site_form.html", context)
     site = Site(
