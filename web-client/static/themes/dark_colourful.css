@@ -22,7 +22,7 @@ body {
   --inventory-btn-text: var(--btn-text);
   --network-tab-bg: #8e44ec;
   --network-tab-text: #ffffff;
-  --network-submenu-bg: #7a33d8;
+  --network-submenu-bg: var(--submenu-bg);
   --network-submenu-text: #ffffff;
   --network-btn-bg: #8e44ec;
   --network-btn-text: #ffffff;
