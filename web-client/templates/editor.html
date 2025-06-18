@@ -7,7 +7,8 @@
 <script>
   const term = new Terminal();
   term.open(document.getElementById('terminal'));
-  const socket = new WebSocket(`ws://${location.host}/ws/editor?file={{ file_path }}`);
+  const scheme = location.protocol === 'https:' ? 'wss' : 'ws';
+  const socket = new WebSocket(`${scheme}://${location.host}/ws/editor?file={{ file_path }}`);
   term.onData(data => socket.send(new TextEncoder().encode(data)));
   socket.onmessage = evt => {
     const reader = new FileReader();

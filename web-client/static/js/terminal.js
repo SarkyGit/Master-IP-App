@@ -4,7 +4,8 @@ document.addEventListener('DOMContentLoaded', () => {
   term.open(container);
   term.write('Connecting...\r\n');
 
-  const socket = new WebSocket(`ws://${location.host}/ws/terminal/${window.deviceId}`);
+  const scheme = location.protocol === 'https:' ? 'wss' : 'ws';
+  const socket = new WebSocket(`${scheme}://${location.host}/ws/terminal/${window.deviceId}`);
 
   socket.addEventListener('open', () => term.clear());
   socket.addEventListener('message', (evt) => term.write(evt.data));
