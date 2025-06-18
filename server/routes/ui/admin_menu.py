@@ -36,11 +36,21 @@ async def system_menu(
         {"label": "Upload Image", "href": "/admin/upload-image"},
         {"label": "Update System", "href": "/admin/update"},
         {"label": "Tunables", "href": "/tunables"},
+        {"label": "UI to be Sorted", "href": "/admin/ui-to-be-sorted"},
     ]
     for item in items:
         item["img"] = _menu_image(db, item["label"])
     context = {"request": request, "items": items, "title": "System", "current_user": current_user}
     return templates.TemplateResponse("admin_menu_grid.html", context)
+
+
+@router.get("/admin/ui-to-be-sorted")
+async def ui_to_be_sorted(
+    request: Request,
+    current_user=Depends(require_role("superadmin")),
+):
+    context = {"request": request, "current_user": current_user}
+    return templates.TemplateResponse("ui_to_be_sorted.html", context)
 
 
 @router.get("/admin/sync")
