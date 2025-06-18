@@ -3,14 +3,14 @@
     <h1 class="text-xl mb-4">Update {{ label }}</h1>
     <form hx-post="/admin/upload-image/{{ category }}/{{ key }}" hx-target="#modal" hx-swap="outerHTML" hx-encoding="multipart/form-data" enctype="multipart/form-data" method="post">
       <div class="mb-2">
-        <label class="block">Icon</label>
+        <label class="block">Icon <span class="text-xs text-gray-400">(suggested 64x64)</span></label>
         <input type="file" name="icon" accept="image/*" class="text-[var(--input-text)]">
         {% if icon %}
         <img src="/static/uploads/{{ 'menu-items' if category=='menu' else 'device-types' }}/{{ icon }}" class="h-10 mt-1" alt="">
         {% endif %}
       </div>
       <div class="mb-2">
-        <label class="block">Image</label>
+        <label class="block">Image <span class="text-xs text-gray-400">(suggested 200x400)</span></label>
         <input type="file" name="image" accept="image/*" class="text-[var(--input-text)]">
         {% if image %}
         <img src="/static/uploads/{{ 'menu-items' if category=='menu' else 'device-types' }}/{{ image }}" class="h-20 mt-1" alt="">
