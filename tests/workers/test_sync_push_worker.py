@@ -103,10 +103,10 @@ def test_push_once_sends_unsynced_records(monkeypatch):
     old_value = db.data[models.SystemTunable][0].value
 
     monkeypatch.setattr(sync_push_worker, "SessionLocal", lambda: db)
-    monkeypatch.setattr(sync_push_worker, "_get_sync_config", lambda: ("http://push", "http://pull", ""))
+    monkeypatch.setattr(sync_push_worker, "_get_sync_config", lambda: ("http://push", "http://pull", "site1", ""))
     sent = {}
 
-    async def fake_request(method, url, payload, log, api_key):
+    async def fake_request(method, url, payload, log, site_id, api_key):
         sent["payload"] = payload
 
     monkeypatch.setattr(sync_push_worker, "_request_with_retry", fake_request)

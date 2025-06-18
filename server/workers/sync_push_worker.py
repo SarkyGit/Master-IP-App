@@ -48,7 +48,7 @@ def _update_last_sync(db) -> None:
 
 
 async def push_once(log: logging.Logger) -> None:
-    push_url, _, api_key = _get_sync_config()
+    push_url, _, site_id, api_key = _get_sync_config()
     db = SessionLocal()
     try:
         since = _load_last_sync(db)
@@ -64,7 +64,7 @@ async def push_once(log: logging.Logger) -> None:
                 {**_serialize(r), "model": Device.__tablename__} for r in records
             ]
         }
-        await _request_with_retry("POST", push_url, payload, log, api_key)
+        await _request_with_retry("POST", push_url, payload, log, site_id, api_key)
         _update_last_sync(db)
     finally:
         db.close()
