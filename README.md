@@ -335,7 +335,8 @@ Start the server with reasonable defaults using the provided `start.sh` script:
 ./start.sh
 ```
 
-This script loads variables from `.env` if present, automatically runs the seed scripts (unless `AUTO_SEED=0` or `false`) and then executes:
+This script loads variables from `.env` if present, applies pending Alembic migrations,
+automatically runs the seed scripts (unless `AUTO_SEED=0` or `false`), and then executes:
 
 ```bash
 gunicorn server.main:app \
