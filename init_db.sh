@@ -46,8 +46,8 @@ from core.utils.db_session import Base, engine
 Base.metadata.create_all(bind=engine)
 PY
 
-# Apply latest database migrations
-alembic upgrade head
+# Mark database as up-to-date with migrations
+alembic stamp head
 
 # Seed tables
 python seed_tunables.py
