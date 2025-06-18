@@ -1,0 +1,25 @@
+<div id="modal" class="fixed inset-0 bg-black/50 flex items-center justify-center">
+  <div class="bg-[var(--card-bg)] p-4 rounded shadow min-w-[20rem]">
+    <h1 class="text-xl mb-4">Update {{ label }}</h1>
+    <form hx-post="/admin/upload-image/{{ category }}/{{ key }}" hx-target="#modal" hx-swap="outerHTML" enctype="multipart/form-data" method="post">
+      <div class="mb-2">
+        <label class="block">Icon</label>
+        <input type="file" name="icon" accept="image/*" class="text-[var(--input-text)]">
+        {% if icon %}
+        <img src="/static/uploads/{{ 'menu-items' if category=='menu' else 'device-types' }}/{{ icon }}" class="h-10 mt-1" alt="">
+        {% endif %}
+      </div>
+      <div class="mb-2">
+        <label class="block">Image</label>
+        <input type="file" name="image" accept="image/*" class="text-[var(--input-text)]">
+        {% if image %}
+        <img src="/static/uploads/{{ 'menu-items' if category=='menu' else 'device-types' }}/{{ image }}" class="h-20 mt-1" alt="">
+        {% endif %}
+      </div>
+      <div class="text-right mt-2">
+        <button type="submit" class="px-3 py-1 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded">Save</button>
+        <button type="button" class="px-3 py-1 ml-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded" onclick="document.getElementById('modal').innerHTML=''">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
