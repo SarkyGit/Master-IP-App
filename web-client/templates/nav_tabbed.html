@@ -18,16 +18,9 @@
             {% if current_user.role == 'superadmin' %}
             {% set admin_items = [
               {'label':'My Profile','href':'/users/me'},
-              {'label':'Tag Manager','href':'/admin/tags'},
-              {'label':'Locations','href':'/admin/locations'},
-              {'label':'SSH Credentials','href':'/admin/ssh'},
-              {'label':'Device Import','href':'/bulk/device-import'},
-              {'label':'Audit Log','href':'/admin/audit'},
-              {'label':'IP Bans','href':'/admin/ip-bans'},
-              {'label':'User Management','href':'/admin/users'},
-              {'label':'Debug Logs','href':'/admin/debug'},
-              {'label':'Site Keys','href':'/admin/site-keys'},
-              {'label':'Cloud Sync','href':'/admin/cloud-sync'}
+              {'label':'System','href':'/admin/system'},
+              {'label':'Sync / API\'s','href':'/admin/sync'},
+              {'label':'Logs','href':'/admin/logs'}
             ] %}
             {% else %}
             {% set admin_items = [
@@ -68,10 +61,7 @@
           {% for cat in get_tunable_categories() %}
           <a href="/tunables?category={{ cat | urlencode }}" @click="setSub('/tunables?category={{ cat | urlencode }}')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/tunables?category={{ cat | urlencode }}'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">{{ cat }}</a>
           {% endfor %}
-          <a href="/admin/logo" @click="setSub('/admin/logo')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/admin/logo'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Upload Logo</a>
-          {% if allow_self_update() %}
-          <a href="/admin/update" @click="setSub('/admin/update')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/admin/update'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Update System</a>
-          {% endif %}
+          
         </div>
       </div>
       {% endif %}
