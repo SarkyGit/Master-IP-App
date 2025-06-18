@@ -165,12 +165,18 @@ async def update_images(
     image_name = None
     if icon and icon.filename:
         if not icon.content_type.startswith("image/"):
+            if request.headers.get("HX-Request"):
+                context = {"request": request, "message": "Invalid icon type"}
+                return templates.TemplateResponse("message_modal.html", context, status_code=400)
             raise HTTPException(status_code=400, detail="Invalid icon type")
         icon_name = f"{key}_icon_{os.path.basename(icon.filename)}"
         with open(os.path.join(upload_dir, icon_name), "wb") as f:
             f.write(await icon.read())
     if image and image.filename:
         if not image.content_type.startswith("image/"):
+            if request.headers.get("HX-Request"):
+                context = {"request": request, "message": "Invalid image type"}
+                return templates.TemplateResponse("message_modal.html", context, status_code=400)
             raise HTTPException(status_code=400, detail="Invalid image type")
         image_name = f"{key}_img_{os.path.basename(image.filename)}"
         with open(os.path.join(upload_dir, image_name), "wb") as f:
@@ -187,5 +193,6 @@ async def update_images(
             dtype.upload_image = image_name
         db.commit()
     if request.headers.get("HX-Request"):
-        return HTMLResponse("", status_code=204)
-    return RedirectResponse(url=f"/admin/upload-image?category={category}", status_code=302)
+        context = {"request": request, "message": "Images updated"}
+        return templates.TemplateResponse("message_modal.html", context)
+    return RedirectResponse(url=f"/admin/upload-image?category={category}&message=Images+updated", status_code=302)

@@ -5,7 +5,6 @@
       <div :class="mobile ? 'flex flex-col space-y-2' : 'hidden lg:flex w-full'">
         <div class="flex w-full">
           <div class="flex space-x-4">
-            <button onclick="history.back()" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Back</button>
             {% if current_user %}
             <button @click="setTop('inventory', $event.target.dataset.align)" data-align="left" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition" :class="{'bg-[var(--active-tab-bg)] text-[var(--active-tab-text)]': activeTopMenu === 'inventory'}">Inventory</button>
             <button @click="setTop('network', $event.target.dataset.align)" data-align="left" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition" :class="{'bg-[var(--active-tab-bg)] text-[var(--active-tab-text)]': activeTopMenu === 'network'}">Network</button>
@@ -14,11 +13,11 @@
           {% if current_user %}
           <div class="flex space-x-4 ml-auto">
             {% if current_user.role in ['admin','superadmin'] %}
-            <button @click="setTop('tunables', $event.target.dataset.align)" data-align="right" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition" :class="{'bg-[var(--active-tab-bg)] text-[var(--active-tab-text)]': activeTopMenu === 'tunables'}">Tunables</button>
             {% if current_user.role == 'superadmin' %}
             {% set admin_items = [
               {'label':'My Profile','href':'/users/me'},
               {'label':'System','href':'/admin/system'},
+              {'label':'Organisation Settings','href':'/admin/org-settings'},
               {'label':'Sync / API\'s','href':'/admin/sync'},
               {'label':'Logs','href':'/admin/logs'}
             ] %}
@@ -55,16 +54,6 @@
           <a href="/network/settings" @click="setSub('/network/settings')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/network/settings'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Network Settings</a>
         </div>
       </div>
-      {% if current_user.role in ['admin','superadmin'] %}
-      <div x-show="ready && activeTopMenu == 'tunables'" x-transition.opacity.duration.150ms :class="(submenuAlign === 'right' ? 'text-right' : '') + ' w-full border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3'" x-cloak>
-        <div :class="mobile ? 'flex flex-col space-y-2 submenu text-sm' : (submenuAlign === 'right' ? 'flex space-x-2 text-sm justify-end submenu' : 'flex space-x-2 text-sm submenu')">
-          {% for cat in get_tunable_categories() %}
-          <a href="/tunables?category={{ cat | urlencode }}" @click="setSub('/tunables?category={{ cat | urlencode }}')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/tunables?category={{ cat | urlencode }}'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">{{ cat }}</a>
-          {% endfor %}
-          
-        </div>
-      </div>
-      {% endif %}
       {% if current_user.role in ['admin','superadmin'] %}
       <div x-show="ready && activeTopMenu == 'admin'" x-transition.opacity.duration.150ms :class="(submenuAlign === 'right' ? 'text-right' : '') + ' w-full border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3'" x-cloak>
         <div :class="mobile ? 'flex flex-col space-y-2 submenu text-sm' : (submenuAlign === 'right' ? 'flex space-x-2 text-sm justify-end submenu' : 'flex space-x-2 text-sm submenu')">
@@ -105,6 +94,7 @@
         setSub(href) {
           this.activeSubMenu = href
           localStorage.setItem('activeSubMenu', href)
+          this.activeTopMenu = ''
         },
         applyColors(menu) {
           const root = document.documentElement
