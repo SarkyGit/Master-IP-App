@@ -112,6 +112,7 @@
 .w-auto{width:auto;}
 .w-full{width:100%;}
 .max-w-screen-2xl{max-width:1536px;}
+.max-w-screen-md{max-width:768px;}
 .flex{display:flex;}
 .inline-flex{display:inline-flex;}
 .flex-1{flex:1 1 0%;}
