@@ -46,6 +46,7 @@ async def network_conf_menu(request: Request, current_user=Depends(get_current_u
         {'label': 'Switch Config', 'href': '/network/switch-config', 'img': ''},
         {'label': 'Bulk Port Update', 'href': '/ssh/bulk-port-update', 'img': ''},
         {'label': 'VLAN Bulk Update', 'href': '/bulk/vlan-push', 'img': ''},
+        {'label': 'Port Config Templates', 'href': '/network/port-configs', 'img': ''},
     ]
     context = {'request': request, 'items': items, 'current_user': current_user}
     return templates.TemplateResponse('network_conf_grid.html', context)
