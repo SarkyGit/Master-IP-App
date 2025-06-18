@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class ConflictEntry(BaseModel):
@@ -44,8 +44,7 @@ class VLANCreate(BaseModel):
 class VLANRead(VLANBase):
     id: int
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class VLANUpdate(BaseModel):
@@ -76,8 +75,7 @@ class DeviceCreate(BaseModel):
 class DeviceRead(DeviceBase):
     id: int
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class DeviceUpdate(BaseModel):
@@ -109,8 +107,7 @@ class SSHCredentialCreate(BaseModel):
 class SSHCredentialRead(SSHCredentialBase):
     id: int
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class SSHCredentialUpdate(BaseModel):
@@ -140,8 +137,7 @@ class UserCreate(BaseModel):
 class UserRead(UserBase):
     id: int
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class UserUpdate(BaseModel):
@@ -166,8 +162,7 @@ class TagCreate(BaseModel):
 class TagRead(TagBase):
     id: int
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class TagUpdate(BaseModel):
@@ -193,8 +188,7 @@ class DeviceTypeCreate(BaseModel):
 class DeviceTypeRead(DeviceTypeBase):
     id: int
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class DeviceTypeUpdate(BaseModel):
@@ -220,8 +214,7 @@ class LocationCreate(BaseModel):
 class LocationRead(LocationBase):
     id: int
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class LocationUpdate(BaseModel):
@@ -246,8 +239,7 @@ class SiteCreate(BaseModel):
 class SiteRead(SiteBase):
     id: int
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class SiteUpdate(BaseModel):
