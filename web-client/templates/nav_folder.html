@@ -38,10 +38,6 @@
         {% for cat in get_tunable_categories() %}
         <a href="/tunables?category={{ cat | urlencode }}" :class="active('/tunables?category={{ cat | urlencode }}')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">{{ cat }}</a>
         {% endfor %}
-        <a href="/admin/logo" :class="active('/admin/logo')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Upload Logo</a>
-        {% if allow_self_update() %}
-        <a href="/admin/update" :class="active('/admin/update')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Update System</a>
-        {% endif %}
       </div>
     </div>
     <div>
@@ -54,16 +50,9 @@
         {% if current_user.role == 'superadmin' %}
         {% set admin_items = [
           {'label':'My Profile','href':'/users/me'},
-          {'label':'Tag Manager','href':'/admin/tags'},
-          {'label':'Locations','href':'/admin/locations'},
-          {'label':'SSH Credentials','href':'/admin/ssh'},
-          {'label':'Device Import','href':'/bulk/device-import'},
-          {'label':'Audit Log','href':'/admin/audit'},
-          {'label':'IP Bans','href':'/admin/ip-bans'},
-          {'label':'User Management','href':'/admin/users'},
-          {'label':'Debug Logs','href':'/admin/debug'},
-          {'label':'Site Keys','href':'/admin/site-keys'},
-          {'label':'Cloud Sync','href':'/admin/cloud-sync'}
+          {'label':'System','href':'/admin/system'},
+          {'label':'Sync / API\'s','href':'/admin/sync'},
+          {'label':'Logs','href':'/admin/logs'}
         ] %}
         {% else %}
         {% set admin_items = [

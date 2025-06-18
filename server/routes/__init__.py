@@ -36,6 +36,7 @@ from .ui.admin_logo import router as admin_logo_router
 from .ui.admin_update import router as admin_update_router
 from .ui.admin_site_keys import router as admin_site_keys_router
 from .ui.cloud_sync import router as cloud_sync_router
+from .ui.admin_menu import router as admin_menu_router
 from .api.devices import router as api_devices_router
 from .api.users import router as api_users_router
 from .api.vlans import router as api_vlans_router
@@ -83,6 +84,7 @@ __all__ = [
     "admin_update_router",
     "admin_site_keys_router",
     "cloud_sync_router",
+    "admin_menu_router",
     "api_devices_router",
     "api_users_router",
     "api_vlans_router",
