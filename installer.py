@@ -199,6 +199,34 @@ def install():
         run("systemctl reload nginx")
 
     run("./init_db.sh")
+
+    # create admin account specified during install
+    os.environ.update({
+        "DATABASE_URL": db_url,
+        "ROLE": mode,
+        "SECRET_KEY": secret_key,
+    })
+    from core.utils.db_session import SessionLocal
+    from core.models.models import User, Site, SiteMembership
+    from core.utils.auth import get_password_hash
+
+    try:
+        db = SessionLocal()
+        user = User(
+            email=admin_email,
+            hashed_password=get_password_hash(admin_password),
+            role="superadmin",
+            is_active=True,
+        )
+        db.add(user)
+        db.commit()
+        site = db.query(Site).first()
+        if site:
+            db.add(SiteMembership(user_id=user.id, site_id=site.id))
+            db.commit()
+    finally:
+        db.close()
+
     try:
         run("./start.sh")
     except KeyboardInterrupt:
