@@ -41,6 +41,7 @@ from .ui.admin_menu import router as admin_menu_router
 from .ui.admin_images import router as admin_images_router
 from .ui.admin_columns import router as admin_columns_router
 from .ui.org_settings import router as org_settings_router
+from .ui.help import router as help_router
 from .api.devices import router as api_devices_router
 from .api.users import router as api_users_router
 from .api.vlans import router as api_vlans_router
@@ -93,6 +94,7 @@ __all__ = [
     "admin_images_router",
     "admin_columns_router",
     "org_settings_router",
+    "help_router",
     "api_devices_router",
     "api_users_router",
     "api_vlans_router",

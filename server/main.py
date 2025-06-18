@@ -51,6 +51,7 @@ from server.routes import (
     admin_images_router,
     admin_columns_router,
     org_settings_router,
+    help_router,
     api_devices_router,
     api_users_router,
     api_vlans_router,
@@ -223,6 +224,7 @@ app.include_router(admin_menu_router)
 app.include_router(admin_images_router)
 app.include_router(admin_columns_router)
 app.include_router(org_settings_router)
+app.include_router(help_router)
 
 
 @app.exception_handler(HTTPException)
