@@ -223,7 +223,7 @@ async def save_device_column_prefs(
         )
     db.commit()
     if request.headers.get("HX-Request"):
-        return HTMLResponse("", status_code=204)
+        return templates.TemplateResponse("close_modal.html", {"request": request})
     return RedirectResponse(url="/devices/table", status_code=302)
 
 

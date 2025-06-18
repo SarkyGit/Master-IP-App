@@ -481,6 +481,9 @@ python -m pip install -r requirements.txt
 ### `venv/bin/python: No such file or directory`
 This message appears when the `venv` directory has not been created. Run the commands above to create the virtual environment before installing the dependencies.
 
+### Modal window stays open after saving
+Forms posted via HTMX replace the `#modal` element with the server response. If the response uses HTTP 204 the dialog remains visible because no HTML is swapped in. Return a small snippet like `close_modal.html` to clear the container instead. See [docs/modals.md](docs/modals.md) for details.
+
 ## Automated Installer
 
 For unattended deployments on a fresh server run the interactive installer.
