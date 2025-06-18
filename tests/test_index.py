@@ -35,3 +35,9 @@ def test_index_references_bw():
 def test_bw_css_served():
     response = client.get("/static/themes/bw.css")
     assert response.status_code == 200
+
+
+def test_favicon_link_present():
+    response = client.get("/")
+    assert response.status_code == 200
+    assert '<link rel="icon"' in response.text

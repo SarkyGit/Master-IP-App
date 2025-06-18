@@ -55,7 +55,16 @@ def logo_url() -> str:
     return "/static/uploads/logo/CEST-Square.png"
 
 
+def favicon_url() -> str:
+    """Return the URL for the favicon, falling back to the logo."""
+    path = os.path.join(STATIC_DIR, "favicon.png")
+    if os.path.exists(path):
+        return "/static/favicon.png"
+    return logo_url()
+
+
 templates.env.globals["logo_url"] = logo_url
+templates.env.globals["favicon_url"] = favicon_url
 from markupsafe import Markup
 from jinja2 import pass_context
 
