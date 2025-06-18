@@ -11,6 +11,7 @@ from core.models.models import SystemTunable, SiteKey, AuditLog
 from core.utils.templates import templates
 from .tunables import grouped_tunables
 from server.workers.heartbeat import send_heartbeat_once
+from core.utils.env_file import set_env_vars
 
 router = APIRouter()
 
@@ -110,6 +111,11 @@ async def test_cloud_sync(
             else:
                 db.add(SystemTunable(name="Enable Cloud Sync", value="true" if enabled else "false", function="Sync", file_type="application", data_type="bool"))
             db.commit()
+            set_env_vars(
+                ENABLE_CLOUD_SYNC="1" if enabled else "0",
+                ENABLE_SYNC_PUSH_WORKER="1" if enabled else "0",
+                ENABLE_SYNC_PULL_WORKER="1" if enabled else "0",
+            )
             msg = "Connection successful"
         except Exception as exc:
             msg = f"Connection failed: {exc}"
