@@ -28,6 +28,7 @@ from .ui.add_device import router as add_device_router
 from .ui.admin_site import router as admin_site_router
 from .ui.bulk import router as bulk_router
 from .ui.reports import router as reports_router
+from .reports import router as conflicts_router
 from .ui.export import router as export_router
 from .internal.snmp_traps import router as snmp_traps_router
 from .internal.syslog import router as syslog_router
@@ -81,6 +82,7 @@ __all__ = [
     "admin_site_router",
     "bulk_router",
     "reports_router",
+    "conflicts_router",
     "export_router",
     "snmp_traps_router",
     "syslog_router",
