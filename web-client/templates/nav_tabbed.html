@@ -1,4 +1,4 @@
-<nav x-data="tabsNav()" x-init="initFromStorage()" class="bg-[var(--nav-bg)] text-[var(--nav-text)] p-2">
+<nav x-data="tabsNav('{{ theme }}', {{ 'true' if current_user and current_user.menu_stick_theme else 'false' }}, '{{ current_user.menu_tab_color if current_user and current_user.menu_tab_color else '' }}', '{{ current_user.menu_bg_color if current_user and current_user.menu_bg_color else '' }}')" x-init="initFromStorage()" class="bg-[var(--nav-bg)] text-[var(--nav-text)] p-2">
   <div class="px-6 mx-auto max-w-screen-2xl">
     <div class="flex items-center justify-between">
       <button @click="mobile = !mobile" class="lg:hidden p-2 rounded">☰</button>
@@ -7,14 +7,14 @@
           <div class="flex space-x-4">
             <button onclick="history.back()" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Back</button>
             {% if current_user %}
-            <button @click="setTop('inventory', $event.target.dataset.align)" data-align="left" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Inventory</button>
-            <button @click="setTop('network', $event.target.dataset.align)" data-align="left" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Network</button>
+            <button @click="setTop('inventory', $event.target.dataset.align)" data-align="left" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition" :class="{'bg-[var(--active-tab-bg)] text-[var(--active-tab-text)]': activeTopMenu === 'inventory'}">Inventory</button>
+            <button @click="setTop('network', $event.target.dataset.align)" data-align="left" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition" :class="{'bg-[var(--active-tab-bg)] text-[var(--active-tab-text)]': activeTopMenu === 'network'}">Network</button>
             {% endif %}
           </div>
           {% if current_user %}
           <div class="flex space-x-4 ml-auto">
             {% if current_user.role in ['admin','superadmin'] %}
-            <button @click="setTop('tunables', $event.target.dataset.align)" data-align="right" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Tunables</button>
+            <button @click="setTop('tunables', $event.target.dataset.align)" data-align="right" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition" :class="{'bg-[var(--active-tab-bg)] text-[var(--active-tab-text)]': activeTopMenu === 'tunables'}">Tunables</button>
             {% if current_user.role == 'superadmin' %}
             {% set admin_items = [
               {'label':'My Profile','href':'/users/me'},
@@ -30,7 +30,7 @@
               {'label':'Device Import','href':'/bulk/device-import'}
             ] %}
             {% endif %}
-            <button @click="setTop('admin', $event.target.dataset.align)" data-align="right" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">{{ 'Super Admin' if current_user.role == 'superadmin' else 'Admin' }}</button>
+            <button @click="setTop('admin', $event.target.dataset.align)" data-align="right" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition" :class="{'bg-[var(--active-tab-bg)] text-[var(--active-tab-text)]': activeTopMenu === 'admin'}">{{ 'Super Admin' if current_user.role == 'superadmin' else 'Admin' }}</button>
             {% endif %}
           </div>
           {% endif %}
@@ -77,16 +77,21 @@
     </div>
   </div>
   <script>
-    function tabsNav() {
+    function tabsNav(theme, stickTheme, tabColor, bgColor) {
       return {
         mobile: false,
         activeTopMenu: '',
         activeSubMenu: '',
         submenuAlign: 'left',
         ready: false,
+        theme,
+        stickTheme,
+        tabColor,
+        bgColor,
         initFromStorage() {
           this.activeTopMenu = localStorage.getItem('activeTopMenu') || ''
           this.activeSubMenu = localStorage.getItem('activeSubMenu') || ''
+          this.applyColors(this.activeTopMenu)
           setTimeout(() => this.ready = true, 50)
         },
         setTop(menu, align) {
@@ -95,10 +100,34 @@
           localStorage.setItem('activeTopMenu', menu)
           localStorage.removeItem('activeSubMenu')
           this.activeSubMenu = ''
+          this.applyColors(menu)
         },
         setSub(href) {
           this.activeSubMenu = href
           localStorage.setItem('activeSubMenu', href)
+        },
+        applyColors(menu) {
+          const root = document.documentElement
+          if (this.stickTheme) {
+            if (this.theme === 'dark_colourful' && menu === 'network') {
+              root.style.setProperty('--active-tab-bg', getComputedStyle(root).getPropertyValue('--network-tab-bg'))
+              root.style.setProperty('--submenu-bg', getComputedStyle(root).getPropertyValue('--network-submenu-bg'))
+              root.style.setProperty('--active-tab-text', getComputedStyle(root).getPropertyValue('--network-tab-text'))
+              root.style.setProperty('--submenu-text', '#ffffff')
+            } else {
+              root.style.setProperty('--active-tab-bg', getComputedStyle(root).getPropertyValue('--tab-bg'))
+              root.style.setProperty('--submenu-bg', getComputedStyle(root).getPropertyValue('--submenu-bg'))
+              root.style.setProperty('--active-tab-text', getComputedStyle(root).getPropertyValue('--tab-text'))
+              root.style.setProperty('--submenu-text', getComputedStyle(root).getPropertyValue('--submenu-text'))
+            }
+          } else {
+            const tab = this.tabColor || getComputedStyle(root).getPropertyValue('--tab-bg')
+            const bg = this.bgColor || getComputedStyle(root).getPropertyValue('--submenu-bg')
+            root.style.setProperty('--active-tab-bg', tab)
+            root.style.setProperty('--submenu-bg', bg)
+            root.style.setProperty('--active-tab-text', getComputedStyle(root).getPropertyValue('--tab-text'))
+            root.style.setProperty('--submenu-text', getComputedStyle(root).getPropertyValue('--submenu-text'))
+          }
         }
       }
     }

@@ -118,6 +118,22 @@
     </div>
     <div class="form-row">
       <div class="form-item">
+        <label for="menu_tab_color" class="block">Tab Color</label>
+        <input type="color" id="menu_tab_color" name="menu_tab_color" value="{{ user.menu_tab_color if user.menu_tab_color else '#06b6d4' }}" class="w-32 h-10 p-1 rounded bg-[var(--input-bg)] border border-[var(--border-color)]">
+      </div>
+      <div class="form-item">
+        <label for="menu_bg_color" class="block">Background Color</label>
+        <input type="color" id="menu_bg_color" name="menu_bg_color" value="{{ user.menu_bg_color if user.menu_bg_color else '#1f2937' }}" class="w-32 h-10 p-1 rounded bg-[var(--input-bg)] border border-[var(--border-color)]">
+      </div>
+      <div class="form-item flex items-center">
+        <label for="menu_stick_theme" class="inline-flex items-center mt-6">
+          <input type="checkbox" id="menu_stick_theme" name="menu_stick_theme" value="1" class="mr-2" {% if user.menu_stick_theme %}checked{% endif %}>
+          Stick with Theme
+        </label>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-item">
         <label for="icon_style" class="block">Icon Style</label>
         <select id="icon_style" name="icon_style" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
           {% for s in icon_sets %}
