@@ -10,6 +10,7 @@ from core.utils.auth import (
     ROLE_HIERARCHY,
     get_password_hash,
 )
+from core.models.models import UserSSHCredential
 from core.models.models import User, SystemTunable, LoginEvent
 
 router = APIRouter()
@@ -34,12 +35,18 @@ async def my_profile(
         .order_by(LoginEvent.timestamp.desc())
         .first()
     )
+    creds = (
+        db.query(UserSSHCredential)
+        .filter(UserSSHCredential.user_id == current_user.id)
+        .all()
+    )
     context = {
         "request": request,
         "user": current_user,
         "current_user": current_user,
         "api_key": api_key,
         "last_login": last_login,
+        "creds": creds,
         "themes": [
             "dark_colourful",
             "dark",

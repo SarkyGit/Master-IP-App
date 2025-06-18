@@ -2,7 +2,13 @@
 
 {% block content %}
 <h1 class="text-xl mb-4">User Details</h1>
-<div class="flex flex-wrap gap-4 items-start">
+<div x-data="{tab: 'profile'}">
+  <div class="flex space-x-2 mb-4">
+    <button @click="tab = 'profile'" :class="{'bg-[var(--tab-hover)]': tab === 'profile'}" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Profile</button>
+    <button @click="tab = 'ssh'" :class="{'bg-[var(--tab-hover)]': tab === 'ssh'}" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">SSH Profiles</button>
+  </div>
+  <div x-show="tab === 'profile'">
+    <div class="flex flex-wrap gap-4 items-start">
   <div class="flex-1 min-w-[200px] overflow-auto">
     <table class="min-w-full table-fixed text-left">
       <tbody>
@@ -128,6 +134,36 @@
   </form>
 
   <a href="/users/me/edit" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition mt-4">Edit Profile</a>
+  </div> {# end profile tab #}
+  <div x-show="tab === 'ssh'" x-cloak>
+    <a href="/user/ssh/new" class="underline">Add SSH Credential</a>
+    <div class="w-full overflow-auto">
+      <table class="min-w-full table-fixed text-left mt-4">
+        <thead>
+          <tr>
+            <th class="px-4 py-2 text-left">Name</th>
+            <th class="px-4 py-2 text-left">Username</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for cred in creds %}
+          <tr class="border-t border-gray-700">
+            <td class="px-4 py-2">{{ cred.name }}</td>
+            <td class="px-4 py-2">{{ cred.username }}</td>
+            <td class="px-4 py-2">
+              <a href="/user/ssh/{{ cred.id }}/edit" aria-label="Edit" class="p-2 rounded transition mr-2">{{ include_icon('pencil','text-blue-500','1.5') }}</a>
+              <form method="post" action="/user/ssh/{{ cred.id }}/delete" class="inline">
+                <button type="submit" aria-label="Delete" class="p-2 rounded transition" onclick="return confirm('Delete profile?')">{{ include_icon('trash-2','text-red-500','1.5') }}</button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div> {# end ssh tab #}
+</div> {# end tab container #}
 {% endif %}
 {% endblock %}
 
