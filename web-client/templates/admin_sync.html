@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
 <h1 class="text-xl mb-4">Cloud Sync &amp; APIs</h1>
-<div class="grid gap-4 md:grid-cols-3">
-  <div class="md:col-span-2 flex flex-col gap-4">
+<div class="grid gap-4 md:grid-cols-2">
+  <div class="flex flex-col gap-4">
     <div class="p-3 bg-[var(--card-bg)] rounded">
       <h2 class="text-lg mb-2">Connection History</h2>
       <div class="w-full overflow-auto">
@@ -32,63 +32,6 @@
         </table>
       </div>
     </div>
-    <div class="p-3 bg-[var(--card-bg)] rounded">
-      <h2 class="text-lg mb-2">API Key Management</h2>
-      <form method="post" action="/admin/site-keys/new" class="space-y-2 mb-4">
-        <div>
-          <label class="block mb-1">Site Name</label>
-          <input type="text" name="site_name" required class="w-full p-1 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
-        </div>
-        <div>
-          <label class="block mb-1">Site ID (optional)</label>
-          <input type="text" name="site_id" class="w-full p-1 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
-        </div>
-        <button type="submit" class="btn">Create Key</button>
-      </form>
-      {% if new_key %}
-      <p class="p-2 mb-4 rounded bg-[var(--alert-bg)]">API Key for {{ new_site_id }}: <code>{{ new_key }}</code></p>
-      {% endif %}
-      <div class="w-full overflow-auto">
-        <table class="min-w-full table-fixed text-left border-collapse">
-          <thead>
-            <tr>
-              <th class="table-cell table-header">Site Name</th>
-              <th class="table-cell table-header">Site ID</th>
-              <th class="table-cell table-header">API Key</th>
-              <th class="table-cell table-header">Status</th>
-              <th class="table-cell table-header">Last Used</th>
-              <th class="table-header text-center actions-col">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-          {% for key in keys %}
-            {% set stale = key.last_used_at is none or (now - key.last_used_at > timedelta(hours=24)) %}
-            <tr class="border-t border-gray-700">
-              <td class="table-cell">{{ key.site_name }}</td>
-              <td class="table-cell">{{ key.site_id }}</td>
-              <td class="table-cell font-mono break-all">{{ key.api_key }}</td>
-              <td class="table-cell">{{ 'Active' if key.active else 'Revoked' }}</td>
-              <td class="table-cell">{{ key.last_used_at or 'never' }}</td>
-              <td class="actions-col text-center">
-                <div class="flex justify-center gap-1">
-                  <form method="post" action="/admin/site-keys/{{ key.id }}/toggle" class="inline">
-                    {% if key.active %}
-                    <button type="submit" aria-label="Disable" class="icon-btn" onclick="return confirm('Disable key?')">{{ include_icon('x-circle','text-red-500','5') }}</button>
-                    {% else %}
-                    <button type="submit" aria-label="Enable" class="icon-btn">{{ include_icon('check-circle','text-green-500','5') }}</button>
-                    {% endif %}
-                  </form>
-                  <form method="post" action="/admin/site-keys/{{ key.id }}/delete" class="inline">
-                    <button type="submit" aria-label="Delete" class="icon-btn" onclick="return confirm('Delete key?')">{{ include_icon('trash-2','text-red-500','5') }}</button>
-                  </form>
-                </div>
-              </td>
-            </tr>
-          {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
   </div>
   <div class="flex flex-col gap-4">
     <div class="p-3 bg-[var(--card-bg)] rounded">
@@ -112,6 +55,65 @@
         <li>Last Push Worker: {{ tunables.get('Last Sync Push Worker', 'never') }}</li>
         <li>Last Pull Worker: {{ tunables.get('Last Sync Pull Worker', 'never') }}</li>
       </ul>
+    </div>
+  </div>
+</div>
+<div class="mt-4">
+  <div class="p-3 bg-[var(--card-bg)] rounded">
+    <h2 class="text-lg mb-2">API Key Management</h2>
+    <form method="post" action="/admin/site-keys/new" class="space-y-2 mb-4">
+      <div>
+        <label class="block mb-1">Site Name</label>
+        <input type="text" name="site_name" required class="w-full p-1 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+      </div>
+      <div>
+        <label class="block mb-1">Site ID (optional)</label>
+        <input type="text" name="site_id" class="w-full p-1 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+      </div>
+      <button type="submit" class="btn">Create Key</button>
+    </form>
+    {% if new_key %}
+    <p class="p-2 mb-4 rounded bg-[var(--alert-bg)]">API Key for {{ new_site_id }}: <code>{{ new_key }}</code></p>
+    {% endif %}
+    <div class="w-full overflow-auto">
+      <table class="min-w-full table-fixed text-left border-collapse">
+        <thead>
+          <tr>
+            <th class="table-cell table-header">Site Name</th>
+            <th class="table-cell table-header">Site ID</th>
+            <th class="table-cell table-header">API Key</th>
+            <th class="table-cell table-header">Status</th>
+            <th class="table-cell table-header">Last Used</th>
+            <th class="table-header text-center actions-col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for key in keys %}
+          {% set stale = key.last_used_at is none or (now - key.last_used_at > timedelta(hours=24)) %}
+          <tr class="border-t border-gray-700">
+            <td class="table-cell">{{ key.site_name }}</td>
+            <td class="table-cell">{{ key.site_id }}</td>
+            <td class="table-cell font-mono break-all">{{ key.api_key }}</td>
+            <td class="table-cell">{{ 'Active' if key.active else 'Revoked' }}</td>
+            <td class="table-cell">{{ key.last_used_at or 'never' }}</td>
+            <td class="actions-col text-center">
+              <div class="flex justify-center gap-1">
+                <form method="post" action="/admin/site-keys/{{ key.id }}/toggle" class="inline">
+                  {% if key.active %}
+                  <button type="submit" aria-label="Disable" class="icon-btn" onclick="return confirm('Disable key?')">{{ include_icon('x-circle','text-red-500','5') }}</button>
+                  {% else %}
+                  <button type="submit" aria-label="Enable" class="icon-btn">{{ include_icon('check-circle','text-green-500','5') }}</button>
+                  {% endif %}
+                </form>
+                <form method="post" action="/admin/site-keys/{{ key.id }}/delete" class="inline">
+                  <button type="submit" aria-label="Delete" class="icon-btn" onclick="return confirm('Delete key?')">{{ include_icon('trash-2','text-red-500','5') }}</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
     </div>
   </div>
 </div>
@@ -212,5 +214,135 @@
       <p class="mt-2">Status: {{ connection_status }}{% if last_contact %} (last at {{ last_contact }}){% endif %}</p>
     </form>
   </div>
+</div>
+<div class="mt-4">
+{% if role == 'cloud' %}
+  <h2 class="text-lg mb-2">Local Servers (Cloud View)</h2>
+{% else %}
+  <h2 class="text-lg mb-2">Cloud Servers (Local View)</h2>
+{% endif %}
+<div x-data="tableControls()" class="space-y-2 full-width">
+  <div class="flex justify-between items-center">
+    <label>Show
+      <select x-model="perPage" class="rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)] mx-1">
+        <option>10</option>
+        <option>25</option>
+        <option>50</option>
+        <option>100</option>
+      </select>
+      entries
+    </label>
+    <input x-model="search" type="text" placeholder="Search" class="rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)] px-2 py-1" />
+  </div>
+  <div class="w-full overflow-auto">
+    <table class="min-w-full table-fixed text-left border-collapse">
+      <thead>
+        {% if role == 'cloud' %}
+        <tr>
+          <th class="table-cell table-header">Site ID</th>
+          <th class="table-cell table-header">Site Name</th>
+          <th class="table-cell table-header">Status</th>
+          <th class="table-cell table-header">Last Seen</th>
+          <th class="table-cell table-header">API Keys</th>
+          <th class="table-header text-center actions-col">Actions</th>
+        </tr>
+        {% else %}
+        <tr>
+          <th class="table-cell table-header">Cloud URL</th>
+          <th class="table-cell table-header">Site ID</th>
+          <th class="table-cell table-header">API Key</th>
+          <th class="table-cell table-header">Status</th>
+          <th class="table-header text-center actions-col">Actions</th>
+        </tr>
+        {% endif %}
+      </thead>
+      <tbody>
+      {% if role == 'cloud' %}
+        {% for site in sites %}
+        {% set online = site.last_seen and (now - site.last_seen < timedelta(minutes=10)) %}
+        <tr class="border-t border-gray-700">
+          <td class="table-cell">{{ site.site_id }}</td>
+          <td class="table-cell">{{ name_map.get(site.site_id, '') }}</td>
+          <td class="table-cell">
+            {% if online %}
+            {{ include_icon('circle','text-green-500','5') }}
+            {% else %}
+            {{ include_icon('circle','text-red-500','5') }}
+            {% endif %}
+          </td>
+          <td class="table-cell">{{ site.last_seen or 'never' }}</td>
+          <td class="table-cell">
+            {% for k in key_map.get(site.site_id, []) %}
+            <div x-data="{show:false}" class="mb-1">
+              <button type="button" @click="show=!show" class="underline text-sm mr-1" x-text="show ? 'Hide' : 'Show'"></button>
+              <span x-show="show" x-text="'{{ k.api_key }}'"></span>
+            </div>
+            {% endfor %}
+          </td>
+          <td class="actions-col text-center">
+            <form method="post" action="/admin/cloud-sync/{{ site.site_id }}/new-key" class="inline">
+              <button type="submit" aria-label="Issue" class="icon-btn">{{ include_icon('plus','text-blue-500','5') }}</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      {% else %}
+        {% set last_dt = datetime.fromisoformat(last_contact) if last_contact else None %}
+        {% set online = last_dt and (now - last_dt < timedelta(minutes=10)) %}
+        <tr class="border-t border-gray-700">
+          <td class="table-cell">{{ cloud_url }}</td>
+          <td class="table-cell">{{ site_id }}</td>
+          <td class="table-cell">
+            {% if api_key %}
+            <div x-data="{show:false}">
+              <button type="button" @click="show=!show" class="underline text-sm mr-1" x-text="show ? 'Hide' : 'Show'"></button>
+              <span x-show="show" x-text="'{{ api_key }}'"></span>
+            </div>
+            {% endif %}
+          </td>
+          <td class="table-cell">
+            {% if online %}
+            {{ include_icon('circle','text-green-500','5') }}
+            {% else %}
+            {{ include_icon('circle','text-red-500','5') }}
+            {% endif %}
+          </td>
+          <td class="actions-col text-center">
+            <button type="button" @click="open = !open" x-data="{open:false}" class="icon-btn">{{ include_icon('pencil','text-blue-500','5') }}</button>
+          </td>
+        </tr>
+        <tr x-show="open" x-data="{open:false}" x-cloak class="border-t border-gray-700">
+          <td colspan="5">
+            <form method="post" action="/admin/cloud-sync/update" class="space-y-2">
+              <div>
+                <label class="block mb-1">Cloud URL</label>
+                <input type="text" name="cloud_url" value="{{ cloud_url }}" class="w-full p-1 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+              </div>
+              <div>
+                <label class="block mb-1">Site ID</label>
+                <input type="text" name="site_id" value="{{ site_id }}" class="w-full p-1 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+              </div>
+              <div>
+                <label class="block mb-1">API Key</label>
+                <input type="text" name="api_key" value="{{ api_key }}" class="w-full p-1 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+              </div>
+              <div class="text-right">
+                <button type="submit" class="btn">Save</button>
+              </div>
+            </form>
+          </td>
+        </tr>
+      {% endif %}
+      </tbody>
+    </table>
+    <div class="flex justify-between items-center mt-2">
+      <span x-text="countText()" class="text-sm"></span>
+      <div>
+        <button type="button" @click="prev" class="px-4 py-1.5 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded shadow transition mr-2">Previous</button>
+        <button type="button" @click="next" class="px-4 py-1.5 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded shadow transition">Next</button>
+      </div>
+    </div>
+  </div>
+</div>
 </div>
 {% endblock %}
