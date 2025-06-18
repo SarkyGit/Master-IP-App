@@ -9,6 +9,17 @@ if [ -z "${DATABASE_URL}" ] && [ -f .env ]; then
     set +a
 fi
 
+# Optionally wait for network connectivity before starting
+if [ "${WAIT_FOR_NETWORK:-0}" != "0" ]; then
+    echo "Waiting for network connectivity..."
+    for i in {1..30}; do
+        if ping -c1 -w1 8.8.8.8 >/dev/null 2>&1; then
+            break
+        fi
+        sleep 2
+    done
+fi
+
 # Fail fast if SECRET_KEY was not changed
 if [ "${SECRET_KEY}" = "change-me" ] || [ -z "${SECRET_KEY}" ]; then
     echo "ERROR: SECRET_KEY must be set to a unique value before deployment" >&2

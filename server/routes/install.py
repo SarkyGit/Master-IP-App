@@ -2,6 +2,7 @@ from fastapi import APIRouter, Request, Form
 from fastapi.responses import RedirectResponse
 from core.utils.templates import templates
 import os, subprocess
+from server.utils.cloud import ensure_env_writable
 
 router = APIRouter()
 
@@ -83,6 +84,8 @@ async def install_finish(request: Request, seed: str = Form("no")):
         f"SITE_ID={data.get('site_id','1')}",
         f"INSTALL_DOMAIN={data.get('install_domain','')}",
     ]
+    if not ensure_env_writable(".env"):
+        raise PermissionError("Cannot write .env file")
     with open(".env", "w", encoding="utf-8") as f:
         f.write("\n".join(lines) + "\n")
 
