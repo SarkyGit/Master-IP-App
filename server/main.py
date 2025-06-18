@@ -38,6 +38,7 @@ from server.routes import (
     admin_site_router,
     bulk_router,
     reports_router,
+    conflicts_router,
     export_router,
     snmp_traps_router,
     syslog_router,
@@ -211,6 +212,7 @@ app.include_router(add_device_router)
 app.include_router(admin_site_router)
 app.include_router(bulk_router)
 app.include_router(reports_router)
+app.include_router(conflicts_router)
 app.include_router(export_router)
 app.include_router(snmp_traps_router)
 app.include_router(syslog_router)
