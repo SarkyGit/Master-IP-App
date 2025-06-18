@@ -60,6 +60,7 @@ async def sync_menu(
     current_user=Depends(require_role("superadmin")),
 ):
     items = [
+        {"label": "Cloud Sync", "href": "/admin/cloud-sync"},
         {"label": "Google Sheets", "href": "/tasks/google-sheets"},
         {"label": "Google Maps", "href": "/tunables?category=Google%20Maps"},
         {"label": "Netbird", "href": "/ssh/netbird-connect"},

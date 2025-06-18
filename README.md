@@ -297,6 +297,7 @@ adjusted from the same **Edit Profile** form.
 ## System Tunables
 
 The application stores various settings in the `system_tunables` table. These are seeded with default values by `seed_tunables.py` and can be adjusted from the **System Tunables** page in the web UI (admin role required).
+Superadmins can manage the connection to a cloud server from **Cloud Sync / API's** at `/admin/cloud-sync`.
 
 After installation you can configure the cloud connection from this page. Look for the following tunables under the **Sync** function:
 
