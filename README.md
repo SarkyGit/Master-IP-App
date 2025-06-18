@@ -492,7 +492,8 @@ AttributeError: module 'lib' has no attribute 'X509_V_FLAG_NOTIFY_POLICY'
 Upgrade `pyOpenSSL` before running Certbot:
 
 ```bash
-sudo pip3 install --break-system-packages --upgrade pyOpenSSL
+sudo pip3 install --upgrade pyOpenSSL
+# add --break-system-packages if your pip version supports it
 ```
 
 ### Modal window stays open after saving

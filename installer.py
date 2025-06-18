@@ -58,6 +58,14 @@ def pg_database_exists(name: str) -> bool:
     return result.stdout.strip() == "1"
 
 
+def pip_supports_break_system_packages() -> bool:
+    """Return True if pip recognizes the --break-system-packages option."""
+    result = subprocess.run(
+        ["pip3", "install", "--help"], capture_output=True, text=True
+    )
+    return "--break-system-packages" in result.stdout
+
+
 def ensure_ipapp_user() -> None:
     """Create ipapp user and sudoers rules if needed."""
     if subprocess.run(["id", "ipapp"], capture_output=True).returncode != 0:
@@ -157,7 +165,10 @@ def install():
             run("apt-get install -y certbot python3-certbot-nginx")
             # pyOpenSSL bundled with some distributions crashes against
             # OpenSSL 3.x. Upgrade it before invoking certbot.
-            run("pip3 install --break-system-packages --upgrade pyOpenSSL")
+            pip_cmd = "pip3 install --upgrade pyOpenSSL"
+            if pip_supports_break_system_packages():
+                pip_cmd = "pip3 install --break-system-packages --upgrade pyOpenSSL"
+            run(pip_cmd)
             run(
                 f"certbot --nginx -d {domain} --non-interactive --agree-tos -m admin@{domain}"
             )
