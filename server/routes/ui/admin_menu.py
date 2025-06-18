@@ -36,6 +36,7 @@ async def system_menu(
         {"label": "Upload Image", "href": "/admin/upload-image"},
         {"label": "Update System", "href": "/admin/update"},
         {"label": "Tunables", "href": "/tunables"},
+        {"label": "Users", "href": "/admin/users"},
         {"label": "UI to be Sorted", "href": "/admin/ui-to-be-sorted"},
     ]
     for item in items:
@@ -60,7 +61,6 @@ async def sync_menu(
     current_user=Depends(require_role("superadmin")),
 ):
     items = [
-        {"label": "Cloud Sync", "href": "/admin/cloud-sync"},
         {"label": "Google Sheets", "href": "/tasks/google-sheets"},
         {"label": "Google Maps", "href": "/tunables?category=Google%20Maps"},
         {"label": "Netbird", "href": "/ssh/netbird-connect"},

@@ -50,26 +50,6 @@ async def inventory_sites(request: Request, current_user=Depends(require_role("v
     return templates.TemplateResponse('inventory_site.html', context)
 
 
-@router.get('/inventory/new-product')
-async def inventory_new_product(request: Request, current_user=Depends(require_role("viewer"))):
-    """Blank table for new products."""
-    context = {"request": request, "current_user": current_user, "devices": [], "title": "New Product Blank Template", "show_r1": False}
-    return templates.TemplateResponse('inventory_table.html', context)
-
-
-@router.get('/inventory/new-camera')
-async def inventory_new_camera(request: Request, current_user=Depends(require_role("viewer"))):
-    """Blank table for new cameras."""
-    context = {"request": request, "current_user": current_user, "devices": [], "title": "New Camera Blank Template", "show_r1": False}
-    return templates.TemplateResponse('inventory_table.html', context)
-
-
-@router.get('/inventory/new-ruckus-ap')
-async def inventory_new_ruckus_ap(request: Request, current_user=Depends(require_role("viewer")), db: Session = Depends(get_db)):
-    """Blank table for new Ruckus APs."""
-    return _render_inventory(request, current_user, db, device_type="AP", title="New Ruckus AP Blank Template", show_r1=True)
-
-
 @router.get('/inventory/switches')
 async def inventory_switches(request: Request, current_user=Depends(require_role("viewer")), db: Session = Depends(get_db)):
     return _render_inventory(request, current_user, db, device_type="Switch", title="Switches")
@@ -167,6 +147,14 @@ async def inventory_reports(
         {"label": "Consumables Report", "href": "/inventory/consumables-report", "img": images["consumables_report"]},
         {"label": "Audit", "href": "/inventory/audit", "img": images["audit"]},
         {"label": "Current Kits", "href": "/inventory/current-kits", "img": images["current_kits"]},
+        {"label": "Switches", "href": "/inventory/switches", "img": ""},
+        {"label": "PTP", "href": "/inventory/ptp", "img": ""},
+        {"label": "PTMP", "href": "/inventory/ptmp", "img": ""},
+        {"label": "APs", "href": "/inventory/aps", "img": ""},
+        {"label": "IPTV", "href": "/inventory/iptv", "img": ""},
+        {"label": "VOG", "href": "/inventory/vog", "img": ""},
+        {"label": "IP Cameras", "href": "/inventory/ip-cameras", "img": ""},
+        {"label": "IoT Devices", "href": "/inventory/iot-devices", "img": ""},
     ]
     if current_user.role in ["admin", "superadmin"]:
         items.append({"label": "Sync Conflicts", "href": "/reports/conflicts", "img": images["conflicts"]})
