@@ -59,6 +59,9 @@ async def create_user(
     font: str = Form("sans"),
     menu_style: str = Form("tabbed"),
     icon_style: str = Form("lucide"),
+    menu_tab_color: str | None = Form(None),
+    menu_bg_color: str | None = Form(None),
+    menu_stick_theme: bool = Form(False),
     db: Session = Depends(get_db),
     current_user=Depends(require_role("superadmin")),
 ):
@@ -92,6 +95,9 @@ async def create_user(
         theme=theme,
         font=font,
         menu_style=menu_style,
+        menu_tab_color=menu_tab_color,
+        menu_bg_color=menu_bg_color,
+        menu_stick_theme=menu_stick_theme,
         icon_style=icon_style,
     )
     db.add(user)
@@ -137,6 +143,9 @@ async def update_user(
     theme: str = Form("dark_colourful"),
     font: str = Form("sans"),
     menu_style: str = Form("tabbed"),
+    menu_tab_color: str | None = Form(None),
+    menu_bg_color: str | None = Form(None),
+    menu_stick_theme: bool = Form(False),
     password: str | None = Form(None),
     db: Session = Depends(get_db),
     current_user=Depends(require_role("superadmin")),
@@ -151,6 +160,9 @@ async def update_user(
     user.theme = theme
     user.font = font
     user.menu_style = menu_style
+    user.menu_tab_color = menu_tab_color
+    user.menu_bg_color = menu_bg_color
+    user.menu_stick_theme = menu_stick_theme
     user.icon_style = icon_style
     if password:
         user.hashed_password = get_password_hash(password)

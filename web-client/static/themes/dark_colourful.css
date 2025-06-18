@@ -14,6 +14,9 @@ body {
   --tab-bg: #06b6d4;      /* cyan */
   --tab-hover: #22d3ee;   /* lighter cyan */
   --tab-text: #ffffff;
+  --network-tab-bg: #8e44ec;
+  --network-tab-text: #ffffff;
+  --network-submenu-bg: #7a33d8;
   --btn-bg:        #f97316; /* orange */
   --btn-hover:     #fb923c; /* lighter orange */
   --btn-text:      #ffffff;

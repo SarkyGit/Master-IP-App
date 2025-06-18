@@ -97,6 +97,9 @@ async def update_my_profile(
     font: str = Form("sans"),
     menu_style: str = Form("tabbed"),
     icon_style: str = Form("lucide"),
+    menu_tab_color: str | None = Form(None),
+    menu_bg_color: str | None = Form(None),
+    menu_stick_theme: bool = Form(False),
     scroll_handoff_enabled: str = Form(None),
     db: Session = Depends(get_db),
     current_user: User = Depends(require_role("viewer")),
@@ -131,6 +134,9 @@ async def update_my_profile(
     current_user.font = font
     current_user.menu_style = menu_style
     current_user.icon_style = icon_style
+    current_user.menu_tab_color = menu_tab_color
+    current_user.menu_bg_color = menu_bg_color
+    current_user.menu_stick_theme = menu_stick_theme
     current_user.scroll_handoff_enabled = bool(scroll_handoff_enabled)
     if password:
         current_user.hashed_password = get_password_hash(password)
@@ -159,6 +165,9 @@ async def update_my_prefs(
     theme: str = Form("dark_colourful"),
     font: str = Form("sans"),
     menu_style: str = Form("tabbed"),
+    menu_tab_color: str | None = Form(None),
+    menu_bg_color: str | None = Form(None),
+    menu_stick_theme: bool = Form(False),
     db: Session = Depends(get_db),
     current_user: User = Depends(require_role("viewer")),
 ):
@@ -166,6 +175,9 @@ async def update_my_prefs(
     current_user.theme = theme
     current_user.font = font
     current_user.menu_style = menu_style
+    current_user.menu_tab_color = menu_tab_color
+    current_user.menu_bg_color = menu_bg_color
+    current_user.menu_stick_theme = menu_stick_theme
     db.commit()
     return RedirectResponse(url="/users/me", status_code=302)
 
