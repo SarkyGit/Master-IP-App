@@ -108,8 +108,73 @@
     </div>
   </div>
 </div>
+<div class="mt-4 grid gap-4 md:grid-cols-2">
+  <div class="space-y-4">
+    {% for file, tuns in sync_groups.items() %}
+    {% if file == 'application' %}
+    <div class="p-3 bg-[var(--card-bg)] rounded">
+      <h2 class="text-lg mb-2">{{ file }}</h2>
+      <form method="post" action="/tunables/group" class="space-y-3">
+        <div class="flex flex-wrap gap-4 items-start">
+        {% for tunable in tuns %}
+          <div class="flex flex-col flex-1 min-w-[260px]">
+            <label class="mb-1 fw-bold">{{ tunable.name }}</label>
+            {% if tunable.description %}<p class="text-sm text-gray-400">{{ tunable.description }}</p>{% endif %}
+            {% if tunable.options and tunable.data_type == 'choice' %}
+            <p class="text-sm text-gray-400">Options: {{ tunable.options }}</p>
+            {% endif %}
+            {% if tunable.data_type == 'bool' %}
+            <input type="checkbox" name="tunable_{{ tunable.id }}" value="true" {% if tunable.value == 'true' %}checked{% endif %}>
+            {% elif tunable.data_type == 'choice' %}
+            <select name="tunable_{{ tunable.id }}" class="rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+              {% for opt in tunable.options.split(',') %}
+              <option value="{{ opt }}" {% if tunable.value == opt %}selected{% endif %}>{{ opt }}</option>
+              {% endfor %}
+            </select>
+            {% else %}
+            <input type="text" name="tunable_{{ tunable.id }}" value="{{ tunable.value }}" class="rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+            {% endif %}
+          </div>
+        {% endfor %}
+        </div>
+        <button type="submit" class="btn">Save</button>
+      </form>
+    </div>
+    {% endif %}
+    {% endfor %}
+  </div>
+  <div class="p-3 bg-[var(--card-bg)] rounded">
+    <h2 class="text-lg mb-2">Cloud Connection</h2>
+    <form method="post" action="/admin/test-cloud-sync" class="space-y-2">
+      <label class="block"><input type="checkbox" name="enable" {% if cloud_enabled %}checked{% endif %}> Enable Cloud Sync</label>
+      <div>
+        <label class="block mb-1">Cloud URL</label>
+        <input type="text" name="cloud_url" value="{{ cloud_url }}" class="w-full p-1 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+      </div>
+      <div>
+        <label class="block mb-1">Site ID</label>
+        <input type="text" name="site_id" value="{{ site_id }}" class="w-full p-1 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+      </div>
+      <div>
+        <label class="block mb-1">API Key</label>
+        <input type="text" name="api_key" value="{{ api_key }}" placeholder="Enter key" class="w-full p-1 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+        {% if api_key %}
+        <p class="text-sm mt-1">Current key: <code>{{ api_key }}</code></p>
+        {% else %}
+        <p class="text-sm mt-1">No API key configured</p>
+        {% endif %}
+      </div>
+      <button type="submit" class="btn">Test Connection</button>
+      {% if cloud_message %}
+      <p class="mt-2">{{ cloud_message }}</p>
+      {% endif %}
+      <p class="mt-2">Status: {{ connection_status }}{% if last_contact %} (last at {{ last_contact }}){% endif %}</p>
+    </form>
+  </div>
+</div>
 <div class="mt-4 space-y-4">
   {% for file, tuns in sync_groups.items() %}
+  {% if file != 'application' %}
   <div class="p-3 bg-[var(--card-bg)] rounded">
     <h2 class="text-lg mb-2">{{ file }}</h2>
     <form method="post" action="/tunables/group" class="space-y-3">
@@ -138,6 +203,7 @@
       <button type="submit" class="btn">Save</button>
     </form>
   </div>
+  {% endif %}
   {% endfor %}
 </div>
 {% endblock %}

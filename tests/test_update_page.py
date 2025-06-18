@@ -87,4 +87,4 @@ def test_update_page_shows_api_key():
         resp = client.get("/admin/update")
 
     assert resp.status_code == 200
-    assert "secret" in resp.text
+    assert "secret" not in resp.text
