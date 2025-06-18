@@ -280,12 +280,16 @@ class AuditLog(Base):
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("users.id"))
     action_type = Column(String, nullable=False)
-    device_id = Column(Integer, ForeignKey("devices.id"), nullable=True)
+    device_id = Column(
+        Integer,
+        ForeignKey("devices.id", ondelete="SET NULL"),
+        nullable=True,
+    )
     timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
     details = Column(Text, nullable=True)
 
     user = relationship("User")
-    device = relationship("Device")
+    device = relationship("Device", passive_deletes=True)
 
 
 class PortConfigTemplate(Base):
