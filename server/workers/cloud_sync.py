@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 import httpx
 
 from core.utils.db_session import SessionLocal
-from core.models.models import SystemTunable
+from core.models.models import SystemTunable, Device
 
 SYNC_INTERVAL = int(os.environ.get("SYNC_FREQUENCY", "300"))
 SYNC_TIMEOUT = int(os.environ.get("SYNC_TIMEOUT", "10"))
@@ -93,7 +93,7 @@ async def _request_with_retry(method: str, url: str, payload: dict, log: logging
 async def push_once(log: logging.Logger) -> None:
     push_url, _, site_id, api_key = _get_sync_config()
     db = SessionLocal()
-    payload = {"timestamp": datetime.now(timezone.utc).isoformat()}
+    payload = {"model": Device.__tablename__, "records": []}
     try:
         await _request_with_retry("POST", push_url, payload, log, site_id, api_key)
         await _update_timestamp(db, "Last Sync Push")
@@ -106,7 +106,8 @@ async def push_once(log: logging.Logger) -> None:
 async def pull_once(log: logging.Logger) -> None:
     _, pull_url, site_id, api_key = _get_sync_config()
     db = SessionLocal()
-    payload: dict[str, str] = {}
+    since = datetime.fromtimestamp(0, timezone.utc).isoformat()
+    payload = {"since": since, "models": [Device.__tablename__]}
     try:
         await _request_with_retry("POST", pull_url, payload, log, site_id, api_key)
         await _update_timestamp(db, "Last Sync Pull")
