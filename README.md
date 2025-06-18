@@ -190,7 +190,7 @@ The application can run either as a standalone **local** instance or as the cent
    ```bash
    docker compose -f deploy/docker/docker-compose.cloud.yml up --build -d
    ```
-3. The cloud server exposes `/api/v1/sync` for local sites. Background workers are disabled by default but can be started with `ENABLE_SYNC_PULL_WORKER=1` and `ENABLE_SYNC_PUSH_WORKER=1`.
+3. The cloud server exposes `/api/v1/sync` for local sites. Background workers now run automatically and synchronize all database tables by default.
 
 ### Component Matrix
 | Component | Local Mode | Cloud Mode |
@@ -271,10 +271,10 @@ python setup_cloud_connection.py https://CESTechnologies.Patch-Bay.com my-api-ke
 
 If any of the parameters are omitted you will be prompted interactively. The
 final argument enables cloud sync when set to `yes`/`1`. If the connection
-succeeds the script prints `Connection successful`, updates `.env` with the
-required worker flags and the background workers will use these values on the
-next run. Manual editing of `ENABLE_CLOUD_SYNC`, `ENABLE_SYNC_PUSH_WORKER` and
-`ENABLE_SYNC_PULL_WORKER` is no longer required.
+succeeds the script prints `Connection successful` and updates `.env` with the
+connection details. The sync workers are enabled by default so manual editing of
+`ENABLE_CLOUD_SYNC`, `ENABLE_SYNC_PUSH_WORKER` and `ENABLE_SYNC_PULL_WORKER` is
+typically unnecessary.
 
 Local sites often run behind NAT or firewalls that block inbound traffic. The sync workers therefore initiate outbound connections to the cloud using the API key assigned to the site. As long as that key exists in the cloud server's allowed list the push and pull operations will succeed without any ports opened on the local network.
 
@@ -314,8 +314,8 @@ Several background workers run alongside the FastAPI app.
 - `config_scheduler` schedules periodic configuration pulls and cleanup tasks.
 - `trap_listener` listens for SNMP traps when `ENABLE_TRAP_LISTENER=1`.
 - `syslog_listener` collects syslog messages when `ENABLE_SYSLOG_LISTENER=1`.
-- `sync_push_worker` sends local updates to the cloud when `ENABLE_SYNC_PUSH_WORKER=1`.
-- `sync_pull_worker` retrieves remote changes when `ENABLE_SYNC_PULL_WORKER=1`.
+- `sync_push_worker` sends local updates to the cloud (enabled by default).
+- `sync_pull_worker` retrieves remote changes from the cloud (enabled by default).
 These workers start automatically when `server.main` is launched but can also be executed directly with `python -m server.workers.<name>` for debugging.
 
 ## Token-based API Authentication
@@ -377,9 +377,9 @@ The application reads several options from the environment. Important variables 
 - `QUEUE_INTERVAL` and `PORT_HISTORY_RETENTION_DAYS` – worker scheduling values.
  - `WORKERS`, `TIMEOUT`, `PORT` and `AUTO_SEED` – options used by `start.sh`.
  - `ROLE` – set to `local` or `cloud` to control sync behaviour.
-- `ENABLE_CLOUD_SYNC` – when `1`, start the background sync worker (local role).
-- `ENABLE_SYNC_PUSH_WORKER` – start the worker that pushes local changes.
-- `ENABLE_SYNC_PULL_WORKER` – start the worker that pulls updates from the cloud.
+ - `ENABLE_CLOUD_SYNC` – set to `0` to disable the background sync worker (local role).
+ - `ENABLE_SYNC_PUSH_WORKER` – set to `0` to disable pushing local changes.
+ - `ENABLE_SYNC_PULL_WORKER` – set to `0` to disable pulling updates from the cloud.
 - `ENABLE_BACKGROUND_WORKERS` – disable to skip queue and scheduler startup.
 - `CLOUD_BASE_URL` – base URL of the cloud server (overrides tunable).
 - `SYNC_PUSH_URL` and `SYNC_PULL_URL` – custom endpoints for synchronization.

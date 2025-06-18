@@ -5,6 +5,7 @@ from datetime import datetime, timezone, timedelta
 
 import httpx
 import pytest
+import bcrypt
 
 from server.workers import sync_push_worker
 from server.workers import cloud_sync
@@ -16,6 +17,7 @@ class DummyQuery:
 
     def filter(self, expr):
         from sqlalchemy.sql import operators
+
         if hasattr(expr, "clauses"):
             clauses = list(expr.clauses)
         else:
@@ -54,6 +56,7 @@ class DummyDB:
         self.models = models
         self.data = {
             models.Device: [],
+            models.User: [],
             models.SystemTunable: [
                 models.SystemTunable(
                     name="Last Sync Push Worker",
@@ -100,10 +103,24 @@ def test_push_once_sends_unsynced_records(monkeypatch):
         version=1,
     )
     db.data[models.Device].append(dev)
+    user = models.User(
+        id=1,
+        email="viewer@example.com",
+        hashed_password=bcrypt.hashpw(b"secret", bcrypt.gensalt()).decode(),
+        role="viewer",
+        is_active=True,
+        created_at=now,
+        version=1,
+    )
+    db.data[models.User].append(user)
     old_value = db.data[models.SystemTunable][0].value
 
     monkeypatch.setattr(sync_push_worker, "SessionLocal", lambda: db)
-    monkeypatch.setattr(sync_push_worker, "_get_sync_config", lambda: ("http://push", "http://pull", "site1", ""))
+    monkeypatch.setattr(
+        sync_push_worker,
+        "_get_sync_config",
+        lambda: ("http://push", "http://pull", "site1", ""),
+    )
     sent = {}
 
     async def fake_request(method, url, payload, log, site_id, api_key):
@@ -113,8 +130,10 @@ def test_push_once_sends_unsynced_records(monkeypatch):
 
     asyncio.run(sync_push_worker.push_once(mock.Mock()))
 
-    assert len(sent["payload"]["records"]) == 1
-    assert sent["payload"]["records"][0]["model"] == models.Device.__tablename__
+    assert len(sent["payload"]["records"]) == 2
+    models_sent = {r["model"] for r in sent["payload"]["records"]}
+    assert models.Device.__tablename__ in models_sent
+    assert models.User.__tablename__ in models_sent
     assert db.data[models.SystemTunable][0].value != old_value
 
 
@@ -142,5 +161,9 @@ def test_request_with_retry_retries(monkeypatch):
 
     monkeypatch.setattr(httpx, "AsyncClient", lambda timeout=None: FakeClient())
     log = mock.Mock()
-    asyncio.run(cloud_sync._request_with_retry("POST", "http://example", {}, log, "site1", "key"))
+    asyncio.run(
+        cloud_sync._request_with_retry(
+            "POST", "http://example", {}, log, "site1", "key"
+        )
+    )
     assert len(calls) == 2
