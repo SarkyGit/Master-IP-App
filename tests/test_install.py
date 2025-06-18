@@ -33,7 +33,7 @@ def test_install_finish_handles_quotes(monkeypatch):
 
     assert fake_run_calls, "subprocess.run not called"
     cmd = fake_run_calls[-1]
-    assert cmd[:2] == ["python", "-c"]
+    assert cmd[:2] == [install_module.sys.executable, "-c"]
     payload = {"email": data["admin_email"], "password": data["admin_password"]}
     encoded = base64.b64encode(json.dumps(payload).encode()).decode()
     assert encoded in cmd[2]

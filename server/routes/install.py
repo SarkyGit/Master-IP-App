@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Request, Form
 from fastapi.responses import RedirectResponse
 from core.utils.templates import templates
-import os, subprocess
+import os, subprocess, sys
 from server.utils.cloud import ensure_env_writable
 
 router = APIRouter()
@@ -96,9 +96,9 @@ async def install_finish(request: Request, seed: str = Form("no")):
         "SECRET_KEY": data["secret_key"],
     })
     subprocess.run(["alembic", "upgrade", "head"], check=True, env=env)
-    subprocess.run(["python", "seed_tunables.py"], check=True, env=env)
+    subprocess.run([sys.executable, "seed_tunables.py"], check=True, env=env)
     if seed == "yes":
-        subprocess.run(["python", "seed_data.py"], check=True, env=env)
+        subprocess.run([sys.executable, "seed_data.py"], check=True, env=env)
 
     import json, base64
     payload = {
@@ -118,6 +118,6 @@ async def install_finish(request: Request, seed: str = Form("no")):
         "role='superadmin',is_active=True);"
         "db.add(user);db.commit();db.close()"
     )
-    subprocess.run(["python", "-c", create_admin], check=True, env=env)
+    subprocess.run([sys.executable, "-c", create_admin], check=True, env=env)
     request.session.clear()
     return templates.TemplateResponse("install/complete.html", {"request": request})
