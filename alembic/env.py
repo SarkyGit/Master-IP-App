@@ -44,7 +44,9 @@ def process_revision_directives(context, revision, directives):
         return
     script = directives[0]
     conn = context.connection
-    for op in list(script.upgrade_ops.list_ops()):
+    # Alembic 1.8+ removed the list_ops() helper, upgrade_ops is iterable
+    # so we can access the operations via the ``ops`` attribute.
+    for op in list(script.upgrade_ops.ops):
         if isinstance(op, AddColumnOp):
             column = op.column
             if not column.nullable and column.server_default is None:
