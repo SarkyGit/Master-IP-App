@@ -169,14 +169,18 @@ def install():
                 )
 
         nginx_conf = (
-            f"server {{\n    listen 80;\n    server_name {server};\n    return 301 https://$host$request_uri;\n}}\n"
-            f"\nserver {{\n    listen 443 ssl;\n    server_name {server};\n"
+            f"server {{\n    listen 80 default_server;\n    server_name {server};\n    return 301 https://$host$request_uri;\n}}\n"
+            f"\nserver {{\n    listen 443 ssl default_server;\n    server_name {server};\n"
             f"    ssl_certificate {ssl_cert};\n    ssl_certificate_key {ssl_key};\n"
             "    location / {\n        proxy_pass http://127.0.0.1:8000;\n        proxy_set_header Host $host;\n        proxy_set_header X-Real-IP $remote_addr;\n        proxy_set_header X-Forwarded-Proto $scheme;\n    }\n"
             "    location /static/ {\n        proxy_pass http://127.0.0.1:8000/static/;\n        proxy_set_header Host $host;\n        proxy_set_header X-Forwarded-Proto $scheme;\n    }\n}"
         )
         Path("/etc/nginx/sites-available/master_ip.conf").write_text(nginx_conf)
         run("ln -sf /etc/nginx/sites-available/master_ip.conf /etc/nginx/sites-enabled/master_ip.conf")
+        if os.path.exists("/etc/nginx/sites-enabled/default"):
+            os.remove("/etc/nginx/sites-enabled/default")
+        if os.path.exists("/etc/nginx/sites-enabled/000-default"):
+            os.remove("/etc/nginx/sites-enabled/000-default")
         run("nginx -t")
         run("systemctl reload nginx")
 
