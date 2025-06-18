@@ -185,6 +185,7 @@
 .bg-black\/50{background-color:rgb(0 0 0 / 0.5) /* #000 */;}
 .bg-green-500{--un-bg-opacity:1;background-color:rgb(34 197 94 / var(--un-bg-opacity)) /* #22c55e */;}
 .bg-red-500{--un-bg-opacity:1;background-color:rgb(239 68 68 / var(--un-bg-opacity)) /* #ef4444 */;}
+.bg-red-600{--un-bg-opacity:1;background-color:rgb(220 38 38 / var(--un-bg-opacity)) /* #dc2626 */;}
 .hover\:bg-\[var\(--btn-hover\)\]:hover{background-color:var(--btn-hover) /* var(--btn-hover) */;}
 .hover\:bg-\[var\(--submenu-hover-bg\)\]:hover{background-color:var(--submenu-hover-bg) /* var(--submenu-hover-bg) */;}
 .hover\:bg-\[var\(--tab-hover\)\]:hover{background-color:var(--tab-hover) /* var(--tab-hover) */;}

@@ -1,38 +1,46 @@
 function startUpdateSocket() {
   const log = document.getElementById('update-log');
   const status = document.getElementById('update-status');
+  const error = document.getElementById('update-error');
+  const closeBtn = document.getElementById('update-close-btn');
+  const retryBtn = document.getElementById('update-retry-btn');
   let failed = false;
   let finished = false;
+  let rebooting = false;
   const socket = new WebSocket(`ws://${location.host}/ws/update`);
 
-  function closeModal() {
-    if (!finished) {
-      finished = true;
-      status.textContent = failed ? 'Update failed' : 'Update successful';
-      if (!failed) {
-        fetch('/admin/check-update')
-          .then(r => r.json())
-          .then(data => {
-            const commitEl = document.getElementById('commit-id');
-            const statusEl = document.getElementById('update-status-line');
-            if (commitEl) commitEl.textContent = data.commit;
-            if (statusEl) {
-              statusEl.textContent = data.update_available ?
-                `Update available (remote ${data.remote})` :
-                'System is up to date.';
-              if (data.update_available) {
-                statusEl.classList.add('text-green-600');
-              } else {
-                statusEl.classList.remove('text-green-600');
-              }
+  function finish() {
+    if (finished) return;
+    finished = true;
+    closeBtn.disabled = false;
+    if (failed) {
+      status.textContent = 'Update failed';
+      if (retryBtn) retryBtn.classList.remove('hidden');
+    } else {
+      status.textContent = rebooting ?
+        'Update complete. Restarting now...' :
+        'Update complete. Reloading...';
+      fetch('/admin/check-update')
+        .then(r => r.json())
+        .then(data => {
+          const commitEl = document.getElementById('commit-id');
+          const statusEl = document.getElementById('update-status-line');
+          if (commitEl) commitEl.textContent = data.commit;
+          if (statusEl) {
+            statusEl.textContent = data.update_available ?
+              `Update available (remote ${data.remote})` :
+              'System is up to date.';
+            if (data.update_available) {
+              statusEl.classList.add('text-green-600');
+            } else {
+              statusEl.classList.remove('text-green-600');
             }
-          })
-          .catch(() => {});
-      }
+          }
+        })
+        .catch(() => {});
       setTimeout(() => {
-        const modal = document.getElementById('modal');
-        if (modal) modal.innerHTML = '';
-      }, 2000);
+        location.reload();
+      }, rebooting ? 5000 : 1000);
     }
   }
 
@@ -42,14 +50,31 @@ function startUpdateSocket() {
     status.textContent = evt.data;
     if (/failed/i.test(evt.data)) {
       failed = true;
+      if (error) {
+        error.textContent = evt.data;
+        error.classList.remove('hidden');
+      }
+    }
+    if (/restarting|rebooting/i.test(evt.data)) {
+      rebooting = true;
     }
     if (evt.data === 'DONE') {
-      closeModal();
+      finish();
     }
   });
 
-  socket.addEventListener('close', closeModal);
-  socket.addEventListener('error', closeModal);
+  socket.addEventListener('close', finish);
+  socket.addEventListener('error', finish);
+  setTimeout(finish, 60000);
 
-  setTimeout(closeModal, 60000);
+  if (retryBtn) {
+    retryBtn.addEventListener('click', () => {
+      retryBtn.classList.add('hidden');
+      if (error) error.classList.add('hidden');
+      closeBtn.disabled = true;
+      log.textContent = '';
+      status.textContent = 'Retrying update...';
+      startUpdateSocket();
+    }, { once: true });
+  }
 }
