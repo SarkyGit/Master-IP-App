@@ -2,6 +2,8 @@ import asyncio
 import sys
 import httpx
 
+from core.utils.env_file import set_env_vars
+
 from core.utils.db_session import SessionLocal
 from core.models.models import SystemTunable
 
@@ -62,6 +64,12 @@ def main() -> None:
         print(f"Connection failed: {exc}")
         sys.exit(1)
     print("Connection successful")
+    set_env_vars(
+        ENABLE_CLOUD_SYNC="1" if enabled else "0",
+        ENABLE_SYNC_PUSH_WORKER="1" if enabled else "0",
+        ENABLE_SYNC_PULL_WORKER="1" if enabled else "0",
+    )
+    print("Updated .env with sync worker settings")
 
 
 if __name__ == "__main__":
