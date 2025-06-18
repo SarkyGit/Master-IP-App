@@ -5,6 +5,7 @@ import os
 from core.utils.auth import require_role
 from core.utils.templates import templates
 from core.utils.paths import STATIC_DIR
+from PIL import Image
 
 router = APIRouter()
 
@@ -26,5 +27,13 @@ async def upload_logo(
     path = os.path.join(STATIC_DIR, "logo.png")
     with open(path, "wb") as f:
         f.write(await logo.read())
+    try:
+        img = Image.open(path)
+        img = img.convert("RGBA")
+        img.thumbnail((32, 32))
+        favicon_path = os.path.join(STATIC_DIR, "favicon.png")
+        img.save(favicon_path, format="PNG")
+    except Exception:
+        pass
     return RedirectResponse(url="/admin/logo", status_code=302)
 
