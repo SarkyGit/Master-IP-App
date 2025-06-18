@@ -160,6 +160,7 @@ async def inventory_reports(
         "consumables_report": _get_tunable(db, "REPORT_CONSUMABLES_REPORT_IMAGE") or "",
         "audit": _get_tunable(db, "REPORT_AUDIT_IMAGE") or "",
         "current_kits": _get_tunable(db, "REPORT_CURRENT_KITS_IMAGE") or "",
+        "conflicts": _get_tunable(db, "REPORT_CONFLICTS_IMAGE") or "",
     }
     items = [
         {"label": "Duplicate Checker", "href": "/devices/duplicates", "img": images["duplicate_checker"]},
@@ -167,6 +168,8 @@ async def inventory_reports(
         {"label": "Audit", "href": "/inventory/audit", "img": images["audit"]},
         {"label": "Current Kits", "href": "/inventory/current-kits", "img": images["current_kits"]},
     ]
+    if current_user.role in ["admin", "superadmin"]:
+        items.append({"label": "Sync Conflicts", "href": "/reports/conflicts", "img": images["conflicts"]})
     context = {"request": request, "items": items, "current_user": current_user}
     return templates.TemplateResponse('reports_grid.html', context)
 
