@@ -74,6 +74,18 @@
       <label for="menu_bg_color" class="block">Background Color</label>
       <input type="color" id="menu_bg_color" name="menu_bg_color" value="{{ user.menu_bg_color if user and user.menu_bg_color else '#1f2937' }}" class="w-32 h-10 p-1 rounded bg-[var(--input-bg)] border border-[var(--border-color)]">
     </div>
+    <div class="form-item">
+      <label for="inventory_color" class="block">Inventory Tab Color</label>
+      <input type="color" id="inventory_color" name="inventory_color" value="{{ user.menu_tab_colors['inventory'] if user and user.menu_tab_colors and user.menu_tab_colors.get('inventory') else '' }}" class="w-32 h-10 p-1 rounded bg-[var(--input-bg)] border border-[var(--border-color)]">
+    </div>
+    <div class="form-item">
+      <label for="network_color" class="block">Network Tab Color</label>
+      <input type="color" id="network_color" name="network_color" value="{{ user.menu_tab_colors['network'] if user and user.menu_tab_colors and user.menu_tab_colors.get('network') else '' }}" class="w-32 h-10 p-1 rounded bg-[var(--input-bg)] border border-[var(--border-color)]">
+    </div>
+    <div class="form-item">
+      <label for="admin_color" class="block">Admin Tab Color</label>
+      <input type="color" id="admin_color" name="admin_color" value="{{ user.menu_tab_colors['admin'] if user and user.menu_tab_colors and user.menu_tab_colors.get('admin') else '' }}" class="w-32 h-10 p-1 rounded bg-[var(--input-bg)] border border-[var(--border-color)]">
+    </div>
     <div class="form-item flex items-center">
       <label for="menu_stick_theme" class="inline-flex items-center mt-6">
         <input type="checkbox" id="menu_stick_theme" name="menu_stick_theme" value="1" class="mr-2" {% if user and user.menu_stick_theme %}checked{% endif %}>
@@ -93,6 +105,17 @@
     </div>
   </div>
   {% endif %}
+  <div class="form-row">
+    <div class="form-item">
+      <label for="table_grid_style" class="block">Grid Line Styling</label>
+      <select id="table_grid_style" name="table_grid_style" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+        <option value="none" {% if user and user.table_grid_style == 'none' %}selected{% endif %}>No Gridlines</option>
+        <option value="thin" {% if user and user.table_grid_style == 'thin' %}selected{% endif %}>Thin Lines</option>
+        <option value="normal" {% if user and user.table_grid_style == 'normal' %}selected{% endif %}>Normal Lines</option>
+        <option value="thick" {% if user and user.table_grid_style == 'thick' %}selected{% endif %}>Thick Lines</option>
+      </select>
+    </div>
+  </div>
   <div class="form-row">
     <div class="form-item">
       <label for="scroll_handoff_enabled" class="inline-flex items-center">

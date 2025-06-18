@@ -62,6 +62,32 @@ async def my_profile(
     return templates.TemplateResponse("user_detail.html", context)
 
 
+@router.get("/users/me/theme")
+async def theme_preferences(
+    request: Request,
+    current_user: User = Depends(require_role("viewer")),
+):
+    """Display interface theme and layout preferences."""
+    context = {
+        "request": request,
+        "user": current_user,
+        "current_user": current_user,
+        "themes": [
+            "dark_colourful",
+            "dark",
+            "light",
+            "blue",
+            "bw",
+            "homebrew",
+            "apple_glass",
+        ],
+        "fonts": ["sans", "serif", "mono"],
+        "menu_styles": ["tabbed", "dropdown", "folder"],
+        "icon_sets": ["lucide", "fontawesome", "material", "bootstrap"],
+    }
+    return templates.TemplateResponse("user_theme.html", context)
+
+
 @router.get("/users/me/edit")
 async def edit_my_profile_form(
     request: Request, current_user: User = Depends(require_role("viewer"))
@@ -167,6 +193,10 @@ async def update_my_prefs(
     menu_style: str = Form("tabbed"),
     menu_tab_color: str | None = Form(None),
     menu_bg_color: str | None = Form(None),
+    inventory_color: str | None = Form(None),
+    network_color: str | None = Form(None),
+    admin_color: str | None = Form(None),
+    table_grid_style: str = Form("normal"),
     menu_stick_theme: bool = Form(False),
     db: Session = Depends(get_db),
     current_user: User = Depends(require_role("viewer")),
@@ -178,6 +208,12 @@ async def update_my_prefs(
     current_user.menu_tab_color = menu_tab_color
     current_user.menu_bg_color = menu_bg_color
     current_user.menu_stick_theme = menu_stick_theme
+    current_user.table_grid_style = table_grid_style
+    current_user.menu_tab_colors = {
+        "inventory": inventory_color or None,
+        "network": network_color or None,
+        "admin": admin_color or None,
+    }
     db.commit()
     return RedirectResponse(url="/users/me", status_code=302)
 

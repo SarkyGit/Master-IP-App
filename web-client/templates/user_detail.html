@@ -6,6 +6,7 @@
   <div class="flex space-x-2 mb-4">
     <button @click="tab = 'profile'" :class="{'bg-[var(--tab-hover)]': tab === 'profile'}" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Profile</button>
     <button @click="tab = 'ssh'" :class="{'bg-[var(--tab-hover)]': tab === 'ssh'}" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">SSH Profiles</button>
+    <a href="/users/me/theme" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Theme</a>
   </div>
   <div x-show="tab === 'profile'">
     <div class="flex flex-wrap gap-4 items-start">
@@ -84,70 +85,7 @@
     </div>
   </form>
 
-  <h2 class="text-lg mt-6 mb-2">Preferences</h2>
-  <form method="post" action="/users/me/prefs" class="space-y-4">
-    <div class="form-row">
-      <div class="form-item">
-        <label for="theme" class="block">Theme</label>
-        <select id="theme" name="theme" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
-          {% for t in themes %}
-          <option value="{{ t }}" {% if user.theme == t %}selected{% endif %}>{{ t }}</option>
-          {% endfor %}
-        </select>
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-item">
-        <label for="font" class="block">Font</label>
-        <select id="font" name="font" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
-          {% for f in fonts %}
-          <option value="{{ f }}" {% if user.font == f %}selected{% endif %}>{{ f }}</option>
-          {% endfor %}
-        </select>
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-item">
-        <label for="menu_style" class="block">Menu Layout</label>
-        <select id="menu_style" name="menu_style" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
-          <option value="tabbed" {% if user.menu_style == 'tabbed' %}selected{% endif %}>Tabbed Navigation</option>
-          <option value="dropdown" {% if user.menu_style == 'dropdown' %}selected{% endif %}>Dropdown Navigation</option>
-          <option value="folder" {% if user.menu_style == 'folder' %}selected{% endif %}>Folder Sidebar</option>
-        </select>
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-item">
-        <label for="menu_tab_color" class="block">Tab Color</label>
-        <input type="color" id="menu_tab_color" name="menu_tab_color" value="{{ user.menu_tab_color if user.menu_tab_color else '#06b6d4' }}" class="w-32 h-10 p-1 rounded bg-[var(--input-bg)] border border-[var(--border-color)]">
-      </div>
-      <div class="form-item">
-        <label for="menu_bg_color" class="block">Background Color</label>
-        <input type="color" id="menu_bg_color" name="menu_bg_color" value="{{ user.menu_bg_color if user.menu_bg_color else '#1f2937' }}" class="w-32 h-10 p-1 rounded bg-[var(--input-bg)] border border-[var(--border-color)]">
-      </div>
-      <div class="form-item flex items-center">
-        <label for="menu_stick_theme" class="inline-flex items-center mt-6">
-          <input type="checkbox" id="menu_stick_theme" name="menu_stick_theme" value="1" class="mr-2" {% if user.menu_stick_theme %}checked{% endif %}>
-          Stick with Theme
-        </label>
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-item">
-        <label for="icon_style" class="block">Icon Style</label>
-        <select id="icon_style" name="icon_style" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
-          {% for s in icon_sets %}
-          <option value="{{ s }}" {% if user.icon_style == s %}selected{% endif %}>{{ s }}</option>
-          {% endfor %}
-        </select>
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-item">
-        <button type="submit" aria-label="Save" class="p-2 rounded transition">{{ include_icon('save') }}</button>
-      </div>
-    </div>
-  </form>
+
 
   <a href="/users/me/edit" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition mt-4">Edit Profile</a>
   </div> {# end profile tab #}

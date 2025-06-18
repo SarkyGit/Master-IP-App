@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="text-xl mb-4">Theme Preferences</h1>
+<form method="post" action="/users/me/prefs" class="grid gap-4 md:grid-cols-3">
+  <div>
+    <label for="theme" class="block">Theme
+      <p class="text-sm opacity-80">Overall color scheme</p>
+    </label>
+    <select id="theme" name="theme" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+      {% for t in themes %}
+      <option value="{{ t }}" {% if user.theme == t %}selected{% endif %}>{{ t }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label for="font" class="block">Font
+      <p class="text-sm opacity-80">Applied to most text</p>
+    </label>
+    <select id="font" name="font" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+      {% for f in fonts %}
+      <option value="{{ f }}" {% if user.font == f %}selected{% endif %}>{{ f }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label for="menu_style" class="block">Menu Layout
+      <p class="text-sm opacity-80">Choose tabbed, dropdown or folder style</p>
+    </label>
+    <select id="menu_style" name="menu_style" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+      {% for m in menu_styles %}
+      <option value="{{ m }}" {% if user.menu_style == m %}selected{% endif %}>
+        {% if m == 'tabbed' %}Tabbed{% elif m == 'dropdown' %}Dropdown{% else %}Folder{% endif %}
+      </option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label for="menu_tab_color" class="block">Default Tab Color
+      <p class="text-sm opacity-80">Used when no per-tab color is configured</p>
+    </label>
+    <input type="color" id="menu_tab_color" name="menu_tab_color" value="{{ user.menu_tab_color if user.menu_tab_color else '#06b6d4' }}" class="w-32 h-10 p-1 rounded bg-[var(--input-bg)] border border-[var(--border-color)]">
+  </div>
+  <div>
+    <label for="menu_bg_color" class="block">Default Submenu Background
+      <p class="text-sm opacity-80">Row color under top menu</p>
+    </label>
+    <input type="color" id="menu_bg_color" name="menu_bg_color" value="{{ user.menu_bg_color if user.menu_bg_color else '#1f2937' }}" class="w-32 h-10 p-1 rounded bg-[var(--input-bg)] border border-[var(--border-color)]">
+  </div>
+  <div class="flex items-center">
+    <label for="menu_stick_theme" class="inline-flex items-center">
+      <input type="checkbox" id="menu_stick_theme" name="menu_stick_theme" value="1" class="mr-2" {% if user.menu_stick_theme %}checked{% endif %}>
+      Stick with Theme
+    </label>
+  </div>
+  <div>
+    <label for="inventory_color" class="block">Inventory Tab Color
+      <p class="text-sm opacity-80">Affects Inventory menu and buttons</p>
+    </label>
+    <input type="color" id="inventory_color" name="inventory_color" value="{{ user.menu_tab_colors['inventory'] if user.menu_tab_colors and user.menu_tab_colors.get('inventory') else '' }}" class="w-32 h-10 p-1 rounded bg-[var(--input-bg)] border border-[var(--border-color)]">
+  </div>
+  <div>
+    <label for="network_color" class="block">Network Tab Color
+      <p class="text-sm opacity-80">Affects Network menu and buttons</p>
+    </label>
+    <input type="color" id="network_color" name="network_color" value="{{ user.menu_tab_colors['network'] if user.menu_tab_colors and user.menu_tab_colors.get('network') else '' }}" class="w-32 h-10 p-1 rounded bg-[var(--input-bg)] border border-[var(--border-color)]">
+  </div>
+  <div>
+    <label for="admin_color" class="block">Admin Tab Color
+      <p class="text-sm opacity-80">Affects Admin menu and buttons</p>
+    </label>
+    <input type="color" id="admin_color" name="admin_color" value="{{ user.menu_tab_colors['admin'] if user.menu_tab_colors and user.menu_tab_colors.get('admin') else '' }}" class="w-32 h-10 p-1 rounded bg-[var(--input-bg)] border border-[var(--border-color)]">
+  </div>
+  <div>
+    <label for="icon_style" class="block">Icon Style
+      <p class="text-sm opacity-80">Choose from several icon sets</p>
+    </label>
+    <select id="icon_style" name="icon_style" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+      {% for s in icon_sets %}
+      <option value="{{ s }}" {% if user.icon_style == s %}selected{% endif %}>{{ s }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label for="table_grid_style" class="block">Grid Line Styling
+      <p class="text-sm opacity-80">Controls line thickness for tables</p>
+    </label>
+    <select id="table_grid_style" name="table_grid_style" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+      <option value="none" {% if user.table_grid_style == 'none' %}selected{% endif %}>No Gridlines</option>
+      <option value="thin" {% if user.table_grid_style == 'thin' %}selected{% endif %}>Thin Lines</option>
+      <option value="normal" {% if user.table_grid_style == 'normal' %}selected{% endif %}>Normal Lines</option>
+      <option value="thick" {% if user.table_grid_style == 'thick' %}selected{% endif %}>Thick Lines</option>
+    </select>
+  </div>
+  <div>
+    <button type="submit" aria-label="Save" class="p-2 rounded transition">{{ include_icon('save') }}</button>
+  </div>
+</form>
+{% endblock %}

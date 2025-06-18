@@ -61,6 +61,11 @@ async def create_user(
     icon_style: str = Form("lucide"),
     menu_tab_color: str | None = Form(None),
     menu_bg_color: str | None = Form(None),
+    icon_style: str = Form("lucide"),
+    inventory_color: str | None = Form(None),
+    network_color: str | None = Form(None),
+    admin_color: str | None = Form(None),
+    table_grid_style: str = Form("normal"),
     menu_stick_theme: bool = Form(False),
     db: Session = Depends(get_db),
     current_user=Depends(require_role("superadmin")),
@@ -97,6 +102,12 @@ async def create_user(
         menu_style=menu_style,
         menu_tab_color=menu_tab_color,
         menu_bg_color=menu_bg_color,
+        menu_tab_colors={
+            "inventory": inventory_color or None,
+            "network": network_color or None,
+            "admin": admin_color or None,
+        },
+        table_grid_style=table_grid_style,
         menu_stick_theme=menu_stick_theme,
         icon_style=icon_style,
     )
@@ -145,6 +156,10 @@ async def update_user(
     menu_style: str = Form("tabbed"),
     menu_tab_color: str | None = Form(None),
     menu_bg_color: str | None = Form(None),
+    inventory_color: str | None = Form(None),
+    network_color: str | None = Form(None),
+    admin_color: str | None = Form(None),
+    table_grid_style: str = Form("normal"),
     menu_stick_theme: bool = Form(False),
     password: str | None = Form(None),
     db: Session = Depends(get_db),
@@ -162,6 +177,12 @@ async def update_user(
     user.menu_style = menu_style
     user.menu_tab_color = menu_tab_color
     user.menu_bg_color = menu_bg_color
+    user.menu_tab_colors = {
+        "inventory": inventory_color or None,
+        "network": network_color or None,
+        "admin": admin_color or None,
+    }
+    user.table_grid_style = table_grid_style
     user.menu_stick_theme = menu_stick_theme
     user.icon_style = icon_style
     if password:
