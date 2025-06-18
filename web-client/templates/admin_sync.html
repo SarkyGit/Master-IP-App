@@ -108,6 +108,40 @@
     </div>
   </div>
 </div>
+<div class="mt-4 space-y-4">
+  {% for file, tuns in sync_groups.items() %}
+  {% if file != 'application' %}
+  <div class="p-3 bg-[var(--card-bg)] rounded">
+    <h2 class="text-lg mb-2">{{ file }}</h2>
+    <form method="post" action="/tunables/group" class="space-y-3">
+      <div class="flex flex-wrap gap-4 items-start">
+      {% for tunable in tuns %}
+        <div class="flex flex-col flex-1 min-w-[260px]">
+          <label class="mb-1 fw-bold">{{ tunable.name }}</label>
+          {% if tunable.description %}<p class="text-sm text-gray-400">{{ tunable.description }}</p>{% endif %}
+          {% if tunable.options and tunable.data_type == 'choice' %}
+          <p class="text-sm text-gray-400">Options: {{ tunable.options }}</p>
+          {% endif %}
+          {% if tunable.data_type == 'bool' %}
+          <input type="checkbox" name="tunable_{{ tunable.id }}" value="true" {% if tunable.value == 'true' %}checked{% endif %}>
+          {% elif tunable.data_type == 'choice' %}
+          <select name="tunable_{{ tunable.id }}" class="rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+            {% for opt in tunable.options.split(',') %}
+            <option value="{{ opt }}" {% if tunable.value == opt %}selected{% endif %}>{{ opt }}</option>
+            {% endfor %}
+          </select>
+          {% else %}
+          <input type="text" name="tunable_{{ tunable.id }}" value="{{ tunable.value }}" class="rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+          {% endif %}
+        </div>
+      {% endfor %}
+      </div>
+      <button type="submit" class="btn">Save</button>
+    </form>
+  </div>
+  {% endif %}
+  {% endfor %}
+</div>
 <div class="mt-4 grid gap-4 md:grid-cols-2">
   <div class="space-y-4">
     {% for file, tuns in sync_groups.items() %}
@@ -171,39 +205,5 @@
       <p class="mt-2">Status: {{ connection_status }}{% if last_contact %} (last at {{ last_contact }}){% endif %}</p>
     </form>
   </div>
-</div>
-<div class="mt-4 space-y-4">
-  {% for file, tuns in sync_groups.items() %}
-  {% if file != 'application' %}
-  <div class="p-3 bg-[var(--card-bg)] rounded">
-    <h2 class="text-lg mb-2">{{ file }}</h2>
-    <form method="post" action="/tunables/group" class="space-y-3">
-      <div class="flex flex-wrap gap-4 items-start">
-      {% for tunable in tuns %}
-        <div class="flex flex-col flex-1 min-w-[260px]">
-          <label class="mb-1 fw-bold">{{ tunable.name }}</label>
-          {% if tunable.description %}<p class="text-sm text-gray-400">{{ tunable.description }}</p>{% endif %}
-          {% if tunable.options and tunable.data_type == 'choice' %}
-          <p class="text-sm text-gray-400">Options: {{ tunable.options }}</p>
-          {% endif %}
-          {% if tunable.data_type == 'bool' %}
-          <input type="checkbox" name="tunable_{{ tunable.id }}" value="true" {% if tunable.value == 'true' %}checked{% endif %}>
-          {% elif tunable.data_type == 'choice' %}
-          <select name="tunable_{{ tunable.id }}" class="rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
-            {% for opt in tunable.options.split(',') %}
-            <option value="{{ opt }}" {% if tunable.value == opt %}selected{% endif %}>{{ opt }}</option>
-            {% endfor %}
-          </select>
-          {% else %}
-          <input type="text" name="tunable_{{ tunable.id }}" value="{{ tunable.value }}" class="rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
-          {% endif %}
-        </div>
-      {% endfor %}
-      </div>
-      <button type="submit" class="btn">Save</button>
-    </form>
-  </div>
-  {% endif %}
-  {% endfor %}
 </div>
 {% endblock %}
