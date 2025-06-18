@@ -67,3 +67,16 @@ async def toggle_site_key(
         key.active = not key.active
         db.commit()
     return RedirectResponse(url="/admin/site-keys", status_code=302)
+
+
+@router.post("/admin/site-keys/{key_id}/delete")
+async def delete_site_key(
+    key_id: int,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("superadmin")),
+):
+    key = db.query(SiteKey).filter(SiteKey.id == key_id).first()
+    if key:
+        db.delete(key)
+        db.commit()
+    return RedirectResponse(url="/admin/site-keys", status_code=302)
