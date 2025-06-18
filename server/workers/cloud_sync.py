@@ -1,6 +1,8 @@
 import asyncio
 import os
 import logging
+import socket
+import time
 from datetime import datetime, timezone
 
 import httpx
@@ -11,6 +13,14 @@ from core.models.models import SystemTunable
 SYNC_INTERVAL = int(os.environ.get("SYNC_FREQUENCY", "300"))
 SYNC_TIMEOUT = int(os.environ.get("SYNC_TIMEOUT", "10"))
 SYNC_RETRIES = int(os.environ.get("SYNC_RETRIES", "3"))
+
+
+def _internet_available(host: str = "8.8.8.8", port: int = 53, timeout: int = 3) -> bool:
+    try:
+        with socket.create_connection((host, port), timeout=timeout):
+            return True
+    except OSError:
+        return False
 
 
 def _get_sync_config() -> tuple[str, str, str, str]:
@@ -128,6 +138,13 @@ def start_cloud_sync() -> None:
     if enabled and role == "cloud":
         raise RuntimeError("cloud_sync worker should not run in cloud role")
     if enabled and role != "cloud":
+        wait_net = os.environ.get("WAIT_FOR_NETWORK", "0") != "0"
+        if wait_net:
+            for _ in range(30):
+                if _internet_available():
+                    break
+                print("Waiting for network...")
+                time.sleep(2)
         print("Starting cloud sync worker")
         global _sync_task
         _sync_task = asyncio.create_task(_sync_loop())

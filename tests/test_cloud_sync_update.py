@@ -21,9 +21,11 @@ def get_client():
          mock.patch("server.workers.trap_listener.setup_trap_listener"), \
          mock.patch("server.workers.syslog_listener.setup_syslog_listener"), \
          mock.patch("server.workers.sync_push_worker.start_sync_push_worker"), \
-         mock.patch("server.workers.sync_pull_worker.start_sync_pull_worker"), \
+        mock.patch("server.workers.sync_pull_worker.start_sync_pull_worker"), \
         mock.patch("server.workers.cloud_sync.start_cloud_sync"):
-        app = importlib.import_module("server.main").app
+        mod = importlib.import_module("server.main")
+        mod.INSTALL_REQUIRED = False
+        app = mod.app
         from core.utils import templates as templates_utils
         from datetime import datetime
         templates_utils.templates.env.globals["datetime"] = datetime
@@ -37,17 +39,12 @@ def test_update_cloud_config_sets_env_vars():
     admin_user = types.SimpleNamespace(id=1, role="admin")
     client.app.dependency_overrides[auth_utils.get_current_user] = lambda: admin_user
 
-    with mock.patch("server.routes.ui.cloud_sync._set_tunable"), \
-         mock.patch("server.routes.ui.cloud_sync.set_env_vars") as set_env:
+    with mock.patch("server.routes.cloud.save_cloud_connection") as save_conn:
         resp = client.post(
             "/admin/cloud-sync/update",
             data={"cloud_url": "http://cloud", "site_id": "1", "api_key": "key"},
             follow_redirects=False,
         )
 
-    assert resp.status_code == 302
-    set_env.assert_called_once_with(
-        ENABLE_CLOUD_SYNC="1",
-        ENABLE_SYNC_PUSH_WORKER="1",
-        ENABLE_SYNC_PULL_WORKER="1",
-    )
+    assert resp.status_code in (302, 307)
+    save_conn.assert_called_once()

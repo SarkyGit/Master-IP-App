@@ -46,6 +46,7 @@ from server.routes import (
     admin_update_router,
     admin_site_keys_router,
     cloud_sync_router,
+    cloud_router,
     admin_menu_router,
     admin_images_router,
     admin_columns_router,
@@ -217,6 +218,7 @@ app.include_router(admin_logo_router)
 app.include_router(admin_update_router)
 app.include_router(admin_site_keys_router)
 app.include_router(cloud_sync_router)
+app.include_router(cloud_router)
 app.include_router(admin_menu_router)
 app.include_router(admin_images_router)
 app.include_router(admin_columns_router)
