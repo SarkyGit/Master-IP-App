@@ -482,6 +482,19 @@ python -m pip install -r requirements.txt
 ### `venv/bin/python: No such file or directory`
 This message appears when the `venv` directory has not been created. Run the commands above to create the virtual environment before installing the dependencies.
 
+### Certbot fails with `X509_V_FLAG_NOTIFY_POLICY`
+On newer Ubuntu releases the `certbot` package may crash with an error like:
+
+```
+AttributeError: module 'lib' has no attribute 'X509_V_FLAG_NOTIFY_POLICY'
+```
+
+Upgrade `pyOpenSSL` before running Certbot:
+
+```bash
+sudo pip3 install --break-system-packages --upgrade pyOpenSSL
+```
+
 ### Modal window stays open after saving
 Forms posted via HTMX replace the `#modal` element with the server response. If the response uses HTTP 204 the dialog remains visible because no HTML is swapped in. Return a small snippet like `close_modal.html` to clear the container instead. See [docs/modals.md](docs/modals.md) for details.
 

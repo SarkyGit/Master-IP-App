@@ -155,6 +155,9 @@ def install():
         ssl_key = "/etc/ssl/master-ip-selfsigned.key"
         if domain and domain != "none":
             run("apt-get install -y certbot python3-certbot-nginx")
+            # pyOpenSSL bundled with some distributions crashes against
+            # OpenSSL 3.x. Upgrade it before invoking certbot.
+            run("pip3 install --break-system-packages --upgrade pyOpenSSL")
             run(
                 f"certbot --nginx -d {domain} --non-interactive --agree-tos -m admin@{domain}"
             )
