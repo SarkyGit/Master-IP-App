@@ -62,6 +62,7 @@ async def sync_menu(
 ):
     items = [
         {"label": "Google Sheets", "href": "/tasks/google-sheets"},
+        {"label": "Cloud Sync", "href": "/admin/cloud-sync"},
         {"label": "Google Maps", "href": "/tunables?category=Google%20Maps"},
         {"label": "Netbird", "href": "/ssh/netbird-connect"},
         {"label": "Site Keys", "href": "/admin/site-keys"},
