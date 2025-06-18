@@ -7,7 +7,7 @@ from core.utils.db_session import get_db
 from datetime import datetime, timezone, timedelta
 
 from settings import settings
-from core.models.models import SystemTunable, SiteKey, AuditLog
+from core.models.models import SystemTunable, SiteKey, AuditLog, ConnectedSite
 from core.utils.templates import templates
 from .tunables import grouped_tunables
 from server.workers.heartbeat import send_heartbeat_once
@@ -39,6 +39,17 @@ def _render_sync(request: Request, db: Session, current_user, message: str = "")
     )
     keys = db.query(SiteKey).order_by(SiteKey.created_at.desc()).all()
 
+    sites = []
+    key_map: dict[str, list[SiteKey]] = {}
+    name_map: dict[str, str] = {}
+    role = "local"
+    if settings.role == "cloud":
+        sites = db.query(ConnectedSite).order_by(ConnectedSite.site_id).all()
+        for k in keys:
+            key_map.setdefault(k.site_id, []).append(k)
+            name_map[k.site_id] = k.site_name
+        role = "cloud"
+
     groups = grouped_tunables(db)
     sync_groups = groups.get("Sync", {})
 
@@ -49,6 +60,10 @@ def _render_sync(request: Request, db: Session, current_user, message: str = "")
         "tunables": tunables,
         "history": history,
         "keys": keys,
+        "sites": sites,
+        "key_map": key_map,
+        "name_map": name_map,
+        "role": role,
         "now": now,
         "connected": connected,
         "cloud_url": tunables.get("Cloud Base URL"),
