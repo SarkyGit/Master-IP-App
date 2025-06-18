@@ -1,6 +1,7 @@
 from fastapi.templating import Jinja2Templates
 from core.utils.db_session import SessionLocal
 from core.models.models import DeviceType, Tag, SystemTunable
+from datetime import datetime, timedelta
 
 # Templates now reside under the ``web-client`` folder
 templates = Jinja2Templates(directory="web-client/templates")
@@ -150,3 +151,5 @@ templates.env.globals["allow_self_update"] = allow_self_update
 from settings import settings
 
 templates.env.globals["app_role"] = settings.role
+templates.env.globals["datetime"] = datetime
+templates.env.globals["timedelta"] = timedelta
