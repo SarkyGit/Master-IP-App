@@ -185,7 +185,7 @@ if settings.role == "cloud":
     app.include_router(api_sync_router)
     app.include_router(register_site_router)
     app.include_router(check_in_router)
-    app.include_router(sync_diagnostics_router)
+app.include_router(sync_diagnostics_router)
 app.include_router(admin_profiles_router)
 app.include_router(configs_router)
 app.include_router(admin_router)
