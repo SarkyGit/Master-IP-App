@@ -15,14 +15,25 @@ from core.utils.versioning import apply_update
 from .cloud_sync import _get_sync_config
 
 SYNC_PULL_INTERVAL = int(os.environ.get("SYNC_PULL_INTERVAL", "90"))
-SYNC_PULL_MODELS = [m.strip() for m in os.environ.get("SYNC_PULL_MODELS", "devices").split(",") if m.strip()]
+_DEFAULT_PULL_MODELS = ",".join(
+    cls.__tablename__ for cls in model_module.Base.__subclasses__()
+)
+SYNC_PULL_MODELS = [
+    m.strip()
+    for m in os.environ.get("SYNC_PULL_MODELS", _DEFAULT_PULL_MODELS).split(",")
+    if m.strip()
+]
 SYNC_TIMEOUT = int(os.environ.get("SYNC_TIMEOUT", "10"))
 SYNC_RETRIES = int(os.environ.get("SYNC_RETRIES", "3"))
 SITE_ID = os.environ.get("SITE_ID")
 
 
 def _load_last_sync(db: Session) -> datetime:
-    entry = db.query(SystemTunable).filter(SystemTunable.name == "Last Sync Pull Worker").first()
+    entry = (
+        db.query(SystemTunable)
+        .filter(SystemTunable.name == "Last Sync Pull Worker")
+        .first()
+    )
     if entry:
         try:
             return datetime.fromisoformat(entry.value)
@@ -33,7 +44,11 @@ def _load_last_sync(db: Session) -> datetime:
 
 def _update_last_sync(db: Session) -> None:
     now = datetime.now(timezone.utc).isoformat()
-    entry = db.query(SystemTunable).filter(SystemTunable.name == "Last Sync Pull Worker").first()
+    entry = (
+        db.query(SystemTunable)
+        .filter(SystemTunable.name == "Last Sync Pull Worker")
+        .first()
+    )
     if entry:
         entry.value = now
     else:
@@ -73,14 +88,19 @@ async def pull_once(log: logging.Logger) -> None:
     try:
         since = _load_last_sync(db)
         _, pull_url, site_id, api_key = _get_sync_config()
-        payload: dict[str, Any] = {"since": since.isoformat(), "models": SYNC_PULL_MODELS}
+        payload: dict[str, Any] = {
+            "since": since.isoformat(),
+            "models": SYNC_PULL_MODELS,
+        }
         if SITE_ID:
             payload["site_id"] = SITE_ID
         data = await _fetch_with_retry(pull_url, payload, log, site_id, api_key)
         if not isinstance(data, list):
             log.error("Invalid pull response: %s", data)
             return
-        model_map = {cls.__tablename__: cls for cls in model_module.Base.__subclasses__()}
+        model_map = {
+            cls.__tablename__: cls for cls in model_module.Base.__subclasses__()
+        }
         for rec in data:
             if not isinstance(rec, dict):
                 continue
@@ -93,8 +113,12 @@ async def pull_once(log: logging.Logger) -> None:
             model_cls = model_map[model_name]
             obj = db.query(model_cls).filter_by(id=record_id).first()
             if obj:
-                update = {k: v for k, v in rec.items() if k not in {"id", "version", "model"}}
-                conflicts = apply_update(obj, update, incoming_version=version, source="cloud")
+                update = {
+                    k: v for k, v in rec.items() if k not in {"id", "version", "model"}
+                }
+                conflicts = apply_update(
+                    obj, update, incoming_version=version, source="cloud"
+                )
                 if conflicts:
                     log.warning("Conflict on %s id %s", model_name, record_id)
                 db.commit()
@@ -106,7 +130,9 @@ async def pull_once(log: logging.Logger) -> None:
                     db.commit()
                 except Exception as exc:
                     db.rollback()
-                    log.error("Failed to insert %s id %s: %s", model_name, record_id, exc)
+                    log.error(
+                        "Failed to insert %s id %s: %s", model_name, record_id, exc
+                    )
         _update_last_sync(db)
     finally:
         db.close()
@@ -130,7 +156,7 @@ _sync_task: asyncio.Task | None = None
 
 def start_sync_pull_worker() -> None:
     """Start the periodic sync pull worker if enabled."""
-    enabled = os.environ.get("ENABLE_SYNC_PULL_WORKER") == "1"
+    enabled = os.environ.get("ENABLE_SYNC_PULL_WORKER", "1") == "1"
     role = os.environ.get("ROLE", "local")
     if not enabled:
         print("Sync pull worker disabled")

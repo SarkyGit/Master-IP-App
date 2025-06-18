@@ -8,7 +8,8 @@ import httpx
 from sqlalchemy import inspect, or_
 
 from core.utils.db_session import SessionLocal
-from core.models.models import Device, SystemTunable
+from core.models.models import SystemTunable
+from core.models import models as model_module
 from .cloud_sync import _request_with_retry, _get_sync_config
 
 SYNC_PUSH_INTERVAL = int(os.environ.get("SYNC_PUSH_INTERVAL", "60"))
@@ -27,7 +28,11 @@ def _serialize(obj: Any) -> dict[str, Any]:
 
 
 def _load_last_sync(db) -> datetime:
-    entry = db.query(SystemTunable).filter(SystemTunable.name == "Last Sync Push Worker").first()
+    entry = (
+        db.query(SystemTunable)
+        .filter(SystemTunable.name == "Last Sync Push Worker")
+        .first()
+    )
     if entry:
         try:
             return datetime.fromisoformat(entry.value)
@@ -38,7 +43,11 @@ def _load_last_sync(db) -> datetime:
 
 def _update_last_sync(db) -> None:
     now = datetime.now(timezone.utc).isoformat()
-    entry = db.query(SystemTunable).filter(SystemTunable.name == "Last Sync Push Worker").first()
+    entry = (
+        db.query(SystemTunable)
+        .filter(SystemTunable.name == "Last Sync Push Worker")
+        .first()
+    )
     if entry:
         entry.value = now
     else:
@@ -59,18 +68,29 @@ async def push_once(log: logging.Logger) -> None:
     db = SessionLocal()
     try:
         since = _load_last_sync(db)
-        records = (
-            db.query(Device)
-            .filter(or_(Device.created_at > since, Device.updated_at > since))
-            .all()
-        )
-        if not records:
+        all_records: list[dict[str, Any]] = []
+        for model_cls in model_module.Base.__subclasses__():
+            created_col = getattr(model_cls, "created_at", None)
+            updated_col = getattr(model_cls, "updated_at", None)
+            query = db.query(model_cls)
+            if created_col is not None and updated_col is not None:
+                query = query.filter(or_(created_col > since, updated_col > since))
+            elif created_col is not None:
+                query = query.filter(created_col > since)
+            elif updated_col is not None:
+                query = query.filter(updated_col > since)
+            else:
+                if since > datetime.fromtimestamp(0, timezone.utc):
+                    continue
+            for obj in query.all():
+                all_records.append(
+                    {**_serialize(obj), "model": model_cls.__tablename__}
+                )
+
+        if not all_records:
             return
-        payload = {
-            "records": [
-                {**_serialize(r), "model": Device.__tablename__} for r in records
-            ]
-        }
+
+        payload = {"records": all_records}
         await _request_with_retry("POST", push_url, payload, log, site_id, api_key)
         _update_last_sync(db)
     finally:
@@ -95,7 +115,7 @@ _sync_task: asyncio.Task | None = None
 
 def start_sync_push_worker() -> None:
     """Start the periodic sync push worker if enabled."""
-    enabled = os.environ.get("ENABLE_SYNC_PUSH_WORKER") == "1"
+    enabled = os.environ.get("ENABLE_SYNC_PUSH_WORKER", "1") == "1"
     role = os.environ.get("ROLE", "local")
     if not enabled:
         print("Sync push worker disabled")
