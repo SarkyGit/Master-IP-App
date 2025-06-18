@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="text-xl mb-4">Cloud Sync &amp; APIs</h1>
+<div class="grid gap-4 md:grid-cols-3">
+  <div class="md:col-span-2 flex flex-col gap-4">
+    <div class="p-3 bg-[var(--card-bg)] rounded">
+      <h2 class="text-lg mb-2">Connection History</h2>
+      <div class="w-full overflow-auto">
+        <table class="min-w-full table-fixed text-left border-collapse">
+          <thead>
+            <tr>
+              <th class="table-cell table-header">Timestamp</th>
+              <th class="table-cell table-header">Direction</th>
+              <th class="table-cell table-header">Status</th>
+              <th class="table-cell table-header">Message</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for entry in history %}
+            <tr class="border-t border-gray-700">
+              <td class="table-cell">{{ entry.timestamp }}</td>
+              <td class="table-cell">{{ entry.action_type == 'key_auth_ok' and 'Pull' or 'Push' }}</td>
+              <td class="table-cell">{{ 'Success' if entry.action_type == 'key_auth_ok' else 'Failed' }}</td>
+              <td class="table-cell">{{ entry.details }}</td>
+            </tr>
+          {% else %}
+            <tr class="border-t border-gray-700">
+              <td colspan="4" class="table-cell">No history available</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="p-3 bg-[var(--card-bg)] rounded">
+      <h2 class="text-lg mb-2">API Key Management</h2>
+      <form method="post" action="/admin/site-keys/new" class="space-y-2 mb-4">
+        <div>
+          <label class="block mb-1">Site Name</label>
+          <input type="text" name="site_name" required class="w-full p-1 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+        </div>
+        <div>
+          <label class="block mb-1">Site ID (optional)</label>
+          <input type="text" name="site_id" class="w-full p-1 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+        </div>
+        <button type="submit" class="btn">Create Key</button>
+      </form>
+      {% if new_key %}
+      <p class="p-2 mb-4 rounded bg-[var(--alert-bg)]">API Key for {{ new_site_id }}: <code>{{ new_key }}</code></p>
+      {% endif %}
+      <div class="w-full overflow-auto">
+        <table class="min-w-full table-fixed text-left border-collapse">
+          <thead>
+            <tr>
+              <th class="table-cell table-header">Site Name</th>
+              <th class="table-cell table-header">Site ID</th>
+              <th class="table-cell table-header">Status</th>
+              <th class="table-cell table-header">Last Used</th>
+              <th class="table-header text-center actions-col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for key in keys %}
+            {% set stale = key.last_used_at is none or (now - key.last_used_at > timedelta(hours=24)) %}
+            <tr class="border-t border-gray-700">
+              <td class="table-cell">{{ key.site_name }}</td>
+              <td class="table-cell">{{ key.site_id }}</td>
+              <td class="table-cell">{{ 'Active' if key.active else 'Revoked' }}</td>
+              <td class="table-cell">{{ key.last_used_at or 'never' }}</td>
+              <td class="actions-col text-center">
+                <form method="post" action="/admin/site-keys/{{ key.id }}/toggle">
+                  {% if key.active %}
+                  <button type="submit" aria-label="Disable" class="icon-btn" onclick="return confirm('Disable key?')">{{ include_icon('x-circle','text-red-500','5') }}</button>
+                  {% else %}
+                  <button type="submit" aria-label="Enable" class="icon-btn">{{ include_icon('check-circle','text-green-500','5') }}</button>
+                  {% endif %}
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="flex flex-col gap-4">
+    <div class="p-3 bg-[var(--card-bg)] rounded">
+      <h2 class="text-lg mb-2">Connection Status</h2>
+      <div class="flex items-center space-x-2 mb-2">
+        <div class="w-4 h-4 rounded-full {% if connected %}bg-green-500{% else %}bg-red-500{% endif %}"></div>
+        <span>{{ 'Connected' if connected else 'Disconnected' }}</span>
+      </div>
+      <ul class="text-sm list-none p-0 space-y-1">
+        <li><strong>Server:</strong> {{ cloud_url or 'N/A' }}</li>
+        <li><strong>Site ID:</strong> {{ site_id or 'N/A' }}</li>
+        <li><strong>Last Sync:</strong> {{ last_contact or 'never' }}</li>
+        <li><strong>Type:</strong> {{ connection_type }}</li>
+      </ul>
+    </div>
+    <div class="p-3 bg-[var(--card-bg)] rounded">
+      <h2 class="text-lg mb-2">Sync Diagnostics</h2>
+      <ul class="list-disc ml-6 text-sm">
+        <li>Last Push: {{ tunables.get('Last Sync Push', 'never') }}</li>
+        <li>Last Pull: {{ tunables.get('Last Sync Pull', 'never') }}</li>
+        <li>Last Push Worker: {{ tunables.get('Last Sync Push Worker', 'never') }}</li>
+        <li>Last Pull Worker: {{ tunables.get('Last Sync Pull Worker', 'never') }}</li>
+      </ul>
+    </div>
+  </div>
+</div>
+<div class="mt-4 space-y-4">
+  {% for file, tuns in sync_groups.items() %}
+  <div class="p-3 bg-[var(--card-bg)] rounded">
+    <h2 class="text-lg mb-2">{{ file }}</h2>
+    <form method="post" action="/tunables/group" class="space-y-3">
+      <div class="flex flex-wrap gap-4 items-start">
+      {% for tunable in tuns %}
+        <div class="flex flex-col flex-1 min-w-[260px]">
+          <label class="mb-1 fw-bold">{{ tunable.name }}</label>
+          {% if tunable.description %}<p class="text-sm text-gray-400">{{ tunable.description }}</p>{% endif %}
+          {% if tunable.options and tunable.data_type == 'choice' %}
+          <p class="text-sm text-gray-400">Options: {{ tunable.options }}</p>
+          {% endif %}
+          {% if tunable.data_type == 'bool' %}
+          <input type="checkbox" name="tunable_{{ tunable.id }}" value="true" {% if tunable.value == 'true' %}checked{% endif %}>
+          {% elif tunable.data_type == 'choice' %}
+          <select name="tunable_{{ tunable.id }}" class="rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+            {% for opt in tunable.options.split(',') %}
+            <option value="{{ opt }}" {% if tunable.value == opt %}selected{% endif %}>{{ opt }}</option>
+            {% endfor %}
+          </select>
+          {% else %}
+          <input type="text" name="tunable_{{ tunable.id }}" value="{{ tunable.value }}" class="rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
+          {% endif %}
+        </div>
+      {% endfor %}
+      </div>
+      <button type="submit" class="btn">Save</button>
+    </form>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

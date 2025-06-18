@@ -43,7 +43,7 @@ async def system_menu(
     return templates.TemplateResponse("admin_menu_grid.html", context)
 
 
-@router.get("/admin/sync")
+@router.get("/admin/sync-menu")
 async def sync_menu(
     request: Request,
     db: Session = Depends(get_db),
