@@ -36,7 +36,15 @@ psql "$PG_URL" -tc "SELECT 1 FROM pg_database WHERE datname = '$DB_NAME';" | gre
     psql "$PG_URL" -c "CREATE DATABASE \"$DB_NAME\""
 
 # Install dependencies
+
+# Ensure required Python packages are installed
 pip install -r requirements.txt
+
+# Create the initial database schema before running migrations
+python - <<'PY'
+from core.utils.db_session import Base, engine
+Base.metadata.create_all(bind=engine)
+PY
 
 # Apply latest database migrations
 alembic upgrade head
