@@ -69,7 +69,7 @@ async def send_heartbeat_once(log: logging.Logger, url: str | None = None, site_
     try:
         headers = {"Site-ID": site_id, "API-Key": api_key}
         async with httpx.AsyncClient(timeout=10) as client:
-            resp = await client.post(url.rstrip("/") + "/api/v1/register-site", json=payload, headers=headers)
+            resp = await client.post(url.rstrip("/") + "/api/sync/check-in", json=payload, headers=headers)
         resp.raise_for_status()
         db = SessionLocal()
         try:

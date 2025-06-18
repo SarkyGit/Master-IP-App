@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
 <h1 class="text-xl mb-4">Cloud Sync</h1>
+{% if role == 'cloud' %}
+<h2 class="text-lg mb-2">Local Servers (Cloud View)</h2>
+{% else %}
+<h2 class="text-lg mb-2">Cloud Servers (Local View)</h2>
+{% endif %}
 <div x-data="tableControls()" class="space-y-2 full-width">
   <div class="flex justify-between items-center">
     <label>Show
