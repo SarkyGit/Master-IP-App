@@ -32,17 +32,26 @@ async def confirm_connection(base_url: str, api_key: str) -> None:
 
 
 def main() -> None:
-    if len(sys.argv) >= 3:
-        base_url = sys.argv[1]
-        api_key = sys.argv[2]
+    args = sys.argv[1:]
+    if len(args) >= 4:
+        base_url, api_key, site_id, enable_flag = args[:4]
+    elif len(args) >= 2:
+        base_url, api_key = args[:2]
+        site_id = input("Cloud site ID: ").strip()
+        enable_flag = input("Enable cloud sync? [y/N]: ").strip()
     else:
         base_url = input("Cloud base URL: ").strip()
         api_key = input("API key: ").strip()
+        site_id = input("Cloud site ID: ").strip()
+        enable_flag = input("Enable cloud sync? [y/N]: ").strip()
+    enabled = str(enable_flag).lower() in {"y", "yes", "1", "true"}
 
     db = SessionLocal()
     try:
         set_tunable(db, "Cloud Base URL", base_url)
         set_tunable(db, "Cloud API Key", api_key)
+        set_tunable(db, "Cloud Site ID", site_id)
+        set_tunable(db, "Enable Cloud Sync", "true" if enabled else "false")
     finally:
         db.close()
 
