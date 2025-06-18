@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-xl mb-4">Add Column</h1>
+<form method="post" action="/admin/columns/new" class="space-y-2">
+  <div>
+    <label>Table</label>
+    <select name="table_name" class="input">
+      {% for t in tables %}<option value="{{ t }}">{{ t }}</option>{% endfor %}
+    </select>
+  </div>
+  <div>
+    <label>Column Name</label>
+    <input type="text" name="column_name" class="input" />
+  </div>
+  <div>
+    <label>Data Type</label>
+    <input type="text" name="data_type" value="TEXT" class="input" />
+  </div>
+  <div>
+    <label>Default Value</label>
+    <input type="text" name="default_value" class="input" />
+  </div>
+  <div>
+    <label><input type="checkbox" name="user_visible" value="1" checked> User Visible</label>
+  </div>
+  <button type="submit" class="btn">Create</button>
+</form>
+{% endblock %}

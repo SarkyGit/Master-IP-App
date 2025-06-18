@@ -539,3 +539,17 @@ class SiteKey(Base):
     created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
     last_used_at = Column(DateTime(timezone=True), nullable=True)
     active = Column(Boolean, default=True)
+
+
+class CustomColumn(Base):
+    """Metadata for columns added at runtime."""
+
+    __tablename__ = "custom_columns"
+
+    id = Column(Integer, primary_key=True)
+    table_name = Column(String, nullable=False)
+    column_name = Column(String, nullable=False)
+    data_type = Column(String, nullable=False)
+    default_value = Column(String, nullable=True)
+    user_visible = Column(Boolean, default=True)
+    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
