@@ -21,6 +21,7 @@
     <tr>
       <th class="table-cell table-header">Site Name</th>
       <th class="table-cell table-header">Site ID</th>
+      <th class="table-cell table-header">API Key</th>
       <th class="table-cell table-header">Active</th>
       <th class="table-cell table-header">Last Used</th>
       <th class="table-cell table-header">Status</th>
@@ -32,18 +33,24 @@
     <tr class="border-t border-gray-700">
       <td class="table-cell">{{ key.site_name }}</td>
       <td class="table-cell">{{ key.site_id }}</td>
+      <td class="table-cell font-mono break-all">{{ key.api_key }}</td>
       <td class="table-cell">{{ 'yes' if key.active else 'no' }}</td>
       <td class="table-cell">{{ key.last_used_at or 'never' }}</td>
       {% set stale = key.last_used_at is none or (now - key.last_used_at > timedelta(hours=24)) %}
       <td class="table-cell">{{ 'stale' if stale else 'ok' }}</td>
       <td class="actions-col text-center">
-        <form method="post" action="/admin/site-keys/{{ key.id }}/toggle">
-          {% if key.active %}
-          <button type="submit" aria-label="Disable" class="icon-btn" onclick="return confirm('Disable key?')">{{ include_icon('x-circle','text-red-500','5') }}</button>
-          {% else %}
-          <button type="submit" aria-label="Enable" class="icon-btn">{{ include_icon('check-circle','text-green-500','5') }}</button>
-          {% endif %}
-        </form>
+        <div class="flex justify-center gap-1">
+          <form method="post" action="/admin/site-keys/{{ key.id }}/toggle" class="inline">
+            {% if key.active %}
+            <button type="submit" aria-label="Disable" class="icon-btn" onclick="return confirm('Disable key?')">{{ include_icon('x-circle','text-red-500','5') }}</button>
+            {% else %}
+            <button type="submit" aria-label="Enable" class="icon-btn">{{ include_icon('check-circle','text-green-500','5') }}</button>
+            {% endif %}
+          </form>
+          <form method="post" action="/admin/site-keys/{{ key.id }}/delete" class="inline">
+            <button type="submit" aria-label="Delete" class="icon-btn" onclick="return confirm('Delete key?')">{{ include_icon('trash-2','text-red-500','5') }}</button>
+          </form>
+        </div>
       </td>
     </tr>
   {% endfor %}
