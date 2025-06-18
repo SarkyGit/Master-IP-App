@@ -261,15 +261,20 @@ python -m server.workers.sync_pull_worker
 ### Connecting a Local Site to the Cloud
 
 After installation you can configure cloud sync parameters using the
-`setup_cloud_connection.py` helper. This stores the cloud URL and API key in the
-`system_tunables` table and verifies connectivity via a simple ping request:
+`setup_cloud_connection.py` helper. This stores the cloud URL, API key, site ID
+and sync flag in the `system_tunables` table and verifies connectivity via a
+simple ping request:
 
 ```bash
-python setup_cloud_connection.py https://cloud.example.com my-api-key
+python setup_cloud_connection.py https://cloud.example.com my-api-key 123 yes
 ```
 
-If the connection succeeds the script prints `Connection successful` and the
-background workers will use these values on the next run.
+If any of the parameters are omitted you will be prompted interactively. The
+final argument enables cloud sync when set to `yes`/`1`. If the connection
+succeeds the script prints `Connection successful` and the background workers
+will use these values on the next run. Remember to set the environment variables
+`ENABLE_CLOUD_SYNC`, `ENABLE_SYNC_PUSH_WORKER` and `ENABLE_SYNC_PULL_WORKER` so
+the related workers actually start.
 
 The `mobile-client/` folder now contains a minimal React Native app that lists devices from the REST API. Use `npm install` then `npm start` inside that directory to launch it with Expo.
 
