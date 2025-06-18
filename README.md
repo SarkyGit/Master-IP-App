@@ -266,7 +266,7 @@ and sync flag in the `system_tunables` table and verifies connectivity via a
 simple ping request:
 
 ```bash
-python setup_cloud_connection.py https://cloud.example.com my-api-key 123 yes
+python setup_cloud_connection.py https://CESTechnologies.Patch-Bay.com my-api-key 123 yes
 ```
 
 If any of the parameters are omitted you will be prompted interactively. The
@@ -388,7 +388,7 @@ the Gunicorn/Uvicorn backend. Save the following block as
 ```nginx
 server {
     listen 80;
-    server_name example.com;
+server_name CESTechnologies.Patch-Bay.com;
 
     location /static/ {
         alias /path/to/Master-IP-App/web-client/static/;
@@ -423,12 +423,12 @@ Nginx automatically. On Debian/Ubuntu, install Certbot and the Nginx plugin
 with `sudo apt install certbot python3-certbot-nginx` (or use Snap):
 
 ```bash
-sudo certbot --nginx -d example.com
+sudo certbot --nginx -d CESTechnologies.Patch-Bay.com
 ```
 
 Certbot will update the file to listen on port 443, use the generated
 certificates and redirect HTTP requests to HTTPS. After the certificate is
-installed visit the application via `https://example.com` and ensure that all
+installed visit the application via `https://CESTechnologies.Patch-Bay.com` and ensure that all
 static files load correctly. Finally make sure Nginx starts on boot:
 
 ```bash
