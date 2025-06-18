@@ -16,7 +16,14 @@ SYNC_PUSH_INTERVAL = int(os.environ.get("SYNC_PUSH_INTERVAL", "60"))
 
 def _serialize(obj: Any) -> dict[str, Any]:
     insp = inspect(obj)
-    return {c.key: getattr(obj, c.key) for c in insp.mapper.column_attrs}
+    data = {}
+    for c in insp.mapper.column_attrs:
+        val = getattr(obj, c.key)
+        if isinstance(val, datetime):
+            data[c.key] = val.isoformat()
+        else:
+            data[c.key] = val
+    return data
 
 
 def _load_last_sync(db) -> datetime:
