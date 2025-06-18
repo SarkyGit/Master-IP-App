@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-xl mb-4">Custom Columns</h1>
+<a href="/admin/columns/new" class="btn">Add Column</a>
+<table class="min-w-full mt-4">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Table</th>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Default</th>
+      <th>Visible</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for col in columns %}
+    <tr>
+      <td>{{ col.id }}</td>
+      <td>{{ col.table_name }}</td>
+      <td>{{ col.column_name }}</td>
+      <td>{{ col.data_type }}</td>
+      <td>{{ col.default_value or '' }}</td>
+      <td>{{ 'Yes' if col.user_visible else 'No' }}</td>
+      <td>
+        <form method="post" action="/admin/columns/{{ col.id }}/delete" onsubmit="return confirm('Delete column?');">
+          <button type="submit" class="text-red-600">Delete</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

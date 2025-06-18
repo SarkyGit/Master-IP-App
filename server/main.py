@@ -48,6 +48,7 @@ from server.routes import (
     cloud_sync_router,
     admin_menu_router,
     admin_images_router,
+    admin_columns_router,
     org_settings_router,
     api_devices_router,
     api_users_router,
@@ -218,6 +219,7 @@ app.include_router(admin_site_keys_router)
 app.include_router(cloud_sync_router)
 app.include_router(admin_menu_router)
 app.include_router(admin_images_router)
+app.include_router(admin_columns_router)
 app.include_router(org_settings_router)
 
 
