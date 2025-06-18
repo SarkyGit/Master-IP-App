@@ -228,6 +228,8 @@ class User(Base):
     menu_tab_color = Column(String, nullable=True)
     menu_bg_color = Column(String, nullable=True)
     menu_stick_theme = Column(Boolean, nullable=False, default=True)
+    menu_tab_colors = Column(JSON, nullable=True)
+    table_grid_style = Column(String, nullable=False, default="normal")
     icon_style = Column(String, nullable=False, default="lucide")
     scroll_handoff_enabled = Column(Boolean, nullable=False, default=True)
     ssh_username = Column(String, nullable=True)

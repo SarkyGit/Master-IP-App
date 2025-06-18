@@ -14,9 +14,25 @@ body {
   --tab-bg: #06b6d4;      /* cyan */
   --tab-hover: #22d3ee;   /* lighter cyan */
   --tab-text: #ffffff;
+  --inventory-tab-bg: var(--tab-bg);
+  --inventory-tab-text: var(--tab-text);
+  --inventory-submenu-bg: var(--submenu-bg);
+  --inventory-submenu-text: var(--submenu-text);
+  --inventory-btn-bg: var(--btn-bg);
+  --inventory-btn-text: var(--btn-text);
   --network-tab-bg: #8e44ec;
   --network-tab-text: #ffffff;
   --network-submenu-bg: #7a33d8;
+  --network-submenu-text: #ffffff;
+  --network-btn-bg: #8e44ec;
+  --network-btn-text: #ffffff;
+  --admin-tab-bg: var(--tab-bg);
+  --admin-tab-text: var(--tab-text);
+  --admin-submenu-bg: var(--submenu-bg);
+  --admin-submenu-text: var(--submenu-text);
+  --admin-btn-bg: var(--btn-bg);
+  --admin-btn-text: var(--btn-text);
+  --table-border-width: 1px;
   --btn-bg:        #f97316; /* orange */
   --btn-hover:     #fb923c; /* lighter orange */
   --btn-text:      #ffffff;
@@ -70,7 +86,7 @@ table tbody tr:nth-child(odd) {
 
 table td {
   padding: 0.5rem 1rem;      /* px-4 py-2 */
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: var(--table-border-width) solid var(--border-color);
 }
 
 .logged-in {

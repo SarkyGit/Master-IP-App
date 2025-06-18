@@ -19,6 +19,25 @@
   --font-size: 0.95rem;
   --submenu-font-size: calc(var(--font-size) * 0.9);
   --glass-blur: blur(12px);
+  --inventory-tab-bg: var(--tab-bg);
+  --inventory-tab-text: var(--tab-text);
+  --inventory-submenu-bg: var(--submenu-bg);
+  --inventory-submenu-text: var(--submenu-text);
+  --inventory-btn-bg: var(--btn-bg);
+  --inventory-btn-text: var(--btn-text);
+  --network-tab-bg: var(--tab-bg);
+  --network-tab-text: var(--tab-text);
+  --network-submenu-bg: var(--submenu-bg);
+  --network-submenu-text: var(--submenu-text);
+  --network-btn-bg: var(--btn-bg);
+  --network-btn-text: var(--btn-text);
+  --admin-tab-bg: var(--tab-bg);
+  --admin-tab-text: var(--tab-text);
+  --admin-submenu-bg: var(--submenu-bg);
+  --admin-submenu-text: var(--submenu-text);
+  --admin-btn-bg: var(--btn-bg);
+  --admin-btn-text: var(--btn-text);
+  --table-border-width: 1px;
 }
 
 
@@ -40,7 +59,7 @@ input, select, textarea {
 
 .table-row {
   background-color: rgba(255, 255, 255, 0.05);
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: var(--table-border-width) solid var(--border-color);
 }
 
 .table-row:nth-child(even) {

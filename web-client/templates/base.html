@@ -17,8 +17,31 @@
         --tab-bg: {{ current_user.menu_tab_color if current_user.menu_tab_color else '#06b6d4' }};
         --submenu-bg: {{ current_user.menu_bg_color if current_user.menu_bg_color else '#1f2937' }};
         {% endif %}
+        {% if current_user and current_user.menu_tab_colors %}
+        {% for name, color in current_user.menu_tab_colors.items() %}
+        --{{ name }}-tab-bg: {{ color or '#06b6d4' }};
+        --{{ name }}-submenu-bg: {{ color or '#1f2937' }};
+        --{{ name }}-btn-bg: {{ color or '#06b6d4' }};
+        --{{ name }}-btn-text: #ffffff;
+        --{{ name }}-tab-text: #ffffff;
+        --{{ name }}-submenu-text: #ffffff;
+        {% endfor %}
+        {% endif %}
         --active-tab-bg: var(--tab-bg);
         --active-tab-text: var(--tab-text);
+        {% if current_user %}
+        {% if current_user.table_grid_style == 'none' %}
+        --table-border-width: 0;
+        {% elif current_user.table_grid_style == 'thin' %}
+        --table-border-width: 1px;
+        {% elif current_user.table_grid_style == 'normal' %}
+        --table-border-width: 2px;
+        {% else %}
+        --table-border-width: 3px;
+        {% endif %}
+        {% else %}
+        --table-border-width: 1px;
+        {% endif %}
       }
     </style>
   </head>

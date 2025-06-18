@@ -12,6 +12,25 @@ body {
   --tab-bg: #333333;
   --tab-hover: #444444;
   --tab-text: #ffffff;
+  --inventory-tab-bg: var(--tab-bg);
+  --inventory-tab-text: var(--tab-text);
+  --inventory-submenu-bg: var(--submenu-bg);
+  --inventory-submenu-text: var(--submenu-text);
+  --inventory-btn-bg: var(--btn-bg);
+  --inventory-btn-text: var(--btn-text);
+  --network-tab-bg: var(--tab-bg);
+  --network-tab-text: var(--tab-text);
+  --network-submenu-bg: var(--submenu-bg);
+  --network-submenu-text: var(--submenu-text);
+  --network-btn-bg: var(--btn-bg);
+  --network-btn-text: var(--btn-text);
+  --admin-tab-bg: var(--tab-bg);
+  --admin-tab-text: var(--tab-text);
+  --admin-submenu-bg: var(--submenu-bg);
+  --admin-submenu-text: var(--submenu-text);
+  --admin-btn-bg: var(--btn-bg);
+  --admin-btn-text: var(--btn-text);
+  --table-border-width: 1px;
   --btn-bg:        #333333;
   --btn-hover:     #444444;
   --btn-text:      #ffffff;
@@ -61,7 +80,7 @@ table.diff { width: 100%; }
 }
 
 .table tbody tr {
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: var(--table-border-width) solid var(--border-color);
 }
 
 .table tbody tr:nth-child(even) {

@@ -101,17 +101,12 @@
         applyColors(menu) {
           const root = document.documentElement
           if (this.stickTheme) {
-            if (this.theme === 'dark_colourful' && menu === 'network') {
-              root.style.setProperty('--active-tab-bg', getComputedStyle(root).getPropertyValue('--network-tab-bg'))
-              root.style.setProperty('--submenu-bg', getComputedStyle(root).getPropertyValue('--network-submenu-bg'))
-              root.style.setProperty('--active-tab-text', getComputedStyle(root).getPropertyValue('--network-tab-text'))
-              root.style.setProperty('--submenu-text', '#ffffff')
-            } else {
-              root.style.setProperty('--active-tab-bg', getComputedStyle(root).getPropertyValue('--tab-bg'))
-              root.style.setProperty('--submenu-bg', getComputedStyle(root).getPropertyValue('--submenu-bg'))
-              root.style.setProperty('--active-tab-text', getComputedStyle(root).getPropertyValue('--tab-text'))
-              root.style.setProperty('--submenu-text', getComputedStyle(root).getPropertyValue('--submenu-text'))
-            }
+            root.style.setProperty('--active-tab-bg', getComputedStyle(root).getPropertyValue(`--${menu}-tab-bg`) || getComputedStyle(root).getPropertyValue('--tab-bg'))
+            root.style.setProperty('--submenu-bg', getComputedStyle(root).getPropertyValue(`--${menu}-submenu-bg`) || getComputedStyle(root).getPropertyValue('--submenu-bg'))
+            root.style.setProperty('--active-tab-text', getComputedStyle(root).getPropertyValue(`--${menu}-tab-text`) || getComputedStyle(root).getPropertyValue('--tab-text'))
+            root.style.setProperty('--submenu-text', getComputedStyle(root).getPropertyValue(`--${menu}-submenu-text`) || getComputedStyle(root).getPropertyValue('--submenu-text'))
+            root.style.setProperty('--btn-bg', getComputedStyle(root).getPropertyValue(`--${menu}-btn-bg`) || getComputedStyle(root).getPropertyValue('--btn-bg'))
+            root.style.setProperty('--btn-text', getComputedStyle(root).getPropertyValue(`--${menu}-btn-text`) || getComputedStyle(root).getPropertyValue('--btn-text'))
           } else {
             const tab = this.tabColor || getComputedStyle(root).getPropertyValue('--tab-bg')
             const bg = this.bgColor || getComputedStyle(root).getPropertyValue('--submenu-bg')
@@ -119,6 +114,8 @@
             root.style.setProperty('--submenu-bg', bg)
             root.style.setProperty('--active-tab-text', getComputedStyle(root).getPropertyValue('--tab-text'))
             root.style.setProperty('--submenu-text', getComputedStyle(root).getPropertyValue('--submenu-text'))
+            root.style.setProperty('--btn-bg', tab)
+            root.style.setProperty('--btn-text', getComputedStyle(root).getPropertyValue('--btn-text'))
           }
         }
       }
