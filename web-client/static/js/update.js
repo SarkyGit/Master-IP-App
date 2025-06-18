@@ -7,7 +7,8 @@ function startUpdateSocket() {
   let failed = false;
   let finished = false;
   let rebooting = false;
-  const socket = new WebSocket(`ws://${location.host}/ws/update`);
+  const scheme = location.protocol === 'https:' ? 'wss' : 'ws';
+  const socket = new WebSocket(`${scheme}://${location.host}/ws/update`);
 
   function finish() {
     if (finished) return;
