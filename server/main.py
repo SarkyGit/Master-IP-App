@@ -48,6 +48,7 @@ from server.routes import (
     cloud_sync_router,
     admin_menu_router,
     admin_images_router,
+    org_settings_router,
     api_devices_router,
     api_users_router,
     api_vlans_router,
@@ -217,6 +218,7 @@ app.include_router(admin_site_keys_router)
 app.include_router(cloud_sync_router)
 app.include_router(admin_menu_router)
 app.include_router(admin_images_router)
+app.include_router(org_settings_router)
 
 
 @app.exception_handler(HTTPException)

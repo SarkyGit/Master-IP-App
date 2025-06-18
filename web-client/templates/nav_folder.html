@@ -29,18 +29,6 @@
     </div>
     {% if current_user.role in ['admin','superadmin'] %}
     <div>
-      <div class="flex items-center cursor-pointer px-2 py-1 rounded hover:bg-[var(--tab-hover)]" @click="toggle('tunables')">
-        <span class="flex-1">Tunables</span>
-        <button @click.stop="pin('tunables')" class="mr-1 text-xs" x-text="isPinned('tunables') ? '★' : '☆'"></button>
-        <span x-html="isOpen('tunables') ? minusIcon : plusIcon"></span>
-      </div>
-      <div x-show="isOpen('tunables')" x-transition class="mt-1 pl-4 flex flex-col space-y-1">
-        {% for cat in get_tunable_categories() %}
-        <a href="/tunables?category={{ cat | urlencode }}" :class="active('/tunables?category={{ cat | urlencode }}')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">{{ cat }}</a>
-        {% endfor %}
-      </div>
-    </div>
-    <div>
       <div class="flex items-center cursor-pointer px-2 py-1 rounded hover:bg-[var(--tab-hover)]" @click="toggle('admin')">
         <span class="flex-1">{{ 'Super Admin' if current_user.role == 'superadmin' else 'Admin' }}</span>
         <button @click.stop="pin('admin')" class="mr-1 text-xs" x-text="isPinned('admin') ? '★' : '☆'"></button>
@@ -51,6 +39,7 @@
         {% set admin_items = [
           {'label':'My Profile','href':'/users/me'},
           {'label':'System','href':'/admin/system'},
+          {'label':'Organisation Settings','href':'/admin/org-settings'},
           {'label':'Sync / API\'s','href':'/admin/sync'},
           {'label':'Logs','href':'/admin/logs'}
         ] %}

@@ -1,0 +1,8 @@
+<div id="modal" class="fixed inset-0 bg-black/50 flex items-center justify-center">
+  <div class="bg-[var(--card-bg)] p-4 rounded shadow min-w-[20rem]">
+    <p>{{ message }}</p>
+    <div class="text-right mt-2">
+      <button type="button" class="px-3 py-1 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded" onclick="document.getElementById('modal').innerHTML=''">Close</button>
+    </div>
+  </div>
+</div>

@@ -1,7 +1,7 @@
 <div id="modal" class="fixed inset-0 bg-black/50 flex items-center justify-center">
   <div class="bg-[var(--card-bg)] p-4 rounded shadow min-w-[20rem]">
     <h1 class="text-xl mb-4">Update {{ label }}</h1>
-    <form hx-post="/admin/upload-image/{{ category }}/{{ key }}" hx-target="#modal" hx-swap="outerHTML" enctype="multipart/form-data" method="post">
+    <form hx-post="/admin/upload-image/{{ category }}/{{ key }}" hx-target="#modal" hx-swap="outerHTML" hx-encoding="multipart/form-data" enctype="multipart/form-data" method="post">
       <div class="mb-2">
         <label class="block">Icon</label>
         <input type="file" name="icon" accept="image/*" class="text-[var(--input-text)]">

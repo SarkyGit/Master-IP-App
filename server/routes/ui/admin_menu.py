@@ -35,6 +35,7 @@ async def system_menu(
         {"label": "Upload Logo", "href": "/admin/logo"},
         {"label": "Upload Image", "href": "/admin/upload-image"},
         {"label": "Update System", "href": "/admin/update"},
+        {"label": "Tunables", "href": "/tunables"},
     ]
     for item in items:
         item["img"] = _menu_image(db, item["label"])
