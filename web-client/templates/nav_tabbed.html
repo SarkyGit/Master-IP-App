@@ -53,7 +53,7 @@
           <a href="/network/settings" @click="setSub('/network/settings')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/network/settings'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Network Settings</a>
         </div>
       </div>
-      {% if current_user.role in ['admin','superadmin'] %}
+      {% if current_user and current_user.role in ['admin','superadmin'] %}
       <div x-show="ready && activeTopMenu == 'admin'" x-transition.opacity.duration.150ms :class="(submenuAlign === 'right' ? 'text-right' : '') + ' w-full border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3'" x-cloak>
         <div :class="mobile ? 'flex flex-col space-y-2 submenu text-sm' : (submenuAlign === 'right' ? 'flex space-x-2 text-sm justify-end submenu' : 'flex space-x-2 text-sm submenu')">
           {% for item in admin_items %}

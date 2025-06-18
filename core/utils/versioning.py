@@ -16,10 +16,15 @@ def apply_update(
     if incoming_version is not None and incoming_version != current_version:
         conflicts = []
         for field, remote_value in update_data.items():
+            local_value = getattr(obj, field, None)
+            if isinstance(local_value, datetime):
+                local_value = local_value.isoformat()
+            if isinstance(remote_value, datetime):
+                remote_value = remote_value.isoformat()
             conflicts.append(
                 {
                     "field": field,
-                    "local_value": getattr(obj, field, None),
+                    "local_value": local_value,
                     "remote_value": remote_value,
                     "timestamp": datetime.now(timezone.utc).isoformat(),
                     "source": source,
