@@ -181,3 +181,17 @@ async def consumables_report(request: Request, current_user=Depends(require_role
 async def current_kits(request: Request, current_user=Depends(require_role("viewer"))):
     context = {"request": request, "current_user": current_user}
     return templates.TemplateResponse('current_kits.html', context)
+
+@router.get('/inventory/settings')
+async def inventory_settings(request: Request, current_user=Depends(require_role("viewer")), db: Session = Depends(get_db)):
+    images = {}
+    items = [
+        {"label": "Edit Tags", "href": "/tasks/edit-tags", "img": images.get("tags", "")},
+        {"label": "Device Types", "href": "/device-types", "img": images.get("device_types", "")},
+        {"label": "Site Inventory", "href": "/inventory/sites", "img": images.get("sites", "")},
+        {"label": "Trailer Inventory", "href": "/inventory/trailers", "img": images.get("trailers", "")},
+    ]
+    if current_user.role in ['editor','admin','superadmin']:
+        items.append({"label": "Add Device", "href": "/inventory/add-device", "img": images.get("add_device", "")})
+    context = {"request": request, "items": items, "current_user": current_user}
+    return templates.TemplateResponse('inventory_settings.html', context)

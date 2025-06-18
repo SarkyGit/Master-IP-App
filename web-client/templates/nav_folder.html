@@ -7,10 +7,11 @@
         <span x-html="isOpen('network') ? minusIcon : plusIcon"></span>
       </div>
       <div x-show="isOpen('network')" x-transition class="mt-1 pl-4 flex flex-col space-y-1">
-        <a href="/dashboard" :class="active('/dashboard')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Dashboard</a>
-        <a href="/network/ip-search" :class="active('/network/ip-search')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">IP Search</a>
-        <a href="/vlans" :class="active('/vlans')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">VLAN MGMT</a>
-        <a href="/network/port-configs" :class="active('/network/port-configs')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Port Configs</a>
+        <a href="/network/dashboard" :class="active('/network/dashboard')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Dashboard</a>
+        <a href="/network/conf" :class="active('/network/conf')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Conf t</a>
+        <a href="/network/show" :class="active('/network/show')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Show</a>
+        <a href="/network/tasks" :class="active('/network/tasks')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Tasks</a>
+        <a href="/network/settings" :class="active('/network/settings')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Network Settings</a>
       </div>
     </div>
     <div>
@@ -37,22 +38,7 @@
         <a href="/devices" :class="active('/devices')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Devices</a>
         <a href="/inventory/show-pad" :class="active('/inventory/show-pad')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Show Pad</a>
         <a href="/inventory/reports" :class="active('/inventory/reports')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Reports</a>
-      </div>
-    </div>
-    <div>
-      <div class="flex items-center cursor-pointer px-2 py-1 rounded hover:bg-[var(--tab-hover)]" @click="toggle('inventory-admin')">
-        <span class="flex-1">Inventory Admin</span>
-        <button @click.stop="pin('inventory-admin')" class="mr-1 text-xs" x-text="isPinned('inventory-admin') ? '★' : '☆'"></button>
-        <span x-html="isOpen('inventory-admin') ? minusIcon : plusIcon"></span>
-      </div>
-      <div x-show="isOpen('inventory-admin')" x-transition class="mt-1 pl-4 flex flex-col space-y-1">
-        <a href="/tasks/edit-tags" :class="active('/tasks/edit-tags')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Edit Tags</a>
-        <a href="/device-types" :class="active('/device-types')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Device Types</a>
-        <a href="/inventory/sites" :class="active('/inventory/sites')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Site Inventory</a>
-        <a href="/inventory/trailers" :class="active('/inventory/trailers')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Trailer Inventory</a>
-        {% if current_user.role in ['editor','admin','superadmin'] %}
-        <a href="/inventory/add-device" :class="active('/inventory/add-device')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Add Device</a>
-        {% endif %}
+        <a href="/inventory/settings" :class="active('/inventory/settings')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Inventory Settings</a>
       </div>
     </div>
     <div>
