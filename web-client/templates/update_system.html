@@ -14,30 +14,4 @@
 {% endif %}
 <button hx-post="/admin/update" hx-target="#modal" hx-swap="innerHTML" class="btn" {% if unsynced %}disabled{% endif %}>Update to latest version</button>
 
-<h2 class="text-lg mt-6 mb-2">Cloud Connection</h2>
-<form method="post" action="/admin/test-cloud" class="space-y-2">
-  <label class="block"><input type="checkbox" name="enable" {% if cloud_enabled %}checked{% endif %}> Enable Cloud Sync</label>
-  <div>
-    <label class="block mb-1">Cloud URL</label>
-    <input type="text" name="cloud_url" value="{{ cloud_url }}" class="w-full p-1 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
-  </div>
-  <div>
-    <label class="block mb-1">Site ID</label>
-    <input type="text" name="site_id" value="{{ site_id }}" class="w-full p-1 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
-  </div>
-  <div>
-    <label class="block mb-1">API Key</label>
-    <input type="text" name="api_key" value="{{ api_key }}" placeholder="Enter key" class="w-full p-1 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
-    {% if api_key %}
-    <p class="text-sm mt-1">Current key: <code>{{ api_key }}</code></p>
-    {% else %}
-    <p class="text-sm mt-1">No API key configured</p>
-    {% endif %}
-  </div>
-  <button type="submit" class="btn">Test Connection</button>
-  {% if cloud_message %}
-  <p class="mt-2">{{ cloud_message }}</p>
-  {% endif %}
-  <p class="mt-2">Status: {{ connection_status }}{% if last_contact %} (last at {{ last_contact }}){% endif %}</p>
-</form>
 {% endblock %}
