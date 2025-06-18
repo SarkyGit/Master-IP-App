@@ -122,7 +122,7 @@ async def welcome_role(role: str, request: Request, current_user=Depends(get_cur
     return templates.TemplateResponse("welcome.html", context)
 
 
-@router.get("/dashboard")
+@router.get("/network/dashboard")
 async def dashboard(
     request: Request,
     site_id: int | None = None,
@@ -276,7 +276,7 @@ async def dashboard(
     return templates.TemplateResponse("dashboard.html", context)
 
 
-@router.get("/dashboard/preferences")
+@router.get("/network/dashboard/preferences")
 async def dashboard_prefs(
     request: Request,
     site_id: int | None = None,
@@ -297,7 +297,7 @@ async def dashboard_prefs(
     return templates.TemplateResponse("dashboard_prefs.html", context)
 
 
-@router.post("/dashboard/preferences")
+@router.post("/network/dashboard/preferences")
 async def save_dashboard_prefs(
     request: Request,
     widgets: list[str] = Form([]),
@@ -321,4 +321,4 @@ async def save_dashboard_prefs(
             )
         )
     db.commit()
-    return RedirectResponse(url="/dashboard", status_code=302)
+    return RedirectResponse(url="/network/dashboard", status_code=302)

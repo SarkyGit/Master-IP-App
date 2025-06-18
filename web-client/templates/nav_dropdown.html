@@ -4,36 +4,22 @@
       <a href="javascript:history.back()" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Back</a>
       {% if current_user %}
       <div class="flex flex-col space-y-1 submenu text-sm">
-        <a href="/dashboard" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Dashboard</a>
+        <a href="/network/dashboard" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Dashboard</a>
         <a href="/devices" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Devices</a>
         <a href="/inventory/show-pad" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Show Pad</a>
         <a href="/inventory/reports" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Reports</a>
-        <a href="/network/ip-search" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">IP Search</a>
-        <a href="/vlans" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">VLAN MGMT</a>
-        <a href="/network/port-configs" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Port Configs</a>
+        <a href="/inventory/settings" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Inventory Settings</a>
         <a href="/tasks" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Task Queue</a>
         <a href="/reports/vlan-usage" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">VLAN Usage</a>
         {% if current_user.role in ['admin','superadmin'] %}
         <a href="/tasks/google-sheets" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Google Sheets</a>
         {% endif %}
-        <span class="mt-2 font-bold">Inventory Admin</span>
-        <a href="/tasks/edit-tags" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Edit Tags</a>
-        <a href="/device-types" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Device Types</a>
-        <a href="/inventory/sites" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Site Inventory</a>
-        <a href="/inventory/trailers" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Trailer Inventory</a>
-        {% if current_user.role in ['editor','admin','superadmin'] %}
-        <a href="/inventory/add-device" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Add Device</a>
-        {% endif %}
-        <span class="mt-2 font-bold">Reports</span>
-        <a href="/inventory/audit" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Audit</a>
-        <a href="/devices/duplicates" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Duplicate Checker</a>
-        <span class="mt-2 font-bold">Network Devices</span>
-        <a href="/ssh/port-config" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Port Config</a>
-        <a href="/ssh/port-check" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Port Check</a>
-        <a href="/ssh/config-check" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Config Check</a>
-        <a href="/ssh/port-search" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Port Search</a>
-        <a href="/ssh/bulk-port-update" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Bulk Port Update</a>
-        <a href="/bulk/vlan-push" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">VLAN Bulk Push</a>
+        <span class="mt-2 font-bold">Network</span>
+        <a href="/network/dashboard" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Dashboard</a>
+        <a href="/network/conf" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Conf t</a>
+        <a href="/network/show" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Show</a>
+        <a href="/network/tasks" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Tasks</a>
+        <a href="/network/settings" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Network Settings</a>
         {% if current_user.role in ['admin','superadmin'] %}
         <span class="mt-2 font-bold">Tunables</span>
         {% for cat in get_tunable_categories() %}

@@ -8,13 +8,11 @@
             <button onclick="history.back()" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Back</button>
             {% if current_user %}
             <button @click="setTop('inventory', $event.target.dataset.align)" data-align="left" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Inventory</button>
-            <button @click="setTop('reports', $event.target.dataset.align)" data-align="left" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Reports</button>
-            <button @click="setTop('inventory-admin', $event.target.dataset.align)" data-align="left" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Inventory Admin</button>
+            <button @click="setTop('network', $event.target.dataset.align)" data-align="left" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Network</button>
             {% endif %}
           </div>
           {% if current_user %}
           <div class="flex space-x-4 ml-auto">
-            <button @click="setTop('network', $event.target.dataset.align)" data-align="right" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Network</button>
             <button @click="setTop('tasks', $event.target.dataset.align)" data-align="right" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Tasks</button>
             <button @click="setTop('netdev', $event.target.dataset.align)" data-align="right" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Network Devices</button>
             {% if current_user.role in ['admin','superadmin'] %}
@@ -54,14 +52,16 @@
           <a href="/devices" @click="setSub('/devices')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/devices'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Devices</a>
           <a href="/inventory/show-pad" @click="setSub('/inventory/show-pad')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/inventory/show-pad'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Show Pad</a>
           <a href="/inventory/reports" @click="setSub('/inventory/reports')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/inventory/reports'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Reports</a>
+          <a href="/inventory/settings" @click="setSub('/inventory/settings')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/inventory/settings'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Inventory Settings</a>
         </div>
       </div>
       <div x-show="ready && activeTopMenu == 'network'" x-transition.opacity.duration.150ms :class="(submenuAlign === 'right' ? 'text-right' : '') + ' w-full border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3'" x-cloak>
         <div :class="mobile ? 'flex flex-col space-y-2 submenu text-sm' : (submenuAlign === 'right' ? 'flex space-x-2 text-sm justify-end submenu' : 'flex space-x-2 text-sm submenu')">
-          <a href="/dashboard" @click="setSub('/dashboard')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/dashboard'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Dashboard</a>
-          <a href="/network/ip-search" @click="setSub('/network/ip-search')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/network/ip-search'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">IP Search</a>
-          <a href="/vlans" @click="setSub('/vlans')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/vlans'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">VLAN MGMT</a>
-          <a href="/network/port-configs" @click="setSub('/network/port-configs')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/network/port-configs'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Port Configs</a>
+          <a href="/network/dashboard" @click="setSub('/network/dashboard')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/network/dashboard'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Dashboard</a>
+          <a href="/network/conf" @click="setSub('/network/conf')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/network/conf'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Conf t</a>
+          <a href="/network/show" @click="setSub('/network/show')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/network/show'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Show</a>
+          <a href="/network/tasks" @click="setSub('/network/tasks')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/network/tasks'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Tasks</a>
+          <a href="/network/settings" @click="setSub('/network/settings')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/network/settings'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Network Settings</a>
         </div>
       </div>
       <div x-show="ready && activeTopMenu == 'tasks'" x-transition.opacity.duration.150ms :class="(submenuAlign === 'right' ? 'text-right' : '') + ' w-full border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3'" x-cloak>
@@ -70,23 +70,6 @@
           <a href="/reports/vlan-usage" @click="setSub('/reports/vlan-usage')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/reports/vlan-usage'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">VLAN Usage</a>
           {% if current_user.role in ['admin','superadmin'] %}
           <a href="/tasks/google-sheets" @click="setSub('/tasks/google-sheets')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/tasks/google-sheets'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Google Sheets</a>
-          {% endif %}
-        </div>
-      </div>
-      <div x-show="ready && activeTopMenu == 'reports'" x-transition.opacity.duration.150ms :class="(submenuAlign === 'right' ? 'text-right' : '') + ' w-full border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3'" x-cloak>
-        <div :class="mobile ? 'flex flex-col space-y-2 submenu text-sm' : (submenuAlign === 'right' ? 'flex space-x-2 text-sm justify-end submenu' : 'flex space-x-2 text-sm submenu')">
-          <a href="/inventory/audit" @click="setSub('/inventory/audit')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/inventory/audit'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Audit</a>
-          <a href="/devices/duplicates" @click="setSub('/devices/duplicates')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/devices/duplicates'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Duplicate Checker</a>
-        </div>
-      </div>
-      <div x-show="ready && activeTopMenu == 'inventory-admin'" x-transition.opacity.duration.150ms :class="(submenuAlign === 'right' ? 'text-right' : '') + ' w-full border border-[var(--border-color)] border-t-0 rounded-b-lg bg-[var(--submenu-bg)] text-[var(--submenu-text)] px-4 py-3'" x-cloak>
-        <div :class="mobile ? 'flex flex-col space-y-2 submenu text-sm' : (submenuAlign === 'right' ? 'flex space-x-2 text-sm justify-end submenu' : 'flex space-x-2 text-sm submenu')">
-          <a href="/tasks/edit-tags" @click="setSub('/tasks/edit-tags')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/tasks/edit-tags'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Edit Tags</a>
-          <a href="/device-types" @click="setSub('/device-types')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/device-types'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Device Types</a>
-          <a href="/inventory/sites" @click="setSub('/inventory/sites')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/inventory/sites'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Site Inventory</a>
-          <a href="/inventory/trailers" @click="setSub('/inventory/trailers')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/inventory/trailers'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Trailer Inventory</a>
-          {% if current_user.role in ['editor','admin','superadmin'] %}
-          <a href="/inventory/add-device" @click="setSub('/inventory/add-device')" :class="{'bg-[var(--submenu-hover-bg)]': activeSubMenu === '/inventory/add-device'}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded-t-lg transition">Add Device</a>
           {% endif %}
         </div>
       </div>
