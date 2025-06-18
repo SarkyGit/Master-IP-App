@@ -75,9 +75,13 @@ async def _run_update(user: User, force_reboot: bool) -> None:
     try:
         old = _git(["git", "rev-parse", "HEAD"])
         _broadcast(f"Current version {old[:7]}")
+        sync_row = db.query(SystemTunable).filter(SystemTunable.name == "Enable Cloud Sync").first()
+        if sync_row and str(sync_row.value).lower() == "true":
+            _broadcast("Cloud sync enabled - update will propagate")
         _git(["git", "fetch", "origin"])
         _broadcast("Fetched origin")
         _git(["git", "reset", "--hard", "origin/main"])
+        _broadcast("Checked out latest code")
         new = _git(["git", "rev-parse", "HEAD"])
         changed = _git(["git", "diff", "--name-only", old, new]).splitlines()
         _broadcast("Building frontend")
@@ -86,13 +90,19 @@ async def _run_update(user: User, force_reboot: bool) -> None:
         _git(["alembic", "upgrade", "head"])
         reboot = _determine_reboot(changed, force_reboot)
         if reboot:
-            _broadcast("Rebooting system")
+            _broadcast("Update complete. Rebooting system...")
+            await asyncio.sleep(1)
+            _broadcast("DONE")
+            await asyncio.sleep(0.5)
             try:
                 _git(["sudo", "reboot"])
             except Exception as exc:
                 _broadcast(f"Reboot failed: {exc}")
         else:
-            _broadcast("Restarting service")
+            _broadcast("Update complete. Restarting service...")
+            await asyncio.sleep(1)
+            _broadcast("DONE")
+            await asyncio.sleep(0.5)
             try:
                 _git(["systemctl", "restart", "master-ip-app"])
             except Exception as exc:
@@ -103,9 +113,10 @@ async def _run_update(user: User, force_reboot: bool) -> None:
         log_audit(db, user, "update_failed", details=str(exc))
     finally:
         db.close()
-        await asyncio.sleep(1)
-        _broadcast("DONE")
-        await asyncio.sleep(1)
+        if not _progress_queues:
+            await asyncio.sleep(1)
+            _broadcast("DONE")
+            await asyncio.sleep(1)
 
 
 @router.websocket("/ws/update")

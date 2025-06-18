@@ -13,8 +13,13 @@
     </div>
     {% else %}
     <h1 class="text-xl mb-2">Updating...</h1>
+    <div id="update-error" class="mb-2 hidden bg-red-600 text-white p-2 rounded"></div>
     <p id="update-status" class="mb-2">Fetching update...</p>
     <pre id="update-log" class="h-48 overflow-y-auto bg-black text-green-400 p-2 rounded"></pre>
+    <div class="text-right mt-2">
+      <button type="button" id="update-close-btn" class="px-3 py-1 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded" disabled onclick="document.getElementById('modal').innerHTML=''">Close</button>
+      <button type="button" id="update-retry-btn" class="px-3 py-1 ml-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded hidden">Retry</button>
+    </div>
     {% endif %}
   </div>
 </div>
