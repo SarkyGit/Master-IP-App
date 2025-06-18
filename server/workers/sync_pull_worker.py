@@ -49,8 +49,10 @@ def _update_last_sync(db: Session) -> None:
     db.commit()
 
 
-async def _fetch_with_retry(url: str, payload: dict, log: logging.Logger, api_key: str) -> Any:
-    headers = {"Authorization": f"Bearer {api_key}"} if api_key else {}
+async def _fetch_with_retry(
+    url: str, payload: dict, log: logging.Logger, site_id: str, api_key: str
+) -> Any:
+    headers = {"Site-ID": site_id, "API-Key": api_key}
     delay = 1
     for attempt in range(SYNC_RETRIES):
         try:
@@ -70,11 +72,11 @@ async def pull_once(log: logging.Logger) -> None:
     db = SessionLocal()
     try:
         since = _load_last_sync(db)
-        _, pull_url, api_key = _get_sync_config()
+        _, pull_url, site_id, api_key = _get_sync_config()
         payload: dict[str, Any] = {"since": since.isoformat(), "models": SYNC_PULL_MODELS}
         if SITE_ID:
             payload["site_id"] = SITE_ID
-        data = await _fetch_with_retry(pull_url, payload, log, api_key)
+        data = await _fetch_with_retry(pull_url, payload, log, site_id, api_key)
         if not isinstance(data, list):
             log.error("Invalid pull response: %s", data)
             return
