@@ -61,7 +61,6 @@ async def create_user(
     icon_style: str = Form("lucide"),
     menu_tab_color: str | None = Form(None),
     menu_bg_color: str | None = Form(None),
-    icon_style: str = Form("lucide"),
     inventory_color: str | None = Form(None),
     network_color: str | None = Form(None),
     admin_color: str | None = Form(None),

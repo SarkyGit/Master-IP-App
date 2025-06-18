@@ -22,6 +22,9 @@ npm run build:web
 python wait_for_db.py
 sleep 2
 
+# Apply any pending database migrations before seeding
+alembic upgrade head
+
 if [ "${AUTO_SEED:-1}" != "0" ] && [ "${AUTO_SEED}" != "false" ]; then
     python seed_tunables.py
     python seed_superuser.py
