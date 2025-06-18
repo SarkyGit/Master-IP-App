@@ -71,7 +71,7 @@
         mobile: false,
         activeTopMenu: '',
         activeSubMenu: '',
-        submenuAlign: 'left',
+        submenuAlign: localStorage.getItem('submenuAlign') || 'left',
         ready: false,
         theme,
         stickTheme,
@@ -80,6 +80,7 @@
         initFromStorage() {
           this.activeTopMenu = localStorage.getItem('activeTopMenu') || ''
           this.activeSubMenu = localStorage.getItem('activeSubMenu') || ''
+          this.submenuAlign = localStorage.getItem('submenuAlign') || this.submenuAlign
           this.applyColors(this.activeTopMenu)
           setTimeout(() => this.ready = true, 50)
         },
@@ -87,6 +88,7 @@
           this.activeTopMenu = menu
           this.submenuAlign = align
           localStorage.setItem('activeTopMenu', menu)
+          localStorage.setItem('submenuAlign', align)
           localStorage.removeItem('activeSubMenu')
           this.activeSubMenu = ''
           this.applyColors(menu)
