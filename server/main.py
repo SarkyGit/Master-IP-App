@@ -54,6 +54,7 @@ from server.routes import (
 )
 from server.routes.api.sync import router as api_sync_router
 from server.routes.api.register_site import router as register_site_router
+from server.routes.api.check_in import router as check_in_router
 from server.routes.ui.sync_diagnostics import router as sync_diagnostics_router
 from server.routes.ui.tunables import router as tunables_router
 from server.routes.ui.editor import router as editor_router
@@ -179,6 +180,7 @@ app.include_router(api_ssh_credentials_router)
 if settings.role == "cloud":
     app.include_router(api_sync_router)
     app.include_router(register_site_router)
+    app.include_router(check_in_router)
     app.include_router(sync_diagnostics_router)
 app.include_router(admin_profiles_router)
 app.include_router(configs_router)
