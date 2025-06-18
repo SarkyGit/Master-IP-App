@@ -193,6 +193,5 @@ async def update_images(
             dtype.upload_image = image_name
         db.commit()
     if request.headers.get("HX-Request"):
-        context = {"request": request, "message": "Images updated"}
-        return templates.TemplateResponse("message_modal.html", context)
+        return HTMLResponse(status_code=204, headers={"HX-Redirect": f"/admin/upload-image?category={category}&message=Images+updated"})
     return RedirectResponse(url=f"/admin/upload-image?category={category}&message=Images+updated", status_code=302)
