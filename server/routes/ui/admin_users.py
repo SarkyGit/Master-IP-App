@@ -153,6 +153,7 @@ async def update_user(
     theme: str = Form("dark_colourful"),
     font: str = Form("sans"),
     menu_style: str = Form("tabbed"),
+    icon_style: str = Form("lucide"),
     menu_tab_color: str | None = Form(None),
     menu_bg_color: str | None = Form(None),
     inventory_color: str | None = Form(None),
