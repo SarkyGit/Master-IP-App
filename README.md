@@ -276,6 +276,8 @@ required worker flags and the background workers will use these values on the
 next run. Manual editing of `ENABLE_CLOUD_SYNC`, `ENABLE_SYNC_PUSH_WORKER` and
 `ENABLE_SYNC_PULL_WORKER` is no longer required.
 
+Local sites often run behind NAT or firewalls that block inbound traffic. The sync workers therefore initiate outbound connections to the cloud using the API key assigned to the site. As long as that key exists in the cloud server's allowed list the push and pull operations will succeed without any ports opened on the local network.
+
 The `mobile-client/` folder now contains a minimal React Native app that lists devices from the REST API. Use `npm install` then `npm start` inside that directory to launch it with Expo.
 
 ## Interface Themes

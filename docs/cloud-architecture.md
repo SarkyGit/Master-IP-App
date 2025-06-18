@@ -37,7 +37,7 @@ This document outlines the proposed design for Phase 6 of the project. The goal 
 </div>
 
 1. Local replicas queue updates in their worker queue.
-2. When connectivity allows, a periodic job posts batched updates to the cloud `/sync` API via the load balancer.
+2. The connection to the cloud is always initiated by the local site because inbound traffic may be blocked by NAT or firewalls. A periodic job posts batched updates to the cloud `/sync` API via the load balancer using the site's API key.
 3. The sync gateway processes updates and responds with any newer records for the site.
 4. If conflicts occur (matching IDs with different versions), the cloud marks the record as needing manual resolution.
 5. If the connection fails, the queue keeps retrying until the cloud is reachable.
