@@ -87,7 +87,7 @@ def save_menu_images(db: Session, label: str, icon: str | None, image: str | Non
     db.commit()
 
 
-@router.get("/admin/upload-image")
+@router.get("/admin/upload-image", name="upload_image_page")
 async def upload_image_page(
     request: Request,
     category: str = "device",
@@ -192,6 +192,7 @@ async def update_images(
         if image_name:
             dtype.upload_image = image_name
         db.commit()
+    redirect_url = str(request.url_for("upload_image_page")) + f"?category={category}&message=Images+updated"
     if request.headers.get("HX-Request"):
-        return HTMLResponse(status_code=204, headers={"HX-Redirect": f"/admin/upload-image?category={category}&message=Images+updated"})
-    return RedirectResponse(url=f"/admin/upload-image?category={category}&message=Images+updated", status_code=302)
+        return HTMLResponse(status_code=204, headers={"HX-Redirect": redirect_url})
+    return RedirectResponse(url=redirect_url, status_code=302)
