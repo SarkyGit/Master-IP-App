@@ -2,7 +2,8 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 from alembic import context
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
+from alembic.operations.ops import AddColumnOp
 from logging.config import fileConfig
 import types
 import importlib.util
@@ -36,16 +37,50 @@ fileConfig(config.config_file_name)
 
 target_metadata = Base.metadata
 
+
+def process_revision_directives(context, revision, directives):
+    """Ensure NOT NULL columns have a server default when tables contain data."""
+    if not getattr(config.cmd_opts, "autogenerate", False):
+        return
+    script = directives[0]
+    conn = context.connection
+    for op in list(script.upgrade_ops.list_ops()):
+        if isinstance(op, AddColumnOp):
+            column = op.column
+            if not column.nullable and column.server_default is None:
+                table = op.table_name
+                has_data = conn.execute(text(f"SELECT 1 FROM {table} LIMIT 1")).first()
+                if has_data:
+                    if column.default is not None:
+                        default = column.default.arg
+                        if isinstance(default, bool):
+                            column.server_default = text("true" if default else "false")
+                        elif isinstance(default, (int, float)):
+                            column.server_default = text(str(default))
+                        elif isinstance(default, str):
+                            column.server_default = text(f"'{default}'")
+                        else:
+                            pass
+
 def run_migrations_offline():
     url = os.environ.get('DATABASE_URL')
-    context.configure(url=url, target_metadata=target_metadata, literal_binds=True)
+    context.configure(
+        url=url,
+        target_metadata=target_metadata,
+        literal_binds=True,
+        process_revision_directives=process_revision_directives,
+    )
     with context.begin_transaction():
         context.run_migrations()
 
 def run_migrations_online():
     connectable = create_engine(os.environ.get('DATABASE_URL'))
     with connectable.connect() as connection:
-        context.configure(connection=connection, target_metadata=target_metadata)
+        context.configure(
+            connection=connection,
+            target_metadata=target_metadata,
+            process_revision_directives=process_revision_directives,
+        )
         with context.begin_transaction():
             context.run_migrations()
 
