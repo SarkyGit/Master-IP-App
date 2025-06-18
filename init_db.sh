@@ -38,6 +38,9 @@ psql "$PG_URL" -tc "SELECT 1 FROM pg_database WHERE datname = '$DB_NAME';" | gre
 # Install dependencies
 pip install -r requirements.txt
 
+# Apply latest database migrations
+alembic upgrade head
+
 # Seed tables
 python seed_tunables.py
 python seed_superuser.py
