@@ -13,12 +13,12 @@
     <link rel="stylesheet" href="{{ request.url_for('static', path='css/layout.css') }}">
     <style>
       :root {
+        {% if current_user and not current_user.menu_stick_theme %}
+        --tab-bg: {{ current_user.menu_tab_color if current_user.menu_tab_color else '#06b6d4' }};
+        --submenu-bg: {{ current_user.menu_bg_color if current_user.menu_bg_color else '#1f2937' }};
+        {% endif %}
         --active-tab-bg: var(--tab-bg);
         --active-tab-text: var(--tab-text);
-        {% if current_user %}
-        --user-tab-color: {{ current_user.menu_tab_color if current_user.menu_tab_color else '#06b6d4' }};
-        --user-bg-color: {{ current_user.menu_bg_color if current_user.menu_bg_color else '#1f2937' }};
-        {% endif %}
       }
     </style>
   </head>
