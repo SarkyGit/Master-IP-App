@@ -2,6 +2,7 @@ from alembic import op
 import sqlalchemy as sa
 from sqlalchemy import inspect
 
+
 revision = '0018'
 down_revision = '0017'
 branch_labels = None
@@ -82,6 +83,7 @@ def upgrade() -> None:
             sa.Column('deleted_at', sa.DateTime(timezone=True), nullable=False, server_default=sa.text('now()')),
             sa.Column('origin', sa.String(), nullable=True),
         )
+
 
 
 def downgrade() -> None:
