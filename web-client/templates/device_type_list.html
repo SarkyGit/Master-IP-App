@@ -20,17 +20,17 @@
 <table class="min-w-full table-fixed text-left border-collapse">
   <thead>
     <tr>
-      <th class="table-cell"><input type="checkbox" id="select-all"></th>
+      <th class="table-cell" style="width: 40px; min-width: 40px; max-width: 40px;"><input type="checkbox" id="select-all"></th>
       <th class="table-cell table-header">Name</th>
-      <th class="table-header text-center actions-col">Actions</th>
+      <th class="table-header text-center actions-col" style="width: 100px; min-width: 100px; max-width: 100px;">Actions</th>
     </tr>
   </thead>
   <tbody>
   {% for dt in types %}
     <tr class="border-t border-gray-700">
-      <td class="table-cell"><input type="checkbox" name="selected" value="{{ dt.id }}"></td>
+      <td class="table-cell" style="width: 40px; min-width: 40px; max-width: 40px;"><input type="checkbox" name="selected" value="{{ dt.id }}"></td>
       <td class="table-cell">{{ dt.name }}</td>
-      <td class="actions-col text-center whitespace-nowrap">
+      <td class="actions-col text-center whitespace-nowrap" style="width: 100px; min-width: 100px; max-width: 100px;">
         <div class="flex justify-center gap-1">
           <a href="/device-types/{{ dt.id }}/edit" aria-label="Edit" class="icon-btn">{{ include_icon('pencil','text-blue-500','5') }}</a>
           <form method="post" action="/device-types/{{ dt.id }}/delete" class="inline">

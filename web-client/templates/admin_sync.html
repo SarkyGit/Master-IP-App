@@ -103,7 +103,7 @@
             <th class="table-cell table-header">API Key</th>
             <th class="table-cell table-header">Status</th>
             <th class="table-cell table-header">Last Used</th>
-            <th class="table-header text-center actions-col">Actions</th>
+            <th class="table-header text-center actions-col" style="width: 100px; min-width: 100px; max-width: 100px;">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -115,7 +115,7 @@
             <td class="table-cell font-mono break-all">{{ key.api_key }}</td>
             <td class="table-cell">{{ 'Active' if key.active else 'Revoked' }}</td>
             <td class="table-cell">{{ key.last_used_at or 'never' }}</td>
-            <td class="actions-col text-center">
+            <td class="actions-col text-center" style="width: 100px; min-width: 100px; max-width: 100px;">
               <div class="flex justify-center gap-1">
                 <form method="post" action="/admin/site-keys/{{ key.id }}/toggle" class="inline">
                   {% if key.active %}
@@ -263,7 +263,7 @@
           <th class="table-cell table-header">Status</th>
           <th class="table-cell table-header">Last Seen</th>
           <th class="table-cell table-header">API Keys</th>
-          <th class="table-header text-center actions-col">Actions</th>
+          <th class="table-header text-center actions-col" style="width: 100px; min-width: 100px; max-width: 100px;">Actions</th>
         </tr>
         {% else %}
         <tr>
@@ -271,7 +271,7 @@
           <th class="table-cell table-header">Site ID</th>
           <th class="table-cell table-header">API Key</th>
           <th class="table-cell table-header">Status</th>
-          <th class="table-header text-center actions-col">Actions</th>
+          <th class="table-header text-center actions-col" style="width: 100px; min-width: 100px; max-width: 100px;">Actions</th>
         </tr>
         {% endif %}
       </thead>
@@ -298,7 +298,7 @@
             </div>
             {% endfor %}
           </td>
-          <td class="actions-col text-center">
+          <td class="actions-col text-center" style="width: 100px; min-width: 100px; max-width: 100px;">
             <form method="post" action="/admin/cloud-sync/{{ site.site_id }}/new-key" class="inline">
               <span aria-label="Issue" class="icon-btn" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('plus','text-blue-500','5') }}</span>
             </form>
@@ -326,7 +326,7 @@
             {{ include_icon('circle','text-red-500','5') }}
             {% endif %}
           </td>
-          <td class="actions-col text-center">
+          <td class="actions-col text-center" style="width: 100px; min-width: 100px; max-width: 100px;">
             <span @click="open = !open" x-data="{open:false}" class="icon-btn" role="button" tabindex="0">{{ include_icon('pencil','text-blue-500','5') }}</span>
           </td>
         </tr>

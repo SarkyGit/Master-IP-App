@@ -8,20 +8,20 @@
 <table class="min-w-full table-fixed text-left mt-4">
   <thead>
     <tr>
-      <th class="px-2"><input type="checkbox" id="select-all"></th>
+      <th class="px-2" style="width: 40px; min-width: 40px; max-width: 40px;"><input type="checkbox" id="select-all"></th>
       <th class="px-4 py-2 text-left">Tag</th>
       <th class="px-4 py-2 text-left">Description</th>
       <th class="px-4 py-2 text-left">Version</th>
-      <th></th>
+      <th style="width: 100px; min-width: 100px; max-width: 100px;"></th>
     </tr>
   </thead>
   <tbody>
   {% for vlan in vlans %}
     <tr class="border-t border-gray-700" {% if vlan.conflict_data %}style="background-color:#7f1d1d"{% endif %}>
-      <td class="px-2"><input type="checkbox" name="selected" value="{{ vlan.id }}"></td>
+      <td class="px-2" style="width: 40px; min-width: 40px; max-width: 40px;"><input type="checkbox" name="selected" value="{{ vlan.id }}"></td>
       <td class="px-4 py-2">{{ vlan.tag }}</td>
       <td class="px-4 py-2">{{ vlan.description or '' }}</td>
-      <td class="px-4 py-2">
+      <td class="px-4 py-2" style="width: 100px; min-width: 100px; max-width: 100px;">
         {{ vlan.version }}
         {% if vlan.conflict_data %}{{ include_icon('alert-triangle','text-red-500','1.5') }}{% endif %}
       </td>

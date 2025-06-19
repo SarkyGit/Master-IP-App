@@ -8,19 +8,19 @@
 <table class="min-w-full table-fixed text-left mt-4">
   <thead>
     <tr>
-      <th class="px-2"><input type="checkbox" id="select-all"></th>
+      <th class="px-2" style="width: 40px; min-width: 40px; max-width: 40px;"><input type="checkbox" id="select-all"></th>
       <th class="px-4 py-2 text-left">Name</th>
       <th class="px-4 py-2 text-left">Type</th>
-      <th class="table-header actions-col"></th>
+      <th class="table-header actions-col" style="width: 100px; min-width: 100px; max-width: 100px;"></th>
     </tr>
   </thead>
   <tbody>
   {% for loc in locations %}
     <tr class="border-t border-gray-700">
-      <td class="px-2"><input type="checkbox" name="selected" value="{{ loc.id }}"></td>
+      <td class="px-2" style="width: 40px; min-width: 40px; max-width: 40px;"><input type="checkbox" name="selected" value="{{ loc.id }}"></td>
       <td class="px-4 py-2">{{ loc.name }}</td>
       <td class="px-4 py-2">{{ loc.location_type }}</td>
-      <td class="actions-col px-4 py-2">
+      <td class="actions-col px-4 py-2" style="width: 100px; min-width: 100px; max-width: 100px;">
         <div class="flex gap-1">
           <a href="/admin/locations/{{ loc.id }}/edit" aria-label="Edit" class="icon-btn">{{ include_icon('pencil','text-blue-500','5') }}</a>
           <form method="post" action="/admin/locations/{{ loc.id }}/delete" class="inline">
