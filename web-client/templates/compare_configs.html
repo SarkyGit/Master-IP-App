@@ -22,7 +22,7 @@
     <option value="{{ b.id }}" {% if b.id == backup_b %}selected{% endif %}>{{ b.created_at }}</option>
     {% endfor %}
   </select>
-  <span aria-label="Compare" class="p-2 rounded transition ml-2" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('eye') }}</span>
+  <span aria-label="Compare" class="p-2 rounded transition ml-2 cursor-pointer" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('eye') }}</span>
   {% endif %}
 </form>
 {% if device %}

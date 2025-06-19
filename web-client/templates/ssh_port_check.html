@@ -17,7 +17,7 @@
       <input id="port_name" type="text" name="port_name" value="{{ port_name or '' }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" required />
     </div>
   </div>
-  <span aria-label="Check" class="p-2 rounded transition" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('search') }}</span>
+  <span aria-label="Check" class="p-2 rounded transition cursor-pointer" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('search') }}</span>
 </form>
 {% if error %}<p class="p-2 rounded bg-[var(--alert-bg)] mt-2">{{ error }}</p>{% endif %}
 {% if output %}

@@ -32,6 +32,6 @@
     </label>
     {% endfor %}
   </div>
-  <span aria-label="Next" class="p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded transition" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('arrow-right') }}</span>
+  <span aria-label="Next" class="p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded transition cursor-pointer" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('arrow-right') }}</span>
 </form>
 {% endblock %}

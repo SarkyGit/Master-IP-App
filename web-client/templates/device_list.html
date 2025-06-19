@@ -4,7 +4,7 @@
 {% if current_user and current_user.role == 'superadmin' %}
   {% set refresh_button %}
   <form method="post" action="/admin/run-push-queue" class="inline-block ml-2">
-    <span aria-label="Run Push Queue" class="p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded transition" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('refresh-ccw', None, '1.5') }}</span>
+    <span aria-label="Run Push Queue" class="p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded transition cursor-pointer" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('refresh-ccw', None, '1.5') }}</span>
   </form>
   {% endset %}
 {% endif %}
@@ -105,7 +105,7 @@
           {% if current_user and current_user.role in ['editor','admin','superadmin'] %}
           <a href="/devices/{{ device.id }}/edit" aria-label="Edit" class="icon-btn">{{ include_icon('pencil','text-blue-500','5') }}</a>
           <form method="post" action="/devices/{{ device.id }}/delete" class="inline">
-            <span aria-label="Delete" class="icon-btn" role="button" tabindex="0" onclick="if(confirm('Delete device?')) { this.closest('form').submit() }">{{ include_icon('trash-2','text-red-500','5') }}</span>
+            <span aria-label="Delete" class="icon-btn cursor-pointer" role="button" tabindex="0" onclick="if(confirm('Delete device?')) { this.closest('form').submit() }">{{ include_icon('trash-2','text-red-500','5') }}</span>
           </form>
           {% endif %}
         </div>
@@ -136,7 +136,7 @@
       {% if column_prefs.status %}<td class="table-cell"></td>{% endif %}
       {% if column_prefs.tags %}<td class="table-cell"><input name="tag_names" class="w-full bg-[var(--input-bg)] text-[var(--input-text)] rounded" /></td>{% endif %}
       <td class="table-cell"></td>
-      <td class="actions-col text-right no-resize"><span @click="bulkUpdate" aria-label="Apply" class="icon-btn" role="button" tabindex="0">{{ include_icon('check','text-green-500','5') }}</span></td>
+      <td class="actions-col text-right no-resize"><span @click="bulkUpdate" aria-label="Apply" class="icon-btn cursor-pointer" role="button" tabindex="0">{{ include_icon('check','text-green-500','5') }}</span></td>
     </tr>
   </tfoot>
 </table>
@@ -155,7 +155,7 @@
     </label>
     {% if current_user and current_user.role in ['editor','admin','superadmin'] %}
     <div class="relative inline-block ml-2" x-data="{open:false, ready:false}" x-init="setTimeout(() => ready = true, 50)">
-      <span aria-label="Export" class="bg-[var(--card-bg)] p-2 text-[var(--btn-text)] rounded" @click="open = !open" role="button" tabindex="0">{{ include_icon('download','text-orange-500','1.5') }}</span>
+      <span aria-label="Export" class="bg-[var(--card-bg)] p-2 text-[var(--btn-text)] rounded cursor-pointer" @click="open = !open" role="button" tabindex="0">{{ include_icon('download','text-orange-500','1.5') }}</span>
       <ul x-show="ready && open" x-transition.opacity.duration.150ms @click.away="open = false" class="absolute bg-[var(--card-bg)] py-2 w-48" x-cloak>
         <li><a class="block px-4 py-2 hover:bg-[var(--btn-hover)]" href="/export/inventory.csv">Export to CSV</a></li>
         <li><a class="block px-4 py-2 hover:bg-[var(--btn-hover)]" href="/export/inventory.pdf">Export to PDF</a></li>
@@ -167,6 +167,6 @@
   </div>
 </div>
 </div>
-<span @click="bulkDelete" aria-label="Delete Selected" class="px-2 text-sm text-[var(--btn-text)] hover:text-[var(--btn-hover-text)] mt-2" role="button" tabindex="0">{{ include_icon('trash-2','text-red-500','1.5') }}</span>
+<span @click="bulkDelete" aria-label="Delete Selected" class="px-2 text-sm text-[var(--btn-text)] hover:text-[var(--btn-hover-text)] mt-2 cursor-pointer" role="button" tabindex="0">{{ include_icon('trash-2','text-red-500','1.5') }}</span>
 </form>
 {% endblock %}

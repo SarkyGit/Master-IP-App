@@ -38,9 +38,9 @@
   <input type="hidden" name="template_id" value="{{ template_id or '' }}" />
   <input type="hidden" name="config_text" value="{{ config_text }}" />
   <input type="hidden" name="model_filter" value="{{ model_filter }}" />
-  <span aria-label="Confirm" class="p-2 rounded transition" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('check-circle') }}</span>
+  <span aria-label="Confirm" class="p-2 rounded transition cursor-pointer" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('check-circle') }}</span>
   {% else %}
-  <span aria-label="Preview" class="p-2 rounded transition" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('eye') }}</span>
+  <span aria-label="Preview" class="p-2 rounded transition cursor-pointer" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('eye') }}</span>
   {% endif %}
 </form>
 {% endblock %}

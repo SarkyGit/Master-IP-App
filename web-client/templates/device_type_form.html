@@ -19,7 +19,7 @@
   <p class="p-2 rounded bg-[var(--alert-bg)] text-[var(--btn-text)]">{{ error }}</p>
   {% endif %}
   <div>
-    <span aria-label="Submit" class="p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded transition" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('check') }}</span>
+    <span aria-label="Submit" class="p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded transition cursor-pointer" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('check') }}</span>
     <a href="/device-types" class="inline-block p-2 ml-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded transition">Cancel</a>
   </div>
 </form>
