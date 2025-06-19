@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from typing import Any
 import logging
 from sqlalchemy import inspect, or_
+from sqlalchemy.exc import IntegrityError
 from datetime import datetime
 
 from core.models import models as model_module
@@ -134,7 +135,9 @@ async def push_changes(
                 obj = db.query(model_cls).filter_by(id=rec["id"]).first()
                 if obj:
                     update = {k: v for k, v in rec.items() if k not in {"id", "version", "model"}}
-                    conf = apply_update(obj, update, incoming_version=rec["version"], source="sync_push")
+                    conf = apply_update(
+                        obj, update, incoming_version=rec["version"], source="sync_push"
+                    )
                     if conf:
                         conflicts += 1
                         log.warning("Conflict on %s id %s", model_name, rec["id"])
@@ -146,9 +149,50 @@ async def push_changes(
                     accepted += 1
                 db.commit()
                 db.refresh(obj)
+            except IntegrityError as exc:  # pragma: no cover - safety
+                db.rollback()
+                if "unique constraint" in str(exc).lower() or "duplicate key" in str(exc).lower():
+                    existing = db.query(model_cls).filter_by(id=rec["id"]).first()
+                    if existing:
+                        try:
+                            update = {
+                                k: v
+                                for k, v in rec.items()
+                                if k not in {"id", "version", "model"}
+                            }
+                            conf = apply_update(
+                                existing,
+                                update,
+                                incoming_version=rec["version"],
+                                source="sync_push",
+                            )
+                            if conf:
+                                conflicts += 1
+                                log.warning(
+                                    "Conflict on %s id %s", model_name, rec["id"]
+                                )
+                            else:
+                                accepted += 1
+                            db.commit()
+                            db.refresh(existing)
+                            continue
+                        except Exception as inner_exc:  # pragma: no cover - safety
+                            db.rollback()
+                            log.error(
+                                "Failed to resolve duplicate for %s id %s: %s",
+                                model_name,
+                                rec.get("id"),
+                                inner_exc,
+                            )
+                log.error(
+                    "Error processing %s id %s: %s", model_name, rec.get("id"), exc
+                )
+                skipped += 1
             except Exception as exc:  # pragma: no cover - safety
                 db.rollback()
-                log.error("Error processing %s id %s: %s", model_name, rec.get("id"), exc)
+                log.error(
+                    "Error processing %s id %s: %s", model_name, rec.get("id"), exc
+                )
                 skipped += 1
 
     return {"accepted": accepted, "conflicts": conflicts, "skipped": skipped}
