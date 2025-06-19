@@ -43,12 +43,14 @@ from .ui.admin_images import router as admin_images_router
 from .ui.admin_columns import router as admin_columns_router
 from .ui.org_settings import router as org_settings_router
 from .ui.help import router as help_router
+from .ui.system_monitor import router as system_monitor_router
 from .api.devices import router as api_devices_router
 from .api.users import router as api_users_router
 from .api.vlans import router as api_vlans_router
 from .api.ssh_credentials import router as api_ssh_credentials_router
 from .api.sync import router as api_sync_router
 from .api.register_site import router as register_site_router
+from .api.system import router as api_system_router
 from .install import router as install_router
 
 __all__ = [
@@ -97,11 +99,13 @@ __all__ = [
     "admin_columns_router",
     "org_settings_router",
     "help_router",
+    "system_monitor_router",
     "api_devices_router",
     "api_users_router",
     "api_vlans_router",
     "api_ssh_credentials_router",
     "api_sync_router",
     "register_site_router",
+    "api_system_router",
     "install_router",
 ]

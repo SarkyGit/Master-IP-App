@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="text-xl mb-4">System Monitor</h1>
+<div x-data="monitor()" x-init="init()" class="space-y-4">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="bg-[var(--card-bg)] p-4 rounded shadow">
+      <h2 class="text-lg mb-2">CPU Usage</h2>
+      <canvas id="cpuChart"></canvas>
+    </div>
+    <div class="bg-[var(--card-bg)] p-4 rounded shadow">
+      <h2 class="text-lg mb-2">Memory Usage</h2>
+      <canvas id="memChart"></canvas>
+    </div>
+    <div class="bg-[var(--card-bg)] p-4 rounded shadow">
+      <h2 class="text-lg mb-2">Load Average</h2>
+      <canvas id="loadChart"></canvas>
+    </div>
+    <div class="bg-[var(--card-bg)] p-4 rounded shadow">
+      <h2 class="text-lg mb-2">Network</h2>
+      <canvas id="netChart"></canvas>
+    </div>
+  </div>
+  <div class="bg-[var(--card-bg)] p-4 rounded shadow">
+    <h2 class="text-lg mb-2">Gunicorn Workers</h2>
+    <table class="min-w-full table-fixed text-left">
+      <thead>
+        <tr>
+          <th class="table-header table-cell">PID</th>
+          <th class="table-header table-cell">CPU %</th>
+          <th class="table-header table-cell">Uptime (s)</th>
+        </tr>
+      </thead>
+      <tbody x-html="workers"></tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+{% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+function monitor(){
+  return {
+    timer: null,
+    cpuChart: null,
+    memChart: null,
+    loadChart: null,
+    netChart: null,
+    workers: '',
+    datasets: {},
+    init(){
+      const ctxC = document.getElementById('cpuChart');
+      const ctxM = document.getElementById('memChart');
+      const ctxL = document.getElementById('loadChart');
+      const ctxN = document.getElementById('netChart');
+      this.cpuChart = new Chart(ctxC,{type:'line',data:{labels:[],datasets:[]},options:{animation:false}});
+      this.memChart = new Chart(ctxM,{type:'line',data:{labels:[],datasets:[{label:'% Used',data:[],borderColor:'#60a5fa'}]},options:{animation:false}});
+      this.loadChart = new Chart(ctxL,{type:'bar',data:{labels:['1m','5m','15m'],datasets:[{label:'load',data:[],backgroundColor:'#fbbf24'}]},options:{animation:false}});
+      this.netChart = new Chart(ctxN,{type:'line',data:{labels:[],datasets:[]},options:{animation:false}});
+      this.fetchMetrics();
+      this.timer = setInterval(()=>this.fetchMetrics(),5000);
+      document.addEventListener('visibilitychange',()=>{if(document.hidden){clearInterval(this.timer);}else{this.timer=setInterval(()=>this.fetchMetrics(),5000);}});
+    },
+    async fetchMetrics(){
+      const r = await fetch('/api/system/metrics');
+      if(!r.ok) return;
+      const d = await r.json();
+      const t = new Date().toLocaleTimeString();
+      if(this.cpuChart.data.labels.length>20){this.cpuChart.data.labels.shift();this.cpuChart.data.datasets.forEach(ds=>ds.data.shift());}
+      this.cpuChart.data.labels.push(t);
+      d.cpu_per_core.forEach((v,i)=>{
+        if(!this.datasets['cpu'+i]){this.datasets['cpu'+i]={label:'CPU'+i,data:[],borderColor:'hsl('+i*40+',70%,50%)'};this.cpuChart.data.datasets.push(this.datasets['cpu'+i]);}
+        this.datasets['cpu'+i].data.push(v);
+        if(this.datasets['cpu'+i].data.length>20)this.datasets['cpu'+i].data.shift();
+      });
+      this.cpuChart.update();
+      if(this.memChart.data.labels.length>20){this.memChart.data.labels.shift();this.memChart.data.datasets[0].data.shift();}
+      this.memChart.data.labels.push(t);
+      this.memChart.data.datasets[0].data.push(d.memory.percent);
+      this.memChart.update();
+      this.loadChart.data.datasets[0].data=[d.load_average['1'],d.load_average['5'],d.load_average['15']];
+      this.loadChart.update();
+      const netData = d.network;
+      if(this.netChart.data.labels.length>20){this.netChart.data.labels.shift();this.netChart.data.datasets.forEach(ds=>ds.data.shift());}
+      this.netChart.data.labels.push(t);
+      Object.keys(netData).forEach((iface,idx)=>{
+        ['bytes_sent','bytes_recv'].forEach((k,j)=>{
+          const key=iface+k;
+          if(!this.datasets[key]){this.datasets[key]={label:iface+' '+k.replace('_',' '),data:[],borderColor:'hsl('+(idx*60+j*20)+',70%,50%)'};this.netChart.data.datasets.push(this.datasets[key]);}
+          this.datasets[key].data.push(netData[iface][k]);
+          if(this.datasets[key].data.length>20)this.datasets[key].data.shift();
+        });
+      });
+      this.netChart.update();
+      this.workers = d.worker_stats.map(w=>`<tr class='border-t border-gray-700'><td class='table-cell'>${w.pid}</td><td class='table-cell'>${w.cpu_percent}</td><td class='table-cell'>${Math.round(w.uptime)}</td></tr>`).join('');
+    }
+  }
+}
+</script>
+{% endblock %}
+

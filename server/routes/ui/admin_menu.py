@@ -37,6 +37,7 @@ async def system_menu(
         {"label": "Update System", "href": "/admin/update"},
         {"label": "Tunables", "href": "/tunables"},
         {"label": "Users", "href": "/admin/users"},
+        {"label": "System Monitor", "href": "/admin/system-monitor"},
         {"label": "UI to be Sorted", "href": "/admin/ui-to-be-sorted"},
     ]
     for item in items:

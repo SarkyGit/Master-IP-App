@@ -19,7 +19,8 @@ def get_client(db):
          mock.patch("server.workers.trap_listener.setup_trap_listener"), \
          mock.patch("server.workers.syslog_listener.setup_syslog_listener"), \
          mock.patch("server.workers.sync_push_worker.start_sync_push_worker"), \
-         mock.patch("server.workers.sync_pull_worker.start_sync_pull_worker"):
+         mock.patch("server.workers.sync_pull_worker.start_sync_pull_worker"), \
+         mock.patch("server.workers.system_metrics_logger.start_metrics_logger"):
         app = importlib.import_module("server.main").app
         key = importlib.import_module("core.utils.db_session").get_db
         app.dependency_overrides[key] = lambda: db

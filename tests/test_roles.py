@@ -24,7 +24,8 @@ def get_client(role: str):
          mock.patch("server.workers.syslog_listener.setup_syslog_listener"), \
          mock.patch("server.workers.cloud_sync.start_cloud_sync"), \
          mock.patch("server.workers.sync_push_worker.start_sync_push_worker") as start_push, \
-         mock.patch("server.workers.sync_pull_worker.start_sync_pull_worker") as start_pull:
+         mock.patch("server.workers.sync_pull_worker.start_sync_pull_worker") as start_pull, \
+         mock.patch("server.workers.system_metrics_logger.start_metrics_logger"):
         app = importlib.import_module("server.main").app
         client = TestClient(app)
         client.__enter__()

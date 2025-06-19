@@ -36,6 +36,8 @@ def get_client_for_shutdown():
         "server.workers.sync_push_worker.start_sync_push_worker"
     ), mock.patch(
         "server.workers.sync_pull_worker.start_sync_pull_worker"
+    ), mock.patch(
+        "server.workers.system_metrics_logger.start_metrics_logger"
     ):
         app = importlib.import_module("server.main").app
         return TestClient(app)
