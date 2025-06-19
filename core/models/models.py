@@ -50,6 +50,9 @@ class SNMPCommunity(Base):
     __tablename__ = "snmp_communities"
 
     id = Column(Integer, primary_key=True)
+    version = Column(Integer, default=1, nullable=False)
+    conflict_data = Column(JSON, nullable=True)
+    sync_state = Column(JSON, nullable=True)
     name = Column(String, unique=True, nullable=False)
     community_string = Column(String, nullable=False)
     version = Column(String, nullable=False)

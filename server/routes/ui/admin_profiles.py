@@ -11,7 +11,6 @@ import os
 DEFAULT_SNMP_VERSION = os.environ.get("DEFAULT_SNMP_VERSION", "2c")
 
 
-
 router = APIRouter()
 
 
@@ -27,7 +26,9 @@ async def list_ssh_credentials(
 
 
 @router.get("/admin/ssh/new")
-async def new_ssh_form(request: Request, current_user=Depends(require_role("superadmin"))):
+async def new_ssh_form(
+    request: Request, current_user=Depends(require_role("superadmin"))
+):
     context = {
         "request": request,
         "cred": None,
@@ -52,7 +53,12 @@ async def create_ssh_credential(
     if existing:
         context = {
             "request": request,
-            "cred": {"name": name, "username": username, "password": password, "private_key": private_key},
+            "cred": {
+                "name": name,
+                "username": username,
+                "password": password,
+                "private_key": private_key,
+            },
             "form_title": "New SSH Profile",
             "error": "Name already exists",
             "current_user": current_user,
@@ -105,7 +111,11 @@ async def update_ssh_credential(
     if not cred:
         raise HTTPException(status_code=404, detail="SSH credential not found")
 
-    existing = db.query(SSHCredential).filter(SSHCredential.name == name, SSHCredential.id != cred_id).first()
+    existing = (
+        db.query(SSHCredential)
+        .filter(SSHCredential.name == name, SSHCredential.id != cred_id)
+        .first()
+    )
     if existing:
         context = {
             "request": request,
@@ -169,7 +179,9 @@ async def list_snmp_profiles(
 
 
 @router.get("/admin/snmp/new")
-async def new_snmp_form(request: Request, current_user=Depends(require_role("superadmin"))):
+async def new_snmp_form(
+    request: Request, current_user=Depends(require_role("superadmin"))
+):
     context = {
         "request": request,
         "profile": None,
@@ -185,7 +197,7 @@ async def create_snmp_profile(
     request: Request,
     name: str = Form(...),
     community_string: str = Form(...),
-    version: str = Form(DEFAULT_SNMP_VERSION),
+    snmp_version: str = Form(DEFAULT_SNMP_VERSION),
     db: Session = Depends(get_db),
     current_user=Depends(require_role("superadmin")),
 ):
@@ -193,14 +205,22 @@ async def create_snmp_profile(
     if existing:
         context = {
             "request": request,
-            "profile": {"name": name, "community_string": community_string, "version": version},
+            "profile": {
+                "name": name,
+                "community_string": community_string,
+                "snmp_version": snmp_version,
+            },
             "form_title": "New SNMP Profile",
             "error": "Name already exists",
             "current_user": current_user,
         }
         return templates.TemplateResponse("snmp_form.html", context)
 
-    profile = SNMPCommunity(name=name, community_string=community_string, version=version or DEFAULT_SNMP_VERSION)
+    profile = SNMPCommunity(
+        name=name,
+        community_string=community_string,
+        snmp_version=snmp_version or DEFAULT_SNMP_VERSION,
+    )
     db.add(profile)
     db.commit()
     return RedirectResponse(url="/admin/snmp", status_code=302)
@@ -232,7 +252,7 @@ async def update_snmp_profile(
     request: Request,
     name: str = Form(...),
     community_string: str = Form(...),
-    version: str = Form(DEFAULT_SNMP_VERSION),
+    snmp_version: str = Form(DEFAULT_SNMP_VERSION),
     db: Session = Depends(get_db),
     current_user=Depends(require_role("superadmin")),
 ):
@@ -240,7 +260,11 @@ async def update_snmp_profile(
     if not profile:
         raise HTTPException(status_code=404, detail="SNMP profile not found")
 
-    existing = db.query(SNMPCommunity).filter(SNMPCommunity.name == name, SNMPCommunity.id != profile_id).first()
+    existing = (
+        db.query(SNMPCommunity)
+        .filter(SNMPCommunity.name == name, SNMPCommunity.id != profile_id)
+        .first()
+    )
     if existing:
         context = {
             "request": request,
@@ -251,12 +275,12 @@ async def update_snmp_profile(
         }
         profile.name = name
         profile.community_string = community_string
-        profile.version = version
+        profile.snmp_version = snmp_version
         return templates.TemplateResponse("snmp_form.html", context)
 
     profile.name = name
     profile.community_string = community_string
-    profile.version = version or DEFAULT_SNMP_VERSION
+    profile.snmp_version = snmp_version or DEFAULT_SNMP_VERSION
     db.commit()
     return RedirectResponse(url="/admin/snmp", status_code=302)
 

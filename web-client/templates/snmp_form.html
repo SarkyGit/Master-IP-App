@@ -15,8 +15,8 @@
       <input id="community_string" type="text" name="community_string" value="{{ profile.community_string if profile else '' }}" class="form-input w-full" required />
     </div>
     <div class="flex flex-col flex-1 min-w-[280px]">
-      <label for="version" class="mb-1 fw-bold block">Version</label>
-      <input id="version" type="text" name="version" value="{{ profile.version if profile else '2c' }}" class="form-input w-full" />
+      <label for="snmp_version" class="mb-1 fw-bold block">Version</label>
+      <input id="snmp_version" type="text" name="snmp_version" value="{{ profile.snmp_version if profile else '2c' }}" class="form-input w-full" />
     </div>
   </div>
   {% if error %}

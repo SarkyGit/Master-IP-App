@@ -23,7 +23,10 @@ def main():
         snmp = db.query(SNMPCommunity).filter_by(name="Home").first()
         if not snmp:
             snmp = SNMPCommunity(
-                name="Home", community_string="homeSNMP", version="v2c"
+                name="Home",
+                community_string="homeSNMP",
+                snmp_version="v2c",
+                version=1,
             )
             db.add(snmp)
             db.commit()
