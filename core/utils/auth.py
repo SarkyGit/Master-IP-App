@@ -9,8 +9,16 @@ from core.models.models import User, Site, SiteMembership
 from core.auth import verify_token
 
 
-ROLE_CHOICES = {"viewer", "user", "editor", "admin", "syncadmin", "superadmin"}
-ROLE_HIERARCHY = ["viewer", "user", "editor", "admin", "syncadmin", "superadmin"]
+ROLE_CHOICES = {"viewer", "user", "syncadmin", "editor", "admin", "superadmin"}
+ROLE_HIERARCHY = [
+    "viewer",
+    "user",
+    "syncadmin",
+    "editor",
+    "admin",
+    "superadmin",
+]
+
 
 
 def get_password_hash(password: str) -> str:
