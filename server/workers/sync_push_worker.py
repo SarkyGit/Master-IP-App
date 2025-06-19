@@ -74,6 +74,7 @@ async def push_once(log: logging.Logger) -> None:
     db = SessionLocal()
     try:
         since = _load_last_sync(db)
+        print(f"\U0001F4C5 Pushing records updated since: {since}")
         all_records: list[dict[str, Any]] = []
         for model_cls in model_module.Base.__subclasses__():
             created_col = getattr(model_cls, "created_at", None)
@@ -93,6 +94,7 @@ async def push_once(log: logging.Logger) -> None:
                     {**_serialize(obj), "model": model_cls.__tablename__}
                 )
 
+        print(f"\u2B06\uFE0F Pushing {len(all_records)} records")
         if not all_records:
             return
 
@@ -143,3 +145,19 @@ async def stop_sync_push_worker() -> None:
         except asyncio.CancelledError:
             pass
         _sync_task = None
+
+
+async def main() -> None:
+    print("\u27A1\uFE0F Sync Push Worker started...")
+    start_sync_push_worker()
+    try:
+        while True:
+            await asyncio.sleep(3600)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        await stop_sync_push_worker()
+
+
+if __name__ == "__main__":
+    asyncio.run(main())

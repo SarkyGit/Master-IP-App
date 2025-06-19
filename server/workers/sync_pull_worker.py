@@ -112,6 +112,7 @@ async def pull_once(log: logging.Logger) -> None:
     db = SessionLocal()
     try:
         since = _load_last_sync(db)
+        print(f"\U0001F4C5 Pulling records updated since: {since}")
         _, pull_url, site_id, api_key = _get_sync_config()
         payload: dict[str, Any] = {
             "since": since.isoformat(),
@@ -123,6 +124,7 @@ async def pull_once(log: logging.Logger) -> None:
         if not isinstance(data, list):
             log.error("Invalid pull response: %s", data)
             return
+        print(f"\u2B07\uFE0F Pulled {len(data)} records")
         model_map = {
             cls.__tablename__: cls for cls in model_module.Base.__subclasses__()
         }
@@ -226,3 +228,19 @@ async def stop_sync_pull_worker() -> None:
         except asyncio.CancelledError:
             pass
         _sync_task = None
+
+
+async def main() -> None:
+    print("\u27a1\ufe0f Sync Pull Worker started...")
+    start_sync_pull_worker()
+    try:
+        while True:
+            await asyncio.sleep(3600)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        await stop_sync_pull_worker()
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
