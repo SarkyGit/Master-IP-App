@@ -47,13 +47,32 @@
         <li><strong>Type:</strong> {{ connection_type }}</li>
       </ul>
     </div>
+    {% if role == 'cloud' %}
+    <div class="p-3 bg-[var(--card-bg)] rounded">
+      <h2 class="text-lg mb-2">Local Server Connections</h2>
+      {% if sites %}
+      <div class="space-y-1 text-sm">
+        {% for s in sites %}
+        <div class="flex flex-wrap gap-4">
+          <span><strong>Site ID:</strong> {{ s.site_id }}</span>
+          <span><strong>Server:</strong> {{ s.ip_address or 'N/A' }}</span>
+          <span><strong>Type:</strong> local</span>
+          <span><strong>Last Sync:</strong> {{ s.last_seen or 'never' }}</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="text-sm text-gray-500">No recent connections</p>
+      {% endif %}
+    </div>
+    {% endif %}
     <div class="p-3 bg-[var(--card-bg)] rounded">
       <h2 class="text-lg mb-2">Sync Diagnostics</h2>
       <ul class="list-disc ml-6 text-sm">
-        <li>Last Push: {{ tunables.get('Last Sync Push', 'never') }}</li>
-        <li>Last Pull: {{ tunables.get('Last Sync Pull', 'never') }}</li>
-        <li>Last Push Worker: {{ tunables.get('Last Sync Push Worker', 'never') }}</li>
-        <li>Last Pull Worker: {{ tunables.get('Last Sync Pull Worker', 'never') }}</li>
+        <li>Last Push: {{ last_push }}</li>
+        <li>Last Pull: {{ last_pull }}</li>
+        <li>Last Push Worker: {{ last_push_worker }}</li>
+        <li>Last Pull Worker: {{ last_pull_worker }}</li>
       </ul>
     </div>
   </div>

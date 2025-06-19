@@ -1,11 +1,18 @@
 import os
-import psutil
 import time
 from typing import Any, Dict
+
+try:
+    import psutil
+except Exception:  # pragma: no cover - optional dependency
+    psutil = None
 
 
 def gather_metrics() -> Dict[str, Any]:
     """Collect system and application metrics."""
+    if psutil is None:
+        return {"error": "psutil not installed"}
+
     cpu_total = psutil.cpu_percent()
     cpu_per_core = psutil.cpu_percent(percpu=True)
     vm = psutil.virtual_memory()
