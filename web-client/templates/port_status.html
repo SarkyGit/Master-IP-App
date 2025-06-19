@@ -78,7 +78,7 @@
       <th class="px-4 py-2 text-left">Speed</th>
       <th class="px-4 py-2 text-left">VLAN/Trunk</th>
       <th class="px-4 py-2 text-left">Description</th>
-      <th class="px-4 py-2 text-left actions-col">Actions</th>
+      <th class="px-4 py-2 text-left actions-col" style="width: 100px; min-width: 100px; max-width: 100px;">Actions</th>
     </tr>
   </thead>
   <tbody>
@@ -104,7 +104,7 @@
         {% endif %}
       </td>
       <td class="px-4 py-2">{{ port.alias or '' }}</td>
-      <td class="px-4 py-2 actions-col">
+      <td class="px-4 py-2 actions-col" style="width: 100px; min-width: 100px; max-width: 100px;">
         <div class="flex gap-1">
           <a href="/devices/{{ device.id }}/ports/{{ port.name }}/config" aria-label="Config" class="icon-btn">{{ include_icon('zap','text-yellow-400','5') }}</a>
           <a href="/devices/{{ device.id }}/ports/{{ port.name }}/apply-template" aria-label="Template" class="icon-btn">{{ include_icon('pencil','text-blue-500','5') }}</a>

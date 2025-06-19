@@ -12,7 +12,7 @@
       <th>Type</th>
       <th>Default</th>
       <th>Visible</th>
-      <th></th>
+      <th style="width: 100px; min-width: 100px; max-width: 100px;"></th>
     </tr>
   </thead>
   <tbody>
@@ -24,7 +24,7 @@
       <td>{{ col.data_type }}</td>
       <td>{{ col.default_value or '' }}</td>
       <td>{{ 'Yes' if col.user_visible else 'No' }}</td>
-      <td>
+      <td style="width: 100px; min-width: 100px; max-width: 100px;">
         <form method="post" action="/admin/columns/{{ col.id }}/delete" onsubmit="return confirm('Delete column?');">
           <button type="submit" class="text-red-600">Delete</button>
         </form>

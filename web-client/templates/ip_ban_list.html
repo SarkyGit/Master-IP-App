@@ -23,7 +23,7 @@
       <th class="table-cell table-header">Banned Until</th>
       <th class="table-cell table-header">Attempts</th>
       <th class="table-cell table-header">Reason</th>
-      <th class="table-header text-center actions-col">Actions</th>
+      <th class="table-header text-center actions-col" style="width: 100px; min-width: 100px; max-width: 100px;">Actions</th>
     </tr>
   </thead>
   <tbody>
@@ -33,7 +33,7 @@
       <td class="table-cell">{{ ban.banned_until }}</td>
       <td class="table-cell">{{ ban.attempt_count }}</td>
       <td class="table-cell">{{ ban.ban_reason }}</td>
-      <td class="actions-col text-center whitespace-nowrap">
+      <td class="actions-col text-center whitespace-nowrap" style="width: 100px; min-width: 100px; max-width: 100px;">
         <div class="flex justify-center gap-1">
           <form method="post" action="/admin/ip-bans/{{ ban.id }}/unban" class="inline">
           <span type='submit' aria-label='Unban' class='icon-btn' role="button" tabindex="0" onclick="return confirm('Unban this IP?')">{{ include_icon('x-circle', '', '5') }}</span>

@@ -25,7 +25,7 @@
       <th class="table-cell table-header">Active</th>
       <th class="table-cell table-header">Last Used</th>
       <th class="table-cell table-header">Status</th>
-      <th class="table-header text-center actions-col">Actions</th>
+      <th class="table-header text-center actions-col" style="width: 100px; min-width: 100px; max-width: 100px;">Actions</th>
     </tr>
   </thead>
   <tbody>
@@ -38,7 +38,7 @@
       <td class="table-cell">{{ key.last_used_at or 'never' }}</td>
       {% set stale = key.last_used_at is none or (now - key.last_used_at > timedelta(hours=24)) %}
       <td class="table-cell">{{ 'stale' if stale else 'ok' }}</td>
-      <td class="actions-col text-center">
+      <td class="actions-col text-center" style="width: 100px; min-width: 100px; max-width: 100px;">
         <div class="flex justify-center gap-1">
           <form method="post" action="/admin/site-keys/{{ key.id }}/toggle" class="inline">
             {% if key.active %}
