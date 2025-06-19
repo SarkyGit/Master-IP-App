@@ -16,7 +16,9 @@ from .cloud_sync import _get_sync_config
 
 SYNC_PULL_INTERVAL = int(os.environ.get("SYNC_PULL_INTERVAL", "90"))
 _DEFAULT_PULL_MODELS = ",".join(
-    cls.__tablename__ for cls in model_module.Base.__subclasses__()
+    cls.__tablename__
+    for cls in model_module.Base.__subclasses__()
+    if hasattr(cls, "version")
 )
 SYNC_PULL_MODELS = [
     m.strip()
