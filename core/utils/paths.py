@@ -11,6 +11,8 @@ BASE_DIR = os.path.dirname(
 # Absolute path to the ``static`` directory.  It can be overridden via the
 # ``STATIC_DIR`` environment variable to support deployments where the
 # repository location is read-only.
-STATIC_DIR = os.environ.get(
-    "STATIC_DIR", os.path.join(BASE_DIR, "web-client", "static")
-)
+_env_static = os.environ.get("STATIC_DIR")
+if _env_static:
+    STATIC_DIR = os.path.abspath(_env_static)
+else:
+    STATIC_DIR = os.path.join(BASE_DIR, "web-client", "static")

@@ -371,6 +371,7 @@ If the service does not restart automatically after an update, run
 
 Static assets are served from the `web-client/static` directory by default.
 If the repository is installed in a read-only location you can set the
+
 `STATIC_DIR` environment variable to an alternate writable path. Ensure this
 directory is also accessible at `/static` when deploying behind a reverse
 proxy so the application can find its assets.
