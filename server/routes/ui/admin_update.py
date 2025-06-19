@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Request, Depends, HTTPException, Form
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
 import subprocess
@@ -14,17 +14,16 @@ from core.models.models import SystemTunable, Device, User
 from core.utils.audit import log_audit
 from server.workers.sync_push_worker import _load_last_sync
 from server.workers.heartbeat import send_heartbeat_once
+from server.utils import progress
 from settings import settings
 
 router = APIRouter()
 
-_progress_queues: set[asyncio.Queue[str]] = set()
 _update_lock = asyncio.Lock()
 
 
 def _broadcast(msg: str) -> None:
-    for q in list(_progress_queues):
-        q.put_nowait(msg)
+    progress.broadcast(msg)
 
 
 def _unsynced_records_exist(db: Session) -> bool:
@@ -113,7 +112,7 @@ async def _run_update(user: User, force_reboot: bool) -> None:
         log_audit(db, user, "update_failed", details=str(exc))
     finally:
         db.close()
-        if not _progress_queues:
+        if not progress.has_listeners():
             await asyncio.sleep(1)
             _broadcast("DONE")
             await asyncio.sleep(1)
@@ -122,18 +121,17 @@ async def _run_update(user: User, force_reboot: bool) -> None:
 @router.websocket("/ws/update")
 async def update_ws(websocket):
     await websocket.accept()
-    q: asyncio.Queue[str] = asyncio.Queue()
-    _progress_queues.add(q)
+    q = progress.new_queue()
     try:
         while True:
-            msg = await q.get()
+            msg = await progress.next_message(q)
             await websocket.send_text(msg)
             if msg == "DONE":
                 break
     except Exception:
         pass
     finally:
-        _progress_queues.discard(q)
+        progress.remove_queue(q)
         await websocket.close()
 
 

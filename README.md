@@ -355,6 +355,13 @@ Set the `AUTO_SEED` environment variable to `0` or `false` to skip the automatic
 Adjust `WORKERS`, `TIMEOUT` and `PORT` as needed. The server listens on
 `0.0.0.0` so it can be proxied by a web server such as Nginx.
 
+The update page streams progress over a WebSocket. When running multiple
+workers the messages must be shared between processes so any worker can
+forward them to connected clients. The bundled implementation uses a
+`multiprocessing.Manager` queue controlled by `PROGRESS_HOST`,
+`PROGRESS_PORT` and `PROGRESS_AUTHKEY`. You can swap this out for another
+backend such as Redis pub/sub.
+
 Static assets are served from the `web-client/static` directory.
 This location is fixed. When deploying inside containers or under a reverse
 proxy, ensure that `/path/to/Master-IP-App/web-client/static` is accessible at `/static` so
