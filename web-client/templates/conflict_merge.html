@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="text-xl mb-4">Resolve Conflict</h1>
+<form method="post" action="/reports/conflicts/{{ device.id }}/merge" class="full-width">
+<div class="w-full overflow-auto">
+<table class="min-w-full table-fixed text-left">
+  <thead>
+    <tr>
+      <th class="table-cell table-header">Field</th>
+      <th class="table-cell table-header">Local</th>
+      <th class="table-cell table-header">Cloud</th>
+      <th class="table-cell table-header">Keep</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for c in device.conflict_data %}
+    <tr class="border-t border-gray-700">
+      <td class="table-cell">{{ c.field }}</td>
+      <td class="table-cell">{{ c.local_value }}</td>
+      <td class="table-cell">{{ c.remote_value }}</td>
+      <td class="table-cell">
+        <label class="mr-2"><input type="radio" name="{{ c.field }}" value="local" checked> Local</label>
+        <label><input type="radio" name="{{ c.field }}" value="cloud"> Cloud</label>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+<div class="mt-2">
+  <button type="submit" class="px-4 py-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded">Save</button>
+</div>
+</form>
+{% endblock %}

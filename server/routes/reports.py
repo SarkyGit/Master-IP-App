@@ -54,3 +54,33 @@ async def resolve_conflict(
     if request and request.headers.get("HX-Request"):
         return templates.TemplateResponse("close_modal.html", {"request": request})
     return RedirectResponse(url="/reports/conflicts", status_code=302)
+
+
+@router.get("/conflicts/{device_id}/merge")
+async def conflict_merge_form(
+    device_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("syncadmin")),
+):
+    device = db.query(Device).filter(Device.id == device_id).first()
+    if not device:
+        raise HTTPException(status_code=404, detail="Device not found")
+    context = {"request": request, "device": device, "current_user": current_user}
+    return templates.TemplateResponse("conflict_merge.html", context)
+
+
+@router.post("/conflicts/{device_id}/merge")
+async def conflict_merge(
+    device_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("syncadmin")),
+):
+    device = db.query(Device).filter(Device.id == device_id).first()
+    if not device:
+        raise HTTPException(status_code=404, detail="Device not found")
+    form = await request.form()
+    choices = {field: form.get(field, "local") for field in [c["field"] for c in device.conflict_data]}
+    await sync_conflicts.resolve_device_conflict(db, device, choices, current_user)
+    return RedirectResponse(url="/reports/conflicts", status_code=302)

@@ -66,16 +66,17 @@
         {% for c in dev.conflict_data %}
         <tr class="border-t border-gray-700">
           <td class="px-4 py-2">{{ c.field }}</td>
-          <td class="px-4 py-2">{{ c.local_value }}</td>
-          <td class="px-4 py-2 {% if c.local_value != c.remote_value %}bg-[var(--alert-bg)]{% endif %}">{{ c.remote_value }}</td>
+          <td class="px-4 py-2 {% if c.local_value != c.remote_value %}bg-yellow-700/50{% endif %}">{{ c.local_value }}</td>
+          <td class="px-4 py-2 {% if c.local_value != c.remote_value %}bg-yellow-700/50{% endif %}">{{ c.remote_value }}</td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
     </div>
     <div class="mt-2 space-x-2">
-      <button type="submit" name="choice" value="local" class="px-4 py-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded">Use Local</button>
-      <button type="submit" name="choice" value="cloud" class="px-4 py-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded">Use Cloud</button>
+      <button type="submit" name="choice" value="local" class="px-4 py-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded">Accept Local</button>
+      <button type="submit" name="choice" value="cloud" class="px-4 py-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded">Accept Cloud</button>
+      <a href="/reports/conflicts/{{ dev.id }}/merge" class="px-4 py-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded">Manual Merge</a>
     </div>
   </form>
   {% endfor %}

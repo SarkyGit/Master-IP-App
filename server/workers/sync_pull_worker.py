@@ -129,7 +129,7 @@ async def pull_once(log: logging.Logger) -> None:
                     db.add(
                         DeviceEditLog(
                             device_id=obj.id,
-                            user_id=None,
+                            user_id=1,
                             changes="sync_pull:" + ",".join(changed),
                         )
                     )
@@ -144,7 +144,7 @@ async def pull_once(log: logging.Logger) -> None:
                         db.add(
                             DeviceEditLog(
                                 device_id=obj.id,
-                                user_id=None,
+                                user_id=1,
                                 changes="sync_pull:created",
                             )
                         )

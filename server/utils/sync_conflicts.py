@@ -17,14 +17,21 @@ from server.workers import sync_push_worker
 async def resolve_device_conflict(
     db: Session,
     device: Device,
-    choice: str,
+    choice: str | dict[str, str],
     user,
 ) -> None:
     """Resolve a device conflict using either local or cloud values."""
     if not device.conflict_data:
         return
 
-    if choice == "cloud":
+    if isinstance(choice, dict):
+        for field, decision in choice.items():
+            if decision == "cloud":
+                for c in device.conflict_data:
+                    if c["field"] == field:
+                        setattr(device, field, c.get("remote_value"))
+                        break
+    elif choice == "cloud":
         updates = {c["field"]: c.get("remote_value") for c in device.conflict_data}
         for field, value in updates.items():
             setattr(device, field, value)
