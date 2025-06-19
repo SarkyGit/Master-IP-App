@@ -129,15 +129,16 @@ def test_push_once_sends_unsynced_records(monkeypatch):
 
     async def fake_request(method, url, payload, log, site_id, api_key):
         sent["payload"] = payload
+        return {"accepted": 1, "conflicts": 0, "skipped": 0}
+        return {"accepted": 2, "conflicts": 0, "skipped": 0}
 
     monkeypatch.setattr(sync_push_worker, "_request_with_retry", fake_request)
 
     asyncio.run(sync_push_worker.push_once(mock.Mock()))
 
-    assert len(sent["payload"]["records"]) == 2
-    models_sent = {r["model"] for r in sent["payload"]["records"]}
-    assert models.Device.__tablename__ in models_sent
-    assert models.User.__tablename__ in models_sent
+    assert set(sent["payload"].keys()) == {models.Device.__tablename__, models.User.__tablename__}
+    assert len(sent["payload"][models.Device.__tablename__]) == 1
+    assert len(sent["payload"][models.User.__tablename__]) == 1
     assert db.data[models.SystemTunable][0].value != old_value
 
 
@@ -176,8 +177,47 @@ def test_push_once_ignores_timestamp_for_unsynced(monkeypatch):
 
     asyncio.run(sync_push_worker.push_once(mock.Mock()))
 
-    assert len(sent["payload"]["records"]) == 1
-    assert sent["payload"]["records"][0]["id"] == 1
+    assert list(sent["payload"].keys()) == [models.Device.__tablename__]
+    assert sent["payload"][models.Device.__tablename__][0]["id"] == 1
+
+
+@pytest.mark.unit
+def test_push_once_includes_deleted_records(monkeypatch):
+    db = DummyDB()
+    models = db.models
+    now = datetime.now(timezone.utc)
+    dev = models.Device(
+        id=1,
+        hostname="dev",
+        ip="1.1.1.1",
+        manufacturer="cisco",
+        device_type_id=1,
+        created_at=now,
+        updated_at=now,
+        deleted_at=now,
+        version=1,
+    )
+    db.data[models.Device].append(dev)
+
+    monkeypatch.setattr(sync_push_worker, "SessionLocal", lambda: db)
+    monkeypatch.setattr(
+        sync_push_worker,
+        "_get_sync_config",
+        lambda: ("http://push", "http://pull", "site1", ""),
+    )
+    sent = {}
+
+    async def fake_request(method, url, payload, log, site_id, api_key):
+        sent["payload"] = payload
+        return {"accepted": 1, "conflicts": 0, "skipped": 0}
+
+    monkeypatch.setattr(sync_push_worker, "_request_with_retry", fake_request)
+
+    asyncio.run(sync_push_worker.push_once(mock.Mock()))
+
+    record = sent["payload"][models.Device.__tablename__][0]
+    assert set(record.keys()) <= {"uuid", "asset_tag", "mac", "deleted_at", "updated_at"}
+    assert record["deleted_at"] is not None
 
 
 @pytest.mark.unit
