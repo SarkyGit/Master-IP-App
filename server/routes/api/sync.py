@@ -110,6 +110,11 @@ async def push_changes(
     if not records_by_model:
         raise HTTPException(status_code=400, detail="Missing model or records")
 
+    total_records = sum(len(r) for r in records_by_model.values())
+    print(
+        f"\u2B06\uFE0F Received push from site {key.site_id} with {total_records} records"
+    )
+
     accepted = 0
     skipped = 0
     conflicts = 0
@@ -195,6 +200,7 @@ async def push_changes(
                 )
                 skipped += 1
 
+    print(f"\u2705 Push processed for site {key.site_id}: {accepted} accepted, {conflicts} conflicts, {skipped} skipped")
     return {"accepted": accepted, "conflicts": conflicts, "skipped": skipped}
 
 
@@ -220,6 +226,10 @@ async def pull_changes(
         since = datetime.fromisoformat(since_str)
     except Exception:
         raise HTTPException(status_code=400, detail="Invalid since timestamp")
+
+    print(
+        f"\u27A1\uFE0F Pull request from site {key.site_id} since {since.isoformat()}"
+    )
 
     model_map = {cls.__tablename__: cls for cls in model_module.Base.__subclasses__()}
     results: list[dict[str, Any]] = []
@@ -253,6 +263,9 @@ async def pull_changes(
             data = {c.key: getattr(obj, c.key) for c in insp.mapper.column_attrs}
             results.append({"model": model_name, **data})
 
+    print(
+        f"\u2B06\uFE0F Sending {len(results)} records to site {key.site_id}"
+    )
     return results
 
 
