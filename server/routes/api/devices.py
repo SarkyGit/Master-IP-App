@@ -81,6 +81,7 @@ def update_device(
         raise HTTPException(status_code=404, detail="Device not found")
     update_data = update.dict(exclude_unset=True, exclude={"version"})
     apply_update(obj, update_data, incoming_version=update.version)
+    obj.updated_at = datetime.now(timezone.utc)
     db.commit()
     db.refresh(obj)
     return obj
