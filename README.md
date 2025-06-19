@@ -369,10 +369,11 @@ backend such as Redis pub/sub.
 If the service does not restart automatically after an update, run
 `sudo systemctl restart master-ip-app` on the host.
 
-Static assets are served from the `web-client/static` directory.
-This location is fixed. When deploying inside containers or under a reverse
-proxy, ensure that `/path/to/Master-IP-App/web-client/static` is accessible at `/static` so
-the application can find its assets.
+Static assets are served from the `web-client/static` directory by default.
+If the repository is installed in a read-only location you can set the
+`STATIC_DIR` environment variable to an alternate writable path. Ensure this
+directory is also accessible at `/static` when deploying behind a reverse
+proxy so the application can find its assets.
 
 If the app is exposed under a URL prefix (e.g. `/inventory/` instead of `/`),
 set the `ROOT_PATH` environment variable to that prefix so all generated links
@@ -395,6 +396,8 @@ The application reads several options from the environment. Important variables 
  - `ENABLE_SYNC_PUSH_WORKER` – set to `0` to disable pushing local changes.
  - `ENABLE_SYNC_PULL_WORKER` – set to `0` to disable pulling updates from the cloud.
 - `ENABLE_BACKGROUND_WORKERS` – disable to skip queue and scheduler startup.
+- `STATIC_DIR` – directory for uploaded images and other static assets. Set this
+  if the repository location is read-only.
 - `CLOUD_BASE_URL` – base URL of the cloud server (overrides tunable).
 - `SYNC_PUSH_URL` and `SYNC_PULL_URL` – custom endpoints for synchronization.
 - `SYNC_API_KEY` – bearer token sent with sync requests.
