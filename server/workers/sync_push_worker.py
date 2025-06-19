@@ -12,6 +12,9 @@ from sqlalchemy import event
 from core.models.models import SystemTunable
 from core.models import models as model_module
 from .cloud_sync import _request_with_retry, _get_sync_config
+from core.utils.audit import log_audit
+from core.utils.sync_logging import log_sync_attempt
+from server.utils.cloud import set_tunable
 
 SYNC_PUSH_INTERVAL = int(os.environ.get("SYNC_PUSH_INTERVAL", "60"))
 
@@ -51,7 +54,7 @@ def _load_last_sync(db) -> datetime:
     return datetime.fromtimestamp(0, timezone.utc)
 
 
-def _update_last_sync(db) -> None:
+def _update_last_sync(db, count: int) -> None:
     now = datetime.now(timezone.utc).isoformat()
     entry = (
         db.query(SystemTunable)
@@ -70,6 +73,21 @@ def _update_last_sync(db) -> None:
                 data_type="text",
             )
         )
+    cnt = db.query(SystemTunable).filter(
+        SystemTunable.name == "Last Sync Push Worker Count"
+    ).first()
+    if cnt:
+        cnt.value = str(count)
+    else:
+        db.add(
+            SystemTunable(
+                name="Last Sync Push Worker Count",
+                value=str(count),
+                function="Sync",
+                file_type="application",
+                data_type="text",
+            )
+        )
     db.commit()
 
 
@@ -81,7 +99,9 @@ async def push_once(log: logging.Logger) -> None:
     db = SessionLocal()
     try:
         since = _load_last_sync(db)
-        print(f"\U0001F4C5 Pushing records updated since: {since}")
+        msg = f"\U0001F4C5 Pushing records updated since: {since}"
+        print(msg)
+        log_audit(db, None, "debug", details=msg)
         records_by_model: dict[str, list[dict[str, Any]]] = {}
         pushed_objs: list[Any] = []
         for model_cls in model_module.Base.__subclasses__():
@@ -121,18 +141,24 @@ async def push_once(log: logging.Logger) -> None:
                 records_by_model.setdefault(model_cls.__tablename__, []).append(rec)
 
         total_records = sum(len(v) for v in records_by_model.values())
-        print(f"\u2B06\uFE0F Pushing {total_records} records")
+        msg = f"\u2B06\uFE0F Pushing {total_records} records"
+        print(msg)
+        log_audit(db, None, "debug", details=msg)
         if not total_records:
             return
 
         payload = records_by_model
         result = await _request_with_retry("POST", push_url, payload, log, site_id, api_key)
-
+        
         for obj in pushed_objs:
             if hasattr(obj, "sync_state"):
                 obj.sync_state = _serialize(obj)
         db.commit()
-        _update_last_sync(db)
+        _update_last_sync(db, total_records)
+
+        conflicts = 0
+        if isinstance(result, dict):
+            conflicts = result.get("conflicts", 0)
 
         if isinstance(result, dict):
             log.info(
@@ -141,6 +167,12 @@ async def push_once(log: logging.Logger) -> None:
                 result.get("conflicts", 0),
                 result.get("skipped", 0),
             )
+        log_sync_attempt(db, "push", total_records, conflicts)
+        set_tunable(db, "Last Sync Push Error", "")
+    except Exception as exc:
+        log_sync_attempt(db, "push", 0, 0, str(exc))
+        set_tunable(db, "Last Sync Push Error", str(exc))
+        log.error("Push failed: %s", exc)
     finally:
         db.close()
 

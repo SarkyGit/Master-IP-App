@@ -1,6 +1,12 @@
 from sqlalchemy.orm import Session
 from datetime import datetime, timezone
-from core.models.models import SyncLog, ConflictLog, DuplicateResolutionLog, DeletionLog
+from core.models.models import (
+    SyncLog,
+    ConflictLog,
+    DuplicateResolutionLog,
+    DeletionLog,
+    AuditLog,
+)
 
 
 def log_sync(db: Session, record_id: int, model: str, action: str, origin: str, target: str, user_id: int | None = None) -> None:
@@ -48,6 +54,23 @@ def log_deletion(db: Session, record_id: int, model: str, user_id: int | None, o
         deleted_by=user_id,
         origin=origin,
         deleted_at=datetime.now(timezone.utc),
+    )
+    db.add(entry)
+    db.commit()
+
+
+def log_sync_attempt(
+    db: Session,
+    direction: str,
+    records: int,
+    conflicts: int,
+    error: str | None = None,
+) -> None:
+    """Record a push or pull operation summary."""
+    entry = AuditLog(
+        user_id=None,
+        action_type=f"sync_{direction}",
+        details=f"records={records} conflicts={conflicts} error={error or ''}",
     )
     db.add(entry)
     db.commit()

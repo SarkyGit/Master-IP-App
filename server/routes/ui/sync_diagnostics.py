@@ -27,10 +27,18 @@ def _render_sync(request: Request, db: Session, current_user, message: str = "")
         except Exception:
             return "never"
 
+    def _num(name: str) -> str:
+        val = tunables.get(name)
+        return val or "0"
+
     last_push = _fmt("Last Sync Push")
     last_pull = _fmt("Last Sync Pull")
     last_push_worker = _fmt("Last Sync Push Worker")
     last_pull_worker = _fmt("Last Sync Pull Worker")
+    last_push_count = _num("Last Sync Push Worker Count")
+    last_pull_count = _num("Last Sync Pull Worker Count")
+    push_error = tunables.get("Last Sync Push Error") or ""
+    pull_error = tunables.get("Last Sync Pull Error") or ""
     now = datetime.now(timezone.utc)
     last_contact = tunables.get("Last Cloud Contact")
     connection_status = "Disconnected"
@@ -93,6 +101,10 @@ def _render_sync(request: Request, db: Session, current_user, message: str = "")
         "last_pull": last_pull,
         "last_push_worker": last_push_worker,
         "last_pull_worker": last_pull_worker,
+        "last_push_count": last_push_count,
+        "last_pull_count": last_pull_count,
+        "push_error": push_error,
+        "pull_error": pull_error,
     }
     return templates.TemplateResponse("admin_sync.html", context)
 
