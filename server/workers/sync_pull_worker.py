@@ -124,6 +124,7 @@ async def pull_once(log: logging.Logger) -> None:
         if not isinstance(data, list):
             log.error("Invalid pull response: %s", data)
             return
+        print(f"\u2B07\uFE0F Pulled {len(data)} records")
         model_map = {
             cls.__tablename__: cls for cls in model_module.Base.__subclasses__()
         }
