@@ -20,6 +20,7 @@ ROLE_HIERARCHY = [
 ]
 
 
+
 def get_password_hash(password: str) -> str:
     """Return a bcrypt hash of the given password."""
     return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
