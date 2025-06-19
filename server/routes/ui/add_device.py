@@ -5,7 +5,7 @@ import csv
 
 from core.utils.templates import templates
 from core.utils.auth import require_role
-from core.utils.db_session import get_db
+from core.utils.db_session import get_db, reset_pk_sequence
 from core.models.models import Device, DeviceType, Location
 from server.routes.ui.task_views import _open_sheet
 from server.routes.ui.devices import _format_ip
@@ -115,6 +115,7 @@ async def add_device_manual(
             added += 1
         except Exception as exc:
             errors.append(str(exc))
+    reset_pk_sequence(db, Device)
     db.commit()
     msg = f"Added {added} device(s)"
     if errors:
@@ -139,6 +140,7 @@ async def add_device_csv(
             added += 1
         except Exception as exc:
             errors.append(str(exc))
+    reset_pk_sequence(db, Device)
     db.commit()
     msg = f"Added {added} device(s)"
     if errors:
@@ -172,6 +174,7 @@ async def add_device_google(
             added += 1
         except Exception as exc:
             errors.append(str(exc))
+    reset_pk_sequence(db, Device)
     db.commit()
     msg = f"Added {added} device(s)"
     if errors:

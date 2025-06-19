@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 import os
 
@@ -25,3 +25,15 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+def reset_pk_sequence(db, model):
+    """Ensure the PostgreSQL sequence for a table's id column is in sync."""
+    if not db.bind or db.bind.dialect.name != "postgresql":
+        return
+    table = model.__tablename__
+    seq_sql = text(
+        f"SELECT setval(pg_get_serial_sequence('{table}', 'id'), "
+        f"COALESCE((SELECT MAX(id) FROM {table}), 0) + 1, false)"
+    )
+    db.execute(seq_sql)
