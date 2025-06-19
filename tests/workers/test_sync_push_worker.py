@@ -24,12 +24,16 @@ class DummyQuery:
             clauses = [expr]
 
         def matches(obj, clause):
+            if not hasattr(clause, "left"):
+                return False
             col = clause.left.key
-            val = clause.right.value
+            val = getattr(clause.right, "value", None)
             if clause.operator == operators.gt:
                 return getattr(obj, col) > val
             if clause.operator == operators.eq:
                 return getattr(obj, col) == val
+            if clause.operator == operators.is_:
+                return (getattr(obj, col) is None) == (val is None)
             return False
 
         self.items = [i for i in self.items if any(matches(i, c) for c in clauses)]
@@ -135,6 +139,45 @@ def test_push_once_sends_unsynced_records(monkeypatch):
     assert models.Device.__tablename__ in models_sent
     assert models.User.__tablename__ in models_sent
     assert db.data[models.SystemTunable][0].value != old_value
+
+
+@pytest.mark.unit
+def test_push_once_ignores_timestamp_for_unsynced(monkeypatch):
+    db = DummyDB()
+    models = db.models
+    past = datetime.now(timezone.utc) - timedelta(days=5)
+    future = datetime.now(timezone.utc) + timedelta(days=1)
+    db.data[models.SystemTunable][0].value = future.isoformat()
+
+    dev = models.Device(
+        id=1,
+        hostname="dev",
+        ip="1.1.1.1",
+        manufacturer="cisco",
+        device_type_id=1,
+        created_at=past,
+        updated_at=past,
+        version=1,
+    )
+    db.data[models.Device].append(dev)
+
+    sent = {}
+    monkeypatch.setattr(sync_push_worker, "SessionLocal", lambda: db)
+    monkeypatch.setattr(
+        sync_push_worker,
+        "_get_sync_config",
+        lambda: ("http://push", "http://pull", "site1", ""),
+    )
+
+    async def fake_request(method, url, payload, log, site_id, api_key):
+        sent["payload"] = payload
+
+    monkeypatch.setattr(sync_push_worker, "_request_with_retry", fake_request)
+
+    asyncio.run(sync_push_worker.push_once(mock.Mock()))
+
+    assert len(sent["payload"]["records"]) == 1
+    assert sent["payload"]["records"][0]["id"] == 1
 
 
 @pytest.mark.unit

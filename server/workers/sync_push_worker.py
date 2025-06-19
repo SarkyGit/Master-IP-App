@@ -76,23 +76,36 @@ async def push_once(log: logging.Logger) -> None:
         since = _load_last_sync(db)
         print(f"\U0001F4C5 Pushing records updated since: {since}")
         all_records: list[dict[str, Any]] = []
+        pushed_objs: list[Any] = []
         for model_cls in model_module.Base.__subclasses__():
             created_col = getattr(model_cls, "created_at", None)
             updated_col = getattr(model_cls, "updated_at", None)
+            sync_col = getattr(model_cls, "sync_state", None)
             query = db.query(model_cls)
+
+            ts_filter = None
             if created_col is not None and updated_col is not None:
-                query = query.filter(or_(created_col > since, updated_col > since))
+                ts_filter = or_(created_col > since, updated_col > since)
             elif created_col is not None:
-                query = query.filter(created_col > since)
+                ts_filter = created_col > since
             elif updated_col is not None:
-                query = query.filter(updated_col > since)
+                ts_filter = updated_col > since
             else:
-                if since > datetime.fromtimestamp(0, timezone.utc):
+                if since > datetime.fromtimestamp(0, timezone.utc) and sync_col is None:
                     continue
+
+            if sync_col is not None:
+                unsynced = sync_col.is_(None)
+                if ts_filter is not None:
+                    query = query.filter(or_(unsynced, ts_filter))
+                else:
+                    query = query.filter(unsynced)
+            elif ts_filter is not None:
+                query = query.filter(ts_filter)
+
             for obj in query.all():
-                all_records.append(
-                    {**_serialize(obj), "model": model_cls.__tablename__}
-                )
+                pushed_objs.append(obj)
+                all_records.append({**_serialize(obj), "model": model_cls.__tablename__})
 
         print(f"\u2B06\uFE0F Pushing {len(all_records)} records")
         if not all_records:
@@ -100,6 +113,11 @@ async def push_once(log: logging.Logger) -> None:
 
         payload = {"records": all_records}
         await _request_with_retry("POST", push_url, payload, log, site_id, api_key)
+
+        for obj in pushed_objs:
+            if hasattr(obj, "sync_state"):
+                obj.sync_state = _serialize(obj)
+        db.commit()
         _update_last_sync(db)
     finally:
         db.close()
