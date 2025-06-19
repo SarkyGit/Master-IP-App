@@ -108,7 +108,8 @@ async def list_devices(
         if d.ip:
             dup_ips.setdefault(d.ip, []).append(d.hostname)
         if d.mac:
-            dup_macs.setdefault(d.mac, []).append(d.hostname)
+            nm = normalize_mac(d.mac)
+            dup_macs.setdefault(nm, []).append(d.hostname)
         if d.asset_tag:
             dup_tags.setdefault(d.asset_tag, []).append(d.hostname)
     duplicate_ips = {k: v for k, v in dup_ips.items() if len(v) > 1}
@@ -246,7 +247,8 @@ async def duplicate_report(
         else:
             missing["ip"].append(d)
         if d.mac:
-            dup_macs.setdefault(d.mac, []).append(d)
+            nm = normalize_mac(d.mac)
+            dup_macs.setdefault(nm, []).append(d)
         else:
             missing["mac"].append(d)
         if d.asset_tag:
@@ -285,7 +287,8 @@ async def list_devices_by_type(
         if d.ip:
             dup_ips.setdefault(d.ip, []).append(d.hostname)
         if d.mac:
-            dup_macs.setdefault(d.mac, []).append(d.hostname)
+            nm = normalize_mac(d.mac)
+            dup_macs.setdefault(nm, []).append(d.hostname)
         if d.asset_tag:
             dup_tags.setdefault(d.asset_tag, []).append(d.hostname)
     duplicate_ips = {k: v for k, v in dup_ips.items() if len(v) > 1}
@@ -367,10 +370,15 @@ def _load_form_options(db: Session):
 
 
 from core.utils.ip_utils import pad_ip
+from core.utils.mac_utils import normalize_mac, MAC_RE
 
 
 def _format_ip(ip: str) -> str:
     return pad_ip(ip)
+
+
+def _format_mac(mac: str | None) -> str | None:
+    return normalize_mac(mac) if mac else None
 
 
 def suggest_vlan_from_ip(db: Session, ip: str):
@@ -453,10 +461,24 @@ async def create_device(
 ):
     """Create a new device from form data."""
     formatted_ip = _format_ip(ip)
+    formatted_mac = _format_mac(mac)
+    if formatted_mac and not MAC_RE.fullmatch(formatted_mac):
+        context = await new_device_form(request, db, current_user)
+        context["error"] = "Invalid MAC address"
+        context["device"] = {
+            "hostname": hostname,
+            "ip": ip,
+            "mac": mac,
+            "asset_tag": asset_tag,
+            "model": model,
+            "manufacturer": manufacturer,
+            "serial_number": serial_number,
+        }
+        return templates.TemplateResponse("device_form.html", context)
     device = Device(
         hostname=hostname,
         ip=formatted_ip,
-        mac=mac or None,
+        mac=formatted_mac,
         asset_tag=asset_tag or None,
         model=model or None,
         manufacturer=manufacturer,
@@ -606,7 +628,12 @@ async def update_device(
 
     device.hostname = hostname
     device.ip = _format_ip(ip)
-    device.mac = mac or None
+    formatted_mac = _format_mac(mac)
+    if formatted_mac and not MAC_RE.fullmatch(formatted_mac):
+        context = await edit_device_form(device_id, request, db, current_user)
+        context["error"] = "Invalid MAC address"
+        return templates.TemplateResponse("device_form.html", context)
+    device.mac = formatted_mac
     device.asset_tag = asset_tag or None
     device.model = model or None
     device.manufacturer = manufacturer
@@ -759,7 +786,9 @@ async def bulk_update_devices(
         if ip:
             device.ip = _format_ip(ip)
         if mac:
-            device.mac = mac
+            fm = _format_mac(mac)
+            if fm and MAC_RE.fullmatch(fm):
+                device.mac = fm
         if asset_tag:
             device.asset_tag = asset_tag
         if model:

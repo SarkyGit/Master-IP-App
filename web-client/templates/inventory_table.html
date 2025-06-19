@@ -22,7 +22,7 @@
     <tr class="border-t border-gray-700">
       <td class="px-4 py-2">{{ d.model or '' }}</td>
       <td class="px-4 py-2">{{ d.asset_tag or '' }}</td>
-      <td class="px-4 py-2">{{ d.mac or '' }}</td>
+      <td class="px-4 py-2">{{ d.mac | display_mac }}</td>
       <td class="px-4 py-2" data-ip="{{ d.ip }}">{{ d.ip | display_ip }}</td>
       <td class="px-4 py-2">{{ d.serial_number or '' }}</td>
       <td class="px-4 py-2">{{ d.location_ref.name if d.location_ref else '' }}</td>

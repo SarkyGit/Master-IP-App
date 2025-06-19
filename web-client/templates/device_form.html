@@ -14,7 +14,8 @@
     </div>
     <div class="flex flex-col flex-1 min-w-[280px]">
       <label for="mac" class="mb-1 fw-bold block">MAC Address</label>
-      <input id="mac" type="text" name="mac" value="{{ device.mac if device else '' }}" class="form-input w-full" />
+      <input id="mac" type="text" name="mac" value="{{ device.mac | display_mac if device else '' }}" class="form-input w-full" />
+      <p id="mac-error" class="text-red-400 text-sm hidden">Invalid MAC address</p>
     </div>
   </div>
   <div class="flex flex-wrap gap-x-8 gap-y-4 mb-4 items-start">
@@ -187,6 +188,8 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   const ipField = document.getElementById('ip-field');
+  const macField = document.getElementById('mac');
+  const macError = document.getElementById('mac-error');
   const vlanField = document.getElementById('vlan-field');
   const note = document.getElementById('vlan-suggestion');
   const manuField = document.querySelector('input[name="manufacturer"]');
@@ -231,11 +234,34 @@ document.addEventListener('DOMContentLoaded', function () {
     ipField.addEventListener('blur', fetchSuggestion);
   }
 
+  function formatMac() {
+    if (!macField) return;
+    let val = macField.value.toUpperCase().replace(/[^0-9A-F]/g, '').slice(0,12);
+    if (val.length > 2) {
+      val = val.match(/.{1,2}/g).join(':');
+    }
+    macField.value = val;
+    if (val && !/^([0-9A-F]{2}:){5}[0-9A-F]{2}$/.test(val)) {
+      macError.classList.remove('hidden');
+    } else {
+      macError.classList.add('hidden');
+    }
+  }
+  if (macField) macField.addEventListener('input', formatMac);
+  formatMac();
+
   form.addEventListener('submit', function(e) {
     const missing = [];
     const assetTag = form.querySelector('input[name="asset_tag"]').value.trim();
     const ip = ipField.value.trim();
-    const mac = form.querySelector('input[name="mac"]').value.trim();
+    const mac = macField.value.trim();
+    formatMac();
+    if (mac && !/^([0-9A-F]{2}:){5}[0-9A-F]{2}$/.test(mac)) {
+      e.preventDefault();
+      macError.classList.remove('hidden');
+      macField.focus();
+      return;
+    }
     if (!assetTag) missing.push('Asset Tag');
     if (!ip) missing.push('IP Address');
     if (!mac) missing.push('MAC Address');
