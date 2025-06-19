@@ -75,7 +75,7 @@ async def _update_timestamp(db, name: str) -> None:
     db.commit()
 
 
-async def _request_with_retry(method: str, url: str, payload: dict, log: logging.Logger, site_id: str, api_key: str) -> None:
+async def _request_with_retry(method: str, url: str, payload: dict, log: logging.Logger, site_id: str, api_key: str) -> dict | None:
     headers = {"Site-ID": site_id, "API-Key": api_key}
     delay = 1
     for attempt in range(SYNC_RETRIES):
@@ -83,7 +83,10 @@ async def _request_with_retry(method: str, url: str, payload: dict, log: logging
             async with httpx.AsyncClient(timeout=SYNC_TIMEOUT) as client:
                 resp = await client.request(method, url, json=payload, headers=headers)
             resp.raise_for_status()
-            return
+            try:
+                return resp.json()
+            except Exception:
+                return None
         except Exception as exc:
             log.warning("%s attempt %s failed: %s", url, attempt + 1, exc)
             if attempt == SYNC_RETRIES - 1:

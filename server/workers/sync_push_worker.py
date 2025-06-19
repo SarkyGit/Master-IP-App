@@ -8,6 +8,7 @@ import httpx
 from sqlalchemy import inspect, or_
 
 from core.utils.db_session import SessionLocal
+from sqlalchemy import event
 from core.models.models import SystemTunable
 from core.models import models as model_module
 from .cloud_sync import _request_with_retry, _get_sync_config
@@ -16,14 +17,20 @@ SYNC_PUSH_INTERVAL = int(os.environ.get("SYNC_PUSH_INTERVAL", "60"))
 
 
 def _serialize(obj: Any) -> dict[str, Any]:
+    """Return a JSON serializable representation of ``obj``."""
     insp = inspect(obj)
     data = {}
     for c in insp.mapper.column_attrs:
         val = getattr(obj, c.key)
         if isinstance(val, datetime):
-            data[c.key] = val.isoformat()
-        else:
-            data[c.key] = val
+            val = val.astimezone(timezone.utc).isoformat()
+        data[c.key] = val
+
+    # When a record is marked deleted only send minimal identifying fields
+    deleted = data.get("deleted_at")
+    if deleted:
+        keep = {"uuid", "asset_tag", "mac", "deleted_at", "updated_at"}
+        data = {k: v for k, v in data.items() if k in keep}
     return data
 
 
@@ -75,11 +82,12 @@ async def push_once(log: logging.Logger) -> None:
     try:
         since = _load_last_sync(db)
         print(f"\U0001F4C5 Pushing records updated since: {since}")
-        all_records: list[dict[str, Any]] = []
+        records_by_model: dict[str, list[dict[str, Any]]] = {}
         pushed_objs: list[Any] = []
         for model_cls in model_module.Base.__subclasses__():
             created_col = getattr(model_cls, "created_at", None)
             updated_col = getattr(model_cls, "updated_at", None)
+            deleted_col = getattr(model_cls, "deleted_at", None)
             sync_col = getattr(model_cls, "sync_state", None)
             query = db.query(model_cls)
 
@@ -94,6 +102,10 @@ async def push_once(log: logging.Logger) -> None:
                 if since > datetime.fromtimestamp(0, timezone.utc) and sync_col is None:
                     continue
 
+            if deleted_col is not None:
+                del_filter = deleted_col > since
+                ts_filter = or_(ts_filter, del_filter) if ts_filter is not None else del_filter
+
             if sync_col is not None:
                 unsynced = sync_col.is_(None)
                 if ts_filter is not None:
@@ -105,20 +117,30 @@ async def push_once(log: logging.Logger) -> None:
 
             for obj in query.all():
                 pushed_objs.append(obj)
-                all_records.append({**_serialize(obj), "model": model_cls.__tablename__})
+                rec = _serialize(obj)
+                records_by_model.setdefault(model_cls.__tablename__, []).append(rec)
 
-        print(f"\u2B06\uFE0F Pushing {len(all_records)} records")
-        if not all_records:
+        total_records = sum(len(v) for v in records_by_model.values())
+        print(f"\u2B06\uFE0F Pushing {total_records} records")
+        if not total_records:
             return
 
-        payload = {"records": all_records}
-        await _request_with_retry("POST", push_url, payload, log, site_id, api_key)
+        payload = records_by_model
+        result = await _request_with_retry("POST", push_url, payload, log, site_id, api_key)
 
         for obj in pushed_objs:
             if hasattr(obj, "sync_state"):
                 obj.sync_state = _serialize(obj)
         db.commit()
         _update_last_sync(db)
+
+        if isinstance(result, dict):
+            log.info(
+                "Push summary: %s accepted, %s conflicts, %s skipped",
+                result.get("accepted", 0),
+                result.get("conflicts", 0),
+                result.get("skipped", 0),
+            )
     finally:
         db.close()
 
@@ -147,6 +169,19 @@ async def _push_loop() -> None:
 _sync_task: asyncio.Task | None = None
 
 
+def _after_commit(session) -> None:
+    """Trigger a push when local data changes."""
+    if not session.new and not session.dirty and not session.deleted:
+        return
+    try:
+        asyncio.get_running_loop().create_task(
+            push_once_safe(logging.getLogger(__name__))
+        )
+    except RuntimeError:
+        # No running loop (e.g., during tests)
+        pass
+
+
 def start_sync_push_worker() -> None:
     """Start the periodic sync push worker if enabled."""
     enabled = os.environ.get("ENABLE_SYNC_PUSH_WORKER", "1") == "1"
@@ -158,6 +193,7 @@ def start_sync_push_worker() -> None:
         print("Sync push worker not started in cloud role")
         return
     print("Starting sync push worker")
+    event.listen(SessionLocal, "after_commit", _after_commit)
     global _sync_task
     _sync_task = asyncio.create_task(_push_loop())
 
@@ -171,6 +207,10 @@ async def stop_sync_push_worker() -> None:
         except asyncio.CancelledError:
             pass
         _sync_task = None
+    try:
+        event.remove(SessionLocal, "after_commit", _after_commit)
+    except Exception:
+        pass
 
 
 async def main() -> None:
