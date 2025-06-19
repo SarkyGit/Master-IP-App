@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Request, Depends, HTTPException, Form
 from fastapi.responses import HTMLResponse, JSONResponse
 from sqlalchemy.orm import Session
-from sqlalchemy import or_
+
 import subprocess
 import asyncio
 import logging
@@ -10,7 +10,7 @@ from datetime import datetime, timezone, timedelta
 from core.utils.auth import require_role
 from core.utils.db_session import get_db, SessionLocal
 from core.utils.templates import templates
-from core.models.models import SystemTunable, Device, User
+from core.models.models import SystemTunable, User
 from core.utils.audit import log_audit
 from server.workers.sync_push_worker import _load_last_sync
 from server.workers.heartbeat import send_heartbeat_once
@@ -36,9 +36,12 @@ def _unsynced_records_exist(db: Session) -> bool:
     if settings.role == "cloud":
         return False
     since = _load_last_sync(db)
+    from core.models.models import DeviceEditLog
+
     return (
-        db.query(Device)
-        .filter(or_(Device.created_at > since, Device.updated_at > since))
+        db.query(DeviceEditLog)
+        .filter(DeviceEditLog.timestamp > since)
+        .filter(~DeviceEditLog.changes.like("sync_pull:%"))
         .count()
         > 0
     )

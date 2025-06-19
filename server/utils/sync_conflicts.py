@@ -12,6 +12,7 @@ from core.models.models import Device
 from core.utils.versioning import clear_conflicts
 from core.utils.audit import log_audit
 from server.workers import sync_push_worker
+from server.workers.sync_pull_worker import USER_EDITABLE_DEVICE_FIELDS
 
 
 async def resolve_device_conflict(
@@ -58,7 +59,17 @@ def list_device_conflicts(
         query = query.filter(Device.status == status)
     if since is not None:
         query = query.filter(or_(Device.created_at > since, Device.updated_at > since))
-    return query.all()
+    devices = query.all()
+    for device in devices:
+        if device.conflict_data:
+            device.conflict_data = [
+                c
+                for c in device.conflict_data
+                if c.get("field") in USER_EDITABLE_DEVICE_FIELDS
+            ]
+            if not device.conflict_data:
+                device.conflict_data = None
+    return devices
 
 
 def list_recent_sync_records(db: Session, limit: int = 100) -> list[dict]:
@@ -79,6 +90,10 @@ def list_recent_sync_records(db: Session, limit: int = 100) -> list[dict]:
         if not device:
             continue
         change = log.changes.split(":", 1)[1] if ":" in log.changes else ""
-        fields = [f for f in change.split(",") if f]
+        fields = [
+            f
+            for f in change.split(",")
+            if f and f in USER_EDITABLE_DEVICE_FIELDS
+        ]
         results.append({"device": device, "fields": fields})
     return results
