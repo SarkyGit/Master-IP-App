@@ -21,7 +21,7 @@
       <td class="px-2"><input type="checkbox" name="selected" value="{{ profile.id }}"></td>
       <td class="px-4 py-2">{{ profile.name }}</td>
       <td class="px-4 py-2">{{ profile.community_string }}</td>
-      <td class="px-4 py-2">{{ profile.version }}</td>
+      <td class="px-4 py-2">{{ profile.snmp_version }}</td>
       <td class="px-4 py-2">
         <a href="/admin/snmp/{{ profile.id }}/edit" aria-label="Edit" class="p-2 rounded transition mr-2">{{ include_icon('pencil','text-blue-500','1.5') }}</a>
         <form method="post" action="/admin/snmp/{{ profile.id }}/delete" class="inline">

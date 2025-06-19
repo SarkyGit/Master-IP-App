@@ -276,6 +276,11 @@ connection details. The sync workers are enabled by default so manual editing of
 `ENABLE_CLOUD_SYNC`, `ENABLE_SYNC_PUSH_WORKER` and `ENABLE_SYNC_PULL_WORKER` is
 typically unnecessary.
 
+All synchronized tables now include a `created_at` timestamp. The push worker
+uses this field (or `updated_at` when present) to detect new records. Upgrade
+the database with Alembic to ensure these columns exist before relying on cloud
+sync.
+
 Local sites often run behind NAT or firewalls that block inbound traffic. The sync workers therefore initiate outbound connections to the cloud using the API key assigned to the site. As long as that key exists in the cloud server's allowed list the push and pull operations will succeed without any ports opened on the local network.
 
 The `mobile-client/` folder now contains a minimal React Native app that lists devices from the REST API. Use `npm install` then `npm start` inside that directory to launch it with Expo.
