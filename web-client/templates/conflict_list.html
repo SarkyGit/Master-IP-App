@@ -51,7 +51,9 @@
 {% endif %}
 {% if conflicts %}
   {% for dev in conflicts %}
-  <h2 class="text-lg mt-4">{{ dev.hostname }}</h2>
+  <h2 class="text-lg mt-4">{{ dev.hostname }}
+    <span class="text-sm ml-2 text-gray-400">{{ dev.ip }} {{ dev.mac or '' }}</span>
+  </h2>
   <form method="post" action="/reports/conflicts/{{ dev.id }}" class="full-width space-y-2">
     <div class="md:flex gap-4">
       <div class="md:w-2/3 space-y-4">

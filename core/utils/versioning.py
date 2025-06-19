@@ -28,8 +28,11 @@ def apply_update(
                     "field": field,
                     "local_value": lv,
                     "remote_value": rv,
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "conflict_detected_at": datetime.now(timezone.utc).isoformat(),
                     "source": source,
+                    "local_version": current_version,
+                    "remote_version": incoming_version,
+                    "conflict_type": source,
                 }
             )
             continue
