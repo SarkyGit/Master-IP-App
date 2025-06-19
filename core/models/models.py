@@ -55,7 +55,7 @@ class SNMPCommunity(Base):
     sync_state = Column(JSON, nullable=True)
     name = Column(String, unique=True, nullable=False)
     community_string = Column(String, nullable=False)
-    snmp_version = Column(String, nullable=False)
+    version = Column(String, nullable=False)
     created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
 
     devices = relationship("Device", back_populates="snmp_community")
