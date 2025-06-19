@@ -68,6 +68,9 @@ def _update_last_sync(db) -> None:
 
 async def push_once(log: logging.Logger) -> None:
     push_url, _, site_id, api_key = _get_sync_config()
+    if not push_url or not site_id:
+        log.info("Cloud sync not configured, skipping push")
+        return
     db = SessionLocal()
     try:
         since = _load_last_sync(db)
