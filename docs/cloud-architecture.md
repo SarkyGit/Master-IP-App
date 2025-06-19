@@ -59,3 +59,26 @@ This document outlines the proposed design for Phase 6 of the project. The goal 
 
 Docker Compose files will be provided for both local and cloud roles. Kubernetes manifests will follow the same pattern with dedicated deployments for the database and web application.
 
+## Duplicate Resolution and Deleted Device Tracking
+
+Synchronising multiple sites inevitably introduces duplicate and deleted records.
+The sync gateway should handle these cases explicitly so every instance
+converges on the same state:
+
+- **Soft Deletion** – instead of removing a device row outright, mark it as
+  deleted or record it in a dedicated `deleted_devices` table.  Only the
+  identifying fields such as `asset_tag` and `mac` are retained.  The cloud and
+  local replicas sync these tombstone records to prevent the device from
+  reappearing after it has been removed elsewhere.  Normal queries exclude the
+  deleted entries.
+
+- **Automatic Duplicate Resolution** – duplicates can occur when two sites
+  create devices with the same identifiers.  During sync the cloud server should
+  merge records that share a hostname, MAC address or asset tag.  The newest
+  `version` wins for conflicting fields, while blank values are filled from the
+  most complete record.  Any unresolved differences are stored in the
+  `conflict_data` field so administrators can review them later.
+
+Implementing these rules keeps the device list consistent across all sites and
+prevents deleted hardware from resurfacing after a synchronisation.
+
