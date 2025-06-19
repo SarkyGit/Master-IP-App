@@ -1,6 +1,6 @@
 import os
 import asyncio
-from multiprocessing.managers import BaseManager
+from multiprocessing.managers import BaseManager, ListProxy
 
 _progress_list = []
 
@@ -12,7 +12,9 @@ class ProgressManager(BaseManager):
     pass
 
 
-ProgressManager.register("get_progress_list", callable=get_progress_list)
+ProgressManager.register(
+    "get_progress_list", callable=get_progress_list, proxytype=ListProxy
+)
 ProgressManager.register("Queue")
 
 HOST = os.environ.get("PROGRESS_HOST", "127.0.0.1")
