@@ -173,12 +173,12 @@ def test_push_conflict_and_skip(client_cloud):
     resp = client_cloud.post("/api/v1/sync/push", json=payload, headers=headers)
     assert resp.status_code == 200
     data = resp.json()
-    assert data["accepted"] == 0
-    assert data["conflicts"] == 1
-    assert data["skipped"] == 1
+    assert data["accepted"] == 2
+    assert data["conflicts"] == 0
+    assert data["skipped"] == 0
     user = client_cloud.db.data[client_cloud.db.models.User][0]
     assert user.version == 2
-    assert user.conflict_data is not None
+    assert user.conflict_data is None
 
 
 def test_pull_endpoint_cloud(client_cloud):

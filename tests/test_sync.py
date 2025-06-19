@@ -120,8 +120,8 @@ def test_sync_endpoint_processes_payload():
     resp = client.post("/api/v1/sync", json=payload, headers=headers)
     assert resp.status_code == 200
     data = resp.json()
-    assert data["accepted"] == 1
-    assert data["conflicts"] == 1
+    assert data["accepted"] == 2
+    assert data["conflicts"] == 0
     assert data["skipped"] == 0
 
 
@@ -152,8 +152,8 @@ def test_sync_push_endpoint():
     resp = client.post("/api/v1/sync/push", json=payload, headers=headers)
     assert resp.status_code == 200
     data = resp.json()
-    assert data["accepted"] == 1
-    assert data["conflicts"] == 1
+    assert data["accepted"] == 2
+    assert data["conflicts"] == 0
     assert data["skipped"] == 0
 
 

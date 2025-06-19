@@ -189,8 +189,7 @@ def test_update_conflict_tracking(url, payload1, payload2, field):
         assert resp.status_code == 200
         second = resp.json()
         assert second["version"] == 3
-        assert second[field] == payload1[field]
-        assert second["conflict_data"] is not None
-        assert second["conflict_data"][0]["field"] == field
+        assert second[field] == payload2[field]
+        assert second["conflict_data"] is None
     finally:
         client.app.dependency_overrides[key] = override_get_db

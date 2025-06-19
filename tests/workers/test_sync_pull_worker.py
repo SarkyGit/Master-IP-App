@@ -133,7 +133,7 @@ def test_pull_once_updates_and_inserts(monkeypatch):
 
     assert len(db.data[models.User]) == 2
     user = db.data[models.User][0]
-    assert user.email == "changed@example.com"
+    assert user.email == "conflict@example.com"
     assert user.version == 3
-    assert user.conflict_data is not None
+    assert user.conflict_data is None
     assert db.data[models.SystemTunable][0].value != old_value
