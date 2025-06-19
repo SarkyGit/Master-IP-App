@@ -148,6 +148,19 @@ body.col-resize {
   min-width: 240px;
 }
 
+/* Alignment rules for grid based forms */
+form.grid,
+.form-grid {
+  align-items: start; /* ensure top edge alignment across cells */
+}
+
+form.grid > div,
+.form-grid > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem; /* uniform spacing between stacked inputs */
+}
+
 /* Font sizing for submenu items */
 .submenu a {
   font-size: var(--submenu-font-size);
