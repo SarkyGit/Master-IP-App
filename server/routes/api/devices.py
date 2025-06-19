@@ -14,14 +14,15 @@ router = APIRouter(prefix="/api/v1/devices", tags=["devices"])
 
 
 def _soft_delete(device: Device, user_id: int, origin: str) -> None:
-    """Mark the device as deleted and clear mutable fields."""
+    """Mark the device as deleted without clearing non-nullable fields."""
     if device.is_deleted:
         return
     keep = {"mac", "asset_tag"}
     for col in device.__table__.columns:
         if col.name in keep or col.primary_key:
             continue
-        setattr(device, col.name, None)
+        if col.nullable:
+            setattr(device, col.name, None)
     device.is_deleted = True
     device.deleted_by_id = user_id
     device.deleted_at = datetime.now(timezone.utc)
