@@ -6,14 +6,22 @@
         <label class="block">Icon <span class="text-xs text-gray-400">(suggested 64x64)</span></label>
         <input type="file" name="icon" accept="image/*" class="text-[var(--input-text)]">
         {% if icon %}
+        {% if icon.startswith('data:') %}
+        <img src="{{ icon }}" class="h-10 mt-1" alt="">
+        {% else %}
         <img src="/static/uploads/{{ 'menu-items' if category=='menu' else 'device-types' }}/{{ icon }}" class="h-10 mt-1" alt="">
+        {% endif %}
         {% endif %}
       </div>
       <div class="mb-2">
         <label class="block">Image <span class="text-xs text-gray-400">(suggested 200x400)</span></label>
         <input type="file" name="image" accept="image/*" class="text-[var(--input-text)]">
         {% if image %}
+        {% if image.startswith('data:') %}
+        <img src="{{ image }}" class="h-20 mt-1" alt="">
+        {% else %}
         <img src="/static/uploads/{{ 'menu-items' if category=='menu' else 'device-types' }}/{{ image }}" class="h-20 mt-1" alt="">
+        {% endif %}
         {% endif %}
       </div>
       <div class="text-right mt-2">

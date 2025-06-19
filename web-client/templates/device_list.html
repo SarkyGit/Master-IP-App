@@ -16,7 +16,11 @@
 <div class="flex justify-between items-center bg-[var(--card-bg)] px-2 py-1 rounded">
   <div class="flex items-center gap-2">
     {% if device_type and device_type.upload_icon %}
+    {% if device_type.upload_icon.startswith('data:') %}
+    <img src="{{ device_type.upload_icon }}" class="w-6 h-6" alt="" />
+    {% else %}
     <img src="{{ request.url_for('static', path='uploads/device-types/' ~ device_type.upload_icon) }}" class="w-6 h-6" alt="" />
+    {% endif %}
     {% else %}
     {{ include_icon('hard-drive') }}
     {% endif %}
