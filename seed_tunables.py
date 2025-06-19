@@ -1,5 +1,13 @@
 from core.utils.db_session import SessionLocal
 from core.models.models import SystemTunable
+import subprocess
+
+
+def upgrade_db() -> None:
+    try:
+        subprocess.run(["alembic", "upgrade", "head"], check=True)
+    except Exception as exc:  # pragma: no cover - best effort
+        print(f"Warning: could not apply migrations: {exc}")
 
 
 def main():
@@ -245,4 +253,5 @@ def main():
 
 
 if __name__ == "__main__":
+    upgrade_db()
     main()
