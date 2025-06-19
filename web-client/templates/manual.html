@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="prose prose-invert max-w-screen-md mx-auto">
+  <h1>User Manual</h1>
+  <p>This guide explains how to navigate the Master IP application, manage settings and resolve common issues.</p>
+  <h2>Navigation Overview</h2>
+  <p>The main menu exposes <strong>Inventory</strong>, <strong>Network</strong> and <strong>Admin</strong> sections. Inventory pages manage devices, reports and related settings. The Network menu covers dashboards, configuration tasks and status utilities. Administrators see additional pages for system settings and cloud synchronisation.</p>
+  <h2>Core Data Fields</h2>
+  <ul>
+    <li><strong>Location</strong> – physical location of the device. Locations are created under <em>Admin → Locations</em> and assigned when editing a device.</li>
+    <li><strong>Site</strong> – logical site used for cloud replication. Sites are managed from <em>Admin → Sites</em>.</li>
+    <li><strong>Device Type</strong> – model category for hardware. Defined under <em>Admin → Inventory Settings</em>.</li>
+    <li><strong>VLAN</strong> – network VLAN number. Added from <em>Network → Network Settings → VLANs</em>.</li>
+    <li><strong>SSH Profile</strong> – credentials for SSH actions. Managed from <em>Network → Network Settings → SSH Credentials</em>.</li>
+    <li><strong>SNMP Profile</strong> – community or v3 profile for SNMP polling. Configured under <em>Network → Network Settings → SNMP Profiles</em>.</li>
+    <li><strong>Tags</strong> – free-form labels applied to devices for filtering.</li>
+    <li><strong>System Tunables</strong> – application options stored in the database. Accessible at <em>Admin → System Tunables</em>.</li>
+  </ul>
+  <h3>System Tunables</h3>
+  <p>Each tunable has a <strong>name</strong>, <strong>value</strong>, <strong>function</strong> group and optional choices. Key options include:</p>
+  <ul>
+    <li><strong>Enable SSH</strong> – turn the built-in SSH service on or off.</li>
+    <li><strong>Config Backup Count</strong> – number of configuration backups to keep.</li>
+    <li><strong>SNMP Version</strong> – protocol version used when querying devices.</li>
+    <li><strong>Google Service Account JSON</strong> – path to Google Sheets credentials.</li>
+    <li><strong>Google Spreadsheet ID</strong> – target spreadsheet identifier.</li>
+    <li><strong>GOOGLE_MAPS_API_KEY</strong> – API key for the Maps JavaScript library.</li>
+    <li><strong>Netbird API URL / Token</strong> – connection info for Netbird integration.</li>
+    <li><strong>Cloud Base URL / API Key / Site ID</strong> – parameters for cloud synchronisation.</li>
+    <li><strong>Enable Cloud Sync</strong> – toggles the periodic heartbeat and sync workers.</li>
+    <li><strong>Queue Interval</strong> – seconds between processing queued config pushes.</li>
+    <li><strong>Port History Retention Days</strong> – days to keep historical port data.</li>
+    <li><strong>SSH Timeout Seconds</strong> – inactivity timeout for the web terminal.</li>
+    <li><strong>Default SNMP Version</strong> – preselected version when creating profiles.</li>
+    <li><strong>Enable SNMP Trap Listener</strong> and <strong>SNMP Trap Port</strong> – control the trap listener.</li>
+    <li><strong>Enable Syslog Listener</strong> and <strong>Syslog Port</strong> – control the syslog listener.</li>
+    <li><strong>SMTP Server / Port / Username / Password</strong> – outgoing mail settings.</li>
+    <li><strong>Email From</strong> – default sender address.</li>
+    <li><strong>App Version</strong> – informational string shown on the settings page.</li>
+    <li><strong>ALLOW_SELF_UPDATE</strong> and <strong>FORCE_REBOOT_ON_UPDATE</strong> – update behaviour.</li>
+  </ul>
+  <h2>Environment Variables</h2>
+  <p>The server also reads configuration from the environment:</p>
+  <ul>
+    <li><code>DATABASE_URL</code> – PostgreSQL connection string.</li>
+    <li><code>SECRET_KEY</code> – signing key for sessions and tokens (change before deploying).</li>
+    <li><code>TOKEN_TTL</code> – token lifetime in seconds (default 3600).</li>
+    <li><code>SESSION_TTL</code> – session cookie lifetime (default 43200).</li>
+    <li><code>ROOT_PATH</code> – optional URL prefix when behind a proxy.</li>
+    <li><code>ENABLE_TRAP_LISTENER</code> and <code>SNMP_TRAP_PORT</code> – enable and configure the trap listener.</li>
+    <li><code>ENABLE_SYSLOG_LISTENER</code> and <code>SYSLOG_PORT</code> – enable and configure the syslog listener.</li>
+    <li><code>QUEUE_INTERVAL</code> and <code>PORT_HISTORY_RETENTION_DAYS</code> – worker scheduling values.</li>
+    <li><code>WORKERS</code>, <code>TIMEOUT</code>, <code>PORT</code> and <code>AUTO_SEED</code> – options used by <code>start.sh</code>.</li>
+    <li><code>ROLE</code> – set to <code>local</code> or <code>cloud</code> to control sync behaviour.</li>
+    <li><code>ENABLE_CLOUD_SYNC</code> – disable cloud sync when set to <code>0</code>.</li>
+    <li><code>ENABLE_SYNC_PUSH_WORKER</code> – disable pushing local changes.</li>
+    <li><code>ENABLE_SYNC_PULL_WORKER</code> – disable pulling updates from the cloud.</li>
+    <li><code>ENABLE_BACKGROUND_WORKERS</code> – disable to skip queue and scheduler startup.</li>
+    <li><code>STATIC_DIR</code> – directory for uploaded images and other static assets.</li>
+    <li><code>CLOUD_BASE_URL</code> – base URL of the cloud server (overrides tunable).</li>
+    <li><code>SYNC_PUSH_URL</code> and <code>SYNC_PULL_URL</code> – custom sync endpoints.</li>
+    <li><code>SYNC_API_KEY</code> – bearer token sent with sync requests.</li>
+  </ul>
+  <h2>Error States and Resolutions</h2>
+  <ul>
+    <li><strong>Red Table Row</strong> – a device or VLAN row highlighted in dark red indicates a conflict between the local record and the cloud. Open the alert icon in the Actions column or visit <em>Reports → Conflicts</em> to merge the data. Once resolved the row colour returns to normal.</li>
+    <li><strong>Duplicate Highlighting</strong> – cells with duplicate IP, MAC or asset tags appear with a red dot and tooltip. Review the duplicates report under <em>Inventory → Reports → Duplicates</em> and edit or remove the extra entries.</li>
+    <li><strong>Unsynced Data Warning</strong> – the update page shows "Unsynced Data" when local changes have not been pushed to the cloud. Use <em>Admin → Cloud Sync / API's</em> to run a manual sync before updating.</li>
+    <li><strong>Terminal Disconnected</strong> – if the web terminal only shows "*** Disconnected ***" ensure the <code>websockets</code> Python package is installed on the server.</li>
+  </ul>
+  <h2>Further Help</h2>
+  <p>See the README for installation instructions. Administrators can consult this manual at <code>/help/manual</code> within the application.</p>
+</div>
+{% endblock %}
