@@ -98,6 +98,7 @@ def test_push_once_sends_unsynced_records(monkeypatch):
     now = datetime.now(timezone.utc)
     dev = models.Device(
         id=1,
+        uuid="11111111-1111-1111-1111-111111111111",
         hostname="dev",
         ip="1.1.1.1",
         manufacturer="cisco",
@@ -109,10 +110,12 @@ def test_push_once_sends_unsynced_records(monkeypatch):
     db.data[models.Device].append(dev)
     user = models.User(
         id=1,
+        uuid="22222222-2222-2222-2222-222222222222",
         email="viewer@example.com",
         hashed_password=bcrypt.hashpw(b"secret", bcrypt.gensalt()).decode(),
         role="viewer",
         is_active=True,
+        updated_at=now,
         created_at=now,
         version=1,
     )
@@ -152,6 +155,7 @@ def test_push_once_ignores_timestamp_for_unsynced(monkeypatch):
 
     dev = models.Device(
         id=1,
+        uuid="33333333-3333-3333-3333-333333333333",
         hostname="dev",
         ip="1.1.1.1",
         manufacturer="cisco",
@@ -188,6 +192,7 @@ def test_push_once_includes_deleted_records(monkeypatch):
     now = datetime.now(timezone.utc)
     dev = models.Device(
         id=1,
+        uuid="44444444-4444-4444-4444-444444444444",
         hostname="dev",
         ip="1.1.1.1",
         manufacturer="cisco",
@@ -218,6 +223,43 @@ def test_push_once_includes_deleted_records(monkeypatch):
     record = sent["payload"][models.Device.__tablename__][0]
     assert set(record.keys()) <= {"uuid", "asset_tag", "mac", "deleted_at", "updated_at", "is_deleted"}
     assert record["deleted_at"] is not None
+
+
+@pytest.mark.unit
+def test_push_once_skips_invalid_records(monkeypatch):
+    db = DummyDB()
+    models = db.models
+    now = datetime.now(timezone.utc)
+    dev = models.Device(
+        id=1,
+        uuid="55555555-5555-5555-5555-555555555555",
+        hostname="dev",
+        ip="1.1.1.1",
+        manufacturer="cisco",
+        device_type_id=1,
+        created_at=now,
+        updated_at=None,
+        version=None,
+    )
+    db.data[models.Device].append(dev)
+
+    monkeypatch.setattr(sync_push_worker, "SessionLocal", lambda: db)
+    monkeypatch.setattr(
+        sync_push_worker,
+        "_get_sync_config",
+        lambda: ("http://push", "http://pull", "site1", ""),
+    )
+    sent = {}
+
+    async def fake_request(method, url, payload, log, site_id, api_key):
+        sent["payload"] = payload
+        return {"accepted": 0, "conflicts": 0, "skipped": 0}
+
+    monkeypatch.setattr(sync_push_worker, "_request_with_retry", fake_request)
+
+    asyncio.run(sync_push_worker.push_once(mock.Mock()))
+
+    assert "payload" not in sent
 
 
 @pytest.mark.unit

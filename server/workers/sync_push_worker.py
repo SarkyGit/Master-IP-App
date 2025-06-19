@@ -119,6 +119,7 @@ async def push_once(log: logging.Logger) -> None:
         log_audit(db, None, "debug", details=msg)
         records_by_model: dict[str, list[dict[str, Any]]] = {}
         pushed_objs: list[Any] = []
+        invalid_count = 0
         for model_cls in model_module.Base.__subclasses__():
             created_col = getattr(model_cls, "created_at", None)
             updated_col = getattr(model_cls, "updated_at", None)
@@ -151,6 +152,17 @@ async def push_once(log: logging.Logger) -> None:
                 query = query.filter(ts_filter)
 
             for obj in query.all():
+                uuid = getattr(obj, "uuid", None)
+                updated = getattr(obj, "updated_at", None)
+                version = getattr(obj, "version", None)
+                if not uuid or updated is None or version is None:
+                    log.warning(
+                        "Skipping %s id %s due to missing sync fields",
+                        model_cls.__tablename__,
+                        getattr(obj, "id", None),
+                    )
+                    invalid_count += 1
+                    continue
                 pushed_objs.append(obj)
                 rec = _serialize(obj)
                 records_by_model.setdefault(model_cls.__tablename__, []).append(rec)
@@ -174,6 +186,8 @@ async def push_once(log: logging.Logger) -> None:
         if isinstance(result, dict):
             conflicts = result.get("conflicts", 0)
         _update_last_sync(db, total_records, conflicts)
+        if invalid_count:
+            log.info("%s records skipped due to validation errors", invalid_count)
 
         if isinstance(result, dict):
             log.info(
