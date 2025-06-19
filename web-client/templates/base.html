@@ -96,7 +96,7 @@
       </div>
       {% endif %}
     <div id="modal"></div>
-    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+      <script src="{{ request.url_for('static', path='js/htmx.min.js') }}"></script>
     <script src="{{ request.url_for('static', path='js/alpine.min.js') }}" defer></script>
     <script src="{{ request.url_for('static', path='js/table.js') }}" defer></script>
     {% block extra_scripts %}
