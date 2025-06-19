@@ -3,7 +3,7 @@
 <h1 class="text-xl mb-4">Resolve Conflict</h1>
 <form method="post" action="/reports/conflicts/{{ device.id }}/merge" class="full-width space-y-2">
   <div class="grid md:grid-cols-2 gap-4 overflow-auto">
-    <table class="min-w-full table-fixed text-left border-collapse no-prefs">
+    <table class="min-w-full table-fixed text-left border-collapse">
       <thead>
         <tr><th class="table-cell table-header" colspan="2">Local</th></tr>
       </thead>
@@ -16,7 +16,7 @@
       {% endfor %}
       </tbody>
     </table>
-    <table class="min-w-full table-fixed text-left border-collapse no-prefs">
+    <table class="min-w-full table-fixed text-left border-collapse">
       <thead>
         <tr><th class="table-cell table-header" colspan="2">Cloud</th></tr>
       </thead>

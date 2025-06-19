@@ -2,7 +2,7 @@ import asyncio
 import logging
 import os
 from datetime import datetime, timezone
-from typing import Any
+from typing import Any, Set
 
 import httpx
 
@@ -13,6 +13,29 @@ from core.models.models import SystemTunable, DeviceEditLog, Device
 from core.models import models as model_module
 from core.utils.versioning import apply_update
 from .cloud_sync import _get_sync_config
+
+# Only log changes for fields that users can edit
+USER_EDITABLE_DEVICE_FIELDS: Set[str] = {
+    "hostname",
+    "ip",
+    "mac",
+    "asset_tag",
+    "model",
+    "manufacturer",
+    "serial_number",
+    "device_type_id",
+    "location_id",
+    "site_id",
+    "on_lasso",
+    "on_r1",
+    "priority",
+    "status",
+    "vlan_id",
+    "ssh_credential_id",
+    "snmp_community_id",
+    "config_pull_interval",
+    "notes",
+}
 
 SYNC_PULL_INTERVAL = int(os.environ.get("SYNC_PULL_INTERVAL", "90"))
 _DEFAULT_PULL_MODELS = ",".join(
@@ -122,7 +145,11 @@ async def pull_once(log: logging.Logger) -> None:
                 conflicts = apply_update(
                     obj, update, incoming_version=version, source="cloud"
                 )
-                changed = [k for k, v in update.items() if old_vals.get(k) != v]
+                changed = [
+                    k
+                    for k, v in update.items()
+                    if old_vals.get(k) != v and k in USER_EDITABLE_DEVICE_FIELDS
+                ]
                 if conflicts:
                     log.warning("Conflict on %s id %s", model_name, record_id)
                 if changed and model_cls is Device:
