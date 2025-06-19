@@ -216,7 +216,7 @@ def test_push_once_includes_deleted_records(monkeypatch):
     asyncio.run(sync_push_worker.push_once(mock.Mock()))
 
     record = sent["payload"][models.Device.__tablename__][0]
-    assert set(record.keys()) <= {"uuid", "asset_tag", "mac", "deleted_at", "updated_at"}
+    assert set(record.keys()) <= {"uuid", "asset_tag", "mac", "deleted_at", "updated_at", "is_deleted"}
     assert record["deleted_at"] is not None
 
 

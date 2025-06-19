@@ -16,6 +16,7 @@ from .cloud_sync import _get_sync_config
 from core.utils.audit import log_audit
 from core.utils.sync_logging import log_sync_attempt
 from server.utils.cloud import set_tunable
+from server.workers import sync_push_worker
 
 # Only log changes for fields that users can edit
 USER_EDITABLE_DEVICE_FIELDS: Set[str] = {
@@ -54,6 +55,22 @@ SYNC_PULL_MODELS = [
 SYNC_TIMEOUT = int(os.environ.get("SYNC_TIMEOUT", "10"))
 SYNC_RETRIES = int(os.environ.get("SYNC_RETRIES", "3"))
 SITE_ID = os.environ.get("SITE_ID")
+
+
+def _soft_delete(device: Device, user_id: int, origin: str) -> None:
+    """Mark the device as deleted and clear nullable fields."""
+    if device.is_deleted:
+        return
+    keep = {"mac", "asset_tag"}
+    for col in device.__table__.columns:
+        if col.name in keep or col.primary_key:
+            continue
+        if col.nullable:
+            setattr(device, col.name, None)
+    device.is_deleted = True
+    device.deleted_by_id = user_id
+    device.deleted_at = datetime.now(timezone.utc)
+    device.deleted_origin = origin
 
 
 def _load_last_sync(db: Session) -> datetime:
@@ -162,6 +179,39 @@ async def pull_once(log: logging.Logger) -> None:
                 continue
             model_cls = model_map[model_name]
             obj = db.query(model_cls).filter_by(id=record_id).first()
+            if obj and rec.get("deleted_at"):
+                try:
+                    remote_ts = rec.get("updated_at") or rec["deleted_at"]
+                    if isinstance(remote_ts, str):
+                        remote_ts_dt = datetime.fromisoformat(remote_ts)
+                    else:
+                        remote_ts_dt = remote_ts
+                except Exception:
+                    remote_ts_dt = datetime.now(timezone.utc)
+                if obj.updated_at and obj.updated_at > remote_ts_dt:
+                    obj.conflict_data = obj.conflict_data or []
+                    obj.conflict_data.append(
+                        {
+                            "field": "deleted_at",
+                            "local_value": None,
+                            "remote_value": rec.get("deleted_at"),
+                            "conflict_detected_at": datetime.now(timezone.utc).isoformat(),
+                            "source": "sync_pull",
+                            "local_version": obj.version,
+                            "remote_version": version,
+                            "conflict_type": "delete",
+                        }
+                    )
+                    conflicts_total += 1
+                    db.commit()
+                    continue
+                _soft_delete(obj, 0, "cloud")
+                obj.deleted_at = remote_ts_dt
+                obj.updated_at = remote_ts_dt
+                obj.version = version
+                obj.sync_state = sync_push_worker._serialize(obj)
+                db.commit()
+                continue
             if obj:
                 update = {
                     k: v for k, v in rec.items() if k not in {"id", "version", "model"}

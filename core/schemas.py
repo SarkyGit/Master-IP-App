@@ -3,7 +3,8 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any
 
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field, ConfigDict, field_validator
+from core.utils.ip_utils import normalize_ip
 
 
 class ConflictEntry(BaseModel):
@@ -74,6 +75,11 @@ class DeviceCreate(BaseModel):
     version: int = Field(1, ge=1)
     conflict_data: list[ConflictEntry] | None = None
 
+    @field_validator("ip")
+    @classmethod
+    def _validate_ip(cls, v: str) -> str:
+        return normalize_ip(v)
+
 
 class DeviceRead(DeviceBase):
     id: int
@@ -89,6 +95,13 @@ class DeviceUpdate(BaseModel):
     model: str | None = None
     version: int | None = Field(None, ge=1)
     conflict_data: list[ConflictEntry] | None = None
+
+    @field_validator("ip")
+    @classmethod
+    def _validate_ip(cls, v: str | None) -> str | None:
+        if v is None:
+            return None
+        return normalize_ip(v)
 
 
 class SSHCredentialBase(BaseSchema):

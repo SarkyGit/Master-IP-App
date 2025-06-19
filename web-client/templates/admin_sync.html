@@ -79,6 +79,12 @@
         Sync issue: {{ push_error or pull_error }}
       </p>
       {% endif %}
+      <form method="post" action="/admin/sync/manual-push" class="inline-block mt-2 mr-2">
+        <button type="submit" class="btn">Push Now</button>
+      </form>
+      <form method="post" action="/admin/sync/manual-pull" class="inline-block mt-2">
+        <button type="submit" class="btn">Pull Now</button>
+      </form>
     </div>
   </div>
 </div>
