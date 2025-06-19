@@ -12,8 +12,11 @@ class ConflictEntry(BaseModel):
     field: str
     local_value: Any
     remote_value: Any
-    timestamp: datetime
+    conflict_detected_at: datetime
     source: str
+    local_version: int
+    remote_version: int
+    conflict_type: str
 
 
 class BaseSchema(BaseModel):
