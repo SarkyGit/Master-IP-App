@@ -72,6 +72,7 @@ function tableControls() {
         if (!cell) return ''
         const raw = (cell.dataset.ip || cell.innerText).trim()
         if (type === 'ip') return ipSortKey(raw)
+        if (type === 'mac') return macSortKey(raw)
         if (type === 'number') {
           const n = parseFloat(raw.replace(/[^0-9.-]/g,''))
           return isNaN(n) ? 0 : n
@@ -95,6 +96,7 @@ function tableControls() {
       headers.forEach((th,i)=>{
         if (th.classList.contains('actions-col') || th.classList.contains('checkbox-col')) return
         if (!th.dataset.sortType && /ip/i.test(th.textContent.trim())) th.dataset.sortType = 'ip'
+        if (!th.dataset.sortType && /mac/i.test(th.textContent.trim())) th.dataset.sortType = 'mac'
         th.style.cursor = 'pointer'
         const icon = document.createElement('span')
         icon.className = 'sort-indicator inline-block ml-1'
@@ -152,7 +154,7 @@ function tableControls() {
 
 function setupTablePrefs() {
   const pathId = window.location.pathname.replace(/\W/g, '_')
-  document.querySelectorAll('table').forEach((table, idx) => {
+  document.querySelectorAll('[x-data*=\"tableControls\"] table').forEach((table, idx) => {
     if (table.classList.contains('no-prefs')) return
     const tableId = `${pathId}_${idx}`
     table.dataset.tableId = tableId
@@ -325,6 +327,10 @@ function autoscale(table) {
 
 function ipSortKey(ip) {
   return ip.split('.').map(p => p.padStart(3,'0')).join('.')
+}
+
+function macSortKey(mac) {
+  return mac.replace(/[^0-9a-f]/gi,'').toLowerCase()
 }
 
 document.addEventListener('DOMContentLoaded', setupTablePrefs)
