@@ -29,7 +29,7 @@
 <form method="get" action="/tasks/live-session" class="space-x-2">
   <select name="device_id" class="p-1 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
     {% for dev in devices %}
-    <option value="{{ dev.id }}">{{ dev.hostname }} ({{ dev.ip }})</option>
+    <option value="{{ dev.id }}">{{ dev.hostname }} ({{ dev.ip | display_ip }})</option>
     {% endfor %}
   </select>
   <button type="submit" aria-label="Connect" class="p-2 rounded transition">{{ include_icon('log-in') }}</button>

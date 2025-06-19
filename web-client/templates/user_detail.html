@@ -31,7 +31,7 @@
           <th class="px-4 py-2 text-left">Last Login</th>
           <td class="px-4 py-2">
             {% if last_login %}
-              {{ last_login.timestamp }} ({{ last_login.ip_address }})
+              {{ last_login.timestamp }} ({{ last_login.ip_address | display_ip }})
             {% else %}
               Never
             {% endif %}

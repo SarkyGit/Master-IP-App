@@ -3,10 +3,13 @@ function tableControls() {
     search: '',
     perPage: 10,
     page: 0,
+    sortIndex: null,
+    sortAsc: true,
     selectedIds: [],
     init() {
       this.$watch('search', () => { this.page = 0; this.update() })
       this.$watch('perPage', () => { this.page = 0; this.update() })
+      this.initSorting()
       this.update()
     },
     get rows() {
@@ -31,6 +34,46 @@ function tableControls() {
     },
     bulkDelete() { this.$el.action = '/devices/bulk-delete'; this.$el.submit() },
     bulkUpdate() { this.$el.action = '/devices/bulk-update'; this.$el.submit() },
+    sort(idx) {
+      if (this.sortIndex === idx) {
+        this.sortAsc = !this.sortAsc
+      } else {
+        this.sortIndex = idx
+        this.sortAsc = true
+      }
+      this.applySort()
+      this.page = 0
+      this.update()
+    },
+    applySort() {
+      if (this.sortIndex === null) return
+      const idx = this.sortIndex
+      const body = this.$el.querySelector('tbody')
+      const rows = Array.from(body.children)
+      const ipSort = this.$el.querySelectorAll('thead th')[idx]?.dataset.sortType === 'ip'
+      const key = r => {
+        const cell = r.children[idx]
+        if (!cell) return ''
+        const raw = cell.dataset.ip || cell.innerText
+        return ipSort ? ipSortKey(raw) : raw.toLowerCase()
+      }
+      rows.sort((a,b)=> key(a) > key(b) ? 1 : key(a) < key(b) ? -1 : 0)
+      if (!this.sortAsc) rows.reverse()
+      rows.forEach(r => body.appendChild(r))
+    },
+    initSorting() {
+      const headers = Array.from(this.$el.querySelectorAll('th'))
+      headers.forEach((th,i)=>{
+        if (th.classList.contains('actions-col') || th.classList.contains('checkbox-col')) return
+        if (!th.dataset.sortType && /ip/i.test(th.textContent.trim())) th.dataset.sortType = 'ip'
+        th.style.cursor = 'pointer'
+        th.addEventListener('click', () => this.sort(i))
+      })
+      let idx = headers.findIndex(h => /ip/i.test(h.textContent.trim()))
+      if (idx === -1) idx = headers.findIndex(h => /name/i.test(h.textContent.trim()))
+      if (idx === -1) idx = headers.findIndex(h => /id/i.test(h.textContent.trim()))
+      if (idx >= 0) this.sort(idx)
+    },
     update() {
       const start = this.start, end = this.end
       this.filteredRows.forEach((row, i) => { row.style.display = (i>=start && i<end)?'' : 'none' })
@@ -208,6 +251,10 @@ function autoscale(table) {
       if (cell) cell.style.width = final + 'px'
     })
   })
+}
+
+function ipSortKey(ip) {
+  return ip.split('.').map(p => p.padStart(3,'0')).join('.')
 }
 
 document.addEventListener('DOMContentLoaded', setupTablePrefs)

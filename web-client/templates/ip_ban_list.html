@@ -29,7 +29,7 @@
   <tbody>
   {% for ban in bans %}
     <tr class="border-t border-gray-700">
-      <td class="table-cell">{{ ban.ip_address }}</td>
+      <td class="table-cell" data-ip="{{ ban.ip_address }}">{{ ban.ip_address | display_ip }}</td>
       <td class="table-cell">{{ ban.banned_until }}</td>
       <td class="table-cell">{{ ban.attempt_count }}</td>
       <td class="table-cell">{{ ban.ban_reason }}</td>

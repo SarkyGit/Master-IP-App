@@ -33,7 +33,7 @@
   {% for entry in login_history %}
     <tr class="border-t border-gray-700">
       <td class="px-4 py-2">{{ entry.timestamp }}</td>
-      <td class="px-4 py-2">{{ entry.ip_address }}</td>
+      <td class="px-4 py-2">{{ entry.ip_address | display_ip }}</td>
       <td class="px-4 py-2">{{ entry.user_agent }}</td>
       <td class="px-4 py-2">{{ entry.location or '' }}</td>
     </tr>

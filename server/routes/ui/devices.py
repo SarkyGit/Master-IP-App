@@ -366,12 +366,11 @@ def _load_form_options(db: Session):
     )
 
 
+from core.utils.ip_utils import pad_ip
+
+
 def _format_ip(ip: str) -> str:
-    parts = ip.split(".")
-    padded = [p.zfill(3) if p else "000" for p in parts]
-    while len(padded) < 4:
-        padded.append("000")
-    return ".".join(padded[:4])
+    return pad_ip(ip)
 
 
 def suggest_vlan_from_ip(db: Session, ip: str):

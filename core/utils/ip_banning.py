@@ -3,6 +3,7 @@ from datetime import datetime, timezone, timedelta
 from sqlalchemy.orm import Session
 
 from core.models.models import BannedIP
+from core.utils.ip_utils import pad_ip
 
 # In-memory tracking of failed login timestamps
 _FAILED_SHORT = defaultdict(deque)  # 10 minute window
@@ -24,6 +25,7 @@ def _prune(queue: deque, window: timedelta, now: datetime) -> None:
 
 def check_ban(db: Session, ip: str) -> bool:
     """Return True if IP is currently banned."""
+    ip = pad_ip(ip)
     record = db.query(BannedIP).filter(BannedIP.ip_address == ip).first()
     if record and record.banned_until and record.banned_until > datetime.now(timezone.utc):
         return True
@@ -32,6 +34,7 @@ def check_ban(db: Session, ip: str) -> bool:
 
 def record_failure(db: Session, ip: str) -> bool:
     """Record a failed login attempt and return True if a ban was triggered."""
+    ip = pad_ip(ip)
     now = datetime.now(timezone.utc)
     short_q = _FAILED_SHORT[ip]
     long_q = _FAILED_LONG[ip]
@@ -68,5 +71,6 @@ def record_failure(db: Session, ip: str) -> bool:
 
 def clear_attempts(ip: str) -> None:
     """Reset in-memory counters for an IP."""
+    ip = pad_ip(ip)
     _FAILED_SHORT.pop(ip, None)
     _FAILED_LONG.pop(ip, None)
