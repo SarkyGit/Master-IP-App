@@ -1,4 +1,6 @@
 from datetime import datetime, timezone
+from uuid import uuid4
+
 from sqlalchemy import (
     Column,
     Integer,
@@ -9,9 +11,11 @@ from sqlalchemy import (
     Boolean,
     Float,
     JSON,
+    event,
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy import Table
+from sqlalchemy.dialects.postgresql import UUID
 
 from core.utils.database import Base
 
@@ -20,11 +24,16 @@ class VLAN(Base):
     __tablename__ = "vlans"
 
     id = Column(Integer, primary_key=True)
+    uuid = Column(
+        UUID(as_uuid=True), default=uuid4, unique=True, nullable=False, index=True
+    )
     version = Column(Integer, default=1, nullable=False)
     conflict_data = Column(JSON, nullable=True)
     sync_state = Column(JSON, nullable=True)
     tag = Column(Integer, unique=True, nullable=False)
     description = Column(String, nullable=True)
+    updated_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
 
     devices = relationship("Device", back_populates="vlan")
@@ -34,6 +43,9 @@ class SSHCredential(Base):
     __tablename__ = "ssh_credentials"
 
     id = Column(Integer, primary_key=True)
+    uuid = Column(
+        UUID(as_uuid=True), default=uuid4, unique=True, nullable=False, index=True
+    )
     version = Column(Integer, default=1, nullable=False)
     conflict_data = Column(JSON, nullable=True)
     sync_state = Column(JSON, nullable=True)
@@ -41,6 +53,8 @@ class SSHCredential(Base):
     username = Column(String, nullable=False)
     password = Column(String, nullable=True)
     private_key = Column(Text, nullable=True)
+    updated_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
 
     devices = relationship("Device", back_populates="ssh_credential")
@@ -50,12 +64,17 @@ class SNMPCommunity(Base):
     __tablename__ = "snmp_communities"
 
     id = Column(Integer, primary_key=True)
+    uuid = Column(
+        UUID(as_uuid=True), default=uuid4, unique=True, nullable=False, index=True
+    )
     version = Column(Integer, default=1, nullable=False)
     conflict_data = Column(JSON, nullable=True)
     sync_state = Column(JSON, nullable=True)
     name = Column(String, unique=True, nullable=False)
     community_string = Column(String, nullable=False)
     version = Column(String, nullable=False)
+    updated_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
 
     devices = relationship("Device", back_populates="snmp_community")
@@ -65,11 +84,16 @@ class Location(Base):
     __tablename__ = "locations"
 
     id = Column(Integer, primary_key=True)
+    uuid = Column(
+        UUID(as_uuid=True), default=uuid4, unique=True, nullable=False, index=True
+    )
     version = Column(Integer, default=1, nullable=False)
     conflict_data = Column(JSON, nullable=True)
     sync_state = Column(JSON, nullable=True)
     name = Column(String, unique=True, nullable=False)
     location_type = Column(String, nullable=False, default="Fixed")
+    updated_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
 
     devices = relationship("Device", back_populates="location_ref")
@@ -79,12 +103,17 @@ class DeviceType(Base):
     __tablename__ = "device_types"
 
     id = Column(Integer, primary_key=True)
+    uuid = Column(
+        UUID(as_uuid=True), default=uuid4, unique=True, nullable=False, index=True
+    )
     version = Column(Integer, default=1, nullable=False)
     conflict_data = Column(JSON, nullable=True)
     sync_state = Column(JSON, nullable=True)
     name = Column(String, unique=True, nullable=False)
     upload_icon = Column(String, nullable=True)
     upload_image = Column(String, nullable=True)
+    updated_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
 
     devices = relationship("Device", back_populates="device_type")
@@ -94,12 +123,17 @@ class Site(Base):
     __tablename__ = "sites"
 
     id = Column(Integer, primary_key=True)
+    uuid = Column(
+        UUID(as_uuid=True), default=uuid4, unique=True, nullable=False, index=True
+    )
     version = Column(Integer, default=1, nullable=False)
     conflict_data = Column(JSON, nullable=True)
     sync_state = Column(JSON, nullable=True)
     name = Column(String, unique=True, nullable=False)
     description = Column(Text, nullable=True)
     created_by_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    updated_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
 
     created_by = relationship("User")
@@ -129,10 +163,15 @@ class Tag(Base):
     __tablename__ = "tags"
 
     id = Column(Integer, primary_key=True)
+    uuid = Column(
+        UUID(as_uuid=True), default=uuid4, unique=True, nullable=False, index=True
+    )
     version = Column(Integer, default=1, nullable=False)
     conflict_data = Column(JSON, nullable=True)
     sync_state = Column(JSON, nullable=True)
     name = Column(String, unique=True, nullable=False)
+    updated_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
 
     devices = relationship("Device", secondary=device_tags, back_populates="tags")
@@ -142,6 +181,9 @@ class Device(Base):
     __tablename__ = "devices"
 
     id = Column(Integer, primary_key=True)
+    uuid = Column(
+        UUID(as_uuid=True), default=uuid4, unique=True, nullable=False, index=True
+    )
     version = Column(Integer, default=1, nullable=False)
     conflict_data = Column(JSON, nullable=True)
     sync_state = Column(JSON, nullable=True)
@@ -239,6 +281,9 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True)
+    uuid = Column(
+        UUID(as_uuid=True), default=uuid4, unique=True, nullable=False, index=True
+    )
     version = Column(Integer, default=1, nullable=False)
     conflict_data = Column(JSON, nullable=True)
     sync_state = Column(JSON, nullable=True)
@@ -259,6 +304,8 @@ class User(Base):
     ssh_username = Column(String, nullable=True)
     ssh_password = Column(String, nullable=True)
     ssh_port = Column(Integer, nullable=True, default=22)
+    updated_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
     last_login = Column(DateTime(timezone=True), nullable=True)
     last_location_lat = Column(Float, nullable=True)
@@ -614,7 +661,9 @@ class ConflictLog(Base):
     local_version = Column(Integer, nullable=False)
     cloud_version = Column(Integer, nullable=False)
     resolved_version = Column(Integer, nullable=False)
-    resolution_time = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    resolution_time = Column(
+        DateTime(timezone=True), default=datetime.now(timezone.utc)
+    )
 
 
 class DuplicateResolutionLog(Base):
@@ -636,3 +685,24 @@ class DeletionLog(Base):
     deleted_by = Column(Integer, ForeignKey("users.id"), nullable=True)
     deleted_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
     origin = Column(String, nullable=True)
+
+
+def _update_timestamp(mapper, connection, target) -> None:
+    """Refresh the updated_at field before persisting changes."""
+    target.updated_at = datetime.now(timezone.utc)
+
+
+_SYNC_MODELS = [
+    VLAN,
+    SSHCredential,
+    SNMPCommunity,
+    Location,
+    DeviceType,
+    Site,
+    Tag,
+    Device,
+    User,
+]
+
+for _model in _SYNC_MODELS:
+    event.listen(_model, "before_update", _update_timestamp)
