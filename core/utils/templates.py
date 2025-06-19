@@ -35,7 +35,9 @@ def get_device_types():
 templates.env.globals["get_device_types"] = get_device_types
 templates.env.filters["format_uptime"] = format_uptime
 from core.utils.ip_utils import display_ip
+from core.utils.mac_utils import display_mac
 templates.env.filters["display_ip"] = display_ip
+templates.env.filters["display_mac"] = display_mac
 
 
 def get_tags():

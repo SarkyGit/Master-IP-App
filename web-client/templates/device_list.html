@@ -64,7 +64,7 @@
       <td class="table-cell checkbox-col no-resize"><input type="checkbox" name="selected" value="{{ device.id }}" x-model="selectedIds"></td>
       {% if column_prefs.hostname %}<td class="table-cell">{{ device.hostname }}</td>{% endif %}
       {% if column_prefs.ip %}<td class="table-cell {% if device.ip and duplicate_ips.get(device.ip) %}duplicate{% endif %}" data-ip="{{ device.ip }}" title="{{ duplicate_ips.get(device.ip)|join(', ') if duplicate_ips.get(device.ip) }}">{{ device.ip | display_ip }}</td>{% endif %}
-      {% if column_prefs.mac %}<td class="table-cell {% if device.mac and duplicate_macs.get(device.mac) %}duplicate{% endif %}" title="{{ duplicate_macs.get(device.mac)|join(', ') if duplicate_macs.get(device.mac) }}">{{ device.mac or '' }}</td>{% endif %}
+      {% if column_prefs.mac %}<td class="table-cell {% if device.mac and duplicate_macs.get(device.mac) %}duplicate{% endif %}" title="{{ duplicate_macs.get(device.mac)|join(', ') if duplicate_macs.get(device.mac) }}">{{ device.mac | display_mac }}</td>{% endif %}
       {% if column_prefs.asset_tag %}<td class="table-cell {% if device.asset_tag and duplicate_tags.get(device.asset_tag) %}duplicate{% endif %}" title="{{ duplicate_tags.get(device.asset_tag)|join(', ') if duplicate_tags.get(device.asset_tag) }}">{{ device.asset_tag or '' }}</td>{% endif %}
       {% if column_prefs.model %}<td class="table-cell">{{ device.model or '' }}</td>{% endif %}
       {% if column_prefs.manufacturer %}<td class="table-cell">{{ device.manufacturer }}</td>{% endif %}
