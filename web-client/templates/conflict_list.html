@@ -17,7 +17,7 @@
     <input x-model="search" type="text" placeholder="Search" class="rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)] px-2 py-1" />
   </div>
   <div class="w-full overflow-auto">
-  <table class="min-w-full table-fixed text-left border-collapse">
+  <table class="min-w-full table-fixed text-left border-collapse no-prefs">
     <thead>
       <tr>
         <th class="table-cell table-header">Hostname</th>
@@ -53,8 +53,9 @@
   {% for dev in conflicts %}
   <h2 class="text-lg mt-4">{{ dev.hostname }}</h2>
   <form method="post" action="/reports/conflicts/{{ dev.id }}" class="full-width space-y-2">
-    <div class="grid md:grid-cols-2 gap-4 overflow-auto">
-      <table class="min-w-full table-fixed text-left border-collapse">
+    <div class="md:flex gap-4">
+      <div class="md:w-2/3 space-y-4">
+      <table class="min-w-full table-fixed text-left border-collapse no-prefs">
         <thead>
           <tr><th class="table-cell table-header" colspan="2">Local</th></tr>
         </thead>
@@ -67,7 +68,7 @@
         {% endfor %}
         </tbody>
       </table>
-      <table class="min-w-full table-fixed text-left border-collapse">
+      <table class="min-w-full table-fixed text-left border-collapse no-prefs">
         <thead>
           <tr><th class="table-cell table-header" colspan="2">Cloud</th></tr>
         </thead>
@@ -80,20 +81,23 @@
         {% endfor %}
         </tbody>
       </table>
-    </div>
-    <div class="grid gap-2 md:grid-cols-2">
-      {% for c in dev.conflict_data %}
-      <div class="flex items-center space-x-4">
-        <span class="w-32">{{ c.field }}</span>
-        <label><input type="radio" name="{{ c.field }}" value="local" checked> Keep Local</label>
-        <label><input type="radio" name="{{ c.field }}" value="cloud"> Keep Cloud</label>
       </div>
-      {% endfor %}
-    </div>
-    <div class="mt-2 space-x-2">
-      <button type="button" onclick="applyAll('{{ dev.id }}','local')" class="px-4 py-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded">Apply All Local</button>
-      <button type="button" onclick="applyAll('{{ dev.id }}','cloud')" class="px-4 py-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded">Apply All Cloud</button>
-      <button type="submit" class="px-4 py-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded">Save</button>
+      <div class="md:w-1/3 flex flex-col space-y-2">
+        <div class="space-y-2 flex-1">
+        {% for c in dev.conflict_data %}
+        <div class="flex items-center space-x-4">
+          <span class="w-32">{{ c.field }}</span>
+          <label><input type="radio" name="{{ c.field }}" value="local" checked> Keep Local</label>
+          <label><input type="radio" name="{{ c.field }}" value="cloud"> Keep Cloud</label>
+        </div>
+        {% endfor %}
+        </div>
+        <div class="mt-2 space-x-2">
+          <button type="button" onclick="applyAll('{{ dev.id }}','local')" class="px-4 py-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded">Apply All Local</button>
+          <button type="button" onclick="applyAll('{{ dev.id }}','cloud')" class="px-4 py-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded">Apply All Cloud</button>
+          <button type="submit" class="px-4 py-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded">Save</button>
+        </div>
+      </div>
     </div>
   </form>
   {% endfor %}
