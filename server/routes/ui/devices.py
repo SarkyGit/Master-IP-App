@@ -76,13 +76,15 @@ MAX_BACKUPS = int(os.environ.get("MAX_BACKUPS", "10"))
 
 
 def _soft_delete(device: Device, user_id: int, origin: str) -> None:
+    """Mark the device as deleted without violating NOT NULL constraints."""
     if device.is_deleted:
         return
     keep = {"mac", "asset_tag"}
     for col in device.__table__.columns:
         if col.name in keep or col.primary_key:
             continue
-        setattr(device, col.name, None)
+        if col.nullable:
+            setattr(device, col.name, None)
     device.is_deleted = True
     device.deleted_by_id = user_id
     device.deleted_at = datetime.now(timezone.utc)
