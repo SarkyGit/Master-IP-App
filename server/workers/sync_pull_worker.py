@@ -9,7 +9,7 @@ import httpx
 from sqlalchemy.orm import Session
 
 from core.utils.db_session import SessionLocal
-from core.models.models import SystemTunable
+from core.models.models import SystemTunable, DeviceEditLog, Device
 from core.models import models as model_module
 from core.utils.versioning import apply_update
 from .cloud_sync import _get_sync_config
@@ -116,11 +116,21 @@ async def pull_once(log: logging.Logger) -> None:
                 update = {
                     k: v for k, v in rec.items() if k not in {"id", "version", "model"}
                 }
+                old_vals = {k: getattr(obj, k) for k in update.keys()}
                 conflicts = apply_update(
                     obj, update, incoming_version=version, source="cloud"
                 )
+                changed = [k for k, v in update.items() if old_vals.get(k) != v]
                 if conflicts:
                     log.warning("Conflict on %s id %s", model_name, record_id)
+                if changed and model_cls is Device:
+                    db.add(
+                        DeviceEditLog(
+                            device_id=obj.id,
+                            user_id=1,
+                            changes="sync_pull:" + ",".join(changed),
+                        )
+                    )
                 db.commit()
                 db.refresh(obj)
             else:
@@ -128,6 +138,15 @@ async def pull_once(log: logging.Logger) -> None:
                     obj = model_cls(**{k: v for k, v in rec.items() if k != "model"})
                     db.add(obj)
                     db.commit()
+                    if model_cls is Device:
+                        db.add(
+                            DeviceEditLog(
+                                device_id=obj.id,
+                                user_id=1,
+                                changes="sync_pull:created",
+                            )
+                        )
+                        db.commit()
                 except Exception as exc:
                     db.rollback()
                     log.error(

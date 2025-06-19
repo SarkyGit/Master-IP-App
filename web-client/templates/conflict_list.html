@@ -1,6 +1,54 @@
 {% extends "base.html" %}
 {% block content %}
 <h1 class="text-xl mb-4">Sync Conflicts</h1>
+{% if recent %}
+<h2 class="text-lg mt-4">Recently Synced Records</h2>
+<div x-data="tableControls()" class="space-y-2 full-width">
+  <div class="flex justify-between items-center">
+    <label>Show
+      <select x-model="perPage" class="rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)] mx-1">
+        <option>10</option>
+        <option>25</option>
+        <option>50</option>
+        <option>100</option>
+      </select>
+      entries
+    </label>
+    <input x-model="search" type="text" placeholder="Search" class="rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)] px-2 py-1" />
+  </div>
+  <div class="w-full overflow-auto">
+  <table class="min-w-full table-fixed text-left border-collapse">
+    <thead>
+      <tr>
+        <th class="table-cell table-header">Hostname</th>
+        <th class="table-cell table-header">IP Address</th>
+        <th class="table-cell table-header">MAC Address</th>
+        <th class="table-cell table-header">Updated Fields</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for r in recent %}
+    <tr class="border-t border-gray-700">
+      <td class="table-cell">{{ r.device.hostname }}</td>
+      <td class="table-cell">{{ r.device.ip }}</td>
+      <td class="table-cell">{{ r.device.mac or '' }}</td>
+      <td class="table-cell">
+        {% for f in r.fields %}<span class="px-1 rounded bg-green-800/50 mr-1">{{ f }}</span>{% endfor %}
+      </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <div class="flex justify-between items-center mt-2">
+    <span x-text="countText()" class="text-sm"></span>
+    <div>
+      <button type="button" @click="prev" class="px-4 py-1.5 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded shadow transition mr-2">Previous</button>
+      <button type="button" @click="next" class="px-4 py-1.5 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded shadow transition">Next</button>
+    </div>
+  </div>
+  </div>
+</div>
+{% endif %}
 {% if conflicts %}
   {% for dev in conflicts %}
   <h2 class="text-lg mt-4">{{ dev.hostname }}</h2>
@@ -18,16 +66,17 @@
         {% for c in dev.conflict_data %}
         <tr class="border-t border-gray-700">
           <td class="px-4 py-2">{{ c.field }}</td>
-          <td class="px-4 py-2">{{ c.local_value }}</td>
-          <td class="px-4 py-2 {% if c.local_value != c.remote_value %}bg-[var(--alert-bg)]{% endif %}">{{ c.remote_value }}</td>
+          <td class="px-4 py-2 {% if c.local_value != c.remote_value %}bg-yellow-700/50{% endif %}">{{ c.local_value }}</td>
+          <td class="px-4 py-2 {% if c.local_value != c.remote_value %}bg-yellow-700/50{% endif %}">{{ c.remote_value }}</td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
     </div>
     <div class="mt-2 space-x-2">
-      <button type="submit" name="choice" value="local" class="px-4 py-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded">Use Local</button>
-      <button type="submit" name="choice" value="cloud" class="px-4 py-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded">Use Cloud</button>
+      <button type="submit" name="choice" value="local" class="px-4 py-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded">Accept Local</button>
+      <button type="submit" name="choice" value="cloud" class="px-4 py-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded">Accept Cloud</button>
+      <a href="/reports/conflicts/{{ dev.id }}/merge" class="px-4 py-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded">Manual Merge</a>
     </div>
   </form>
   {% endfor %}
