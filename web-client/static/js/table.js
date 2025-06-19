@@ -174,6 +174,7 @@ function initResize(table, tableId) {
     th.appendChild(handle)
     let startX, startWidth
     handle.addEventListener('mousedown', e => {
+      e.stopPropagation()
       startX = e.pageX
       startWidth = th.offsetWidth
       handle.classList.add('active')
@@ -196,6 +197,7 @@ function initResize(table, tableId) {
       document.addEventListener('mousemove', move)
       document.addEventListener('mouseup', up)
     })
+    handle.addEventListener('click', e => e.stopPropagation())
   })
 }
 
