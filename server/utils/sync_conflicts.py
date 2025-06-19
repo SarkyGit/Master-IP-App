@@ -52,3 +52,26 @@ def list_device_conflicts(
     if since is not None:
         query = query.filter(or_(Device.created_at > since, Device.updated_at > since))
     return query.all()
+
+
+def list_recent_sync_records(db: Session, limit: int = 100) -> list[dict]:
+    """Return recently synced device records."""
+    from core.models.models import DeviceEditLog
+
+    logs = (
+        db.query(DeviceEditLog)
+        .filter(DeviceEditLog.changes.like("sync_pull:%"))
+        .order_by(DeviceEditLog.timestamp.desc())
+        .limit(limit)
+        .all()
+    )
+
+    results: list[dict] = []
+    for log in logs:
+        device = db.query(Device).filter(Device.id == log.device_id).first()
+        if not device:
+            continue
+        change = log.changes.split(":", 1)[1] if ":" in log.changes else ""
+        fields = [f for f in change.split(",") if f]
+        results.append({"device": device, "fields": fields})
+    return results
