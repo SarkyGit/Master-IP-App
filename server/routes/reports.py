@@ -80,6 +80,8 @@ async def conflict_merge_form(
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
     context = {"request": request, "device": device, "current_user": current_user}
+    if request.headers.get("HX-Request"):
+        return templates.TemplateResponse("conflict_merge_modal.html", context)
     return templates.TemplateResponse("conflict_merge.html", context)
 
 

@@ -84,6 +84,7 @@ function tableControls() {
 function setupTablePrefs() {
   const pathId = window.location.pathname.replace(/\W/g, '_')
   document.querySelectorAll('table').forEach((table, idx) => {
+    if (table.classList.contains('no-prefs')) return
     const tableId = `${pathId}_${idx}`
     table.dataset.tableId = tableId
     initResize(table, tableId)

@@ -104,6 +104,7 @@
 
 {% block extra_scripts %}
 {{ super() }}
+
 <script>
 function applyAll(id, choice) {
   const form = document.querySelector(`form[action='/reports/conflicts/${id}']`)
