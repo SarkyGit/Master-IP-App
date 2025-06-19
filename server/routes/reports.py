@@ -7,8 +7,9 @@ from typing import Optional
 from core.utils.db_session import get_db
 from core.utils.auth import require_role
 from core.utils.templates import templates
-from core.models.models import Device
+from core.models.models import Device, ConnectedSite, SiteKey
 from server.utils import sync_conflicts
+from settings import settings
 
 router = APIRouter(prefix="/reports")
 
@@ -30,11 +31,22 @@ async def conflict_list(
             ts = None
     conflicts = sync_conflicts.list_device_conflicts(db, device_type, status, ts)
     recent = sync_conflicts.list_recent_sync_records(db)
+    sites = []
+    name_map: dict[str, str] = {}
+    role = settings.role
+    if role == "cloud":
+        sites = db.query(ConnectedSite).order_by(ConnectedSite.site_id).all()
+        keys = db.query(SiteKey).all()
+        for k in keys:
+            name_map[k.site_id] = k.site_name
     context = {
         "request": request,
         "conflicts": conflicts,
         "recent": recent,
         "current_user": current_user,
+        "sites": sites,
+        "name_map": name_map,
+        "role": role,
     }
     return templates.TemplateResponse("conflict_list.html", context)
 

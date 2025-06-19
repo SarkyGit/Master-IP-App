@@ -13,6 +13,9 @@ from core.models.models import SystemTunable, DeviceEditLog, Device
 from core.models import models as model_module
 from core.utils.versioning import apply_update
 from .cloud_sync import _get_sync_config
+from core.utils.audit import log_audit
+from core.utils.sync_logging import log_sync_attempt
+from server.utils.cloud import set_tunable
 
 # Only log changes for fields that users can edit
 USER_EDITABLE_DEVICE_FIELDS: Set[str] = {
@@ -67,7 +70,7 @@ def _load_last_sync(db: Session) -> datetime:
     return datetime.fromtimestamp(0)
 
 
-def _update_last_sync(db: Session) -> None:
+def _update_last_sync(db: Session, count: int) -> None:
     now = datetime.now(timezone.utc).isoformat()
     entry = (
         db.query(SystemTunable)
@@ -81,6 +84,21 @@ def _update_last_sync(db: Session) -> None:
             SystemTunable(
                 name="Last Sync Pull Worker",
                 value=now,
+                function="Sync",
+                file_type="application",
+                data_type="text",
+            )
+        )
+    cnt = db.query(SystemTunable).filter(
+        SystemTunable.name == "Last Sync Pull Worker Count"
+    ).first()
+    if cnt:
+        cnt.value = str(count)
+    else:
+        db.add(
+            SystemTunable(
+                name="Last Sync Pull Worker Count",
+                value=str(count),
                 function="Sync",
                 file_type="application",
                 data_type="text",
@@ -112,7 +130,9 @@ async def pull_once(log: logging.Logger) -> None:
     db = SessionLocal()
     try:
         since = _load_last_sync(db)
-        print(f"\U0001F4C5 Pulling records updated since: {since}")
+        msg = f"\U0001F4C5 Pulling records updated since: {since}"
+        print(msg)
+        log_audit(db, None, "debug", details=msg)
         _, pull_url, site_id, api_key = _get_sync_config()
         payload: dict[str, Any] = {
             "since": since.isoformat(),
@@ -124,10 +144,13 @@ async def pull_once(log: logging.Logger) -> None:
         if not isinstance(data, list):
             log.error("Invalid pull response: %s", data)
             return
-        print(f"\u2B07\uFE0F Pulled {len(data)} records")
+        msg = f"\u2B07\uFE0F Pulled {len(data)} records"
+        print(msg)
+        log_audit(db, None, "debug", details=msg)
         model_map = {
             cls.__tablename__: cls for cls in model_module.Base.__subclasses__()
         }
+        conflicts_total = 0
         for rec in data:
             if not isinstance(rec, dict):
                 continue
@@ -153,6 +176,7 @@ async def pull_once(log: logging.Logger) -> None:
                     if old_vals.get(k) != v and k in USER_EDITABLE_DEVICE_FIELDS
                 ]
                 if conflicts:
+                    conflicts_total += 1
                     log.warning("Conflict on %s id %s", model_name, record_id)
                 if changed and model_cls is Device:
                     db.add(
@@ -183,7 +207,13 @@ async def pull_once(log: logging.Logger) -> None:
                     log.error(
                         "Failed to insert %s id %s: %s", model_name, record_id, exc
                     )
-        _update_last_sync(db)
+        _update_last_sync(db, len(data))
+        log_sync_attempt(db, "pull", len(data), conflicts_total)
+        set_tunable(db, "Last Sync Pull Error", "")
+    except Exception as exc:
+        log_sync_attempt(db, "pull", 0, 0, str(exc))
+        set_tunable(db, "Last Sync Pull Error", str(exc))
+        log.error("Pull failed: %s", exc)
     finally:
         db.close()
 

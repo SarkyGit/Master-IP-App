@@ -1,6 +1,31 @@
 {% extends "base.html" %}
 {% block content %}
 <h1 class="text-xl mb-4">Sync Conflicts</h1>
+{% if role == 'cloud' and sites %}
+<h2 class="text-lg mt-4">Connected Sites</h2>
+<div class="w-full overflow-auto mb-4">
+  <table class="min-w-full table-fixed text-left border-collapse">
+    <thead>
+      <tr>
+        <th class="table-cell table-header">Site ID</th>
+        <th class="table-cell table-header">Server Name</th>
+        <th class="table-cell table-header">Type</th>
+        <th class="table-cell table-header">Last Sync Time</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for s in sites %}
+      <tr class="border-t border-gray-700">
+        <td class="table-cell">{{ s.site_id }}</td>
+        <td class="table-cell">{{ name_map.get(s.site_id, '') }}</td>
+        <td class="table-cell">local</td>
+        <td class="table-cell">{{ s.last_seen or 'never' }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
 {% if recent %}
 <h2 class="text-lg mt-4">Recently Synced Records</h2>
 <div x-data="tableControls()" class="space-y-2 full-width">
