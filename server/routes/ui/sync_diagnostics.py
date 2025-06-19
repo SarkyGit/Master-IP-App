@@ -11,6 +11,7 @@ from core.models.models import SystemTunable, SiteKey, AuditLog, ConnectedSite
 from core.utils.templates import templates
 from .tunables import grouped_tunables
 from server.workers.heartbeat import send_heartbeat_once
+from server.workers import sync_push_worker, sync_pull_worker
 from core.utils.env_file import set_env_vars
 
 router = APIRouter()
@@ -166,3 +167,23 @@ async def test_cloud_sync(
     else:
         msg = "Cloud URL, Site ID and API key required"
     return _render_sync(request, db, current_user, msg)
+
+
+@router.post("/admin/sync/manual-push")
+async def manual_sync_push(
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("admin")),
+):
+    await sync_push_worker.push_once_safe(logging.getLogger(__name__))
+    return _render_sync(request, db, current_user, "Manual push triggered")
+
+
+@router.post("/admin/sync/manual-pull")
+async def manual_sync_pull(
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("admin")),
+):
+    await sync_pull_worker.pull_once(logging.getLogger(__name__))
+    return _render_sync(request, db, current_user, "Manual pull triggered")

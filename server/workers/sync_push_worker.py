@@ -32,7 +32,7 @@ def _serialize(obj: Any) -> dict[str, Any]:
     # When a record is marked deleted only send minimal identifying fields
     deleted = data.get("deleted_at")
     if deleted:
-        keep = {"uuid", "asset_tag", "mac", "deleted_at", "updated_at"}
+        keep = {"uuid", "asset_tag", "mac", "deleted_at", "updated_at", "is_deleted"}
         data = {k: v for k, v in data.items() if k in keep}
     return data
 
