@@ -189,7 +189,7 @@ table.devices-table tbody tr {
   position: sticky;
   right: 0;
   background: var(--card-bg);
-  z-index: 1;
+  z-index: 15;
 }
 
 /* Icon-only buttons */
