@@ -34,7 +34,7 @@
         <div class="flex justify-center gap-1">
           <a href="/device-types/{{ dt.id }}/edit" aria-label="Edit" class="icon-btn">{{ include_icon('pencil','text-blue-500','5') }}</a>
           <form method="post" action="/device-types/{{ dt.id }}/delete" class="inline">
-            <span aria-label="Delete" class="icon-btn" role="button" tabindex="0" onclick="if(confirm('Delete type?')) { this.closest('form').submit() }">{{ include_icon('trash-2','text-red-500','5') }}</span>
+            <span aria-label="Delete" class="icon-btn cursor-pointer" role="button" tabindex="0" onclick="if(confirm('Delete type?')) { this.closest('form').submit() }">{{ include_icon('trash-2','text-red-500','5') }}</span>
           </form>
         </div>
       </td>
@@ -50,7 +50,7 @@
   </div>
 </div>
 </div>
-<span aria-label="Delete Selected" class="px-2 text-sm text-[var(--btn-text)] hover:text-[var(--btn-hover-text)] mt-2" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('trash-2','text-red-500','1.5') }}</span>
+<span aria-label="Delete Selected" class="px-2 text-sm text-[var(--btn-text)] hover:text-[var(--btn-hover-text)] mt-2 cursor-pointer" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('trash-2','text-red-500','1.5') }}</span>
 </form>
 <script>
 document.getElementById('select-all').addEventListener('change', function(e){

@@ -33,7 +33,7 @@
   <p class="text-green-400">{{ message }}</p>
   {% endif %}
   <div>
-    <span aria-label="Push Config" class="p-2 rounded transition" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('upload','text-orange-500') }}</span>
+    <span aria-label="Push Config" class="p-2 rounded transition cursor-pointer" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('upload','text-orange-500') }}</span>
     <a href="/devices/table" class="ml-2 underline">Cancel</a>
   </div>
 </form>

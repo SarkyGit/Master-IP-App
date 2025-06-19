@@ -7,6 +7,6 @@
   <div x-show="proxy=='yes'" class="space-y-2">
     <input type="text" name="install_domain" placeholder="Domain (leave blank for self-signed)" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
   </div>
-  <span aria-label="Next" class="p-2 rounded transition" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('chevron-right') }}</span>
+  <span aria-label="Next" class="p-2 rounded transition cursor-pointer" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('chevron-right') }}</span>
 </form>
 {% endblock %}

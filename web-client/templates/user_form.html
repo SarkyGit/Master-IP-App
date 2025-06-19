@@ -139,7 +139,7 @@
   {% endif %}
   <div class="form-row">
     <div class="form-item">
-      <span aria-label="Submit" class="p-2 rounded transition" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('check') }}</span>
+      <span aria-label="Submit" class="p-2 rounded transition cursor-pointer" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('check') }}</span>
       <a href="{{ cancel_url or '/users/me' }}" class="ml-2 underline">Cancel</a>
     </div>
   </div>

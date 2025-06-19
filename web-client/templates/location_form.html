@@ -21,7 +21,7 @@
   <p class="p-2 rounded bg-[var(--alert-bg)]">{{ error }}</p>
   {% endif %}
   <div>
-    <span aria-label="Submit" class="p-2 rounded transition" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('check') }}</span>
+    <span aria-label="Submit" class="p-2 rounded transition cursor-pointer" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('check') }}</span>
     <a href="/admin/locations" class="ml-2 underline">Cancel</a>
   </div>
 </form>
