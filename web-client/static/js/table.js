@@ -5,11 +5,16 @@ function tableControls() {
     page: 0,
     sortIndex: null,
     sortAsc: true,
+    originalOrder: [],
+    headers: [],
     selectedIds: [],
     init() {
       this.$watch('search', () => { this.page = 0; this.update() })
       this.$watch('perPage', () => { this.page = 0; this.update() })
+      this.originalOrder = this.rows.slice()
       this.initSorting()
+      this.loadSortPrefs()
+      this.applySort()
       this.update()
     },
     get rows() {
@@ -36,7 +41,12 @@ function tableControls() {
     bulkUpdate() { this.$el.action = '/devices/bulk-update'; this.$el.submit() },
     sort(idx) {
       if (this.sortIndex === idx) {
-        this.sortAsc = !this.sortAsc
+        if (this.sortAsc) {
+          this.sortAsc = false
+        } else {
+          this.sortIndex = null
+          this.sortAsc = true
+        }
       } else {
         this.sortIndex = idx
         this.sortAsc = true
@@ -44,39 +54,98 @@ function tableControls() {
       this.applySort()
       this.page = 0
       this.update()
+      this.saveSortPrefs()
     },
     applySort() {
-      if (this.sortIndex === null) return
-      const idx = this.sortIndex
       const body = this.$el.querySelector('tbody')
+      if (this.sortIndex === null) {
+        this.originalOrder.forEach(r => body.appendChild(r))
+        this.updateSortIndicators()
+        return
+      }
+      const idx = this.sortIndex
       const rows = Array.from(body.children)
-      const ipSort = this.$el.querySelectorAll('thead th')[idx]?.dataset.sortType === 'ip'
+      const header = this.headers[idx]
+      const type = header?.dataset.sortType
       const key = r => {
         const cell = r.children[idx]
         if (!cell) return ''
-        const raw = cell.dataset.ip || cell.innerText
-        return ipSort ? ipSortKey(raw) : raw.toLowerCase()
+        const raw = (cell.dataset.ip || cell.innerText).trim()
+        if (type === 'ip') return ipSortKey(raw)
+        if (type === 'number') {
+          const n = parseFloat(raw.replace(/[^0-9.-]/g,''))
+          return isNaN(n) ? 0 : n
+        }
+        if (type === 'date') {
+          const t = Date.parse(raw)
+          return isNaN(t) ? 0 : t
+        }
+        const num = parseFloat(raw)
+        if (!isNaN(num) && /^\d/.test(raw)) return num
+        return raw.toLowerCase()
       }
-      rows.sort((a,b)=> key(a) > key(b) ? 1 : key(a) < key(b) ? -1 : 0)
+      rows.sort((a,b)=>{const A=key(a), B=key(b); if(A>B) return 1; if(A<B) return -1; return 0})
       if (!this.sortAsc) rows.reverse()
       rows.forEach(r => body.appendChild(r))
+      this.updateSortIndicators()
     },
     initSorting() {
       const headers = Array.from(this.$el.querySelectorAll('th'))
+      this.headers = headers
       headers.forEach((th,i)=>{
         if (th.classList.contains('actions-col') || th.classList.contains('checkbox-col')) return
         if (!th.dataset.sortType && /ip/i.test(th.textContent.trim())) th.dataset.sortType = 'ip'
         th.style.cursor = 'pointer'
+        const icon = document.createElement('span')
+        icon.className = 'sort-indicator inline-block ml-1'
+        th.appendChild(icon)
         th.addEventListener('click', () => this.sort(i))
       })
       let idx = headers.findIndex(h => /ip/i.test(h.textContent.trim()))
       if (idx === -1) idx = headers.findIndex(h => /name/i.test(h.textContent.trim()))
       if (idx === -1) idx = headers.findIndex(h => /id/i.test(h.textContent.trim()))
-      if (idx >= 0) this.sort(idx)
+      if (this.sortIndex === null && idx >= 0) {
+        this.sortIndex = idx
+      }
+      this.updateSortIndicators()
     },
     update() {
       const start = this.start, end = this.end
       this.filteredRows.forEach((row, i) => { row.style.display = (i>=start && i<end)?'' : 'none' })
+    },
+    saveSortPrefs() {
+      const table = this.$el.querySelector('table')
+      if (!table || !table.dataset.tableId) return
+      const key = `table-sort-${table.dataset.tableId}`
+      if (this.sortIndex === null) {
+        sessionStorage.removeItem(key)
+      } else {
+        sessionStorage.setItem(key, JSON.stringify({index:this.sortIndex, asc:this.sortAsc}))
+      }
+    },
+    loadSortPrefs() {
+      const table = this.$el.querySelector('table')
+      if (!table || !table.dataset.tableId) return
+      const key = `table-sort-${table.dataset.tableId}`
+      const data = sessionStorage.getItem(key)
+      if (data) {
+        try {
+          const obj = JSON.parse(data)
+          this.sortIndex = obj.index
+          this.sortAsc = obj.asc
+        } catch {}
+      }
+    },
+    updateSortIndicators() {
+      this.headers.forEach((th,i)=>{
+        const icon = th.querySelector('.sort-indicator')
+        if (!icon) return
+        if (this.sortIndex === i) {
+          icon.textContent = this.sortAsc ? '↑' : '↓'
+        } else {
+          icon.textContent = ''
+        }
+      })
     }
   }
 }
