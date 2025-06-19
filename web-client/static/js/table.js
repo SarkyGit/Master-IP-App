@@ -333,4 +333,91 @@ function macSortKey(mac) {
   return mac.replace(/[^0-9a-f]/gi,'').toLowerCase()
 }
 
-document.addEventListener('DOMContentLoaded', setupTablePrefs)
+function setupSorting() {
+  const pathId = window.location.pathname.replace(/\W/g, '_')
+  document.querySelectorAll('table').forEach((table, idx) => {
+    if (table.closest('[x-data*="tableControls"]')) return
+    if (!table.querySelector('tbody')) return
+    if (!table.dataset.tableId) table.dataset.tableId = `${pathId}_simple_${idx}`
+    const headers = Array.from(table.querySelectorAll('th'))
+    const body = table.querySelector('tbody')
+    let sortIndex = null
+    let sortAsc = true
+    const data = sessionStorage.getItem(`table-sort-${table.dataset.tableId}`)
+    if (data) {
+      try { const obj = JSON.parse(data); sortIndex = obj.index; sortAsc = obj.asc } catch {}
+    }
+    const keyFunc = r => {
+      const cell = r.children[sortIndex]
+      if (!cell) return ''
+      const raw = (cell.dataset.ip || cell.innerText).trim()
+      const header = headers[sortIndex]
+      const type = header?.dataset.sortType
+      if (type === 'ip') return ipSortKey(raw)
+      if (type === 'mac') return macSortKey(raw)
+      if (type === 'number') {
+        const n = parseFloat(raw.replace(/[^0-9.-]/g,''))
+        return isNaN(n) ? 0 : n
+      }
+      if (type === 'date') {
+        const t = Date.parse(raw)
+        return isNaN(t) ? 0 : t
+      }
+      const num = parseFloat(raw)
+      if (!isNaN(num) && /^\d/.test(raw)) return num
+      return raw.toLowerCase()
+    }
+    const updateIcons = () => {
+      headers.forEach((th,i)=>{
+        let icon = th.querySelector('.sort-indicator')
+        if (!icon) {
+          icon = document.createElement('span')
+          icon.className = 'sort-indicator inline-block ml-1'
+          th.appendChild(icon)
+        }
+        if (sortIndex === i) icon.textContent = sortAsc ? '↑' : '↓'
+        else icon.textContent = ''
+      })
+    }
+    const apply = () => {
+      if (sortIndex === null) { updateIcons(); return }
+      const rows = Array.from(body.children)
+      rows.sort((a,b)=>{const A=keyFunc(a), B=keyFunc(b); if(A>B) return 1; if(A<B) return -1; return 0})
+      if (!sortAsc) rows.reverse()
+      rows.forEach(r => body.appendChild(r))
+      updateIcons()
+    }
+    headers.forEach((th,i)=>{
+      if (th.classList.contains('actions-col') || th.classList.contains('checkbox-col')) return
+      if (!th.dataset.sortType && /ip/i.test(th.textContent.trim())) th.dataset.sortType = 'ip'
+      if (!th.dataset.sortType && /mac/i.test(th.textContent.trim())) th.dataset.sortType = 'mac'
+      th.style.cursor = 'pointer'
+      th.addEventListener('click', () => {
+        if (sortIndex === i) {
+          if (sortAsc) {
+            sortAsc = false
+          } else {
+            sortIndex = null
+            sortAsc = true
+          }
+        } else {
+          sortIndex = i
+          sortAsc = true
+        }
+        apply()
+        const key = `table-sort-${table.dataset.tableId}`
+        if (sortIndex === null) {
+          sessionStorage.removeItem(key)
+        } else {
+          sessionStorage.setItem(key, JSON.stringify({index:sortIndex, asc:sortAsc}))
+        }
+      })
+    })
+    apply()
+  })
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  setupTablePrefs()
+  setupSorting()
+})
