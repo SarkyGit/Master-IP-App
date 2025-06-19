@@ -15,6 +15,7 @@ from core.utils.site_auth import validate_site_key
 
 router = APIRouter(prefix="/api/v1/sync", tags=["sync"])
 
+
 @router.post("/")
 async def sync_payload(
     payload: dict[str, Any] = Body(...),
@@ -40,7 +41,10 @@ async def sync_payload(
         required_cols = [
             c.key
             for c in insp.columns
-            if not c.nullable and not c.primary_key and c.default is None and c.server_default is None
+            if not c.nullable
+            and not c.primary_key
+            and c.default is None
+            and c.server_default is None
         ]
 
         for rec in records:
@@ -50,7 +54,9 @@ async def sync_payload(
             try:
                 obj = db.query(model_cls).filter_by(id=rec["id"]).first()
                 if obj:
-                    update = {k: v for k, v in rec.items() if k not in {"id", "version"}}
+                    update = {
+                        k: v for k, v in rec.items() if k not in {"id", "version"}
+                    }
                     conf = apply_update(obj, update, incoming_version=rec["version"])
                     if conf:
                         conflicts += 1
@@ -67,7 +73,9 @@ async def sync_payload(
                 db.refresh(obj)
             except Exception as exc:  # pragma: no cover - safety
                 db.rollback()
-                logging.getLogger(__name__).error("Error processing %s id %s: %s", model_name, rec.get("id"), exc)
+                logging.getLogger(__name__).error(
+                    "Error processing %s id %s: %s", model_name, rec.get("id"), exc
+                )
                 skipped += 1
 
     return {"accepted": accepted, "conflicts": conflicts, "skipped": skipped}
@@ -113,7 +121,7 @@ async def push_changes(
 
     total_records = sum(len(r) for r in records_by_model.values())
     print(
-        f"\u2B06\uFE0F Received push from site {key.site_id} with {total_records} records"
+        f"\u2b06\ufe0f Received push from site {key.site_id} with {total_records} records"
     )
 
     accepted = 0
@@ -129,7 +137,10 @@ async def push_changes(
         required_cols = [
             c.key
             for c in insp.columns
-            if not c.nullable and not c.primary_key and c.default is None and c.server_default is None
+            if not c.nullable
+            and not c.primary_key
+            and c.default is None
+            and c.server_default is None
         ]
 
         for rec in records:
@@ -140,7 +151,11 @@ async def push_changes(
             try:
                 obj = db.query(model_cls).filter_by(id=rec["id"]).first()
                 if obj:
-                    update = {k: v for k, v in rec.items() if k not in {"id", "version", "model"}}
+                    update = {
+                        k: v
+                        for k, v in rec.items()
+                        if k not in {"id", "version", "model"}
+                    }
                     conf = apply_update(
                         obj, update, incoming_version=rec["version"], source="sync_push"
                     )
@@ -164,10 +179,16 @@ async def push_changes(
                         if rec.get("mac"):
                             dup = db.query(model_cls).filter_by(mac=rec["mac"]).first()
                         if not dup and rec.get("asset_tag"):
-                            dup = db.query(model_cls).filter_by(asset_tag=rec["asset_tag"]).first()
+                            dup = (
+                                db.query(model_cls)
+                                .filter_by(asset_tag=rec["asset_tag"])
+                                .first()
+                            )
                         if dup:
                             if dup.is_deleted:
-                                apply_update(dup, {k: v for k, v in rec.items() if k != "model"})
+                                apply_update(
+                                    dup, {k: v for k, v in rec.items() if k != "model"}
+                                )
                                 dup.is_deleted = False
                                 accepted += 1
                                 log_duplicate(db, model_name, dup.id, rec["id"])
@@ -176,7 +197,9 @@ async def push_changes(
                                 remote_created = rec.get("created_at", dup.created_at)
                                 if isinstance(remote_created, str):
                                     try:
-                                        remote_created = datetime.fromisoformat(remote_created)
+                                        remote_created = datetime.fromisoformat(
+                                            remote_created
+                                        )
                                     except Exception:
                                         remote_created = dup.created_at
 
@@ -187,15 +210,21 @@ async def push_changes(
                                 else:
                                     log_duplicate(db, model_name, rec["id"], dup.id)
                                     db.delete(dup)
-                                    obj = model_cls(**{k: v for k, v in rec.items() if k != "model"})
+                                    obj = model_cls(
+                                        **{k: v for k, v in rec.items() if k != "model"}
+                                    )
                                     db.add(obj)
                                     accepted += 1
                         else:
-                            obj = model_cls(**{k: v for k, v in rec.items() if k != "model"})
+                            obj = model_cls(
+                                **{k: v for k, v in rec.items() if k != "model"}
+                            )
                             db.add(obj)
                             accepted += 1
                     else:
-                        obj = model_cls(**{k: v for k, v in rec.items() if k != "model"})
+                        obj = model_cls(
+                            **{k: v for k, v in rec.items() if k != "model"}
+                        )
                         db.add(obj)
                         accepted += 1
                     log_sync(db, rec["id"], model_name, "create", "local", "cloud")
@@ -203,7 +232,10 @@ async def push_changes(
                 db.refresh(obj)
             except IntegrityError as exc:  # pragma: no cover - safety
                 db.rollback()
-                if "unique constraint" in str(exc).lower() or "duplicate key" in str(exc).lower():
+                if (
+                    "unique constraint" in str(exc).lower()
+                    or "duplicate key" in str(exc).lower()
+                ):
                     existing = db.query(model_cls).filter_by(id=rec["id"]).first()
                     if existing:
                         try:
@@ -247,7 +279,9 @@ async def push_changes(
                 )
                 skipped += 1
 
-    print(f"\u2705 Push processed for site {key.site_id}: {accepted} accepted, {conflicts} conflicts, {skipped} skipped")
+    print(
+        f"\u2705 Push processed for site {key.site_id}: {accepted} accepted, {conflicts} conflicts, {skipped} skipped"
+    )
     return {"accepted": accepted, "conflicts": conflicts, "skipped": skipped}
 
 
@@ -275,7 +309,7 @@ async def pull_changes(
         raise HTTPException(status_code=400, detail="Invalid since timestamp")
 
     print(
-        f"\u27A1\uFE0F Pull request from site {key.site_id} since {since.isoformat()}"
+        f"\u27a1\ufe0f Pull request from site {key.site_id} since {since.isoformat()}"
     )
 
     model_map = {cls.__tablename__: cls for cls in model_module.Base.__subclasses__()}
@@ -294,9 +328,7 @@ async def pull_changes(
         created_col = getattr(model_cls, "created_at", None)
         updated_col = getattr(model_cls, "updated_at", None)
 
-        if created_col is not None and updated_col is not None:
-            query = query.filter(or_(created_col > since, updated_col > since))
-        elif updated_col is not None:
+        if updated_col is not None:
             query = query.filter(updated_col > since)
         elif created_col is not None:
             query = query.filter(created_col > since)
@@ -313,9 +345,7 @@ async def pull_changes(
             results.append({"model": model_name, **data})
             log_sync(db, obj.id, model_name, "read", "cloud", "local")
 
-    print(
-        f"\u2B06\uFE0F Sending {len(results)} records to site {key.site_id}"
-    )
+    print(f"\u2b06\ufe0f Sending {len(results)} records to site {key.site_id}")
     return results
 
 
