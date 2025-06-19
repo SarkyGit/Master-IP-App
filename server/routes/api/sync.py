@@ -8,6 +8,7 @@ from datetime import datetime
 
 from core.models import models as model_module
 from core.utils.versioning import apply_update
+from core.utils.sync_logging import log_sync, log_conflict, log_duplicate
 
 from core.utils.db_session import get_db
 from core.utils.site_auth import validate_site_key
@@ -146,12 +147,51 @@ async def push_changes(
                     if conf:
                         conflicts += 1
                         log.warning("Conflict on %s id %s", model_name, rec["id"])
+                        log_conflict(
+                            db,
+                            rec["id"],
+                            model_name,
+                            rec["version"],
+                            obj.version,
+                            obj.version,
+                        )
                     else:
                         accepted += 1
+                    log_sync(db, obj.id, model_name, "update", "local", "cloud")
                 else:
-                    obj = model_cls(**{k: v for k, v in rec.items() if k != "model"})
-                    db.add(obj)
-                    accepted += 1
+                    if model_name == "devices":
+                        dup = None
+                        if rec.get("mac"):
+                            dup = db.query(model_cls).filter_by(mac=rec["mac"]).first()
+                        if not dup and rec.get("asset_tag"):
+                            dup = db.query(model_cls).filter_by(asset_tag=rec["asset_tag"]).first()
+                        if dup:
+                            if dup.is_deleted:
+                                apply_update(dup, {k: v for k, v in rec.items() if k != "model"})
+                                dup.is_deleted = False
+                                accepted += 1
+                                log_duplicate(db, model_name, dup.id, rec["id"])
+                                obj = dup
+                            else:
+                                keep = dup if dup.created_at <= rec.get("created_at", dup.created_at) else None
+                                if keep is dup:
+                                    log_duplicate(db, model_name, dup.id, rec["id"])
+                                    obj = dup
+                                else:
+                                    log_duplicate(db, model_name, rec["id"], dup.id)
+                                    db.delete(dup)
+                                    obj = model_cls(**{k: v for k, v in rec.items() if k != "model"})
+                                    db.add(obj)
+                                    accepted += 1
+                        else:
+                            obj = model_cls(**{k: v for k, v in rec.items() if k != "model"})
+                            db.add(obj)
+                            accepted += 1
+                    else:
+                        obj = model_cls(**{k: v for k, v in rec.items() if k != "model"})
+                        db.add(obj)
+                        accepted += 1
+                    log_sync(db, rec["id"], model_name, "create", "local", "cloud")
                 db.commit()
                 db.refresh(obj)
             except IntegrityError as exc:  # pragma: no cover - safety
@@ -262,6 +302,7 @@ async def pull_changes(
         for obj in query.all():
             data = {c.key: getattr(obj, c.key) for c in insp.mapper.column_attrs}
             results.append({"model": model_name, **data})
+            log_sync(db, obj.id, model_name, "read", "cloud", "local")
 
     print(
         f"\u2B06\uFE0F Sending {len(results)} records to site {key.site_id}"
