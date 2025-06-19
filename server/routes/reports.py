@@ -42,14 +42,27 @@ async def conflict_list(
 @router.post("/conflicts/{device_id}")
 async def resolve_conflict(
     device_id: int,
-    choice: str = Form("local"),
-    request: Request = None,
+    request: Request,
     db: Session = Depends(get_db),
     current_user=Depends(require_role("syncadmin")),
 ):
+    if current_user.role not in ["syncadmin", "superadmin"]:
+        raise HTTPException(status_code=403, detail="Insufficient role")
+
     device = db.query(Device).filter(Device.id == device_id).first()
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
+
+    form = await request.form()
+
+    if "choice" in form and len(form) == 1:
+        choice = form.get("choice", "local")
+    else:
+        choice = {
+            field: form.get(field, "local")
+            for field in [c["field"] for c in device.conflict_data]
+        }
+
     await sync_conflicts.resolve_device_conflict(db, device, choice, current_user)
     if request and request.headers.get("HX-Request"):
         return templates.TemplateResponse("close_modal.html", {"request": request})
@@ -67,6 +80,8 @@ async def conflict_merge_form(
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
     context = {"request": request, "device": device, "current_user": current_user}
+    if request.headers.get("HX-Request"):
+        return templates.TemplateResponse("conflict_merge_modal.html", context)
     return templates.TemplateResponse("conflict_merge.html", context)
 
 

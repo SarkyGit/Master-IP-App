@@ -51,36 +51,17 @@
 {% endif %}
 {% if conflicts %}
   {% for dev in conflicts %}
-  <h2 class="text-lg mt-4">{{ dev.hostname }}</h2>
-  <form method="post" action="/reports/conflicts/{{ dev.id }}">
-    <div class="w-full overflow-auto">
-    <table class="min-w-full table-fixed text-left">
-      <thead>
-        <tr>
-          <th class="px-4 py-2">Field</th>
-          <th class="px-4 py-2">Local</th>
-          <th class="px-4 py-2">Cloud</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for c in dev.conflict_data %}
-        <tr class="border-t border-gray-700">
-          <td class="px-4 py-2">{{ c.field }}</td>
-          <td class="px-4 py-2 {% if c.local_value != c.remote_value %}bg-yellow-700/50{% endif %}">{{ c.local_value }}</td>
-          <td class="px-4 py-2 {% if c.local_value != c.remote_value %}bg-yellow-700/50{% endif %}">{{ c.remote_value }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    </div>
-    <div class="mt-2 space-x-2">
-      <button type="submit" name="choice" value="local" class="px-4 py-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded">Accept Local</button>
-      <button type="submit" name="choice" value="cloud" class="px-4 py-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded">Accept Cloud</button>
-      <a href="/reports/conflicts/{{ dev.id }}/merge" class="px-4 py-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded">Manual Merge</a>
-    </div>
-  </form>
+  <div class="mt-4">
+    <h2 class="text-lg">{{ dev.hostname }}</h2>
+    <p class="text-sm mb-2">Fields: {% for c in dev.conflict_data %}<span class="px-1 rounded bg-yellow-800/50 mr-1">{{ c.field }}</span>{% endfor %}</p>
+    <button hx-get="/reports/conflicts/{{ dev.id }}/merge" hx-target="#modal" hx-swap="innerHTML" class="px-4 py-1 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded">Resolve</button>
+  </div>
   {% endfor %}
 {% else %}
-<p>No conflicts found.</p>
+  <p>No conflicts found.</p>
 {% endif %}
+{% endblock %}
+
+{% block extra_scripts %}
+{{ super() }}
 {% endblock %}
