@@ -55,7 +55,7 @@ def test_upload_damage_photo_sanitizes_filename(tmp_path, monkeypatch):
             pass
 
     db = DummyDB()
-    monkeypatch.setattr(devices_module, "user_in_site", lambda db_, user, site_id: True)
+    monkeypatch.setattr(devices_module, "user_in_site", lambda db_, user, site_id: True, raising=False)
     monkeypatch.setattr(devices_module, "STATIC_DIR", str(tmp_path))
 
     photo = UploadFile(

@@ -12,7 +12,7 @@ from core.utils.device_detect import detect_ssh_platform
 
 from core.utils.db_session import SessionLocal
 from core.models.models import Device, User
-from core.utils.auth import ROLE_HIERARCHY, user_in_site
+from core.utils.auth import ROLE_HIERARCHY
 
 router = APIRouter()
 INACTIVITY_TIMEOUT = int(os.environ.get("SSH_TIMEOUT", "900"))
@@ -44,10 +44,6 @@ async def terminal_ws(websocket: WebSocket, device_id: int):
         device = db.query(Device).filter(Device.id == device_id).first()
         if not device:
             await websocket.send_text("Device not found")
-            await websocket.close()
-            return
-        if not user_in_site(db, user, device.site_id):
-            await websocket.send_text("Device not assigned to your site")
             await websocket.close()
             return
 
