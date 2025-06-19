@@ -53,10 +53,12 @@ from server.routes import (
     admin_columns_router,
     org_settings_router,
     help_router,
+    system_monitor_router,
     api_devices_router,
     api_users_router,
     api_vlans_router,
     api_ssh_credentials_router,
+    api_system_router,
     install_router,
 )
 from server.routes.api.sync import router as api_sync_router
@@ -230,6 +232,8 @@ app.include_router(admin_images_router)
 app.include_router(admin_columns_router)
 app.include_router(org_settings_router)
 app.include_router(help_router)
+app.include_router(system_monitor_router)
+app.include_router(api_system_router)
 
 
 @app.exception_handler(HTTPException)
