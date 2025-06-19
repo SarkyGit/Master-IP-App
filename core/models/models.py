@@ -25,6 +25,7 @@ class VLAN(Base):
     sync_state = Column(JSON, nullable=True)
     tag = Column(Integer, unique=True, nullable=False)
     description = Column(String, nullable=True)
+    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
 
     devices = relationship("Device", back_populates="vlan")
 
@@ -40,6 +41,7 @@ class SSHCredential(Base):
     username = Column(String, nullable=False)
     password = Column(String, nullable=True)
     private_key = Column(Text, nullable=True)
+    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
 
     devices = relationship("Device", back_populates="ssh_credential")
 
@@ -51,6 +53,7 @@ class SNMPCommunity(Base):
     name = Column(String, unique=True, nullable=False)
     community_string = Column(String, nullable=False)
     version = Column(String, nullable=False)
+    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
 
     devices = relationship("Device", back_populates="snmp_community")
 
@@ -64,6 +67,7 @@ class Location(Base):
     sync_state = Column(JSON, nullable=True)
     name = Column(String, unique=True, nullable=False)
     location_type = Column(String, nullable=False, default="Fixed")
+    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
 
     devices = relationship("Device", back_populates="location_ref")
 
@@ -78,6 +82,7 @@ class DeviceType(Base):
     name = Column(String, unique=True, nullable=False)
     upload_icon = Column(String, nullable=True)
     upload_image = Column(String, nullable=True)
+    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
 
     devices = relationship("Device", back_populates="device_type")
 
@@ -125,6 +130,7 @@ class Tag(Base):
     conflict_data = Column(JSON, nullable=True)
     sync_state = Column(JSON, nullable=True)
     name = Column(String, unique=True, nullable=False)
+    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
 
     devices = relationship("Device", secondary=device_tags, back_populates="tags")
 
@@ -516,7 +522,6 @@ class ImportLog(Base):
 
     user = relationship("User")
     site = relationship("Site")
-
 
 
 class ConnectedSite(Base):
