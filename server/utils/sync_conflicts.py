@@ -15,6 +15,41 @@ from server.workers import sync_push_worker
 from server.workers.sync_pull_worker import USER_EDITABLE_DEVICE_FIELDS
 
 
+def _is_blank(value: object) -> bool:
+    """Return True if the value represents an empty/null state."""
+    if value is None:
+        return True
+    if isinstance(value, str) and value.strip().lower() in {"", "none", "null"}:
+        return True
+    return False
+
+
+def _add_auto_choices(conflicts: list[dict]) -> None:
+    """Annotate each conflict with an auto_choice based on blank detection."""
+    for c in conflicts:
+        local_blank = _is_blank(c.get("local_value"))
+        remote_blank = _is_blank(c.get("remote_value"))
+        if local_blank and not remote_blank:
+            c["auto_choice"] = "cloud"
+        elif remote_blank and not local_blank:
+            c["auto_choice"] = "local"
+
+
+def prepare_device_conflicts(device: Device) -> None:
+    """Filter conflict data and set auto_choice values."""
+    if not device.conflict_data:
+        return
+    device.conflict_data = [
+        c
+        for c in device.conflict_data
+        if c.get("field") in USER_EDITABLE_DEVICE_FIELDS
+    ]
+    if device.conflict_data:
+        _add_auto_choices(device.conflict_data)
+    else:
+        device.conflict_data = None
+
+
 async def resolve_device_conflict(
     db: Session,
     device: Device,
@@ -61,14 +96,7 @@ def list_device_conflicts(
         query = query.filter(or_(Device.created_at > since, Device.updated_at > since))
     devices = query.all()
     for device in devices:
-        if device.conflict_data:
-            device.conflict_data = [
-                c
-                for c in device.conflict_data
-                if c.get("field") in USER_EDITABLE_DEVICE_FIELDS
-            ]
-            if not device.conflict_data:
-                device.conflict_data = None
+        prepare_device_conflicts(device)
     return devices
 
 
