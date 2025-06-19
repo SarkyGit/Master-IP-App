@@ -173,7 +173,14 @@ async def push_changes(
                                 log_duplicate(db, model_name, dup.id, rec["id"])
                                 obj = dup
                             else:
-                                keep = dup if dup.created_at <= rec.get("created_at", dup.created_at) else None
+                                remote_created = rec.get("created_at", dup.created_at)
+                                if isinstance(remote_created, str):
+                                    try:
+                                        remote_created = datetime.fromisoformat(remote_created)
+                                    except Exception:
+                                        remote_created = dup.created_at
+
+                                keep = dup if dup.created_at <= remote_created else None
                                 if keep is dup:
                                     log_duplicate(db, model_name, dup.id, rec["id"])
                                     obj = dup
