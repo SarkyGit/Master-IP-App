@@ -303,8 +303,10 @@ async def pull_changes(
         else:
             continue  # no timestamp columns to filter
 
-        if hasattr(model_cls, "site_id"):
-            query = query.filter(getattr(model_cls, "site_id") == key.site_id)
+        # Do not restrict by site_id so all records are synced across every site
+        # Previously only records matching the requesting site's ID were returned.
+        # Removing the filter ensures all data propagates between cloud and local
+        # instances, matching the desired behavior of full database replication.
 
         for obj in query.all():
             data = {c.key: getattr(obj, c.key) for c in insp.mapper.column_attrs}
