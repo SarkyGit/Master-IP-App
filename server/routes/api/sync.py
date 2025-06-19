@@ -141,9 +141,6 @@ async def push_changes(
                     else:
                         accepted += 1
                 else:
-                    if any(field not in rec for field in required_cols):
-                        skipped += 1
-                        continue
                     obj = model_cls(**{k: v for k, v in rec.items() if k != "model"})
                     db.add(obj)
                     accepted += 1

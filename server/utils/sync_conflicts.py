@@ -95,9 +95,12 @@ def list_device_conflicts(
     if since is not None:
         query = query.filter(or_(Device.created_at > since, Device.updated_at > since))
     devices = query.all()
+    result: list[Device] = []
     for device in devices:
         prepare_device_conflicts(device)
-    return devices
+        if device.conflict_data:
+            result.append(device)
+    return result
 
 
 def list_recent_sync_records(db: Session, limit: int = 100) -> list[dict]:

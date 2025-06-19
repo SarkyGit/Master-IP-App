@@ -35,10 +35,13 @@ def _load_last_sync(db) -> datetime:
     )
     if entry:
         try:
-            return datetime.fromisoformat(entry.value)
+            dt = datetime.fromisoformat(entry.value)
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=timezone.utc)
+            return dt.astimezone(timezone.utc)
         except Exception:
             pass
-    return datetime.fromtimestamp(0)
+    return datetime.fromtimestamp(0, timezone.utc)
 
 
 def _update_last_sync(db) -> None:
