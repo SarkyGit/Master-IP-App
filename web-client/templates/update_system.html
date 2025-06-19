@@ -13,5 +13,6 @@
 <p class="text-red-600 mb-2">Unsynced local data detected. Please sync with the cloud before updating.</p>
 {% endif %}
 <button hx-post="/admin/update" hx-target="#modal" hx-swap="innerHTML" class="btn" {% if unsynced %}disabled{% endif %}>Update to latest version</button>
+<p class="mt-4 text-sm">If the service does not restart automatically after an update you can restart it manually with <code>sudo systemctl restart master-ip-app</code>.</p>
 
 {% endblock %}

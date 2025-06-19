@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Request, Depends, HTTPException, Form
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
 import subprocess
@@ -362,3 +362,13 @@ async def start_update(
 async def _do_update(user: User, force: bool) -> None:
     async with _update_lock:
         await _run_update(user, force)
+
+
+@router.post("/admin/restart")
+async def restart_service(current_user=Depends(require_role("admin"))):
+    """Attempt to restart the main service."""
+    try:
+        subprocess.run(["systemctl", "restart", "master-ip-app"], check=True)
+    except Exception as exc:
+        return JSONResponse({"status": "error", "detail": str(exc)})
+    return JSONResponse({"status": "ok"})
