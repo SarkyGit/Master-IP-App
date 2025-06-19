@@ -15,7 +15,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 
 from core.utils.db_session import get_db
-from core.utils.auth import get_current_user, require_role, user_in_site
+from core.utils.auth import get_current_user, require_role
 from core.models.models import (
     Device,
     VLAN,
@@ -567,8 +567,6 @@ async def edit_device_form(
     )
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
-    if not user_in_site(db, current_user, device.site_id):
-        raise HTTPException(status_code=403, detail="Device not assigned to your site")
 
     (
         device_types,
@@ -764,8 +762,6 @@ async def upload_damage_photo(
     )
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
-    if not user_in_site(db, current_user, device.site_id):
-        raise HTTPException(status_code=403, detail="Device not assigned to your site")
     if not photo.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="Invalid file type")
     damage_dir = os.path.join(STATIC_DIR, "damage")
@@ -1385,9 +1381,7 @@ async def port_map(
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
 
-    active_site_id = request.session.get("active_site_id")
-    if active_site_id and device.site_id != active_site_id:
-        raise HTTPException(status_code=403, detail="Device not assigned to your site")
+    # Site restrictions are not enforced for viewing port maps
 
     profile = device.snmp_community
     ports: list[dict] = []
@@ -1489,8 +1483,6 @@ async def edit_ports_form(
     device = db.query(Device).filter(Device.id == device_id).first()
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
-    if not user_in_site(db, current_user, device.site_id):
-        raise HTTPException(status_code=403, detail="Device not assigned to your site")
 
     interfaces = (
         db.query(Interface).filter(Interface.device_id == device.id).order_by(Interface.name).all()
@@ -1557,8 +1549,6 @@ async def save_ports(
     device = db.query(Device).filter(Device.id == device_id).first()
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
-    if not user_in_site(db, current_user, device.site_id):
-        raise HTTPException(status_code=403, detail="Device not assigned to your site")
 
     form = await request.form()
     interfaces = db.query(Interface).filter(Interface.device_id == device.id).all()

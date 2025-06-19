@@ -7,7 +7,7 @@ import asyncio
 from datetime import datetime, timezone
 
 from core.utils.db_session import get_db
-from core.utils.auth import require_role, user_in_site
+from core.utils.auth import require_role
 from core.models.models import Device, ConfigBackup, SystemTunable
 from core.utils.ssh import build_conn_kwargs, resolve_ssh_credential
 from core.utils.device_detect import detect_ssh_platform
@@ -144,8 +144,6 @@ async def port_config_action(
     device = db.query(Device).filter(Device.id == device_id).first()
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
-    if not user_in_site(db, current_user, device.site_id):
-        raise HTTPException(status_code=403, detail="Device not assigned to your site")
     cred, source = resolve_ssh_credential(db, device, current_user)
     output = ""
     error = None
@@ -314,16 +312,6 @@ async def port_search_action(
     results = []
     devices = db.query(Device).filter(Device.id.in_(device_ids)).all()
     for device in devices:
-        if not user_in_site(db, current_user, device.site_id):
-            results.append(
-                {
-                    "device": device,
-                    "output": "",
-                    "error": "Not part of your site",
-                    "cred_source": None,
-                }
-            )
-            continue
         cred, source = resolve_ssh_credential(db, device, current_user)
         output = ""
         error = None
@@ -385,9 +373,6 @@ async def bulk_port_update_action(
     ports_list = [p.strip() for p in ports.splitlines() if p.strip()]
     message_parts = []
     for device in devices:
-        if not user_in_site(db, current_user, device.site_id):
-            message_parts.append(f"{device.hostname}: not in site")
-            continue
         cred, _ = resolve_ssh_credential(db, device, current_user)
         if not cred:
             message_parts.append(f"{device.hostname}: no credentials")
