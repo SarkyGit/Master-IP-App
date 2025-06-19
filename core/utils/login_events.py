@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from core.models.models import LoginEvent, User
 from .geolocation import geolocate_ip
-from .ip_utils import pad_ip
+from .ip_utils import normalize_ip
 
 
 def log_login_event(
@@ -16,7 +16,10 @@ def log_login_event(
     location: str | None = None,
 ) -> LoginEvent:
     """Create a LoginEvent entry and return it."""
-    padded = pad_ip(ip)
+    try:
+        padded = normalize_ip(ip)
+    except ValueError:
+        padded = ""
     if location is None:
         location, _, _ = geolocate_ip(ip)
     event = LoginEvent(

@@ -12,7 +12,8 @@
     </select>
   </label>
   <label class="mr-2">IP:
-    <input id="ip" type="text" name="ip" value="{{ ip or '' }}" onchange="this.form.submit()">
+    <input id="ip" type="text" name="ip" value="{{ ip or '' }}" onchange="this.form.submit()" class="ip-input">
+    <span class="text-red-400 text-sm hidden ip-error">Invalid IP address</span>
   </label>
   <label class="mr-2">Start:
     <input id="start" type="date" name="start" value="{{ start or '' }}" onchange="this.form.submit()">

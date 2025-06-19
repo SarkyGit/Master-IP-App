@@ -99,6 +99,7 @@
       <script src="{{ request.url_for('static', path='js/htmx.min.js') }}"></script>
     <script src="{{ request.url_for('static', path='js/alpine.min.js') }}" defer></script>
     <script src="{{ request.url_for('static', path='js/table.js') }}" defer></script>
+    <script src="{{ request.url_for('static', path='js/ip_validation.js') }}" defer></script>
     {% block extra_scripts %}
     {% if current_user is defined and current_user and current_user.scroll_handoff_enabled %}
     <script>

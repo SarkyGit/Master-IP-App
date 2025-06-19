@@ -3,7 +3,8 @@
 {% block content %}
 <h1 class="text-xl mb-4">IP Search</h1>
 <form method="get" class="mb-4">
-  <input type="text" name="ip" value="{{ ip or '' }}" class="text-[var(--input-text)] px-2" placeholder="Enter IP">
+  <input type="text" name="ip" value="{{ ip or '' }}" class="text-[var(--input-text)] px-2 ip-input" placeholder="Enter IP">
+  <p class="text-red-400 text-sm hidden ip-error">Invalid IP address</p>
   <span aria-label="Search" class="p-2 rounded transition cursor-pointer" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('search') }}</span>
 </form>
 {% if ip %}

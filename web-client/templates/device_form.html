@@ -10,7 +10,8 @@
     </div>
     <div class="flex flex-col flex-1 min-w-[280px]">
       <label for="ip-field" class="mb-1 fw-bold block">IP Address</label>
-      <input type="text" name="ip" id="ip-field" value="{{ device.ip | display_ip if device else '' }}" class="form-input w-full" />
+      <input type="text" name="ip" id="ip-field" value="{{ device.ip | display_ip if device else '' }}" class="form-input w-full ip-input" />
+      <p id="ip-error" class="text-red-400 text-sm hidden">Invalid IP address</p>
     </div>
     <div class="flex flex-col flex-1 min-w-[280px]">
       <label for="mac" class="mb-1 fw-bold block">MAC Address</label>
