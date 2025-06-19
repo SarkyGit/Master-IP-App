@@ -369,12 +369,12 @@ def _load_form_options(db: Session):
     )
 
 
-from core.utils.ip_utils import pad_ip
+from core.utils.ip_utils import normalize_ip
 from core.utils.mac_utils import normalize_mac, MAC_RE
 
 
 def _format_ip(ip: str) -> str:
-    return pad_ip(ip)
+    return normalize_ip(ip)
 
 
 def _format_mac(mac: str | None) -> str | None:
@@ -460,7 +460,21 @@ async def create_device(
     current_user=Depends(require_role("editor")),
 ):
     """Create a new device from form data."""
-    formatted_ip = _format_ip(ip)
+    try:
+        formatted_ip = _format_ip(ip)
+    except ValueError:
+        context = await new_device_form(request, db, current_user)
+        context["error"] = "Invalid IP address"
+        context["device"] = {
+            "hostname": hostname,
+            "ip": ip,
+            "mac": mac,
+            "asset_tag": asset_tag,
+            "model": model,
+            "manufacturer": manufacturer,
+            "serial_number": serial_number,
+        }
+        return templates.TemplateResponse("device_form.html", context)
     formatted_mac = _format_mac(mac)
     if formatted_mac and not MAC_RE.fullmatch(formatted_mac):
         context = await new_device_form(request, db, current_user)
@@ -627,7 +641,12 @@ async def update_device(
     }
 
     device.hostname = hostname
-    device.ip = _format_ip(ip)
+    try:
+        device.ip = _format_ip(ip)
+    except ValueError:
+        context = await edit_device_form(device_id, request, db, current_user)
+        context["error"] = "Invalid IP address"
+        return templates.TemplateResponse("device_form.html", context)
     formatted_mac = _format_mac(mac)
     if formatted_mac and not MAC_RE.fullmatch(formatted_mac):
         context = await edit_device_form(device_id, request, db, current_user)
@@ -784,7 +803,10 @@ async def bulk_update_devices(
         if hostname:
             device.hostname = hostname
         if ip:
-            device.ip = _format_ip(ip)
+            try:
+                device.ip = _format_ip(ip)
+            except ValueError:
+                pass
         if mac:
             fm = _format_mac(mac)
             if fm and MAC_RE.fullmatch(fm):

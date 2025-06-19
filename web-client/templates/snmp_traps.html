@@ -37,7 +37,7 @@
   {% for trap in traps %}
     <tr class="border-t border-gray-700">
       <td class="px-4 py-2">{{ trap.timestamp }}</td>
-      <td class="px-4 py-2">{{ trap.source_ip }}</td>
+      <td class="px-4 py-2">{{ trap.source_ip | display_ip }}</td>
       <td class="px-4 py-2">{{ trap.trap_oid }}</td>
       <td class="px-4 py-2">{{ trap.device.hostname if trap.device else '' }}</td>
       <td class="px-4 py-2">{{ trap.site.name if trap.site else '' }}</td>

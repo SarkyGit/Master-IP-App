@@ -44,9 +44,13 @@ def _create_device_from_row(db: Session, row: dict, user) -> None:
             .filter(Location.name.ilike(row["location"].strip()))
             .first()
         )
+    try:
+        norm_ip = _format_ip(ip)
+    except ValueError:
+        raise ValueError(f"Invalid IP address {ip}")
     device = Device(
         hostname=hostname,
-        ip=_format_ip(ip),
+        ip=norm_ip,
         mac=row.get("mac") or None,
         asset_tag=row.get("asset_tag") or None,
         model=row.get("model") or None,

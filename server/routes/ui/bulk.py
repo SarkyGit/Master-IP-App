@@ -283,7 +283,11 @@ async def device_import_wizard(
             if not ip or not host:
                 errors.append(f"Missing required fields in row {row}")
                 continue
-            ip = _format_ip(ip)
+            try:
+                ip = _format_ip(ip)
+            except ValueError:
+                errors.append(f"Invalid IP address {ip} in row {row}")
+                continue
             existing = (
                 db.query(Device)
                 .filter(or_(Device.ip == ip, Device.hostname == host))
