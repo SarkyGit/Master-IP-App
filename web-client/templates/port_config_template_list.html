@@ -22,7 +22,7 @@
       <td class="px-4 py-2">
         <a href="/network/port-configs/{{ tpl.id }}/edit" aria-label="Edit" class="px-2 text-sm text-[var(--btn-text)] hover:text-[var(--btn-hover-text)] mr-2">{{ include_icon('pencil','text-blue-500','1.5') }}</a>
         <form method="post" action="/network/port-configs/{{ tpl.id }}/delete" class="inline">
-          <button type="submit" aria-label="Delete" class="px-2 text-sm text-[var(--btn-text)] hover:text-[var(--btn-hover-text)]" onclick="return confirm('Delete template?')">{{ include_icon('trash-2','text-red-500','1.5') }}</button>
+          <span aria-label="Delete" class="px-2 text-sm text-[var(--btn-text)] hover:text-[var(--btn-hover-text)]" role="button" tabindex="0" onclick="if(confirm('Delete template?')) { this.closest('form').submit() }">{{ include_icon('trash-2','text-red-500','1.5') }}</span>
         </form>
       </td>
     </tr>

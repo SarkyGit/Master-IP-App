@@ -8,10 +8,10 @@
   <form method="post" action="/admin/debug/trap-listener">
     {% if trap_running %}
     <input type="hidden" name="action" value="stop">
-    <button type="submit" aria-label="Stop Listener" class="p-2 rounded transition">{{ include_icon('stop') }}</button>
+    <span aria-label="Stop Listener" class="p-2 rounded transition" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('stop') }}</span>
     {% else %}
     <input type="hidden" name="action" value="start">
-    <button type="submit" aria-label="Start Listener" class="p-2 rounded transition">{{ include_icon('play') }}</button>
+    <span aria-label="Start Listener" class="p-2 rounded transition" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('play') }}</span>
     {% endif %}
   </form>
 </div>
@@ -21,10 +21,10 @@
   <form method="post" action="/admin/debug/syslog-listener">
     {% if syslog_running %}
     <input type="hidden" name="action" value="stop">
-    <button type="submit" aria-label="Stop Listener" class="p-2 rounded transition">{{ include_icon('stop') }}</button>
+    <span aria-label="Stop Listener" class="p-2 rounded transition" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('stop') }}</span>
     {% else %}
     <input type="hidden" name="action" value="start">
-    <button type="submit" aria-label="Start Listener" class="p-2 rounded transition">{{ include_icon('play') }}</button>
+    <span aria-label="Start Listener" class="p-2 rounded transition" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('play') }}</span>
     {% endif %}
   </form>
 </div>

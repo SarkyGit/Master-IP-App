@@ -18,6 +18,6 @@
       <option value="merge">Merge</option>
     </select>
   </label>
-  <button type="submit" name="confirm" value="yes" aria-label="Import" class="p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded transition">{{ include_icon('check-circle') }}</button>
+  <span name="confirm" value="yes" aria-label="Import" class="p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded transition" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('check-circle') }}</span>
 </form>
 {% endblock %}

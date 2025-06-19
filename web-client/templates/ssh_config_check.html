@@ -11,7 +11,7 @@
       {% endfor %}
     </select>
   </div>
-  <button type="submit" aria-label="Fetch Config" class="p-2 rounded transition">{{ include_icon('download','text-orange-500') }}</button>
+  <span aria-label="Fetch Config" class="p-2 rounded transition" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('download','text-orange-500') }}</span>
 </form>
 {% if error %}<p class="p-2 rounded bg-[var(--alert-bg)] mt-2">{{ error }}</p>{% endif %}
 {% if output %}

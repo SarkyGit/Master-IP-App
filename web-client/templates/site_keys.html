@@ -42,13 +42,13 @@
         <div class="flex justify-center gap-1">
           <form method="post" action="/admin/site-keys/{{ key.id }}/toggle" class="inline">
             {% if key.active %}
-            <button type="submit" aria-label="Disable" class="icon-btn" onclick="return confirm('Disable key?')">{{ include_icon('x-circle','text-red-500','5') }}</button>
+            <span aria-label="Disable" class="icon-btn" role="button" tabindex="0" onclick="if(confirm('Disable key?')) { this.closest('form').submit() }">{{ include_icon('x-circle','text-red-500','5') }}</span>
             {% else %}
-            <button type="submit" aria-label="Enable" class="icon-btn">{{ include_icon('check-circle','text-green-500','5') }}</button>
+            <span aria-label="Enable" class="icon-btn" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('check-circle','text-green-500','5') }}</span>
             {% endif %}
           </form>
           <form method="post" action="/admin/site-keys/{{ key.id }}/delete" class="inline">
-            <button type="submit" aria-label="Delete" class="icon-btn" onclick="return confirm('Delete key?')">{{ include_icon('trash-2','text-red-500','5') }}</button>
+            <span aria-label="Delete" class="icon-btn" role="button" tabindex="0" onclick="if(confirm('Delete key?')) { this.closest('form').submit() }">{{ include_icon('trash-2','text-red-500','5') }}</span>
           </form>
         </div>
       </td>

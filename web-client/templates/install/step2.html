@@ -7,6 +7,6 @@
   <input type="text" name="timezone" placeholder="Timezone" value="UTC" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" required>
   <input type="text" name="database_url" placeholder="Database URL" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" required>
   <input type="text" name="secret_key" placeholder="Secret Key" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" required>
-  <button type="submit" aria-label="Next" class="p-2 rounded transition">{{ include_icon('chevron-right') }}</button>
+  <span aria-label="Next" class="p-2 rounded transition" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('chevron-right') }}</span>
 </form>
 {% endblock %}

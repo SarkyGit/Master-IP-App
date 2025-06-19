@@ -9,7 +9,7 @@
     {% if error %}
     <p class="p-2 rounded bg-[var(--alert-bg)]">{{ error }}</p>
     {% endif %}
-    <button type="submit" aria-label="Login" class="p-2 rounded transition">{{ include_icon('log-in') }}</button>
+    <span aria-label="Login" class="p-2 rounded transition" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('log-in') }}</span>
   </form>
 </div>
 {% endblock %}

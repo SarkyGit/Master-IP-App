@@ -66,7 +66,7 @@
           </td>
           <td class="actions-col text-center">
             <form method="post" action="/admin/cloud-sync/{{ site.site_id }}/new-key" class="inline">
-              <button type="submit" aria-label="Issue" class="icon-btn">{{ include_icon('plus','text-blue-500','5') }}</button>
+              <span aria-label="Issue" class="icon-btn" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('plus','text-blue-500','5') }}</span>
             </form>
           </td>
         </tr>
@@ -93,7 +93,7 @@
             {% endif %}
           </td>
           <td class="actions-col text-center">
-            <button type="button" @click="open = !open" x-data="{open:false}" class="icon-btn">{{ include_icon('pencil','text-blue-500','5') }}</button>
+            <span @click="open = !open" x-data="{open:false}" class="icon-btn" role="button" tabindex="0">{{ include_icon('pencil','text-blue-500','5') }}</span>
           </td>
         </tr>
         <tr x-show="open" x-data="{open:false}" x-cloak class="border-t border-gray-700">
