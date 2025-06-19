@@ -361,6 +361,8 @@ forward them to connected clients. The bundled implementation uses a
 `multiprocessing.Manager` queue controlled by `PROGRESS_HOST`,
 `PROGRESS_PORT` and `PROGRESS_AUTHKEY`. You can swap this out for another
 backend such as Redis pub/sub.
+If the service does not restart automatically after an update, run
+`sudo systemctl restart master-ip-app` on the host.
 
 Static assets are served from the `web-client/static` directory.
 This location is fixed. When deploying inside containers or under a reverse

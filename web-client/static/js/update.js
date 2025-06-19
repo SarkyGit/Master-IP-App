@@ -4,6 +4,7 @@ function startUpdateSocket() {
   const error = document.getElementById('update-error');
   const closeBtn = document.getElementById('update-close-btn');
   const retryBtn = document.getElementById('update-retry-btn');
+  const restartBtn = document.getElementById('update-restart-btn');
   let failed = false;
   let finished = false;
   let rebooting = false;
@@ -43,6 +44,7 @@ function startUpdateSocket() {
         location.reload();
       }, rebooting ? 5000 : 1000);
     }
+    if (restartBtn) restartBtn.classList.remove('hidden');
   }
 
   socket.addEventListener('message', (evt) => {
@@ -55,6 +57,9 @@ function startUpdateSocket() {
         error.textContent = evt.data;
         error.classList.remove('hidden');
       }
+    }
+    if (/restart failed/i.test(evt.data) && restartBtn) {
+      restartBtn.classList.remove('hidden');
     }
     if (/restarting|rebooting/i.test(evt.data)) {
       rebooting = true;
@@ -77,5 +82,35 @@ function startUpdateSocket() {
       status.textContent = 'Retrying update...';
       startUpdateSocket();
     }, { once: true });
+  }
+
+  if (restartBtn) {
+    restartBtn.addEventListener('click', () => {
+      restartBtn.disabled = true;
+      restartBtn.textContent = 'Restarting...';
+      fetch('/admin/restart', { method: 'POST' })
+        .then(r => r.json())
+        .then(data => {
+          if (data.status === 'ok') {
+            status.textContent = 'Service restarting...';
+            setTimeout(() => location.reload(), 2000);
+          } else {
+            restartBtn.disabled = false;
+            restartBtn.textContent = 'Restart service';
+            if (error) {
+              error.textContent = data.detail || 'Restart failed';
+              error.classList.remove('hidden');
+            }
+          }
+        })
+        .catch(() => {
+          restartBtn.disabled = false;
+          restartBtn.textContent = 'Restart service';
+          if (error) {
+            error.textContent = 'Restart failed';
+            error.classList.remove('hidden');
+          }
+        });
+    });
   }
 }
