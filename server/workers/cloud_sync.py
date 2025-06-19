@@ -147,6 +147,7 @@ def start_cloud_sync() -> None:
                 print("Waiting for network...")
                 time.sleep(2)
         print("Starting cloud sync worker")
+        asyncio.create_task(run_sync_once())
         global _sync_task
         _sync_task = asyncio.create_task(_sync_loop())
     else:

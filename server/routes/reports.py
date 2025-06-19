@@ -20,7 +20,7 @@ async def conflict_list(
     status: Optional[str] = None,
     since: Optional[str] = None,
     db: Session = Depends(get_db),
-    current_user=Depends(require_role("admin")),
+    current_user=Depends(require_role("syncadmin")),
 ):
     ts = None
     if since:
@@ -29,7 +29,13 @@ async def conflict_list(
         except Exception:
             ts = None
     conflicts = sync_conflicts.list_device_conflicts(db, device_type, status, ts)
-    context = {"request": request, "conflicts": conflicts, "current_user": current_user}
+    recent = sync_conflicts.list_recent_sync_records(db)
+    context = {
+        "request": request,
+        "conflicts": conflicts,
+        "recent": recent,
+        "current_user": current_user,
+    }
     return templates.TemplateResponse("conflict_list.html", context)
 
 
@@ -39,7 +45,7 @@ async def resolve_conflict(
     choice: str = Form("local"),
     request: Request = None,
     db: Session = Depends(get_db),
-    current_user=Depends(require_role("admin")),
+    current_user=Depends(require_role("syncadmin")),
 ):
     device = db.query(Device).filter(Device.id == device_id).first()
     if not device:
