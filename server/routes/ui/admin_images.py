@@ -2,6 +2,7 @@ from fastapi import APIRouter, Request, Depends, UploadFile, File, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy.orm import Session
 import os
+import base64
 
 from core.utils.auth import require_role
 from core.utils.db_session import get_db
@@ -163,6 +164,8 @@ async def update_images(
     os.makedirs(upload_dir, exist_ok=True)
     icon_name = None
     image_name = None
+    icon_data = None
+    image_data = None
     if icon and icon.filename:
         if not icon.content_type.startswith("image/"):
             if request.headers.get("HX-Request"):
@@ -170,8 +173,10 @@ async def update_images(
                 return templates.TemplateResponse("message_modal.html", context, status_code=400)
             raise HTTPException(status_code=400, detail="Invalid icon type")
         icon_name = f"{key}_icon_{os.path.basename(icon.filename)}"
+        data = await icon.read()
         with open(os.path.join(upload_dir, icon_name), "wb") as f:
-            f.write(await icon.read())
+            f.write(data)
+        icon_data = f"data:{icon.content_type};base64,{base64.b64encode(data).decode()}"
     if image and image.filename:
         if not image.content_type.startswith("image/"):
             if request.headers.get("HX-Request"):
@@ -179,18 +184,25 @@ async def update_images(
                 return templates.TemplateResponse("message_modal.html", context, status_code=400)
             raise HTTPException(status_code=400, detail="Invalid image type")
         image_name = f"{key}_img_{os.path.basename(image.filename)}"
+        data = await image.read()
         with open(os.path.join(upload_dir, image_name), "wb") as f:
-            f.write(await image.read())
+            f.write(data)
+        image_data = f"data:{image.content_type};base64,{base64.b64encode(data).decode()}"
     if category == "menu":
-        save_menu_images(db, next(k for k, v in get_menu_images(db).items() if v["slug"] == key), icon_name if icon_name else None, image_name if image_name else None)
+        save_menu_images(
+            db,
+            next(k for k, v in get_menu_images(db).items() if v["slug"] == key),
+            icon_data if icon_data else None,
+            image_data if image_data else None,
+        )
     else:
         dtype = db.query(DeviceType).filter(DeviceType.id == int(key)).first()
         if not dtype:
             raise HTTPException(status_code=404)
-        if icon_name:
-            dtype.upload_icon = icon_name
-        if image_name:
-            dtype.upload_image = image_name
+        if icon_data:
+            dtype.upload_icon = icon_data
+        if image_data:
+            dtype.upload_image = image_data
         db.commit()
     redirect_url = str(request.url_for("upload_image_page")) + f"?category={category}&message=Images+updated"
     if request.headers.get("HX-Request"):

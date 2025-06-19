@@ -17,6 +17,8 @@ def _menu_image(db: Session, label: str) -> str:
     slug = _slug(label)
     row = db.query(SystemTunable).filter(SystemTunable.name == f"MENU_IMAGE_{slug}").first()
     if row and row.value:
+        if row.value.startswith("data:"):
+            return row.value
         path = os.path.join(STATIC_DIR, "uploads", "menu-items", row.value)
         if os.path.exists(path):
             return f"/static/uploads/menu-items/{row.value}"

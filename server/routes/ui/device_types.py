@@ -7,6 +7,7 @@ from core.utils.db_session import get_db
 from core.utils.auth import require_role
 from core.models.models import DeviceType
 import os
+import base64
 from core.utils.paths import STATIC_DIR
 
 
@@ -68,16 +69,18 @@ async def create_device_type(
         if not upload_icon.content_type.startswith("image/"):
             raise HTTPException(status_code=400, detail="Invalid icon type")
         icon_name = f"{dtype.id}_icon_{os.path.basename(upload_icon.filename)}"
+        data = await upload_icon.read()
         with open(os.path.join(upload_dir, icon_name), "wb") as f:
-            f.write(await upload_icon.read())
-        dtype.upload_icon = icon_name
+            f.write(data)
+        dtype.upload_icon = f"data:{upload_icon.content_type};base64,{base64.b64encode(data).decode()}"
     if upload_image and upload_image.filename:
         if not upload_image.content_type.startswith("image/"):
             raise HTTPException(status_code=400, detail="Invalid image type")
         image_name = f"{dtype.id}_img_{os.path.basename(upload_image.filename)}"
+        data = await upload_image.read()
         with open(os.path.join(upload_dir, image_name), "wb") as f:
-            f.write(await upload_image.read())
-        dtype.upload_image = image_name
+            f.write(data)
+        dtype.upload_image = f"data:{upload_image.content_type};base64,{base64.b64encode(data).decode()}"
     db.commit()
     return RedirectResponse(url="/device-types", status_code=302)
 
@@ -135,16 +138,18 @@ async def update_device_type(
         if not upload_icon.content_type.startswith("image/"):
             raise HTTPException(status_code=400, detail="Invalid icon type")
         icon_name = f"{dtype.id}_icon_{os.path.basename(upload_icon.filename)}"
+        data = await upload_icon.read()
         with open(os.path.join(upload_dir, icon_name), "wb") as f:
-            f.write(await upload_icon.read())
-        dtype.upload_icon = icon_name
+            f.write(data)
+        dtype.upload_icon = f"data:{upload_icon.content_type};base64,{base64.b64encode(data).decode()}"
     if upload_image and upload_image.filename:
         if not upload_image.content_type.startswith("image/"):
             raise HTTPException(status_code=400, detail="Invalid image type")
         image_name = f"{dtype.id}_img_{os.path.basename(upload_image.filename)}"
+        data = await upload_image.read()
         with open(os.path.join(upload_dir, image_name), "wb") as f:
-            f.write(await upload_image.read())
-        dtype.upload_image = image_name
+            f.write(data)
+        dtype.upload_image = f"data:{upload_image.content_type};base64,{base64.b64encode(data).decode()}"
     db.commit()
     return RedirectResponse(url="/device-types", status_code=302)
 

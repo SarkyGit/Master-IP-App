@@ -13,10 +13,18 @@
   {% for label, item in items.items() %}
   <div class="relative border rounded p-2 h-40">
     {% if item.icon %}
+    {% if item.icon.startswith('data:') %}
+    <img src="{{ item.icon }}" class="absolute top-2 left-2 w-8 h-8 object-contain" alt="">
+    {% else %}
     <img src="/static/uploads/{{ 'menu-items' if category=='menu' else 'device-types' }}/{{ item.icon }}" class="absolute top-2 left-2 w-8 h-8 object-contain" alt="">
     {% endif %}
+    {% endif %}
     {% if item.image %}
+    {% if item.image.startswith('data:') %}
+    <img src="{{ item.image }}" class="absolute top-2 right-2 h-16 object-contain" alt="">
+    {% else %}
     <img src="/static/uploads/{{ 'menu-items' if category=='menu' else 'device-types' }}/{{ item.image }}" class="absolute top-2 right-2 h-16 object-contain" alt="">
+    {% endif %}
     {% endif %}
     <div class="absolute bottom-2 left-2">
       <button hx-get="/admin/upload-image/{{ category }}/{{ item.slug if category=='menu' else item.id }}/modal" hx-target="#modal" hx-swap="innerHTML" class="px-2 py-1 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded">Update</button>
