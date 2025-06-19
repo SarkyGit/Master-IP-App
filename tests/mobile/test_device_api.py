@@ -99,7 +99,8 @@ def get_client(role: str, db: DummyDB):
          mock.patch("server.workers.syslog_listener.setup_syslog_listener"), \
          mock.patch("server.workers.sync_push_worker.start_sync_push_worker"), \
          mock.patch("server.workers.sync_pull_worker.start_sync_pull_worker"), \
-         mock.patch("server.workers.cloud_sync.start_cloud_sync"):
+         mock.patch("server.workers.cloud_sync.start_cloud_sync"), \
+         mock.patch("server.workers.system_metrics_logger.start_metrics_logger"):
         app = importlib.import_module("server.main").app
         app.dependency_overrides[importlib.import_module("core.utils.db_session").get_db] = override_get_db(db)
         client = TestClient(app)

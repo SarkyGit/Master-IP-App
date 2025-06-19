@@ -20,9 +20,10 @@ def get_client():
          mock.patch("server.workers.config_scheduler.start_config_scheduler"), \
          mock.patch("server.workers.trap_listener.setup_trap_listener"), \
          mock.patch("server.workers.syslog_listener.setup_syslog_listener"), \
-         mock.patch("server.workers.sync_push_worker.start_sync_push_worker"), \
-        mock.patch("server.workers.sync_pull_worker.start_sync_pull_worker"), \
-        mock.patch("server.workers.cloud_sync.start_cloud_sync"):
+        mock.patch("server.workers.sync_push_worker.start_sync_push_worker"), \
+       mock.patch("server.workers.sync_pull_worker.start_sync_pull_worker"), \
+       mock.patch("server.workers.cloud_sync.start_cloud_sync"), \
+       mock.patch("server.workers.system_metrics_logger.start_metrics_logger"):
         mod = importlib.import_module("server.main")
         mod.INSTALL_REQUIRED = False
         app = mod.app

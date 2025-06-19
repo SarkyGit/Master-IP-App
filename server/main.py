@@ -77,6 +77,7 @@ from server.workers.cloud_sync import start_cloud_sync, stop_cloud_sync
 from server.workers.sync_push_worker import start_sync_push_worker, stop_sync_push_worker
 from server.workers.sync_pull_worker import start_sync_pull_worker, stop_sync_pull_worker
 from server.workers.heartbeat import start_heartbeat, stop_heartbeat
+from server.workers.system_metrics_logger import start_metrics_logger, stop_metrics_logger
 from core.utils.templates import templates
 from core.utils.db_session import engine, SessionLocal
 from core.models.models import SystemTunable
@@ -111,6 +112,7 @@ async def lifespan(app: FastAPI):
             start_config_scheduler()
             setup_trap_listener()
             setup_syslog_listener()
+            start_metrics_logger()
         if settings.enable_cloud_sync:
             start_cloud_sync()
             start_heartbeat()
@@ -126,6 +128,7 @@ async def lifespan(app: FastAPI):
         await stop_sync_push_worker()
         await stop_sync_pull_worker()
         await stop_heartbeat()
+        await stop_metrics_logger()
     logging.shutdown()
 
 app = FastAPI(lifespan=lifespan)

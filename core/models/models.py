@@ -557,3 +557,13 @@ class CustomColumn(Base):
     default_value = Column(String, nullable=True)
     user_visible = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+
+
+class SystemMetric(Base):
+    """Periodic snapshot of system metrics."""
+
+    __tablename__ = "system_metrics"
+
+    id = Column(Integer, primary_key=True)
+    timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    data = Column(JSON, nullable=False)

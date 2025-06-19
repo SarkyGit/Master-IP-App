@@ -16,6 +16,7 @@ google-auth
 psycopg2-binary
 gunicorn
 requests
+psutil
 apscheduler
 reportlab
 syslog-rfc5424-parser
