@@ -22,7 +22,7 @@
         {% for d in row.devices %}
         <tr class="border-t border-gray-700">
           <td class="px-4 py-2">{{ d.hostname }}</td>
-          <td class="px-4 py-2">{{ d.ip }}</td>
+          <td class="px-4 py-2" data-ip="{{ d.ip }}">{{ d.ip | display_ip }}</td>
           <td class="px-4 py-2">{{ d.model or '' }}</td>
           <td class="px-4 py-2">{{ d.config_pull_interval }}</td>
         </tr>

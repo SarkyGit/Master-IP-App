@@ -38,7 +38,7 @@
     <tr class="border-t border-gray-700">
       <td class="px-4 py-2">{{ event.timestamp }}</td>
       <td class="px-4 py-2">{{ event.user.email if event.user else '' }}</td>
-      <td class="px-4 py-2">{{ event.ip_address }}</td>
+      <td class="px-4 py-2" data-ip="{{ event.ip_address }}">{{ event.ip_address | display_ip }}</td>
       <td class="px-4 py-2">{{ event.user_agent }}</td>
       <td class="px-4 py-2">{{ event.location or '' }}</td>
       <td class="px-4 py-2">{{ 'Yes' if event.success else 'No' }}</td>
