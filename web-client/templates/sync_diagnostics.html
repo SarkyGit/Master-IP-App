@@ -5,8 +5,8 @@
 <ul class="list-disc ml-6">
   <li>Last Push: {{ last_push }}</li>
   <li>Last Pull: {{ last_pull }}</li>
-  <li>Last Push Worker: {{ last_push_worker }} ({{ last_push_count }} records)</li>
-  <li>Last Pull Worker: {{ last_pull_worker }} ({{ last_pull_count }} records)</li>
+  <li>Last Push Worker: {{ last_push_worker }} ({{ last_push_count }} records, {{ last_push_conflicts }} conflicts)</li>
+  <li>Last Pull Worker: {{ last_pull_worker }} ({{ last_pull_count }} records, {{ last_pull_conflicts }} conflicts)</li>
 </ul>
 {% if push_error or pull_error %}
 <p class="p-2 mt-2 rounded bg-[var(--alert-bg)] text-red-300">

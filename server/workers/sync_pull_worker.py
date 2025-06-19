@@ -87,7 +87,7 @@ def _load_last_sync(db: Session) -> datetime:
     return datetime.fromtimestamp(0)
 
 
-def _update_last_sync(db: Session, count: int) -> None:
+def _update_last_sync(db: Session, count: int, conflicts: int = 0) -> None:
     now = datetime.now(timezone.utc).isoformat()
     entry = (
         db.query(SystemTunable)
@@ -116,6 +116,21 @@ def _update_last_sync(db: Session, count: int) -> None:
             SystemTunable(
                 name="Last Sync Pull Worker Count",
                 value=str(count),
+                function="Sync",
+                file_type="application",
+                data_type="text",
+            )
+        )
+    conf = db.query(SystemTunable).filter(
+        SystemTunable.name == "Last Sync Pull Worker Conflicts"
+    ).first()
+    if conf:
+        conf.value = str(conflicts)
+    else:
+        db.add(
+            SystemTunable(
+                name="Last Sync Pull Worker Conflicts",
+                value=str(conflicts),
                 function="Sync",
                 file_type="application",
                 data_type="text",
@@ -257,7 +272,7 @@ async def pull_once(log: logging.Logger) -> None:
                     log.error(
                         "Failed to insert %s id %s: %s", model_name, record_id, exc
                     )
-        _update_last_sync(db, len(data))
+        _update_last_sync(db, len(data), conflicts_total)
         log_sync_attempt(db, "pull", len(data), conflicts_total)
         set_tunable(db, "Last Sync Pull Error", "")
     except Exception as exc:

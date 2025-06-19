@@ -54,7 +54,7 @@ def _load_last_sync(db) -> datetime:
     return datetime.fromtimestamp(0, timezone.utc)
 
 
-def _update_last_sync(db, count: int) -> None:
+def _update_last_sync(db, count: int, conflicts: int = 0) -> None:
     now = datetime.now(timezone.utc).isoformat()
     entry = (
         db.query(SystemTunable)
@@ -83,6 +83,21 @@ def _update_last_sync(db, count: int) -> None:
             SystemTunable(
                 name="Last Sync Push Worker Count",
                 value=str(count),
+                function="Sync",
+                file_type="application",
+                data_type="text",
+            )
+        )
+    conf = db.query(SystemTunable).filter(
+        SystemTunable.name == "Last Sync Push Worker Conflicts"
+    ).first()
+    if conf:
+        conf.value = str(conflicts)
+    else:
+        db.add(
+            SystemTunable(
+                name="Last Sync Push Worker Conflicts",
+                value=str(conflicts),
                 function="Sync",
                 file_type="application",
                 data_type="text",
@@ -154,11 +169,11 @@ async def push_once(log: logging.Logger) -> None:
             if hasattr(obj, "sync_state"):
                 obj.sync_state = _serialize(obj)
         db.commit()
-        _update_last_sync(db, total_records)
 
         conflicts = 0
         if isinstance(result, dict):
             conflicts = result.get("conflicts", 0)
+        _update_last_sync(db, total_records, conflicts)
 
         if isinstance(result, dict):
             log.info(
