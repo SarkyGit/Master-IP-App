@@ -17,7 +17,7 @@
   {% if error %}<p class="p-2 rounded bg-[var(--alert-bg)]">{{ error }}</p>{% endif %}
   <div class="form-row">
     <div class="form-item">
-      <button type="submit" aria-label="Submit" class="p-2 rounded transition">{{ include_icon('check') }}</button>
+      <span aria-label="Submit" class="p-2 rounded transition" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('check') }}</span>
     </div>
   </div>
 </form>

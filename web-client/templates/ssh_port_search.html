@@ -16,7 +16,7 @@
     </label>
     {% endfor %}
   </div>
-  <button type="submit" aria-label="Search" class="p-2 rounded transition">{{ include_icon('search') }}</button>
+  <span aria-label="Search" class="p-2 rounded transition" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('search') }}</span>
 </form>
 {% if results %}
   {% for r in results %}

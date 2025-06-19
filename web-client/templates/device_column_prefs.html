@@ -10,6 +10,6 @@
     </label>
   </div>
   {% endfor %}
-  <button type="submit" aria-label="Save" class="p-2 rounded shadow transition">{{ include_icon("save") }}</button>
+  <span aria-label="Save" class="p-2 rounded shadow transition" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon("save") }}</span>
 </form>
 {% endblock %}

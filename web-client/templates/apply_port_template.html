@@ -20,7 +20,7 @@
   {% if message %}<p class="text-green-400">{{ message }}</p>{% endif %}
   {% if error %}<p class="p-2 rounded bg-[var(--alert-bg)]">{{ error }}</p>{% endif %}
   <div>
-    <button type="submit" aria-label="Apply" class="p-2 rounded transition">{{ include_icon('check') }}</button>
+    <span aria-label="Apply" class="p-2 rounded transition" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('check') }}</span>
     <a href="/devices/{{ device.id }}/ports" class="ml-2 underline">Cancel</a>
   </div>
 </form>

@@ -14,7 +14,7 @@
       <input id="spreadsheet_id" type="text" name="spreadsheet_id" value="{{ config.sheet_id }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]">
     </div>
   </div>
-  <button type="submit" aria-label="Save" class="p-2 rounded shadow transition">{{ include_icon('save') }}</button>
+  <span aria-label="Save" class="p-2 rounded shadow transition" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('save') }}</span>
 </form>
 
 <hr class="my-4">
@@ -28,7 +28,7 @@
     <option value="snmp_communities">SNMP Communities</option>
     <option value="port_config_templates">Port Config Templates</option>
   </select>
-  <button type="submit" aria-label="Export" class="p-2 rounded shadow transition">{{ include_icon('download','text-orange-500') }}</button>
+  <span aria-label="Export" class="p-2 rounded shadow transition" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('download','text-orange-500') }}</span>
 </form>
 
 <hr class="my-4">
@@ -42,6 +42,6 @@
     <option value="snmp_communities">SNMP Communities</option>
     <option value="port_config_templates">Port Config Templates</option>
   </select>
-  <button type="submit" aria-label="Import" class="p-2 rounded shadow transition">{{ include_icon('upload','text-orange-500') }}</button>
+  <span aria-label="Import" class="p-2 rounded shadow transition" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('upload','text-orange-500') }}</span>
 </form>
 {% endblock %}

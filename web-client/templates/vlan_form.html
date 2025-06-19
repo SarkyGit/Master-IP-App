@@ -18,7 +18,7 @@
   {% endif %}
   <div class="flex flex-wrap gap-x-8 gap-y-4 mb-4 items-start">
     <div class="flex flex-col flex-1 min-w-[280px]">
-      <button type="submit" aria-label="Submit" class="p-2 rounded transition">{{ include_icon('check') }}</button>
+      <span aria-label="Submit" class="p-2 rounded transition" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('check') }}</span>
       <a href="/vlans" class="ml-2 underline">Cancel</a>
     </div>
   </div>

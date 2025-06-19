@@ -18,6 +18,6 @@
       <input id="import_file" type="file" name="import_file" required class="w-full text-[var(--input-text)]" />
     </div>
   </div>
-  <button type="submit" aria-label="Next" class="p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded transition">{{ include_icon('arrow-right') }}</button>
+  <span aria-label="Next" class="p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded transition" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('arrow-right') }}</span>
 </form>
 {% endblock %}
