@@ -34,7 +34,9 @@ def _get_sync_config() -> tuple[str, str, str, str]:
                 .filter(SystemTunable.name == "Cloud Base URL")
                 .first()
             )
-            base = row.value if row else "http://cloud"
+            base = row.value if row else None
+        if not base:
+            return "", "", "", ""
         base = base.rstrip("/")
         push = os.environ.get("SYNC_PUSH_URL") or f"{base}/api/v1/sync/push"
         pull = os.environ.get("SYNC_PULL_URL") or f"{base}/api/v1/sync/pull"
@@ -92,6 +94,9 @@ async def _request_with_retry(method: str, url: str, payload: dict, log: logging
 
 async def push_once(log: logging.Logger) -> None:
     push_url, _, site_id, api_key = _get_sync_config()
+    if not push_url or not site_id:
+        log.info("Cloud sync not configured, skipping push")
+        return
     db = SessionLocal()
     payload = {"model": Device.__tablename__, "records": []}
     try:
@@ -105,6 +110,9 @@ async def push_once(log: logging.Logger) -> None:
 
 async def pull_once(log: logging.Logger) -> None:
     _, pull_url, site_id, api_key = _get_sync_config()
+    if not pull_url or not site_id:
+        log.info("Cloud sync not configured, skipping pull")
+        return
     db = SessionLocal()
     since = datetime.fromtimestamp(0, timezone.utc).isoformat()
     payload = {"since": since, "models": [Device.__tablename__]}
