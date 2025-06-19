@@ -38,6 +38,8 @@ def _render_sync(request: Request, db: Session, current_user, message: str = "")
     last_pull_worker = _fmt("Last Sync Pull Worker")
     last_push_count = _num("Last Sync Push Worker Count")
     last_pull_count = _num("Last Sync Pull Worker Count")
+    last_push_conflicts = _num("Last Sync Push Worker Conflicts")
+    last_pull_conflicts = _num("Last Sync Pull Worker Conflicts")
     push_error = tunables.get("Last Sync Push Error") or ""
     pull_error = tunables.get("Last Sync Pull Error") or ""
     now = datetime.now(timezone.utc)
@@ -104,6 +106,8 @@ def _render_sync(request: Request, db: Session, current_user, message: str = "")
         "last_pull_worker": last_pull_worker,
         "last_push_count": last_push_count,
         "last_pull_count": last_pull_count,
+        "last_push_conflicts": last_push_conflicts,
+        "last_pull_conflicts": last_pull_conflicts,
         "push_error": push_error,
         "pull_error": pull_error,
     }
