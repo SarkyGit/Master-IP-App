@@ -123,6 +123,14 @@ async def push_once(log: logging.Logger) -> None:
         db.close()
 
 
+async def push_once_safe(log: logging.Logger) -> None:
+    """Run ``push_once`` and log any exceptions."""
+    try:
+        await push_once(log)
+    except Exception as exc:  # pragma: no cover - defensive logging
+        log.error("Sync push failed: %s", exc)
+
+
 async def _push_loop() -> None:
     log = logging.getLogger(__name__)
     delay = SYNC_PUSH_INTERVAL

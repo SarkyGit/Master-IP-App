@@ -210,3 +210,14 @@ def test_request_with_retry_retries(monkeypatch):
         )
     )
     assert len(calls) == 2
+
+
+@pytest.mark.unit
+def test_push_once_safe_logs_errors(monkeypatch):
+    async def fail(log):
+        raise httpx.ConnectError("fail")
+
+    monkeypatch.setattr(sync_push_worker, "push_once", fail)
+    log = mock.Mock()
+    asyncio.run(sync_push_worker.push_once_safe(log))
+    log.error.assert_called_once()

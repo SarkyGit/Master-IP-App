@@ -77,7 +77,9 @@ async def resolve_device_conflict(
     db.commit()
     log_audit(db, user, "resolve_conflict", device, f"choice={choice}")
     # Trigger an immediate push to the cloud
-    asyncio.create_task(sync_push_worker.push_once(logging.getLogger(__name__)))
+    asyncio.create_task(
+        sync_push_worker.push_once_safe(logging.getLogger(__name__))
+    )
 
 
 def list_device_conflicts(
