@@ -57,6 +57,8 @@ from datetime import datetime, timezone
 from puresnmp import Client, PyWrapper, V2C
 from puresnmp.exc import SnmpError
 import re
+from sqlalchemy.orm.session import object_session
+from core.utils.sync_logging import log_deletion
 from server.workers.config_scheduler import (
     schedule_device_config_pull,
     unschedule_device_config_pull,
@@ -71,6 +73,23 @@ STATUS_OPTIONS = ["active", "inactive", "maintenance"]
 import os
 
 MAX_BACKUPS = int(os.environ.get("MAX_BACKUPS", "10"))
+
+
+def _soft_delete(device: Device, user_id: int, origin: str) -> None:
+    if device.is_deleted:
+        return
+    keep = {"mac", "asset_tag"}
+    for col in device.__table__.columns:
+        if col.name in keep or col.primary_key:
+            continue
+        setattr(device, col.name, None)
+    device.is_deleted = True
+    device.deleted_by_id = user_id
+    device.deleted_at = datetime.now(timezone.utc)
+    device.deleted_origin = origin
+    session = object_session(device)
+    if session is not None:
+        log_deletion(session, device.id, Device.__tablename__, user_id, origin)
 # Available configuration templates for push-config form
 TEMPLATE_OPTIONS = [
     "Trunk Port",
@@ -100,7 +119,7 @@ async def list_devices(
     if sort in {"uptime", "-uptime"}:
         order = Device.uptime_seconds.asc() if sort == "uptime" else Device.uptime_seconds.desc()
         query = query.order_by(order)
-    devices = query.all()
+    devices = [d for d in query.all() if not getattr(d, "is_deleted", False)]
     dup_ips = {}
     dup_macs = {}
     dup_tags = {}
@@ -236,7 +255,7 @@ async def duplicate_report(
 ):
     if not current_user:
         raise HTTPException(status_code=401, detail="Not authenticated")
-    devices = db.query(Device).all()
+    devices = [d for d in db.query(Device).all() if not getattr(d, "is_deleted", False)]
     dup_ips = {}
     dup_macs = {}
     dup_tags = {}
@@ -278,7 +297,12 @@ async def list_devices_by_type(
 ):
     if not current_user:
         raise HTTPException(status_code=401, detail="Not authenticated")
-    devices = db.query(Device).filter(Device.device_type_id == type_id).all()
+    devices = (
+        db.query(Device)
+        .filter(Device.device_type_id == type_id)
+        
+        .all()
+    )
     dtype = db.query(DeviceType).filter(DeviceType.id == type_id).first()
     dup_ips = {}
     dup_macs = {}
@@ -535,7 +559,12 @@ async def edit_device_form(
     current_user=Depends(require_role("editor")),
 ):
     """Load an existing device into the form."""
-    device = db.query(Device).filter(Device.id == device_id).first()
+    device = (
+        db.query(Device)
+        .filter(Device.id == device_id)
+        
+        .first()
+    )
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
     if not user_in_site(db, current_user, device.site_id):
@@ -612,7 +641,12 @@ async def update_device(
     current_user=Depends(require_role("editor")),
 ):
     """Update an existing device with form data."""
-    device = db.query(Device).filter(Device.id == device_id).first()
+    device = (
+        db.query(Device)
+        .filter(Device.id == device_id)
+        
+        .first()
+    )
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
 
@@ -722,7 +756,12 @@ async def upload_damage_photo(
     db: Session = Depends(get_db),
     current_user=Depends(require_role("editor")),
 ):
-    device = db.query(Device).filter(Device.id == device_id).first()
+    device = (
+        db.query(Device)
+        .filter(Device.id == device_id)
+        
+        .first()
+    )
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
     if not user_in_site(db, current_user, device.site_id):
@@ -753,7 +792,7 @@ async def delete_device(
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
     unschedule_device_config_pull(device.id)
-    db.delete(device)
+    _soft_delete(device, current_user.id, "ui")
     db.commit()
     return RedirectResponse(url="/devices/table", status_code=302)
 
@@ -765,10 +804,15 @@ async def bulk_delete_devices(
     current_user=Depends(require_role("editor")),
 ):
     for device_id in selected:
-        device = db.query(Device).filter(Device.id == device_id).first()
+        device = (
+            db.query(Device)
+            .filter(Device.id == device_id)
+            
+            .first()
+        )
         if device:
             unschedule_device_config_pull(device.id)
-            db.delete(device)
+            _soft_delete(device, current_user.id, "ui")
     db.commit()
     return RedirectResponse(url="/devices/table", status_code=302)
 
@@ -797,7 +841,12 @@ async def bulk_update_devices(
     current_user=Depends(require_role("editor")),
 ):
     for device_id in selected:
-        device = db.query(Device).filter(Device.id == device_id).first()
+        device = (
+            db.query(Device)
+            .filter(Device.id == device_id)
+            
+            .first()
+        )
         if not device:
             continue
         if hostname:

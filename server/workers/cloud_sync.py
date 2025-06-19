@@ -127,8 +127,8 @@ async def pull_once(log: logging.Logger) -> None:
 
 async def run_sync_once() -> None:
     log = logging.getLogger(__name__)
-    await push_once(log)
     await pull_once(log)
+    await push_once(log)
 
 
 async def _sync_loop() -> None:

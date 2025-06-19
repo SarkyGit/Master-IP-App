@@ -1,4 +1,13 @@
 from core.utils.db_session import SessionLocal
+import subprocess
+
+
+def upgrade_db() -> None:
+    """Apply any pending database migrations."""
+    try:
+        subprocess.run(["alembic", "upgrade", "head"], check=True)
+    except Exception as exc:  # pragma: no cover - best effort
+        print(f"Warning: could not apply migrations: {exc}")
 from core.models.models import (
     DeviceType,
     SSHCredential,
@@ -98,4 +107,5 @@ def main():
 
 
 if __name__ == "__main__":
+    upgrade_db()
     main()

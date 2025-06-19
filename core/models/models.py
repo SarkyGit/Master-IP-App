@@ -186,6 +186,12 @@ class Device(Base):
     # Free-form notes about the device
     notes = Column(Text, nullable=True)
 
+    # Soft deletion tracking
+    is_deleted = Column(Boolean, default=False)
+    deleted_by_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
+    deleted_origin = Column(String, nullable=True)
+
     vlan = relationship("VLAN", back_populates="devices")
     ssh_credential = relationship("SSHCredential", back_populates="devices")
     snmp_community = relationship("SNMPCommunity", back_populates="devices")
@@ -209,6 +215,7 @@ class Device(Base):
         back_populates="device",
         cascade="all, delete-orphan",
     )
+    deleted_by = relationship("User", foreign_keys=[deleted_by_id])
 
 
 class ConfigBackup(Base):
@@ -583,3 +590,49 @@ class SystemMetric(Base):
     id = Column(Integer, primary_key=True)
     timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
     data = Column(JSON, nullable=False)
+
+
+class SyncLog(Base):
+    __tablename__ = "sync_logs"
+
+    id = Column(Integer, primary_key=True)
+    record_id = Column(Integer, nullable=False)
+    model_name = Column(String, nullable=False)
+    action = Column(String, nullable=False)
+    origin = Column(String, nullable=False)
+    target = Column(String, nullable=False)
+    timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+
+
+class ConflictLog(Base):
+    __tablename__ = "conflict_logs"
+
+    id = Column(Integer, primary_key=True)
+    record_id = Column(Integer, nullable=False)
+    model_name = Column(String, nullable=False)
+    local_version = Column(Integer, nullable=False)
+    cloud_version = Column(Integer, nullable=False)
+    resolved_version = Column(Integer, nullable=False)
+    resolution_time = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+
+
+class DuplicateResolutionLog(Base):
+    __tablename__ = "duplicate_resolution_logs"
+
+    id = Column(Integer, primary_key=True)
+    model_name = Column(String, nullable=False)
+    kept_id = Column(Integer, nullable=False)
+    removed_id = Column(Integer, nullable=False)
+    timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+
+
+class DeletionLog(Base):
+    __tablename__ = "deletion_logs"
+
+    id = Column(Integer, primary_key=True)
+    record_id = Column(Integer, nullable=False)
+    model_name = Column(String, nullable=False)
+    deleted_by = Column(Integer, ForeignKey("users.id"), nullable=True)
+    deleted_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    origin = Column(String, nullable=True)
