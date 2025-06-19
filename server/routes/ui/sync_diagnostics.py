@@ -18,6 +18,19 @@ router = APIRouter()
 
 def _render_sync(request: Request, db: Session, current_user, message: str = ""):
     tunables = {t.name: t.value for t in db.query(SystemTunable).all()}
+    def _fmt(name: str) -> str:
+        val = tunables.get(name)
+        if not val:
+            return "never"
+        try:
+            return datetime.fromisoformat(val).isoformat(sep=" ")
+        except Exception:
+            return "never"
+
+    last_push = _fmt("Last Sync Push")
+    last_pull = _fmt("Last Sync Pull")
+    last_push_worker = _fmt("Last Sync Push Worker")
+    last_pull_worker = _fmt("Last Sync Pull Worker")
     now = datetime.now(timezone.utc)
     last_contact = tunables.get("Last Cloud Contact")
     connection_status = "Disconnected"
@@ -76,6 +89,10 @@ def _render_sync(request: Request, db: Session, current_user, message: str = "")
         "sync_groups": sync_groups,
         "cloud_message": message,
         "current_user": current_user,
+        "last_push": last_push,
+        "last_pull": last_pull,
+        "last_push_worker": last_push_worker,
+        "last_pull_worker": last_pull_worker,
     }
     return templates.TemplateResponse("admin_sync.html", context)
 
