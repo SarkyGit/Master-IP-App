@@ -9,6 +9,7 @@ from datetime import datetime
 from core.models import models as model_module
 from core.utils.versioning import apply_update
 from core.utils.sync_logging import log_sync, log_conflict, log_duplicate
+from core.utils.deletion import soft_delete
 
 from core.utils.db_session import get_db
 from core.utils.schema import verify_schema, get_schema_revision
@@ -223,7 +224,7 @@ async def push_changes(
                                     obj = dup
                                 else:
                                     log_duplicate(db, model_name, rec["id"], dup.id)
-                                    db.delete(dup)
+                                    soft_delete(dup, None, "sync_push")
                                     obj = model_cls(
                                         **{k: v for k, v in rec.items() if k != "model"}
                                     )

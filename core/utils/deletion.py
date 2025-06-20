@@ -7,7 +7,7 @@ def soft_delete(obj, user_id: int | None = None, origin: str = "api") -> None:
     """Soft delete a SQLAlchemy model instance."""
     if getattr(obj, "deleted_at", None):
         return
-    keep = {"uuid", "mac", "asset_tag"}
+    keep = {"uuid", "mac", "mac_address", "asset_tag"}
     for col in obj.__table__.columns:
         if col.name in keep or col.primary_key:
             continue

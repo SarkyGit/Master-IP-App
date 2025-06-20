@@ -16,6 +16,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import relationship
 from sqlalchemy import Table
 from sqlalchemy.dialects.postgresql import UUID
+from core.utils.types import GUID
 
 from core.utils.database import Base
 
@@ -25,7 +26,7 @@ class VLAN(Base):
 
     id = Column(Integer, primary_key=True)
     uuid = Column(
-        UUID(as_uuid=True), default=uuid4, unique=True, nullable=False, index=True
+        GUID(), default=uuid4, unique=True, nullable=False, index=True
     )
     version = Column(Integer, default=1, nullable=False)
     conflict_data = Column(JSON, nullable=True)
@@ -44,7 +45,7 @@ class SSHCredential(Base):
 
     id = Column(Integer, primary_key=True)
     uuid = Column(
-        UUID(as_uuid=True), default=uuid4, unique=True, nullable=False, index=True
+        GUID(), default=uuid4, unique=True, nullable=False, index=True
     )
     version = Column(Integer, default=1, nullable=False)
     conflict_data = Column(JSON, nullable=True)
@@ -65,7 +66,7 @@ class SNMPCommunity(Base):
 
     id = Column(Integer, primary_key=True)
     uuid = Column(
-        UUID(as_uuid=True), default=uuid4, unique=True, nullable=False, index=True
+        GUID(), default=uuid4, unique=True, nullable=False, index=True
     )
     version = Column(Integer, default=1, nullable=False)
     conflict_data = Column(JSON, nullable=True)
@@ -85,7 +86,7 @@ class Location(Base):
 
     id = Column(Integer, primary_key=True)
     uuid = Column(
-        UUID(as_uuid=True), default=uuid4, unique=True, nullable=False, index=True
+        GUID(), default=uuid4, unique=True, nullable=False, index=True
     )
     version = Column(Integer, default=1, nullable=False)
     conflict_data = Column(JSON, nullable=True)
@@ -104,7 +105,7 @@ class DeviceType(Base):
 
     id = Column(Integer, primary_key=True)
     uuid = Column(
-        UUID(as_uuid=True), default=uuid4, unique=True, nullable=False, index=True
+        GUID(), default=uuid4, unique=True, nullable=False, index=True
     )
     version = Column(Integer, default=1, nullable=False)
     conflict_data = Column(JSON, nullable=True)
@@ -124,7 +125,7 @@ class Site(Base):
 
     id = Column(Integer, primary_key=True)
     uuid = Column(
-        UUID(as_uuid=True), default=uuid4, unique=True, nullable=False, index=True
+        GUID(), default=uuid4, unique=True, nullable=False, index=True
     )
     version = Column(Integer, default=1, nullable=False)
     conflict_data = Column(JSON, nullable=True)
@@ -164,7 +165,7 @@ class Tag(Base):
 
     id = Column(Integer, primary_key=True)
     uuid = Column(
-        UUID(as_uuid=True), default=uuid4, unique=True, nullable=False, index=True
+        GUID(), default=uuid4, unique=True, nullable=False, index=True
     )
     version = Column(Integer, default=1, nullable=False)
     conflict_data = Column(JSON, nullable=True)
@@ -182,7 +183,7 @@ class Device(Base):
 
     id = Column(Integer, primary_key=True)
     uuid = Column(
-        UUID(as_uuid=True), default=uuid4, unique=True, nullable=False, index=True
+        GUID(), default=uuid4, unique=True, nullable=False, index=True
     )
     version = Column(Integer, default=1, nullable=False)
     conflict_data = Column(JSON, nullable=True)
@@ -282,7 +283,7 @@ class User(Base):
 
     id = Column(Integer, primary_key=True)
     uuid = Column(
-        UUID(as_uuid=True), default=uuid4, unique=True, nullable=False, index=True
+        GUID(), default=uuid4, unique=True, nullable=False, index=True
     )
     version = Column(Integer, default=1, nullable=False)
     conflict_data = Column(JSON, nullable=True)
