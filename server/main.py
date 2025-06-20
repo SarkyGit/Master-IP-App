@@ -62,7 +62,6 @@ from server.routes import (
     api_vlans_router,
     api_ssh_credentials_router,
     api_system_router,
-    install_router,
 )
 from server.routes.api.sync import router as api_sync_router
 from server.routes.api.register_site import router as register_site_router
@@ -146,8 +145,10 @@ app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
 
 @app.middleware("http")
 async def install_redirect(request: Request, call_next):
-    if INSTALL_REQUIRED and not request.url.path.startswith("/install") and not request.url.path.startswith("/static"):
-        return RedirectResponse("/install")
+    if INSTALL_REQUIRED and not request.url.path.startswith("/static"):
+        return templates.TemplateResponse(
+            "install_cli.html", {"request": request}, status_code=503
+        )
     return await call_next(request)
 
 
@@ -183,7 +184,6 @@ app.add_middleware(
     max_age=int(os.environ.get("SESSION_TTL", "43200")),
 )
 
-app.include_router(install_router)
 app.include_router(auth_router, prefix="/auth")
 app.include_router(devices_router)
 app.include_router(vlans_router)
