@@ -136,6 +136,12 @@
         {% endfor %}
         </tbody>
       </table>
+<div class="hidden">
+{% for key in keys %}
+<form id="toggle-key-{{ key.id }}" method="post" action="/admin/site-keys/{{ key.id }}/toggle"></form>
+<form id="delete-key-{{ key.id }}" method="post" action="/admin/site-keys/{{ key.id }}/delete"></form>
+{% endfor %}
+</div>
     </div>
   </div>
 </div>

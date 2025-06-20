@@ -26,6 +26,11 @@
     </tr>
   {% endfor %}
   </tbody>
-</table>
+  </table>
+ </div>
+<div class="hidden">
+{% for tpl in templates %}
+<form id="delete-template-{{ tpl.id }}" method="post" action="/network/port-configs/{{ tpl.id }}/delete"></form>
+{% endfor %}
 </div>
 {% endblock %}

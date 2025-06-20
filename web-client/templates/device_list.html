@@ -167,4 +167,9 @@
 </div>
 <span @click="bulkDelete" aria-label="Delete Selected" class="px-2 text-sm text-[var(--btn-text)] hover:text-[var(--btn-hover-text)] mt-2 cursor-pointer" role="button" tabindex="0">{{ include_icon('trash-2','text-red-500','5') }}</span>
 </form>
+<div class="hidden">
+{% for device in devices %}
+<form id="delete-device-{{ device.id }}" method="post" action="/devices/{{ device.id }}/delete"></form>
+{% endfor %}
+</div>
 {% endblock %}

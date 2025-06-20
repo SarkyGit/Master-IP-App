@@ -24,6 +24,11 @@
     </tr>
   {% endfor %}
   </tbody>
-</table>
+  </table>
+  </div>
+<div class="hidden">
+{% for cred in creds %}
+<form id="delete-user-ssh-{{ cred.id }}" method="post" action="/user/ssh/{{ cred.id }}/delete"></form>
+{% endfor %}
 </div>
-{% endblock %}
+  {% endblock %}

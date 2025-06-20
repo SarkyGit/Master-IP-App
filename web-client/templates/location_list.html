@@ -33,6 +33,11 @@
 </div>
 <span aria-label="Delete Selected" class="p-2 rounded transition cursor-pointer" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('trash-2','text-red-500','5') }}</span>
 </form>
+<div class="hidden">
+{% for loc in locations %}
+<form id="delete-location-{{ loc.id }}" method="post" action="/admin/locations/{{ loc.id }}/delete"></form>
+{% endfor %}
+</div>
 <script>
 document.getElementById('select-all').addEventListener('change', function(e){
   document.querySelectorAll('input[name="selected"]').forEach(cb => cb.checked = e.target.checked);

@@ -44,4 +44,9 @@
   </tbody>
 </table>
 </div>
+<div class="hidden">
+{% for tag in tags %}
+<form id="delete-tag-{{ tag.id }}" method="post" action="/admin/tags/{{ tag.id }}/delete"></form>
+{% endfor %}
+</div>
 {% endblock %}

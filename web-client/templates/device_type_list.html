@@ -55,5 +55,10 @@ document.getElementById('select-all').addEventListener('change', function(e){
   document.querySelectorAll('input[name="selected"]').forEach(cb => cb.checked = e.target.checked);
 });
 </script>
+<div class="hidden">
+{% for dt in types %}
+<form id="delete-type-{{ dt.id }}" method="post" action="/device-types/{{ dt.id }}/delete"></form>
+{% endfor %}
+</div>
 {% endblock %}
 

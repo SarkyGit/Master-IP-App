@@ -116,6 +116,11 @@
     </div>
   </div> {# end ssh tab #}
 </div> {# end tab container #}
+<div class="hidden">
+{% for cred in creds %}
+<form id="delete-user-ssh-{{ cred.id }}" method="post" action="/user/ssh/{{ cred.id }}/delete"></form>
+{% endfor %}
+</div>
 {% endif %}
 {% endblock %}
 
