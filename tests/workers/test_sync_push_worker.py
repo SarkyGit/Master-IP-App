@@ -128,6 +128,9 @@ def test_push_once_sends_unsynced_records(monkeypatch):
         "_get_sync_config",
         lambda: ("http://push", "http://pull", "site1", ""),
     )
+    async def _noop(*a, **k):
+        pass
+    monkeypatch.setattr(sync_push_worker, "ensure_schema", _noop)
     sent = {}
 
     async def fake_request(method, url, payload, log, site_id, api_key):
@@ -210,6 +213,9 @@ def test_push_once_includes_deleted_records(monkeypatch):
         "_get_sync_config",
         lambda: ("http://push", "http://pull", "site1", ""),
     )
+    async def _noop(*a, **k):
+        pass
+    monkeypatch.setattr(sync_push_worker, "ensure_schema", _noop)
     sent = {}
 
     async def fake_request(method, url, payload, log, site_id, api_key):
@@ -249,6 +255,9 @@ def test_push_once_skips_invalid_records(monkeypatch):
         "_get_sync_config",
         lambda: ("http://push", "http://pull", "site1", ""),
     )
+    async def _noop(*a, **k):
+        pass
+    monkeypatch.setattr(sync_push_worker, "ensure_schema", _noop)
     sent = {}
 
     async def fake_request(method, url, payload, log, site_id, api_key):

@@ -12,7 +12,7 @@ from core.utils.db_session import SessionLocal
 from core.models.models import SystemTunable, DeviceEditLog, Device
 from core.models import models as model_module
 from core.utils.versioning import apply_update
-from .cloud_sync import _get_sync_config
+from .cloud_sync import _get_sync_config, ensure_schema
 from core.utils.audit import log_audit
 from core.utils.sync_logging import log_sync_attempt
 from server.utils.cloud import set_tunable
@@ -166,6 +166,8 @@ async def pull_once(log: logging.Logger) -> None:
         print(msg)
         log_audit(db, None, "debug", details=msg)
         _, pull_url, site_id, api_key = _get_sync_config()
+        base = pull_url.rsplit("/", 1)[0]
+        await ensure_schema(base, log, site_id, api_key)
         payload: dict[str, Any] = {
             "since": since.isoformat(),
             "models": SYNC_PULL_MODELS,
