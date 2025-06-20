@@ -49,9 +49,7 @@ PY
 # Mark database as up-to-date with migrations
 alembic stamp head
 
-# Seed tables
-python seed_tunables.py
+# Seed default superuser account
 python seed_superuser.py
-python seed_data.py
 
 echo "Database '$DB_NAME' initialized and seeded."
