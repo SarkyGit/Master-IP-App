@@ -8,7 +8,7 @@
   </form>
   {% endset %}
 {% endif %}
-<form method="post" action="/devices/bulk-delete" x-data="tableControls()" id="device-table-form" class="space-y-2 full-width">
+<form method="post" action="{{ request.url_for('bulk_delete_devices') }}" x-data="tableControls()" id="device-table-form" class="space-y-2 full-width" data-bulk-delete-url="{{ request.url_for('bulk_delete_devices') }}" data-bulk-update-url="{{ request.url_for('bulk_update_devices') }}">
 <div class="flex justify-end items-center">
   <input x-model="search" type="text" placeholder="Search" class="rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)] px-2 py-1" />
   {% if refresh_button is defined %}{{ refresh_button }}{% endif %}
@@ -104,7 +104,7 @@
           {% endif %}
           {% if current_user and current_user.role in ['editor','admin','superadmin'] %}
           <a href="/devices/{{ device.id }}/edit" aria-label="Edit" class="icon-btn">{{ include_icon('pencil','text-blue-500','5') }}</a>
-          <button type="submit" formmethod="post" formaction="/devices/{{ device.id }}/delete" aria-label="Delete" class="icon-btn cursor-pointer" onclick="return confirm('Delete device?')">{{ include_icon('trash-2','text-red-500','5') }}</button>
+          <button type="submit" formmethod="post" form="delete-device-{{ device.id }}" formaction="{{ request.url_for('delete_device', device_id=device.id) }}" aria-label="Delete" class="icon-btn cursor-pointer" onclick="return confirm('Delete device?')">{{ include_icon('trash-2','text-red-500','5') }}</button>
           {% endif %}
         </div>
       </td>
@@ -169,7 +169,7 @@
 </form>
 <div class="hidden">
 {% for device in devices %}
-<form id="delete-device-{{ device.id }}" method="post" action="/devices/{{ device.id }}/delete"></form>
+<form id="delete-device-{{ device.id }}" method="post" action="{{ request.url_for('delete_device', device_id=device.id) }}"></form>
 {% endfor %}
 </div>
 {% endblock %}

@@ -193,3 +193,28 @@ def test_update_conflict_tracking(url, payload1, payload2, field):
         assert second["conflict_data"] is None
     finally:
         client.app.dependency_overrides[key] = override_get_db
+
+def test_delete_device_removes_from_list():
+    token = _token()
+    db = DummyDB()
+
+    def _override():
+        try:
+            yield db
+        finally:
+            pass
+
+    key = importlib.import_module("core.utils.db_session").get_db
+    client.app.dependency_overrides[key] = _override
+    try:
+        resp = client.delete("/api/v1/devices/1", headers={"Authorization": f"Bearer {token}"})
+        assert resp.status_code == 200
+        # ensure record marked deleted
+        assert db.data[db.models.Device][0].is_deleted is True
+        # list should exclude deleted device
+        resp = client.get("/api/v1/devices", headers={"Authorization": f"Bearer {token}"})
+        ids = [d["id"] for d in resp.json()]
+        assert 1 not in ids
+    finally:
+        client.app.dependency_overrides[key] = override_get_db
+
