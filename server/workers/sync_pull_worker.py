@@ -175,6 +175,15 @@ async def pull_once(log: logging.Logger) -> None:
         msg = f"\u2b07\ufe0f Pulled {len(data)} records"
         print(msg)
         log_audit(db, None, "debug", details=msg)
+        # Group pulled records by model for detailed logging
+        grouped: dict[str, list[dict[str, Any]]] = {}
+        for rec in data:
+            m = rec.get("table") or rec.get("model")
+            if not m:
+                continue
+            grouped.setdefault(m, []).append(rec)
+        for model_name, payload in grouped.items():
+            print(f"[⬇️] Pulled {len(payload)} records from cloud for model '{model_name}'")
         model_map = {
             cls.__tablename__: cls for cls in model_module.Base.__subclasses__()
         }
@@ -189,6 +198,7 @@ async def pull_once(log: logging.Logger) -> None:
                 log.warning("Skipping malformed record: %s", rec)
                 continue
             model_cls = model_map[model_name]
+            print(f"[🛠] Applying update for ID={record_id} on model='{model_name}'")
             query = db.query(model_cls)
             if hasattr(query, "execution_options"):
                 query = query.execution_options(include_deleted=True)
@@ -220,6 +230,7 @@ async def pull_once(log: logging.Logger) -> None:
                     )
                     conflicts_total += 1
                     db.commit()
+                    print(f"[⏩] No new records for '{model_name}' since {since}")
                     continue
                 _soft_delete(obj, 0, "cloud")
                 obj.deleted_at = remote_ts_dt
@@ -262,6 +273,7 @@ async def pull_once(log: logging.Logger) -> None:
                     log.error(
                         "Failed to update %s id %s: %s", model_name, record_id, exc
                     )
+                    print(f"[❌] Sync pull error for model '{model_name}': {exc}")
                     continue
             else:
                 try:
@@ -284,9 +296,11 @@ async def pull_once(log: logging.Logger) -> None:
                     log.error(
                         "Failed to insert %s id %s: %s", model_name, record_id, exc
                     )
+                    print(f"[❌] Sync pull error for model '{model_name}': {exc}")
         _update_last_sync(db, len(data), conflicts_total)
         log_sync_attempt(db, "pull", len(data), conflicts_total)
         set_tunable(db, "Last Sync Pull Error", "")
+        print(f"[✅] Sync pull completed with {len(data)} applied and {conflicts_total} conflicts.")
     except Exception as exc:
         log_sync_attempt(db, "pull", 0, 0, str(exc))
         set_tunable(db, "Last Sync Pull Error", str(exc))
@@ -297,6 +311,7 @@ async def pull_once(log: logging.Logger) -> None:
 
 async def _pull_loop() -> None:
     log = logging.getLogger(__name__)
+    print(f"[🔁] Sync pull loop started at {datetime.now(timezone.utc)}")
     delay = SYNC_PULL_INTERVAL
     while True:
         try:
