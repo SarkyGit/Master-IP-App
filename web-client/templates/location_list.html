@@ -23,9 +23,7 @@
       <td class="actions-col px-4 py-2" style="width: 100px; min-width: 100px; max-width: 100px;">
         <div class="flex gap-1">
           <a href="/admin/locations/{{ loc.id }}/edit" aria-label="Edit" class="icon-btn">{{ include_icon('pencil','text-blue-500','5') }}</a>
-          <form method="post" action="/admin/locations/{{ loc.id }}/delete" class="inline">
-            <span aria-label="Delete" class="icon-btn cursor-pointer" role="button" tabindex="0" onclick="if(confirm('Delete location?')) { this.closest('form').submit() }">{{ include_icon('trash-2','text-red-500','5') }}</span>
-          </form>
+          <button type="submit" form="delete-location-{{ loc.id }}" aria-label="Delete" class="icon-btn cursor-pointer" onclick="return confirm('Delete location?')">{{ include_icon('trash-2','text-red-500','5') }}</button>
         </div>
       </td>
     </tr>
@@ -35,6 +33,11 @@
 </div>
 <span aria-label="Delete Selected" class="p-2 rounded transition cursor-pointer" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('trash-2','text-red-500','5') }}</span>
 </form>
+<div class="hidden">
+{% for loc in locations %}
+<form id="delete-location-{{ loc.id }}" method="post" action="/admin/locations/{{ loc.id }}/delete"></form>
+{% endfor %}
+</div>
 <script>
 document.getElementById('select-all').addEventListener('change', function(e){
   document.querySelectorAll('input[name="selected"]').forEach(cb => cb.checked = e.target.checked);

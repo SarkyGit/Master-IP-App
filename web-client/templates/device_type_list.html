@@ -33,9 +33,7 @@
       <td class="actions-col text-center whitespace-nowrap" style="width: 100px; min-width: 100px; max-width: 100px;">
         <div class="flex justify-center gap-1">
           <a href="/device-types/{{ dt.id }}/edit" aria-label="Edit" class="icon-btn">{{ include_icon('pencil','text-blue-500','5') }}</a>
-          <form method="post" action="/device-types/{{ dt.id }}/delete" class="inline">
-            <span aria-label="Delete" class="icon-btn cursor-pointer" role="button" tabindex="0" onclick="if(confirm('Delete type?')) { this.closest('form').submit() }">{{ include_icon('trash-2','text-red-500','5') }}</span>
-          </form>
+          <button type="submit" form="delete-type-{{ dt.id }}" aria-label="Delete" class="icon-btn cursor-pointer" onclick="return confirm('Delete type?')">{{ include_icon('trash-2','text-red-500','5') }}</button>
         </div>
       </td>
     </tr>
@@ -57,5 +55,10 @@ document.getElementById('select-all').addEventListener('change', function(e){
   document.querySelectorAll('input[name="selected"]').forEach(cb => cb.checked = e.target.checked);
 });
 </script>
+<div class="hidden">
+{% for dt in types %}
+<form id="delete-type-{{ dt.id }}" method="post" action="/device-types/{{ dt.id }}/delete"></form>
+{% endfor %}
+</div>
 {% endblock %}
 
