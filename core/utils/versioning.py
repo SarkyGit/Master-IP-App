@@ -2,6 +2,8 @@ from datetime import datetime, timezone
 from typing import Any
 import uuid
 
+from .serialization import to_jsonable
+
 
 def apply_update(
     obj: Any,
