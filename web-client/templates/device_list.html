@@ -4,7 +4,7 @@
 {% if current_user and current_user.role == 'superadmin' %}
   {% set refresh_button %}
   <form method="post" action="/admin/run-push-queue" class="inline-block ml-2">
-    <span aria-label="Run Push Queue" class="p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded transition cursor-pointer" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('refresh-ccw', None, '1.5') }}</span>
+    <span aria-label="Run Push Queue" class="p-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded transition cursor-pointer" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('refresh-ccw', None, '5') }}</span>
   </form>
   {% endset %}
 {% endif %}
@@ -29,7 +29,7 @@
     <span class="ml-2">{{ complete_count }} complete</span>
     <span class="ml-2">{{ incomplete_count }} incomplete</span>
   </div>
-  <a href="" aria-label="Refresh">{{ include_icon('refresh-ccw','', '1.5') }}</a>
+  <a href="" aria-label="Refresh">{{ include_icon('refresh-ccw','', '5') }}</a>
 </div>
 <div class="w-full overflow-auto">
 <table class="min-w-full table-fixed text-left border-collapse devices-table">
@@ -167,6 +167,6 @@
   </div>
 </div>
 </div>
-<span @click="bulkDelete" aria-label="Delete Selected" class="px-2 text-sm text-[var(--btn-text)] hover:text-[var(--btn-hover-text)] mt-2 cursor-pointer" role="button" tabindex="0">{{ include_icon('trash-2','text-red-500','1.5') }}</span>
+<span @click="bulkDelete" aria-label="Delete Selected" class="px-2 text-sm text-[var(--btn-text)] hover:text-[var(--btn-hover-text)] mt-2 cursor-pointer" role="button" tabindex="0">{{ include_icon('trash-2','text-red-500','5') }}</span>
 </form>
 {% endblock %}
