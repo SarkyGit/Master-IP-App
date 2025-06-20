@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 from typing import Any
+import uuid
 
 
 def apply_update(
@@ -21,8 +22,16 @@ def apply_update(
         changed_remote = last_value is not None and remote_value != last_value
 
         if changed_local and changed_remote and remote_value != local_value:
-            lv = local_value.isoformat() if isinstance(local_value, datetime) else local_value
-            rv = remote_value.isoformat() if isinstance(remote_value, datetime) else remote_value
+            lv = local_value
+            rv = remote_value
+            if isinstance(lv, datetime):
+                lv = lv.isoformat()
+            elif isinstance(lv, uuid.UUID):
+                lv = str(lv)
+            if isinstance(rv, datetime):
+                rv = rv.isoformat()
+            elif isinstance(rv, uuid.UUID):
+                rv = str(rv)
             conflicts.append(
                 {
                     "field": field,
