@@ -5,6 +5,8 @@ import uuid
 from datetime import datetime, timezone
 from typing import Any
 
+from core.utils.serialization import to_jsonable
+
 import httpx
 from sqlalchemy import inspect, or_
 
@@ -26,11 +28,7 @@ def _serialize(obj: Any) -> dict[str, Any]:
     data = {}
     for c in insp.mapper.column_attrs:
         val = getattr(obj, c.key)
-        if isinstance(val, datetime):
-            val = val.astimezone(timezone.utc).isoformat()
-        elif isinstance(val, uuid.UUID):
-            val = str(val)
-        data[c.key] = val
+        data[c.key] = to_jsonable(val)
 
     # When a record is marked deleted only send minimal identifying fields
     deleted = data.get("deleted_at")

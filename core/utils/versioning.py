@@ -1,19 +1,7 @@
 from datetime import datetime, timezone
 from typing import Any
-import uuid
 
-
-def _jsonable(val: Any) -> Any:
-    """Recursively convert datetimes and UUIDs to JSON serializable values."""
-    if isinstance(val, datetime):
-        return val.isoformat()
-    if isinstance(val, uuid.UUID):
-        return str(val)
-    if isinstance(val, dict):
-        return {k: _jsonable(v) for k, v in val.items()}
-    if isinstance(val, list):
-        return [_jsonable(v) for v in val]
-    return val
+from .serialization import to_jsonable
 
 
 def apply_update(
@@ -35,8 +23,8 @@ def apply_update(
         changed_remote = last_value is not None and remote_value != last_value
 
         if changed_local and changed_remote and remote_value != local_value:
-            lv = _jsonable(local_value)
-            rv = _jsonable(remote_value)
+            lv = to_jsonable(local_value)
+            rv = to_jsonable(remote_value)
             conflicts.append(
                 {
                     "field": field,
