@@ -206,5 +206,11 @@ async def update_images(
         db.commit()
     redirect_url = str(request.url_for("upload_image_page")) + f"?category={category}&message=Images+updated"
     if request.headers.get("HX-Request"):
-        return HTMLResponse(status_code=204, headers={"HX-Redirect": redirect_url})
+        return HTMLResponse(
+            status_code=200,
+            headers={
+                "HX-Redirect": redirect_url,
+                "HX-Refresh": "true",
+            },
+        )
     return RedirectResponse(url=redirect_url, status_code=302)

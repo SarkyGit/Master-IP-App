@@ -61,6 +61,7 @@ def test_update_images_hx_redirect(tmp_path, monkeypatch):
         files={"icon": ("icon.png", BytesIO(b"data"), "image/png")},
         headers={"HX-Request": "true"},
     )
-    assert resp.status_code == 204
+    assert resp.status_code == 200
     assert resp.headers.get("HX-Redirect")
+    assert resp.headers.get("HX-Refresh") == "true"
     assert db.committed
