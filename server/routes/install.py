@@ -110,10 +110,10 @@ async def install_finish(request: Request, seed: str = Form("no")):
         "from core.utils.auth import get_password_hash;"
         f"data=json.loads(base64.b64decode('{encoded}'));"
         "db=SessionLocal();"
-        "user=User(email=data['email'],"
-        "hashed_password=get_password_hash(data['password']),"
-        "role='superadmin',is_active=True);"
-        "db.add(user);db.commit();db.close()"
+        "u=db.query(User).filter_by(email=data['email']).first();"
+        "h=get_password_hash(data['password']);\n"
+        "if u:\n    u.hashed_password=h\nelse:\n    u=User(email=data['email'],hashed_password=h,role='superadmin',is_active=True);db.add(u)\n"
+        "db.commit();db.close()"
     )
     subprocess.run([sys.executable, "-c", create_admin], check=True, env=env)
     request.session.clear()
