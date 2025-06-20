@@ -86,7 +86,7 @@ TEMPLATE_OPTIONS = [
 ]
 
 
-@router.get("/devices")
+@router.get("/devices/table")
 async def list_devices(
     request: Request,
     sort: str | None = None,
