@@ -80,10 +80,10 @@ The instructions below assume you are starting on a fresh Ubuntu system. Every c
    uvicorn server.main:app --host 0.0.0.0 --port 8000 --reload
    ```
 
-Visit [http://localhost:8000](http://localhost:8000) and log in using the superuser credentials created by `seed_superuser.py`:
+Visit [http://localhost:8000](http://localhost:8000) and log in using the default Super Admin account:
 
-- **Email:** `Barny@CESTechnologies.com`
-- **Password:** `C0pperpa!r`
+- **Email:** `admin`
+- **Password:** `12345678`
 
 ### Ubuntu Production Setup
 
@@ -117,7 +117,7 @@ sudo -u postgres psql -c "CREATE DATABASE master_ip_db OWNER masteruser;"
 
 echo "DATABASE_URL=postgresql://masteruser:masterpass@localhost:5432/master_ip_db" > .env
 
-# optionally seed
+# initialize the database
 ./init_db.sh
 
 # start the production server
@@ -302,7 +302,7 @@ adjusted from the same **Edit Profile** form.
 
 ## System Tunables
 
-The application stores various settings in the `system_tunables` table. These are seeded with default values by `seed_tunables.py` and can be adjusted from the **System Tunables** page in the web UI (admin role required).
+The application stores various settings in the `system_tunables` table. These can be adjusted from the **System Tunables** page in the web UI (admin role required).
 Superadmins can manage the connection to a cloud server from **Cloud Sync / API's** at `/admin/cloud-sync`.
 
 After installation you can configure the cloud connection from this page. Look for the following tunables under the **Sync** function:
@@ -346,7 +346,7 @@ Start the server with reasonable defaults using the provided `start.sh` script:
 ```
 
 This script loads variables from `.env` if present, applies pending Alembic migrations,
-automatically runs the seed scripts (unless `AUTO_SEED=0` or `false`), and then executes:
+creates the default Super Admin account (unless `AUTO_SEED=0` or `false`), and then executes:
 
 ```bash
 gunicorn server.main:app \
@@ -356,7 +356,7 @@ gunicorn server.main:app \
     --bind 0.0.0.0:${PORT:-8000}
 ```
 
-Set the `AUTO_SEED` environment variable to `0` or `false` to skip the automatic seeding step if the database is already populated.
+Set the `AUTO_SEED` environment variable to `0` or `false` to skip the automatic creation step if the database is already populated.
 
 Adjust `WORKERS`, `TIMEOUT` and `PORT` as needed. The server listens on
 `0.0.0.0` so it can be proxied by a web server such as Nginx.

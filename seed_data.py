@@ -1,4 +1,4 @@
-from core.utils.db_session import SessionLocal
+from core.utils.db_session import SessionLocal, reset_pk_sequence
 import subprocess
 
 
@@ -76,6 +76,7 @@ def main():
 
         # Seed sample switches if none exist
         if not db.query(Device).first():
+            reset_pk_sequence(db, Device)
             devices = [
                 ("SW10.1", "10.1.10.1", "WS-C3560CX-12PC-S", "AT-1001"),
                 ("SW10.2", "10.1.10.2", "WS-C2960G-8TC-L", "AT-1002"),
@@ -99,6 +100,7 @@ def main():
                 )
                 db.add(device)
             db.commit()
+            reset_pk_sequence(db, Device)
             print("Sample data seeded")
         else:
             print("Sample devices already exist")
