@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Request, WebSocket, Depends, HTTPException
+from dotenv import load_dotenv
 from contextlib import asynccontextmanager
 import logging
 
@@ -62,7 +63,6 @@ from server.routes import (
     api_vlans_router,
     api_ssh_credentials_router,
     api_system_router,
-    install_router,
 )
 from server.routes.api.sync import router as api_sync_router
 from server.routes.api.register_site import router as register_site_router
@@ -90,7 +90,10 @@ from core.models.models import SystemTunable
 
 
 def check_install_required() -> bool:
-    if not os.path.exists(".env") and not os.environ.get("DATABASE_URL"):
+    """Determine if the CLI installer still needs to run."""
+    if os.path.exists(".env"):
+        load_dotenv(".env", override=False)
+    if not os.environ.get("DATABASE_URL"):
         return True
     required = ["DATABASE_URL"]
     if any(not os.environ.get(k) for k in required):
@@ -146,8 +149,13 @@ app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
 
 @app.middleware("http")
 async def install_redirect(request: Request, call_next):
-    if INSTALL_REQUIRED and not request.url.path.startswith("/install") and not request.url.path.startswith("/static"):
-        return RedirectResponse("/install")
+    global INSTALL_REQUIRED
+    if INSTALL_REQUIRED:
+        INSTALL_REQUIRED = check_install_required()
+    if INSTALL_REQUIRED and not request.url.path.startswith("/static"):
+        return templates.TemplateResponse(
+            "install_cli.html", {"request": request}, status_code=503
+        )
     return await call_next(request)
 
 
@@ -183,7 +191,6 @@ app.add_middleware(
     max_age=int(os.environ.get("SESSION_TTL", "43200")),
 )
 
-app.include_router(install_router)
 app.include_router(auth_router, prefix="/auth")
 app.include_router(devices_router)
 app.include_router(vlans_router)
