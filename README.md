@@ -215,7 +215,7 @@ alembic upgrade head
 ```bash
 curl -X POST http://localhost:8000/api/v1/sync/push \
      -H 'Content-Type: application/json' \
-    -d '{"model":"devices","records":[]}'
+    -d '{"table":"devices","records":[]}'
 ```
 
 ## Running Tests

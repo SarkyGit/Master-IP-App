@@ -188,7 +188,7 @@ async def pull_once(log: logging.Logger) -> None:
         for rec in data:
             if not isinstance(rec, dict):
                 continue
-            model_name = rec.get("model")
+            model_name = rec.get("table") or rec.get("model")
             record_id = rec.get("id")
             version = rec.get("version")
             if model_name not in model_map or record_id is None or version is None:
