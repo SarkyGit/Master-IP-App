@@ -1,6 +1,9 @@
 from fastapi import FastAPI, Request, WebSocket, Depends, HTTPException
 from contextlib import asynccontextmanager
 import logging
+
+# Reduce noisy INFO logs from Alembic when workers start
+logging.getLogger("alembic.runtime.migration").setLevel(logging.WARNING)
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse, RedirectResponse
 
