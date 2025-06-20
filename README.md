@@ -12,6 +12,7 @@ Tailwind CSS has been removed from the project. Styling and components now rely 
 - `server/` holds the FastAPI application, API routes and background workers.
 - `web-client/` stores HTML templates and static assets served by the app.
 - `mobile-client/` is a placeholder for a future mobile application.
+- Deleted records are never removed from the database. Instead `core.utils.deletion.soft_delete()` sets `deleted_at` and clears other fields so normal queries automatically exclude them.
 
 ## Quick Start for Beginners
 
