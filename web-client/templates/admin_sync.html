@@ -128,14 +128,20 @@
             <td class="table-cell">{{ key.last_used_at or 'never' }}</td>
             <td class="actions-col text-center" style="width: 100px; min-width: 100px; max-width: 100px;">
               <div class="flex justify-center gap-1">
-                <button type="submit" formmethod="post" formaction="/admin/site-keys/{{ key.id }}/toggle" aria-label="{{ 'Disable' if key.active else 'Enable' }}" class="icon-btn" onclick="return {{ 'confirm(\'Disable key?\')' if key.active else 'true' }}">{{ include_icon(key.active and 'x-circle' or 'check-circle', key.active and 'text-red-500' or 'text-green-500', '5') }}</button>
-                <button type="submit" formmethod="post" formaction="/admin/site-keys/{{ key.id }}/delete" aria-label="Delete" class="icon-btn" onclick="return confirm('Delete key?')">{{ include_icon('trash-2','text-red-500','5') }}</button>
+                <button type="submit" form="toggle-key-{{ key.id }}" aria-label="{{ 'Disable' if key.active else 'Enable' }}" class="icon-btn" onclick="return {{ 'confirm(\'Disable key?\')' if key.active else 'true' }}">{{ include_icon(key.active and 'x-circle' or 'check-circle', key.active and 'text-red-500' or 'text-green-500', '5') }}</button>
+                <button type="submit" form="delete-key-{{ key.id }}" aria-label="Delete" class="icon-btn" onclick="return confirm('Delete key?')">{{ include_icon('trash-2','text-red-500','5') }}</button>
               </div>
             </td>
           </tr>
         {% endfor %}
         </tbody>
       </table>
+<div class="hidden">
+{% for key in keys %}
+<form id="toggle-key-{{ key.id }}" method="post" action="/admin/site-keys/{{ key.id }}/toggle"></form>
+<form id="delete-key-{{ key.id }}" method="post" action="/admin/site-keys/{{ key.id }}/delete"></form>
+{% endfor %}
+</div>
     </div>
   </div>
 </div>
