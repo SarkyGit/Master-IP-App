@@ -72,7 +72,7 @@ class SNMPCommunity(Base):
     sync_state = Column(JSON, nullable=True)
     name = Column(String, unique=True, nullable=False)
     community_string = Column(String, nullable=False)
-    version = Column(String, nullable=False)
+    snmp_version = Column(String, nullable=False)
     updated_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
     deleted_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
