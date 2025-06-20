@@ -74,9 +74,11 @@ def _update_last_sync(db, count: int, conflicts: int = 0) -> None:
                 data_type="text",
             )
         )
-    cnt = db.query(SystemTunable).filter(
-        SystemTunable.name == "Last Sync Push Worker Count"
-    ).first()
+    cnt = (
+        db.query(SystemTunable)
+        .filter(SystemTunable.name == "Last Sync Push Worker Count")
+        .first()
+    )
     if cnt:
         cnt.value = str(count)
     else:
@@ -89,9 +91,11 @@ def _update_last_sync(db, count: int, conflicts: int = 0) -> None:
                 data_type="text",
             )
         )
-    conf = db.query(SystemTunable).filter(
-        SystemTunable.name == "Last Sync Push Worker Conflicts"
-    ).first()
+    conf = (
+        db.query(SystemTunable)
+        .filter(SystemTunable.name == "Last Sync Push Worker Conflicts")
+        .first()
+    )
     if conf:
         conf.value = str(conflicts)
     else:
@@ -117,7 +121,7 @@ async def push_once(log: logging.Logger) -> None:
     db = SessionLocal()
     try:
         since = _load_last_sync(db)
-        msg = f"\U0001F4C5 Pushing records updated since: {since}"
+        msg = f"\U0001f4c5 Pushing records updated since: {since}"
         print(msg)
         log_audit(db, None, "debug", details=msg)
         records_by_model: dict[str, list[dict[str, Any]]] = {}
@@ -155,7 +159,9 @@ async def push_once(log: logging.Logger) -> None:
 
             if deleted_col is not None:
                 del_filter = deleted_col > since
-                ts_filter = or_(ts_filter, del_filter) if ts_filter is not None else del_filter
+                ts_filter = (
+                    or_(ts_filter, del_filter) if ts_filter is not None else del_filter
+                )
 
             if sync_col is not None:
                 unsynced = sync_col.is_(None)
@@ -183,15 +189,17 @@ async def push_once(log: logging.Logger) -> None:
                 records_by_model.setdefault(model_cls.__tablename__, []).append(rec)
 
         total_records = sum(len(v) for v in records_by_model.values())
-        msg = f"\u2B06\uFE0F Pushing {total_records} records"
+        msg = f"\u2b06\ufe0f Pushing {total_records} records"
         print(msg)
         log_audit(db, None, "debug", details=msg)
         if not total_records:
             return
 
         payload = records_by_model
-        result = await _request_with_retry("POST", push_url, payload, log, site_id, api_key)
-        
+        result = await _request_with_retry(
+            "POST", push_url, payload, log, site_id, api_key
+        )
+
         for obj in pushed_objs:
             if hasattr(obj, "sync_state"):
                 obj.sync_state = _serialize(obj)
@@ -268,9 +276,12 @@ def start_sync_push_worker() -> None:
     if role == "cloud":
         print("Sync push worker not started in cloud role")
         return
+    global _sync_task
+    if _sync_task:
+        print("Sync push worker already running")
+        return
     print("Starting sync push worker")
     event.listen(SessionLocal, "after_commit", _after_commit)
-    global _sync_task
     _sync_task = asyncio.create_task(_push_loop())
 
 
@@ -290,7 +301,7 @@ async def stop_sync_push_worker() -> None:
 
 
 async def main() -> None:
-    print("\u27A1\uFE0F Sync Push Worker started...")
+    print("\u27a1\ufe0f Sync Push Worker started...")
     start_sync_push_worker()
     try:
         while True:

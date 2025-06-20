@@ -106,9 +106,11 @@ def _update_last_sync(db: Session, count: int, conflicts: int = 0) -> None:
                 data_type="text",
             )
         )
-    cnt = db.query(SystemTunable).filter(
-        SystemTunable.name == "Last Sync Pull Worker Count"
-    ).first()
+    cnt = (
+        db.query(SystemTunable)
+        .filter(SystemTunable.name == "Last Sync Pull Worker Count")
+        .first()
+    )
     if cnt:
         cnt.value = str(count)
     else:
@@ -121,9 +123,11 @@ def _update_last_sync(db: Session, count: int, conflicts: int = 0) -> None:
                 data_type="text",
             )
         )
-    conf = db.query(SystemTunable).filter(
-        SystemTunable.name == "Last Sync Pull Worker Conflicts"
-    ).first()
+    conf = (
+        db.query(SystemTunable)
+        .filter(SystemTunable.name == "Last Sync Pull Worker Conflicts")
+        .first()
+    )
     if conf:
         conf.value = str(conflicts)
     else:
@@ -162,7 +166,7 @@ async def pull_once(log: logging.Logger) -> None:
     db = SessionLocal()
     try:
         since = _load_last_sync(db)
-        msg = f"\U0001F4C5 Pulling records updated since: {since}"
+        msg = f"\U0001f4c5 Pulling records updated since: {since}"
         print(msg)
         log_audit(db, None, "debug", details=msg)
         _, pull_url, site_id, api_key = _get_sync_config()
@@ -178,7 +182,7 @@ async def pull_once(log: logging.Logger) -> None:
         if not isinstance(data, list):
             log.error("Invalid pull response: %s", data)
             return
-        msg = f"\u2B07\uFE0F Pulled {len(data)} records"
+        msg = f"\u2b07\ufe0f Pulled {len(data)} records"
         print(msg)
         log_audit(db, None, "debug", details=msg)
         model_map = {
@@ -212,7 +216,9 @@ async def pull_once(log: logging.Logger) -> None:
                             "field": "deleted_at",
                             "local_value": None,
                             "remote_value": rec.get("deleted_at"),
-                            "conflict_detected_at": datetime.now(timezone.utc).isoformat(),
+                            "conflict_detected_at": datetime.now(
+                                timezone.utc
+                            ).isoformat(),
                             "source": "sync_pull",
                             "local_version": obj.version,
                             "remote_version": version,
@@ -322,8 +328,11 @@ def start_sync_pull_worker() -> None:
     if role == "cloud":
         print("Sync pull worker not started in cloud role")
         return
-    print("Starting sync pull worker")
     global _sync_task
+    if _sync_task:
+        print("Sync pull worker already running")
+        return
+    print("Starting sync pull worker")
     _sync_task = asyncio.create_task(_pull_loop())
 
 
