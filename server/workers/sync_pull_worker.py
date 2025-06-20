@@ -189,12 +189,10 @@ async def pull_once(log: logging.Logger) -> None:
                 log.warning("Skipping malformed record: %s", rec)
                 continue
             model_cls = model_map[model_name]
-            obj = (
-                db.query(model_cls)
-                .execution_options(include_deleted=True)
-                .filter_by(id=record_id)
-                .first()
-            )
+            query = db.query(model_cls)
+            if hasattr(query, "execution_options"):
+                query = query.execution_options(include_deleted=True)
+            obj = query.filter_by(id=record_id).first()
             if obj and rec.get("deleted_at"):
                 try:
                     remote_ts = rec.get("updated_at") or rec["deleted_at"]

@@ -33,7 +33,7 @@ def _serialize(obj: Any) -> dict[str, Any]:
     # When a record is marked deleted only send minimal identifying fields
     deleted = data.get("deleted_at")
     if deleted:
-        keep = {"uuid", "asset_tag", "mac", "deleted_at", "updated_at", "is_deleted"}
+        keep = {"uuid", "asset_tag", "mac", "mac_address", "deleted_at", "updated_at", "is_deleted"}
         data = {k: v for k, v in data.items() if k in keep}
     return data
 
@@ -144,7 +144,9 @@ async def push_once(log: logging.Logger) -> None:
             updated_col = getattr(model_cls, "updated_at", None)
             deleted_col = getattr(model_cls, "deleted_at", None)
             sync_col = getattr(model_cls, "sync_state", None)
-            query = db.query(model_cls).execution_options(include_deleted=True)
+            query = db.query(model_cls)
+            if hasattr(query, "execution_options"):
+                query = query.execution_options(include_deleted=True)
 
             ts_filter = None
             if created_col is not None and updated_col is not None:
