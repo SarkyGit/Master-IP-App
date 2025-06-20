@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from core.utils.db_session import get_db
 from core.utils.auth import require_role
 from core.models.models import SSHCredential, SNMPCommunity
+from core.utils.deletion import soft_delete
 import os
 
 DEFAULT_SNMP_VERSION = os.environ.get("DEFAULT_SNMP_VERSION", "2c")
@@ -148,7 +149,7 @@ async def delete_ssh_credential(
     if not cred:
         raise HTTPException(status_code=404, detail="SSH credential not found")
 
-    db.delete(cred)
+    soft_delete(cred, current_user.id, "ui")
     db.commit()
     return RedirectResponse(url="/admin/ssh", status_code=302)
 
@@ -162,7 +163,7 @@ async def bulk_delete_ssh(
     for cred_id in selected:
         cred = db.query(SSHCredential).filter(SSHCredential.id == cred_id).first()
         if cred:
-            db.delete(cred)
+            soft_delete(cred, current_user.id, "ui")
     db.commit()
     return RedirectResponse(url="/admin/ssh", status_code=302)
 
@@ -295,7 +296,7 @@ async def delete_snmp_profile(
     if not profile:
         raise HTTPException(status_code=404, detail="SNMP profile not found")
 
-    db.delete(profile)
+    soft_delete(profile, current_user.id, "ui")
     db.commit()
     return RedirectResponse(url="/admin/snmp", status_code=302)
 
@@ -309,6 +310,6 @@ async def bulk_delete_snmp(
     for profile_id in selected:
         profile = db.query(SNMPCommunity).filter(SNMPCommunity.id == profile_id).first()
         if profile:
-            db.delete(profile)
+            soft_delete(profile, current_user.id, "ui")
     db.commit()
     return RedirectResponse(url="/admin/snmp", status_code=302)

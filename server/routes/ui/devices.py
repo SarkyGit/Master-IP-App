@@ -57,8 +57,7 @@ from datetime import datetime, timezone
 from puresnmp import Client, PyWrapper, V2C
 from puresnmp.exc import SnmpError
 import re
-from sqlalchemy.orm.session import object_session
-from core.utils.sync_logging import log_deletion
+from core.utils.deletion import soft_delete
 from server.workers.config_scheduler import (
     schedule_device_config_pull,
     unschedule_device_config_pull,
@@ -77,21 +76,7 @@ MAX_BACKUPS = int(os.environ.get("MAX_BACKUPS", "10"))
 
 def _soft_delete(device: Device, user_id: int, origin: str) -> None:
     """Mark the device as deleted without violating NOT NULL constraints."""
-    if device.is_deleted:
-        return
-    keep = {"mac", "asset_tag"}
-    for col in device.__table__.columns:
-        if col.name in keep or col.primary_key:
-            continue
-        if col.nullable:
-            setattr(device, col.name, None)
-    device.is_deleted = True
-    device.deleted_by_id = user_id
-    device.deleted_at = datetime.now(timezone.utc)
-    device.deleted_origin = origin
-    session = object_session(device)
-    if session is not None:
-        log_deletion(session, device.id, Device.__tablename__, user_id, origin)
+    soft_delete(device, user_id, origin)
 # Available configuration templates for push-config form
 TEMPLATE_OPTIONS = [
     "Trunk Port",

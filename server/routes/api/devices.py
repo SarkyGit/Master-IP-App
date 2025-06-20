@@ -6,30 +6,10 @@ from core.models.models import Device
 from core import schemas
 from core.utils.versioning import apply_update
 from core.utils import auth as auth_utils
-from core.utils.sync_logging import log_deletion
-from sqlalchemy.orm.session import object_session
+from core.utils.deletion import soft_delete
 from datetime import datetime, timezone
 
 router = APIRouter(prefix="/api/v1/devices", tags=["devices"])
-
-
-def _soft_delete(device: Device, user_id: int, origin: str) -> None:
-    """Mark the device as deleted without clearing non-nullable fields."""
-    if device.is_deleted:
-        return
-    keep = {"mac", "asset_tag"}
-    for col in device.__table__.columns:
-        if col.name in keep or col.primary_key:
-            continue
-        if col.nullable:
-            setattr(device, col.name, None)
-    device.is_deleted = True
-    device.deleted_by_id = user_id
-    device.deleted_at = datetime.now(timezone.utc)
-    device.deleted_origin = origin
-    session = object_session(device)
-    if session is not None:
-        log_deletion(session, device.id, Device.__tablename__, user_id, origin)
 
 @router.get("/", response_model=list[schemas.DeviceRead])
 def list_devices(
@@ -95,6 +75,6 @@ def delete_device(
     obj = db.query(Device).filter_by(id=device_id).first()
     if not obj:
         raise HTTPException(status_code=404, detail="Device not found")
-    _soft_delete(obj, current_user.id, "api")
+    soft_delete(obj, current_user.id, "api")
     db.commit()
     return {"status": "deleted"}

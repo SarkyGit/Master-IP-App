@@ -6,6 +6,7 @@ from core.models.models import User
 from core import schemas
 from core.utils.versioning import apply_update
 from core.utils import auth as auth_utils
+from core.utils.deletion import soft_delete
 
 router = APIRouter(prefix="/api/v1/users", tags=["users"])
 
@@ -71,6 +72,6 @@ def delete_user(
     obj = db.query(User).filter_by(id=user_id).first()
     if not obj:
         raise HTTPException(status_code=404, detail="User not found")
-    db.delete(obj)
+    soft_delete(obj, current_user.id, "api")
     db.commit()
     return {"status": "deleted"}

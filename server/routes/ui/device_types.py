@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from core.utils.db_session import get_db
 from core.utils.auth import require_role
 from core.models.models import DeviceType
+from core.utils.deletion import soft_delete
 import os
 import base64
 from core.utils.paths import STATIC_DIR
@@ -164,7 +165,7 @@ async def delete_device_type(
     if not dtype:
         raise HTTPException(status_code=404, detail="Device type not found")
 
-    db.delete(dtype)
+    soft_delete(dtype, current_user.id, "ui")
     db.commit()
     return RedirectResponse(url="/device-types", status_code=302)
 
@@ -178,6 +179,6 @@ async def bulk_delete_device_types(
     for t_id in selected:
         dtype = db.query(DeviceType).filter(DeviceType.id == t_id).first()
         if dtype:
-            db.delete(dtype)
+            soft_delete(dtype, current_user.id, "ui")
     db.commit()
     return RedirectResponse(url="/device-types", status_code=302)

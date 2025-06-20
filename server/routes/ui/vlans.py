@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from core.utils.db_session import get_db
 from core.utils.auth import require_role
 from core.models.models import VLAN
+from core.utils.deletion import soft_delete
 
 
 
@@ -120,7 +121,7 @@ async def delete_vlan(
     if not vlan:
         raise HTTPException(status_code=404, detail="VLAN not found")
 
-    db.delete(vlan)
+    soft_delete(vlan, current_user.id, "ui")
     db.commit()
     return RedirectResponse(url="/vlans", status_code=302)
 
@@ -134,6 +135,6 @@ async def bulk_delete_vlans(
     for vlan_id in selected:
         vlan = db.query(VLAN).filter(VLAN.id == vlan_id).first()
         if vlan:
-            db.delete(vlan)
+            soft_delete(vlan, current_user.id, "ui")
     db.commit()
     return RedirectResponse(url="/vlans", status_code=302)

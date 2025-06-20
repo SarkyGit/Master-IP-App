@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from core.utils.db_session import get_db
 from core.utils.auth import require_role
 from core.models.models import UserSSHCredential
+from core.utils.deletion import soft_delete
 from core.utils.templates import templates
 
 router = APIRouter()
@@ -106,6 +107,6 @@ async def delete_user_cred(cred_id: int, db: Session = Depends(get_db), current_
     cred = db.query(UserSSHCredential).filter(UserSSHCredential.id == cred_id, UserSSHCredential.user_id == current_user.id).first()
     if not cred:
         raise HTTPException(status_code=404, detail="Credential not found")
-    db.delete(cred)
+    soft_delete(cred, current_user.id, "ui")
     db.commit()
     return RedirectResponse(url="/user/ssh", status_code=302)

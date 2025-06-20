@@ -6,6 +6,7 @@ from core.models.models import SSHCredential
 from core import schemas
 from core.utils.versioning import apply_update
 from core.utils import auth as auth_utils
+from core.utils.deletion import soft_delete
 
 router = APIRouter(prefix="/api/v1/ssh-credentials", tags=["ssh_credentials"])
 
@@ -71,6 +72,6 @@ def delete_cred(
     obj = db.query(SSHCredential).filter_by(id=cred_id).first()
     if not obj:
         raise HTTPException(status_code=404, detail="Credential not found")
-    db.delete(obj)
+    soft_delete(obj, current_user.id, "api")
     db.commit()
     return {"status": "deleted"}
