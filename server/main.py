@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Request, WebSocket, Depends, HTTPException
+from dotenv import load_dotenv
 from contextlib import asynccontextmanager
 import logging
 
@@ -89,7 +90,10 @@ from core.models.models import SystemTunable
 
 
 def check_install_required() -> bool:
-    if not os.path.exists(".env") and not os.environ.get("DATABASE_URL"):
+    """Determine if the CLI installer still needs to run."""
+    if os.path.exists(".env"):
+        load_dotenv(".env", override=False)
+    if not os.environ.get("DATABASE_URL"):
         return True
     required = ["DATABASE_URL"]
     if any(not os.environ.get(k) for k in required):
@@ -148,7 +152,6 @@ async def install_redirect(request: Request, call_next):
     global INSTALL_REQUIRED
     if INSTALL_REQUIRED:
         INSTALL_REQUIRED = check_install_required()
-
     if INSTALL_REQUIRED and not request.url.path.startswith("/static"):
         return templates.TemplateResponse(
             "install_cli.html", {"request": request}, status_code=503
