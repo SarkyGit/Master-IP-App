@@ -103,14 +103,31 @@ async def devices_grid(
         .all()
     )
     types = db.query(DeviceType).all()
+
     context = {
         "request": request,
         "types": types,
         "counts": counts,
         "current_user": current_user,
+
+        "message": message,
+        "sort": sort,
+        "snmp": snmp,
+        "column_prefs": column_prefs,
+        "column_labels": DEVICE_COLUMN_LABELS,
+        "column_count": column_count,
+        "device_types": device_types,
+        "device_type": dtype,
+        "vlans": vlans,
+        "ssh_credentials": ssh_credentials,
+        "snmp_communities": snmp_communities,
+        "locations": locations,
+        "sites": sites,
+        "status_options": STATUS_OPTIONS,
+        "complete_count": complete_count,
+        "incomplete_count": incomplete_count,
     }
     return templates.TemplateResponse("devices_grid.html", context)
-
 
 
 
@@ -157,7 +174,7 @@ async def save_device_column_prefs(
     db.commit()
     if request.headers.get("HX-Request"):
         return templates.TemplateResponse("close_modal.html", {"request": request})
-    return RedirectResponse(url="/devices", status_code=302)
+    return RedirectResponse(url="/devices/table", status_code=302)
 
 
 @router.get("/devices/duplicates")
@@ -464,6 +481,7 @@ async def create_device(
     return RedirectResponse(url=f"/devices/type/{device.device_type_id}", status_code=302)
 
 
+
 @router.get("/devices/{device_id}/edit")
 async def edit_device_form(
     device_id: int,
@@ -660,6 +678,7 @@ async def update_device(
     return RedirectResponse(url=f"/devices/type/{device.device_type_id}", status_code=302)
 
 
+
 @router.post("/devices/{device_id}/damage")
 async def upload_damage_photo(
     device_id: int,
@@ -707,6 +726,7 @@ async def delete_device(
     return RedirectResponse(url=f"/devices/type/{dtype_id}", status_code=302)
 
 
+
 @router.post("/devices/bulk-delete")
 async def bulk_delete_devices(
     selected: list[int] = Form(...),
@@ -724,7 +744,7 @@ async def bulk_delete_devices(
             unschedule_device_config_pull(device.id)
             _soft_delete(device, current_user.id, "ui")
     db.commit()
-    return RedirectResponse(url="/devices", status_code=302)
+    return RedirectResponse(url="/devices/table", status_code=302)
 
 
 @router.post("/devices/bulk-update")
@@ -804,7 +824,7 @@ async def bulk_update_devices(
         update_device_complete_tag(db, device, current_user)
         update_device_attribute_tags(db, device, user=current_user)
     db.commit()
-    return RedirectResponse(url="/devices", status_code=302)
+    return RedirectResponse(url="/devices/table", status_code=302)
 
 
 @router.post("/devices/{device_id}/pull-config")
@@ -824,6 +844,7 @@ async def pull_device_config(
         return RedirectResponse(
             url=f"/devices/type/{device.device_type_id}?message=No+SSH+credentials",
             status_code=302,
+
         )
 
     conn_kwargs = build_conn_kwargs(cred)
@@ -842,6 +863,7 @@ async def pull_device_config(
         return RedirectResponse(
             url=f"/devices/type/{device.device_type_id}?message=SSH+error:+{str(exc)}",
             status_code=302,
+
         )
 
     backup = ConfigBackup(device_id=device.id, source="ssh", config_text=output)
@@ -871,6 +893,7 @@ async def pull_device_config(
         url=f"/devices/type/{device.device_type_id}?message=Config+pulled",
         status_code=302,
     )
+
 
 
 @router.get("/devices/{device_id}/push-config")
@@ -970,6 +993,7 @@ async def push_device_config(
         url=f"/devices/type/{device.device_type_id}?message={message}",
         status_code=302,
     )
+
 
 
 @router.get("/devices/{device_id}/template-config")
