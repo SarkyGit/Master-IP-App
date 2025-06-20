@@ -82,6 +82,7 @@ from server.workers.heartbeat import start_heartbeat, stop_heartbeat
 from server.workers.system_metrics_logger import start_metrics_logger, stop_metrics_logger
 from core.utils.templates import templates
 from core.utils.db_session import engine, SessionLocal
+from core.utils.schema import verify_schema
 from core.models.models import SystemTunable
 
 
@@ -108,6 +109,7 @@ INSTALL_REQUIRED = check_install_required()
 # Allow deploying the app under a URL prefix by setting ROOT_PATH.
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    verify_schema()
     if settings.role == "local" and not INSTALL_REQUIRED:
         if settings.enable_background_workers:
             start_queue_worker()

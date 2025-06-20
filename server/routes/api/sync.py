@@ -11,9 +11,23 @@ from core.utils.versioning import apply_update
 from core.utils.sync_logging import log_sync, log_conflict, log_duplicate
 
 from core.utils.db_session import get_db
+from core.utils.schema import verify_schema, get_schema_revision
 from core.utils.site_auth import validate_site_key
 
 router = APIRouter(prefix="/api/v1/sync", tags=["sync"])
+
+
+@router.get("/schema")
+async def get_schema(key=Depends(validate_site_key)):
+    """Return the current database schema revision."""
+    return {"revision": get_schema_revision()}
+
+
+@router.post("/align-schema")
+async def align_schema(key=Depends(validate_site_key)):
+    """Ensure migrations are applied and return the schema revision."""
+    rev = verify_schema()
+    return {"revision": rev}
 
 
 @router.post("/")

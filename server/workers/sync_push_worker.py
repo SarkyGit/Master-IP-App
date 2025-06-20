@@ -12,7 +12,7 @@ from core.utils.db_session import SessionLocal
 from sqlalchemy import event
 from core.models.models import SystemTunable
 from core.models import models as model_module
-from .cloud_sync import _request_with_retry, _get_sync_config
+from .cloud_sync import _request_with_retry, _get_sync_config, ensure_schema
 from core.utils.audit import log_audit
 from core.utils.sync_logging import log_sync_attempt
 from server.utils.cloud import set_tunable
@@ -114,6 +114,8 @@ async def push_once(log: logging.Logger) -> None:
     if not push_url or not site_id:
         log.info("Cloud sync not configured, skipping push")
         return
+    base = push_url.rsplit("/", 1)[0]
+    await ensure_schema(base, log, site_id, api_key)
     db = SessionLocal()
     try:
         since = _load_last_sync(db)

@@ -95,11 +95,26 @@ async def _request_with_retry(method: str, url: str, payload: dict, log: logging
             delay *= 2
 
 
+async def ensure_schema(base_url: str, log: logging.Logger, site_id: str, api_key: str) -> None:
+    """Verify local schema and instruct remote to upgrade if necessary."""
+    from core.utils.schema import verify_schema
+
+    verify_schema()
+    if not base_url:
+        return
+    try:
+        await _request_with_retry("POST", f"{base_url}/align-schema", {}, log, site_id, api_key)
+    except Exception as exc:  # pragma: no cover - best effort
+        log.warning("Remote schema alignment failed: %s", exc)
+
+
 async def push_once(log: logging.Logger) -> None:
     push_url, _, site_id, api_key = _get_sync_config()
     if not push_url or not site_id:
         log.info("Cloud sync not configured, skipping push")
         return
+    base = push_url.rsplit("/", 1)[0]
+    await ensure_schema(base, log, site_id, api_key)
     db = SessionLocal()
     payload = {"model": Device.__tablename__, "records": []}
     try:
@@ -116,6 +131,8 @@ async def pull_once(log: logging.Logger) -> None:
     if not pull_url or not site_id:
         log.info("Cloud sync not configured, skipping pull")
         return
+    base = pull_url.rsplit("/", 1)[0]
+    await ensure_schema(base, log, site_id, api_key)
     db = SessionLocal()
     since = datetime.fromtimestamp(0, timezone.utc).isoformat()
     payload = {"since": since, "models": [Device.__tablename__]}

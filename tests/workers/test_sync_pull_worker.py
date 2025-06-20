@@ -123,6 +123,9 @@ def test_pull_once_updates_and_inserts(monkeypatch):
         "_get_sync_config",
         lambda: ("http://push", "http://pull", "site1", ""),
     )
+    async def _noop(*a, **k):
+        pass
+    monkeypatch.setattr(sync_pull_worker, "ensure_schema", _noop)
 
     async def fake_fetch(url, payload, log, site_id, api_key):
         return sample
