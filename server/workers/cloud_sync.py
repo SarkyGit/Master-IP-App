@@ -15,7 +15,9 @@ SYNC_TIMEOUT = int(os.environ.get("SYNC_TIMEOUT", "10"))
 SYNC_RETRIES = int(os.environ.get("SYNC_RETRIES", "3"))
 
 
-def _internet_available(host: str = "8.8.8.8", port: int = 53, timeout: int = 3) -> bool:
+def _internet_available(
+    host: str = "8.8.8.8", port: int = 53, timeout: int = 3
+) -> bool:
     try:
         with socket.create_connection((host, port), timeout=timeout):
             return True
@@ -50,7 +52,11 @@ def _get_sync_config() -> tuple[str, str, str, str]:
             api_key = row.value if row else ""
         site_id = os.environ.get("SITE_ID")
         if not site_id:
-            row = db.query(SystemTunable).filter(SystemTunable.name == "Cloud Site ID").first()
+            row = (
+                db.query(SystemTunable)
+                .filter(SystemTunable.name == "Cloud Site ID")
+                .first()
+            )
             site_id = row.value if row else ""
         return push, pull, site_id, api_key
     finally:
@@ -75,7 +81,14 @@ async def _update_timestamp(db, name: str) -> None:
     db.commit()
 
 
-async def _request_with_retry(method: str, url: str, payload: dict, log: logging.Logger, site_id: str, api_key: str) -> dict | None:
+async def _request_with_retry(
+    method: str,
+    url: str,
+    payload: dict,
+    log: logging.Logger,
+    site_id: str,
+    api_key: str,
+) -> dict | None:
     headers = {"Site-ID": site_id, "API-Key": api_key}
     delay = 1
     for attempt in range(SYNC_RETRIES):
@@ -95,7 +108,9 @@ async def _request_with_retry(method: str, url: str, payload: dict, log: logging
             delay *= 2
 
 
-async def ensure_schema(base_url: str, log: logging.Logger, site_id: str, api_key: str) -> None:
+async def ensure_schema(
+    base_url: str, log: logging.Logger, site_id: str, api_key: str
+) -> None:
     """Verify local schema and instruct remote to upgrade if necessary."""
     from core.utils.schema import verify_schema
 
@@ -103,7 +118,9 @@ async def ensure_schema(base_url: str, log: logging.Logger, site_id: str, api_ke
     if not base_url:
         return
     try:
-        await _request_with_retry("POST", f"{base_url}/align-schema", {}, log, site_id, api_key)
+        await _request_with_retry(
+            "POST", f"{base_url}/align-schema", {}, log, site_id, api_key
+        )
     except Exception as exc:  # pragma: no cover - best effort
         log.warning("Remote schema alignment failed: %s", exc)
 
@@ -174,9 +191,12 @@ def start_cloud_sync() -> None:
                     break
                 print("Waiting for network...")
                 time.sleep(2)
+        global _sync_task
+        if _sync_task:
+            print("Cloud sync worker already running")
+            return
         print("Starting cloud sync worker")
         asyncio.create_task(run_sync_once())
-        global _sync_task
         _sync_task = asyncio.create_task(_sync_loop())
     else:
         print("Cloud sync worker disabled")
