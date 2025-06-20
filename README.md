@@ -273,9 +273,11 @@ python setup_cloud_connection.py https://CESTechnologies.Patch-Bay.com my-api-ke
 If any of the parameters are omitted you will be prompted interactively. The
 final argument enables cloud sync when set to `yes`/`1`. If the connection
 succeeds the script prints `Connection successful` and updates `.env` with the
-connection details. The sync workers are enabled by default so manual editing of
-`ENABLE_CLOUD_SYNC`, `ENABLE_SYNC_PUSH_WORKER` and `ENABLE_SYNC_PULL_WORKER` is
-typically unnecessary.
+connection details. When the base URL points to a Patch‑Bay instance the helper
+also attempts to fetch the database connection string and writes it to
+`DATABASE_URL` automatically. The sync workers are enabled by default so manual
+editing of `ENABLE_CLOUD_SYNC`, `ENABLE_SYNC_PUSH_WORKER` and
+`ENABLE_SYNC_PULL_WORKER` is typically unnecessary.
 
 All synchronized tables now include a `created_at` timestamp. The push worker
 uses this field (or `updated_at` when present) to detect new records. Upgrade
@@ -504,6 +506,16 @@ python -m pip install -r requirements.txt
 
 ### `venv/bin/python: No such file or directory`
 This message appears when the `venv` directory has not been created. Run the commands above to create the virtual environment before installing the dependencies.
+
+### `alembic upgrade` fails with `sqlalchemy.exc.NoSuchModuleError`
+If the migrations abort with `Can't load plugin: sqlalchemy.dialects:https`, your
+`DATABASE_URL` is using an HTTPS URL instead of a PostgreSQL connection string.
+Update it to begin with `postgresql://`:
+
+```bash
+DATABASE_URL=postgresql://user:pass@localhost:5432/master_ip_db
+```
+Then rerun `alembic upgrade head` or start the application again.
 
 ### Certbot fails with `X509_V_FLAG_NOTIFY_POLICY`
 On newer Ubuntu releases the `certbot` package may crash with an error like:

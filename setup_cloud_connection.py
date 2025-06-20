@@ -33,6 +33,18 @@ async def confirm_connection(base_url: str, api_key: str) -> None:
     resp.raise_for_status()
 
 
+async def discover_database_url(base_url: str, api_key: str, site_id: str) -> str:
+    """Return the database URL from the cloud server if available."""
+    url = base_url.rstrip("/") + "/api/v1/sync/db-url"
+    headers = {"Authorization": f"Bearer {api_key}"} if api_key else {}
+    params = {"site_id": site_id}
+    async with httpx.AsyncClient(timeout=10) as client:
+        resp = await client.get(url, headers=headers, params=params)
+    resp.raise_for_status()
+    data = resp.json()
+    return str(data.get("database_url", ""))
+
+
 def main() -> None:
     args = sys.argv[1:]
     if len(args) >= 4:
@@ -64,6 +76,16 @@ def main() -> None:
         print(f"Connection failed: {exc}")
         sys.exit(1)
     print("Connection successful")
+
+    db_url = ""
+    try:
+        db_url = asyncio.run(discover_database_url(base_url, api_key, site_id))
+    except Exception as exc:
+        print(f"Database URL discovery failed: {exc}")
+    if db_url:
+        set_env_vars(DATABASE_URL=db_url)
+        print(f"Discovered database URL: {db_url}")
+
     set_env_vars(
         ENABLE_CLOUD_SYNC="1" if enabled else "0",
         ENABLE_SYNC_PUSH_WORKER="1" if enabled else "0",
