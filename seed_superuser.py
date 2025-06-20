@@ -14,19 +14,19 @@ from core.utils.auth import get_password_hash, verify_password
 def main():
     db = SessionLocal()
     try:
-        existing = db.query(User).filter_by(email="Barny@CESTechnologies.com").first()
+        existing = db.query(User).filter_by(email="admin").first()
         if existing:
-            if not verify_password("C0pperpa!r", existing.hashed_password):
-                existing.hashed_password = get_password_hash("C0pperpa!r")
+            if not verify_password("12345678", existing.hashed_password):
+                existing.hashed_password = get_password_hash("12345678")
                 db.commit()
                 print("Superuser password updated.")
             else:
                 print("Superuser already exists.")
             return
 
-        hashed_pw = get_password_hash("C0pperpa!r")
+        hashed_pw = get_password_hash("12345678")
         user = User(
-            email="Barny@CESTechnologies.com",
+            email="admin",
             hashed_password=hashed_pw,
             role="superadmin",
             is_active=True,

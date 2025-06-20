@@ -37,9 +37,7 @@ sleep 2
 alembic upgrade head
 
 if [ "${AUTO_SEED:-1}" != "0" ] && [ "${AUTO_SEED}" != "false" ]; then
-    python seed_tunables.py
     python seed_superuser.py
-    python seed_data.py
 fi
 
 exec gunicorn server.main:app \

@@ -96,9 +96,6 @@ async def install_finish(request: Request, seed: str = Form("no")):
         "SECRET_KEY": data["secret_key"],
     })
     subprocess.run(["alembic", "upgrade", "head"], check=True, env=env)
-    subprocess.run([sys.executable, "seed_tunables.py"], check=True, env=env)
-    if seed == "yes":
-        subprocess.run([sys.executable, "seed_data.py"], check=True, env=env)
 
     import json, base64
     payload = {

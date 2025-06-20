@@ -1,8 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
-<h1 class="text-xl mb-4">Step 5: Seed Sample Data</h1>
-<form method="post" action="/install/finish" x-data="{seed:false}" class="space-y-4">
-  <label class="inline-flex items-center"><input type="checkbox" name="seed" value="yes" x-model="seed" class="mr-2">Load sample devices</label>
+<h1 class="text-xl mb-4">Step 5: Complete Installation</h1>
+<form method="post" action="/install/finish" class="space-y-4">
   <button type="submit" class="p-2 rounded transition">Finish</button>
 </form>
 {% endblock %}
