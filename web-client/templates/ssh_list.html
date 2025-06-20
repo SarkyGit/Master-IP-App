@@ -27,7 +27,7 @@
       </td>
       <td class="px-4 py-2">
         <a href="/admin/ssh/{{ cred.id }}/edit" aria-label="Edit" class="p-2 rounded transition mr-2">{{ include_icon('pencil','text-blue-500','1.5') }}</a>
-        <button type="submit" form="delete-ssh-{{ cred.id }}" aria-label="Delete" class="p-2 rounded transition cursor-pointer" onclick="return confirm('Delete profile?')">{{ include_icon('trash-2','text-red-500','1.5') }}</button>
+        <button type="submit" formmethod="post" formaction="/admin/ssh/{{ cred.id }}/delete" aria-label="Delete" class="p-2 rounded transition cursor-pointer" onclick="return confirm('Delete profile?')">{{ include_icon('trash-2','text-red-500','1.5') }}</button>
       </td>
     </tr>
   {% endfor %}
