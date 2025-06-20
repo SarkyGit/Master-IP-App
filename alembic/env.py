@@ -16,6 +16,13 @@ database = importlib.util.module_from_spec(db_spec)
 db_spec.loader.exec_module(database)
 sys.modules['core.utils.database'] = database
 
+# Load custom types module as part of minimal core package
+types_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'core', 'utils', 'types.py'))
+types_spec = importlib.util.spec_from_file_location('core.utils.types', types_path)
+types_module = importlib.util.module_from_spec(types_spec)
+types_spec.loader.exec_module(types_module)
+sys.modules['core.utils.types'] = types_module
+
 # Create minimal core package hierarchy
 core_pkg = types.ModuleType('core')
 utils_pkg = types.ModuleType('core.utils')
@@ -23,6 +30,7 @@ sys.modules['core'] = core_pkg
 sys.modules['core.utils'] = utils_pkg
 core_pkg.utils = utils_pkg
 utils_pkg.database = database
+utils_pkg.types = types_module
 
 # Load models module explicitly
 models_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'core', 'models', 'models.py'))
