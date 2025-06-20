@@ -230,34 +230,45 @@ async def pull_once(log: logging.Logger) -> None:
                 db.commit()
                 continue
             if obj:
-                update = {
-                    k: v for k, v in rec.items() if k not in {"id", "version", "model"}
-                }
-                old_vals = {k: getattr(obj, k) for k in update.keys()}
-                conflicts = apply_update(
-                    obj, update, incoming_version=version, source="cloud"
-                )
-                changed = [
-                    k
-                    for k, v in update.items()
-                    if old_vals.get(k) != v and k in USER_EDITABLE_DEVICE_FIELDS
-                ]
-                if conflicts:
-                    conflicts_total += 1
-                    log.warning("Conflict on %s id %s", model_name, record_id)
-                if changed and model_cls is Device:
-                    db.add(
-                        DeviceEditLog(
-                            device_id=obj.id,
-                            user_id=1,
-                            changes="sync_pull:" + ",".join(changed),
-                        )
+                try:
+                    update = {
+                        k: v
+                        for k, v in rec.items()
+                        if k not in {"id", "version", "model", "table"}
+                    }
+                    old_vals = {k: getattr(obj, k, None) for k in update.keys()}
+                    conflicts = apply_update(
+                        obj, update, incoming_version=version, source="cloud"
                     )
-                db.commit()
-                db.refresh(obj)
+                    changed = [
+                        k
+                        for k, v in update.items()
+                        if old_vals.get(k) != v and k in USER_EDITABLE_DEVICE_FIELDS
+                    ]
+                    if conflicts:
+                        conflicts_total += 1
+                        log.warning("Conflict on %s id %s", model_name, record_id)
+                    if changed and model_cls is Device:
+                        db.add(
+                            DeviceEditLog(
+                                device_id=obj.id,
+                                user_id=1,
+                                changes="sync_pull:" + ",".join(changed),
+                            )
+                        )
+                    db.commit()
+                    db.refresh(obj)
+                except Exception as exc:
+                    db.rollback()
+                    log.error(
+                        "Failed to update %s id %s: %s", model_name, record_id, exc
+                    )
+                    continue
             else:
                 try:
-                    obj = model_cls(**{k: v for k, v in rec.items() if k != "model"})
+                    obj = model_cls(
+                        **{k: v for k, v in rec.items() if k not in {"model", "table"}}
+                    )
                     db.add(obj)
                     db.commit()
                     if model_cls is Device:
