@@ -1,5 +1,5 @@
-from sqlalchemy import create_engine, text
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine, text, event
+from sqlalchemy.orm import sessionmaker, Session, with_loader_criteria
 import os
 
 from core.utils.database import Base
@@ -16,6 +16,19 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 if engine:
     # Ensure all tables are created
     Base.metadata.create_all(bind=engine)
+
+@event.listens_for(Session, "do_orm_execute")
+def _filter_deleted(execute_state):
+    if execute_state.is_select and not execute_state.execution_options.get(
+        "include_deleted", False
+    ):
+        for cls in Base.__subclasses__():
+            if hasattr(cls, "deleted_at"):
+                execute_state.statement = execute_state.statement.options(
+                    with_loader_criteria(
+                        cls, lambda c: c.deleted_at.is_(None), include_aliases=True
+                    )
+                )
 
 
 def get_db():

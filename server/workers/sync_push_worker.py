@@ -144,7 +144,7 @@ async def push_once(log: logging.Logger) -> None:
             updated_col = getattr(model_cls, "updated_at", None)
             deleted_col = getattr(model_cls, "deleted_at", None)
             sync_col = getattr(model_cls, "sync_state", None)
-            query = db.query(model_cls)
+            query = db.query(model_cls).execution_options(include_deleted=True)
 
             ts_filter = None
             if created_col is not None and updated_col is not None:

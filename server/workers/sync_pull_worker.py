@@ -17,6 +17,7 @@ from core.utils.audit import log_audit
 from core.utils.sync_logging import log_sync_attempt
 from server.utils.cloud import set_tunable
 from server.workers import sync_push_worker
+from core.utils.deletion import soft_delete
 
 # Only log changes for fields that users can edit
 USER_EDITABLE_DEVICE_FIELDS: Set[str] = {
@@ -59,18 +60,7 @@ SITE_ID = os.environ.get("SITE_ID")
 
 def _soft_delete(device: Device, user_id: int, origin: str) -> None:
     """Mark the device as deleted and clear nullable fields."""
-    if device.is_deleted:
-        return
-    keep = {"mac", "asset_tag"}
-    for col in device.__table__.columns:
-        if col.name in keep or col.primary_key:
-            continue
-        if col.nullable:
-            setattr(device, col.name, None)
-    device.is_deleted = True
-    device.deleted_by_id = user_id
-    device.deleted_at = datetime.now(timezone.utc)
-    device.deleted_origin = origin
+    soft_delete(device, user_id, origin)
 
 
 def _load_last_sync(db: Session) -> datetime:
@@ -199,7 +189,12 @@ async def pull_once(log: logging.Logger) -> None:
                 log.warning("Skipping malformed record: %s", rec)
                 continue
             model_cls = model_map[model_name]
-            obj = db.query(model_cls).filter_by(id=record_id).first()
+            obj = (
+                db.query(model_cls)
+                .execution_options(include_deleted=True)
+                .filter_by(id=record_id)
+                .first()
+            )
             if obj and rec.get("deleted_at"):
                 try:
                     remote_ts = rec.get("updated_at") or rec["deleted_at"]

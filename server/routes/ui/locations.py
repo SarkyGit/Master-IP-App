@@ -6,6 +6,7 @@ from core.utils.db_session import get_db
 from core.utils.auth import require_role
 from core.utils.templates import templates
 from core.models.models import Location
+from core.utils.deletion import soft_delete
 
 LOCATION_TYPES = ["Fixed", "Remote", "Mobile"]
 
@@ -107,7 +108,7 @@ async def delete_location(loc_id: int, db: Session = Depends(get_db), current_us
     loc = db.query(Location).filter(Location.id == loc_id).first()
     if not loc:
         raise HTTPException(status_code=404, detail="Location not found")
-    db.delete(loc)
+    soft_delete(loc, current_user.id, "ui")
     db.commit()
     return RedirectResponse(url="/admin/locations", status_code=302)
 
@@ -116,6 +117,6 @@ async def bulk_delete_locations(selected: list[int] = Form(...), db: Session = D
     for loc_id in selected:
         loc = db.query(Location).filter(Location.id == loc_id).first()
         if loc:
-            db.delete(loc)
+            soft_delete(loc, current_user.id, "ui")
     db.commit()
     return RedirectResponse(url="/admin/locations", status_code=302)

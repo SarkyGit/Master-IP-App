@@ -6,6 +6,7 @@ from core.models.models import VLAN
 from core import schemas
 from core.utils.versioning import apply_update
 from core.utils import auth as auth_utils
+from core.utils.deletion import soft_delete
 
 router = APIRouter(prefix="/api/v1/vlans", tags=["vlans"])
 
@@ -71,6 +72,6 @@ def delete_vlan(
     obj = db.query(VLAN).filter_by(id=vlan_id).first()
     if not obj:
         raise HTTPException(status_code=404, detail="VLAN not found")
-    db.delete(obj)
+    soft_delete(obj, current_user.id, "api")
     db.commit()
     return {"status": "deleted"}

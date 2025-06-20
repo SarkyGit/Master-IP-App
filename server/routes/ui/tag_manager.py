@@ -8,6 +8,7 @@ from core.utils.auth import require_role, get_current_user
 from core.utils.templates import templates
 from core.utils.tags import add_tag_to_device, remove_tag_from_device
 from core.models.models import Tag
+from core.utils.deletion import soft_delete
 
 router = APIRouter()
 
@@ -48,7 +49,7 @@ async def rename_tag(
             if existing not in dev.tags:
                 add_tag_to_device(db, dev, existing, current_user)
             remove_tag_from_device(db, dev, tag, current_user)
-        db.delete(tag)
+        soft_delete(tag, current_user.id, "ui")
     else:
         tag.name = name
     db.commit()
@@ -72,7 +73,7 @@ async def merge_tag(
         if target not in dev.tags:
             add_tag_to_device(db, dev, target, current_user)
         remove_tag_from_device(db, dev, source, current_user)
-    db.delete(source)
+    soft_delete(source, current_user.id, "ui")
     db.commit()
     return RedirectResponse(url="/admin/tags", status_code=302)
 
@@ -87,7 +88,7 @@ async def delete_tag(
     if tag:
         for dev in list(tag.devices):
             remove_tag_from_device(db, dev, tag, current_user)
-        db.delete(tag)
+        soft_delete(tag, current_user.id, "ui")
         db.commit()
     return RedirectResponse(url="/admin/tags", status_code=302)
 
