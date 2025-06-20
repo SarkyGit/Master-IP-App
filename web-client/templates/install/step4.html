@@ -1,9 +1,0 @@
-{% extends "base.html" %}
-{% block content %}
-<h1 class="text-xl mb-4">Step 4: Admin Account</h1>
-<form method="post" action="/install/step4" class="space-y-4">
-  <input type="email" name="admin_email" placeholder="Admin Email" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" required>
-  <input type="password" name="admin_password" placeholder="Password" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" required>
-  <span aria-label="Next" class="p-2 rounded transition cursor-pointer" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('chevron-right') }}</span>
-</form>
-{% endblock %}

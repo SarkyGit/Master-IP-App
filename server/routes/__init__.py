@@ -51,7 +51,6 @@ from .api.ssh_credentials import router as api_ssh_credentials_router
 from .api.sync import router as api_sync_router
 from .api.register_site import router as register_site_router
 from .api.system import router as api_system_router
-from .install import router as install_router
 
 __all__ = [
     "auth_router",
@@ -107,5 +106,4 @@ __all__ = [
     "api_sync_router",
     "register_site_router",
     "api_system_router",
-    "install_router",
 ]

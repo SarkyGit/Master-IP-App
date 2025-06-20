@@ -5,7 +5,7 @@ import logging
 # Reduce noisy INFO logs from Alembic when workers start
 logging.getLogger("alembic.runtime.migration").setLevel(logging.WARNING)
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi.responses import JSONResponse
 
 from starlette.middleware.sessions import SessionMiddleware
 try:
@@ -62,7 +62,6 @@ from server.routes import (
     api_vlans_router,
     api_ssh_credentials_router,
     api_system_router,
-    install_router,
 )
 from server.routes.api.sync import router as api_sync_router
 from server.routes.api.register_site import router as register_site_router
@@ -143,15 +142,6 @@ app = FastAPI(lifespan=lifespan)
 # correct scheme when behind a reverse proxy.
 app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
 
-
-@app.middleware("http")
-async def install_redirect(request: Request, call_next):
-    if INSTALL_REQUIRED and not request.url.path.startswith("/install") and not request.url.path.startswith("/static"):
-        return RedirectResponse("/install")
-    return await call_next(request)
-
-
-
 # Path to the ``static`` directory under ``web-client``
 from core.utils.paths import STATIC_DIR
 
@@ -183,7 +173,6 @@ app.add_middleware(
     max_age=int(os.environ.get("SESSION_TTL", "43200")),
 )
 
-app.include_router(install_router)
 app.include_router(auth_router, prefix="/auth")
 app.include_router(devices_router)
 app.include_router(vlans_router)
