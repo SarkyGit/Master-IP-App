@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="flex flex-col items-center justify-center text-center min-h-[60vh]">
+  <div class="bg-[var(--card-bg)] text-[var(--card-text)] p-6 rounded shadow max-w-lg">
+    <h1 class="text-2xl font-bold mb-4">Installation Required</h1>
+    <p>The web installer has been disabled. Run the command below on the server and then refresh this page:</p>
+    <pre class="bg-gray-800 text-white p-2 rounded mt-4">sudo python3 installer.py</pre>
+  </div>
+</div>
+{% endblock %}

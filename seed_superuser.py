@@ -1,4 +1,4 @@
-from core.utils.db_session import SessionLocal
+from core.utils.db_session import SessionLocal, reset_pk_sequence
 from core.models.models import User, Site, SiteMembership
 import subprocess
 
@@ -13,6 +13,7 @@ from core.utils.auth import get_password_hash, verify_password
 
 def main():
     db = SessionLocal()
+    reset_pk_sequence(db, User)
     try:
         existing = db.query(User).filter_by(email="admin").first()
         if existing:
