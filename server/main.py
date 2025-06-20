@@ -148,6 +148,7 @@ async def install_redirect(request: Request, call_next):
     global INSTALL_REQUIRED
     if INSTALL_REQUIRED:
         INSTALL_REQUIRED = check_install_required()
+
     if INSTALL_REQUIRED and not request.url.path.startswith("/static"):
         return templates.TemplateResponse(
             "install_cli.html", {"request": request}, status_code=503
