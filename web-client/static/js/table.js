@@ -204,8 +204,15 @@ function initResize(table, tableId) {
 function insertCustomizeButton(table, tableId) {
   const btn = document.createElement('button')
   btn.textContent = 'Customize Columns'
-  btn.className = 'mb-2 px-2 py-1 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded'
-  table.parentNode.insertBefore(btn, table)
+  btn.className = 'px-2 py-1 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded mr-2'
+  const container = table.nextElementSibling
+  const target = container?.querySelector('div')
+  if (target) {
+    target.insertBefore(btn, target.firstChild)
+  } else {
+    btn.classList.add('mb-2')
+    table.parentNode.insertBefore(btn, table)
+  }
   btn.addEventListener('click', () => showColumnModal(table, tableId))
 }
 
