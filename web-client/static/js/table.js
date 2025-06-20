@@ -37,8 +37,8 @@ function tableControls() {
         if (state) this.selectedIds.push(cb.value)
       })
     },
-    bulkDelete() { this.$el.action = '/devices/bulk-delete'; this.$el.submit() },
-    bulkUpdate() { this.$el.action = '/devices/bulk-update'; this.$el.submit() },
+    bulkDelete() { this.$el.action = this.$el.dataset.bulkDeleteUrl; this.$el.submit() },
+    bulkUpdate() { this.$el.action = this.$el.dataset.bulkUpdateUrl; this.$el.submit() },
     sort(idx) {
       if (this.sortIndex === idx) {
         if (this.sortAsc) {
