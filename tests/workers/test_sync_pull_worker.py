@@ -201,3 +201,40 @@ def test_pull_continues_on_error(monkeypatch):
     assert db.data[models.User][0].email == old_email
     # Second record should still be inserted
     assert any(u.id == 2 for u in db.data[models.User])
+
+
+@pytest.mark.unit
+def test_pull_handles_table_key(monkeypatch):
+    db = DummyDB()
+    models = db.models
+
+    sample = [
+        {
+            "table": models.User.__tablename__,
+            "id": 1,
+            "email": "changed@example.com",
+            "hashed_password": "x",
+            "role": "viewer",
+            "is_active": True,
+            "version": 1,
+        }
+    ]
+
+    monkeypatch.setattr(sync_pull_worker, "SessionLocal", lambda: db)
+    monkeypatch.setattr(
+        sync_pull_worker,
+        "_get_sync_config",
+        lambda: ("http://push", "http://pull", "site1", ""),
+    )
+    async def _noop(*a, **k):
+        pass
+    monkeypatch.setattr(sync_pull_worker, "ensure_schema", _noop)
+
+    async def fake_fetch(url, payload, log, site_id, api_key):
+        return sample
+
+    monkeypatch.setattr(sync_pull_worker, "_fetch_with_retry", fake_fetch)
+
+    asyncio.run(sync_pull_worker.pull_once(mock.Mock()))
+
+    assert db.data[models.User][0].email == "changed@example.com"
