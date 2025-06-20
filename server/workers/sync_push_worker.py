@@ -124,6 +124,18 @@ async def push_once(log: logging.Logger) -> None:
         pushed_objs: list[Any] = []
         invalid_count = 0
         for model_cls in model_module.Base.__subclasses__():
+            # Only process models that participate in the sync protocol.
+            if not (
+                hasattr(model_cls, "uuid")
+                and hasattr(model_cls, "version")
+                and hasattr(model_cls, "updated_at")
+            ):
+                log.debug(
+                    "Skipping %s model due to missing sync columns",
+                    getattr(model_cls, "__tablename__", str(model_cls)),
+                )
+                continue
+
             created_col = getattr(model_cls, "created_at", None)
             updated_col = getattr(model_cls, "updated_at", None)
             deleted_col = getattr(model_cls, "deleted_at", None)
