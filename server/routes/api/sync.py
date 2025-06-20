@@ -120,7 +120,7 @@ async def push_changes(
             for rec in payload["records"]:
                 if not isinstance(rec, dict):
                     continue
-                model_name = rec.get("model")
+                model_name = rec.get("table") or rec.get("model")
                 if not model_name or model_name not in model_map:
                     continue
                 records_by_model.setdefault(model_name, []).append(rec)
@@ -356,7 +356,7 @@ async def pull_changes(
 
         for obj in query.all():
             data = {c.key: getattr(obj, c.key) for c in insp.mapper.column_attrs}
-            results.append({"model": model_name, **data})
+            results.append({"table": model_name, **data})
             log_sync(db, obj.id, model_name, "read", "cloud", "local")
 
     print(f"\u2b06\ufe0f Sending {len(results)} records to site {key.site_id}")
