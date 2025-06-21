@@ -8,7 +8,8 @@ from core.utils.auth import require_role
 from core.utils.db_session import get_db
 from core.utils.templates import templates
 from core.utils.paths import STATIC_DIR
-from core.models.models import DeviceType, SystemTunable
+from modules.inventory.models import DeviceType
+from core.models.models import SystemTunable
 
 router = APIRouter()
 

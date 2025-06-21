@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 import logging
 
 from core.utils.db_session import get_db
-from core.models.models import ConnectedSite
+from modules.network.models import ConnectedSite
 from core.utils.site_auth import validate_site_key
 
 router = APIRouter(prefix="/api/sync", tags=["cloud"])

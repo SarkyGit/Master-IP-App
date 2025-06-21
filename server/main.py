@@ -68,8 +68,8 @@ from server.routes import (
     api_ssh_credentials_router,
     api_system_router,
 )
-from modules.inventory import inventory_router
-from modules.network import network_router
+from modules.inventory.routes import router as inventory_router
+from modules.network.routes import router as network_router
 from server.routes.api.sync import router as api_sync_router
 from server.routes.api.register_site import router as register_site_router
 from server.routes.api.check_in import router as check_in_router

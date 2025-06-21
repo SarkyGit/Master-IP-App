@@ -4,7 +4,8 @@ from sqlalchemy.orm import Session
 
 from core.utils.db_session import get_db
 from core.utils.auth import require_role, user_in_site, ROLE_HIERARCHY
-from core.models.models import Site, User, Device, SiteMembership
+from modules.inventory.models import Device
+from core.models.models import Site, User, SiteMembership
 from core.utils.templates import templates
 from server.workers.config_scheduler import (
     schedule_device_config_pull,

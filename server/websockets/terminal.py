@@ -11,7 +11,8 @@ from core.utils.ssh import build_conn_kwargs
 from core.utils.device_detect import detect_ssh_platform
 
 from core.utils.db_session import SessionLocal
-from core.models.models import Device, User
+from modules.inventory.models import Device
+from core.models.models import User
 from core.utils.auth import ROLE_HIERARCHY
 
 router = APIRouter()

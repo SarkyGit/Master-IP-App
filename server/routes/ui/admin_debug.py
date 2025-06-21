@@ -6,7 +6,8 @@ from typing import Optional
 
 from core.utils.db_session import get_db
 from core.utils.auth import require_role
-from core.models.models import AuditLog, User, Device
+from modules.inventory.models import Device
+from core.models.models import AuditLog, User
 from server.workers.trap_listener import (
     start_trap_listener,
     stop_trap_listener,

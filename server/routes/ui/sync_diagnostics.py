@@ -7,7 +7,8 @@ from core.utils.db_session import get_db
 from datetime import datetime, timezone, timedelta
 
 from settings import settings
-from core.models.models import SystemTunable, SiteKey, AuditLog, ConnectedSite
+from modules.network.models import ConnectedSite
+from core.models.models import SystemTunable, SiteKey, AuditLog
 from core.utils.templates import templates
 from .tunables import grouped_tunables
 from server.workers.heartbeat import send_heartbeat_once

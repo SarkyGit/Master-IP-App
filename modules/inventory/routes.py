@@ -3,7 +3,8 @@ from sqlalchemy.orm import Session
 from core.utils.templates import templates
 from core.utils.auth import require_role
 from core.utils.db_session import get_db
-from core.models.models import Device, DeviceType, SystemTunable
+from modules.inventory.models import Device, DeviceType
+from core.models.models import SystemTunable
 
 router = APIRouter()
 

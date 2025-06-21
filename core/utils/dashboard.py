@@ -4,13 +4,12 @@ from sqlalchemy import func
 from core.models.models import (
     DashboardWidget,
     SiteDashboardWidget,
-    Device,
-    DeviceType,
     ConfigBackup,
-    PortStatusHistory,
     SNMPTrapLog,
     SyslogEntry,
 )
+from modules.inventory.models import Device, DeviceType
+from modules.network.models import PortStatusHistory
 
 DEFAULT_WIDGETS = [
     "device_summary",

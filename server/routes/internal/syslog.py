@@ -6,7 +6,8 @@ from sqlalchemy.orm import Session
 from core.utils.db_session import get_db
 from core.utils.auth import require_role
 from core.utils.templates import templates
-from core.models.models import SyslogEntry, Device, Site
+from modules.inventory.models import Device
+from core.models.models import SyslogEntry, Site
 
 router = APIRouter()
 
