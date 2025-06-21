@@ -104,14 +104,18 @@ async def devices_grid(
     )
     types = db.query(DeviceType).all()
     message = request.query_params.get("message")
+
     context = {
         "request": request,
         "types": types,
         "counts": counts,
         "current_user": current_user,
+
         "message": message,
     }
     return templates.TemplateResponse("devices_grid.html", context)
+
+
 
 
 
@@ -159,7 +163,7 @@ async def save_device_column_prefs(
     db.commit()
     if request.headers.get("HX-Request"):
         return templates.TemplateResponse("close_modal.html", {"request": request})
-    return RedirectResponse(url="/devices", status_code=302)
+    return RedirectResponse(url="/devices/table", status_code=302)
 
 
 @router.get("/devices/duplicates")
@@ -709,7 +713,6 @@ async def delete_device(
     db.commit()
     return RedirectResponse(url=f"/devices/type/{dtype_id}", status_code=302)
 
-
 @router.post("/devices/bulk-delete")
 async def bulk_delete_devices(
     selected: list[int] = Form(...),
@@ -727,7 +730,7 @@ async def bulk_delete_devices(
             unschedule_device_config_pull(device.id)
             _soft_delete(device, current_user.id, "ui")
     db.commit()
-    return RedirectResponse(url="/devices", status_code=302)
+    return RedirectResponse(url="/devices/table", status_code=302)
 
 
 @router.post("/devices/bulk-update")
@@ -807,7 +810,7 @@ async def bulk_update_devices(
         update_device_complete_tag(db, device, current_user)
         update_device_attribute_tags(db, device, user=current_user)
     db.commit()
-    return RedirectResponse(url="/devices", status_code=302)
+    return RedirectResponse(url="/devices/table", status_code=302)
 
 
 @router.post("/devices/{device_id}/pull-config")
