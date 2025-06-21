@@ -33,7 +33,7 @@
       <td class="actions-col text-center whitespace-nowrap" style="width: 100px; min-width: 100px; max-width: 100px;">
         <div class="flex justify-center gap-1">
           <a href="/device-types/{{ dt.id }}/edit" aria-label="Edit" class="icon-btn">{{ include_icon('pencil','text-blue-500','5') }}</a>
-          <button type="submit" formmethod="post" formaction="/device-types/{{ dt.id }}/delete" aria-label="Delete" class="icon-btn cursor-pointer" onclick="return confirm('Delete type?')">{{ include_icon('trash-2','text-red-500','5') }}</button>
+          <button type="submit" form="delete-type-{{ dt.id }}" aria-label="Delete" class="icon-btn cursor-pointer" onclick="return confirm('Delete type?')">{{ include_icon('trash-2','text-red-500','5') }}</button>
         </div>
       </td>
     </tr>
