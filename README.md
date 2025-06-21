@@ -8,7 +8,9 @@ Tailwind CSS has been removed from the project. Styling and components now rely 
 
 ## Repository Layout
 
-- `core/` contains database models, authentication helpers and common utilities.
+- `core/` contains shared models, authentication helpers and common utilities.
+- `modules/inventory/` defines device and location models.
+- `modules/network/` defines VLAN, interface and other network models.
 - `server/` holds the FastAPI application, API routes and background workers.
 - `web-client/` stores HTML templates and static assets served by the app.
 - `mobile-client/` is a placeholder for a future mobile application.
