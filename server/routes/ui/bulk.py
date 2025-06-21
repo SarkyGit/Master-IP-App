@@ -20,7 +20,7 @@ from core.utils.ssh import build_conn_kwargs, resolve_ssh_credential
 from core.utils.device_detect import detect_ssh_platform
 from core.utils.templates import templates
 from core.utils.audit import log_audit
-from core.utils.tags import get_or_create_tag, add_tag_to_device
+from modules.inventory.utils import get_or_create_tag, add_tag_to_device
 from modules.inventory.utils import format_ip
 
 router = APIRouter(prefix="/bulk")

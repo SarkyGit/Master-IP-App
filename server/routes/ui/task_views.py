@@ -17,7 +17,7 @@ import io
 import urllib.parse
 import gspread
 from google.oauth2.service_account import Credentials
-from core.utils.tags import (
+from modules.inventory.utils import (
     update_device_complete_tag,
     update_device_attribute_tags,
     get_or_create_tag,
