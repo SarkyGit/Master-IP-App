@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Request, Depends
 from core.utils.templates import templates
-from core.utils.auth import get_current_user
+from core.utils.auth import require_role
 
 router = APIRouter()
 
 @router.get('/help')
-async def help_page(request: Request, current_user=Depends(get_current_user)):
+async def help_page(request: Request, current_user=Depends(require_role("viewer"))):
     context = {
         'request': request,
         'current_user': current_user,
@@ -14,7 +14,7 @@ async def help_page(request: Request, current_user=Depends(get_current_user)):
 
 
 @router.get('/help/manual')
-async def manual_page(request: Request, current_user=Depends(get_current_user)):
+async def manual_page(request: Request, current_user=Depends(require_role("viewer"))):
     """Display the expanded user manual."""
     context = {
         'request': request,

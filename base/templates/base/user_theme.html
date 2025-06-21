@@ -96,3 +96,28 @@
   </div>
 </form>
 {% endblock %}
+
+{% block extra_scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const stick = document.getElementById('menu_stick_theme');
+    const fields = ['theme','font','icon_style','menu_style','table_grid_style','admin_color','inventory_color','network_color','menu_tab_color','menu_bg_color'];
+    function update() {
+      const disabled = stick.checked;
+      fields.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          if (disabled) {
+            el.value = '';
+            el.setAttribute('disabled','');
+          } else {
+            el.removeAttribute('disabled');
+          }
+        }
+      });
+    }
+    stick.addEventListener('change', update);
+    update();
+  });
+</script>
+{% endblock %}

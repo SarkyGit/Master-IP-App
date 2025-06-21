@@ -2,7 +2,7 @@
 
 {% block content %}
 <h1 class="text-xl mb-4">Users</h1>
-<a href="/admin/users/new" class="underline">Add User</a>
+<a href="/admin/users/new" class="inline-block mb-2 px-4 py-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded transition">Add User</a>
 <div class="w-full overflow-auto">
 <table class="min-w-full table-fixed text-left mt-4">
   <thead>
@@ -27,14 +27,14 @@
       </td>
       <td class="px-4 py-2">{{ user.created_at }}</td>
       <td class="px-4 py-2" style="width: 100px; min-width: 100px; max-width: 100px;">
-        <a href="/admin/users/{{ user.id }}/edit" aria-label="Edit" class="p-2 rounded transition mr-2">{{ include_icon('pencil','text-blue-500','1.5') }}</a>
+        <a href="/admin/users/{{ user.id }}/edit" aria-label="Edit" class="icon-btn h-full flex items-center p-2 mr-2">{{ include_icon('pencil','text-blue-500','1.5') }}</a>
         {% if user.is_active %}
         <form method="post" action="/admin/users/{{ user.id }}/deactivate" class="inline">
-          <span aria-label="Disable" class="p-2 rounded transition mr-2 cursor-pointer" role="button" tabindex="0" onclick="if(confirm('Deactivate user?')) { this.closest('form').submit() }">{{ include_icon('minus-circle','text-red-500','1.5') }}</span>
+          <span aria-label="Disable" class="icon-btn h-full flex items-center mr-2 cursor-pointer" role="button" tabindex="0" onclick="if(confirm('Deactivate user?')) { this.closest('form').submit() }">{{ include_icon('minus-circle','text-red-500','1.5') }}</span>
         </form>
         {% endif %}
         <form method="post" action="/admin/users/{{ user.id }}/reset-password" class="inline">
-          <span aria-label="Reset Password" class="p-2 underline text-yellow-400 cursor-pointer" role="button" tabindex="0" onclick="if(confirm('Reset password?')) { this.closest('form').submit() }">{{ include_icon('refresh-ccw','text-yellow-400','1.5') }}</span>
+          <span aria-label="Reset Password" class="icon-btn h-full flex items-center text-yellow-400 cursor-pointer" role="button" tabindex="0" onclick="if(confirm('Reset password?')) { this.closest('form').submit() }">{{ include_icon('refresh-ccw','text-yellow-400','1.5') }}</span>
         </form>
       </td>
     </tr>

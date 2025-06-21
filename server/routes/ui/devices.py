@@ -15,7 +15,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 
 from core.utils.db_session import get_db
-from core.utils.auth import get_current_user, require_role
+from core.utils.auth import require_role
 from modules.inventory.models import (
     Device,
     DeviceType,
@@ -101,11 +101,9 @@ TEMPLATE_OPTIONS = [
 async def devices_grid(
     request: Request,
     db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
+    current_user=Depends(require_role("viewer")),
 ):
     """Render a grid of device types."""
-    if not current_user:
-        raise HTTPException(status_code=401, detail="Not authenticated")
 
     counts = dict(
         db.query(Device.device_type_id, func.count(Device.id))
@@ -135,10 +133,8 @@ async def devices_grid(
 async def device_column_prefs(
     request: Request,
     db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
+    current_user=Depends(require_role("viewer")),
 ):
-    if not current_user:
-        raise HTTPException(status_code=401, detail="Not authenticated")
     prefs = load_column_preferences(db, current_user.id, "device_list")
     context = {
         "request": request,
@@ -155,10 +151,8 @@ async def save_device_column_prefs(
     request: Request,
     selection: ColumnSelection | None = Body(None),
     db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
+    current_user=Depends(require_role("viewer")),
 ):
-    if not current_user:
-        raise HTTPException(status_code=401, detail="Not authenticated")
     selected = selection.selected if selection else []
     db.query(ColumnPreference).filter_by(user_id=current_user.id, view="device_list").delete()
     for idx, name in enumerate(DEFAULT_DEVICE_COLUMNS):
@@ -181,10 +175,8 @@ async def save_device_column_prefs(
 async def duplicate_report(
     request: Request,
     db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
+    current_user=Depends(require_role("viewer")),
 ):
-    if not current_user:
-        raise HTTPException(status_code=401, detail="Not authenticated")
     devices = [d for d in db.query(Device).all() if not getattr(d, "is_deleted", False)]
     dup_ips = {}
     dup_macs = {}
@@ -224,10 +216,8 @@ async def list_devices_by_type(
     request: Request,
     message: str | None = None,
     db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
+    current_user=Depends(require_role("viewer")),
 ):
-    if not current_user:
-        raise HTTPException(status_code=401, detail="Not authenticated")
     devices = (
         db.query(Device)
         .filter(Device.device_type_id == type_id)

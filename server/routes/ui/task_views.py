@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from core.utils.db_session import get_db
 from fastapi.responses import RedirectResponse, Response
 from fastapi import UploadFile, File, Form
-from core.utils.auth import get_current_user, require_role
+from core.utils.auth import require_role
 from core.models.models import (
     ConfigBackup,
     SystemTunable,
@@ -99,10 +99,8 @@ def _open_sheet(db: Session):
 async def list_tasks(
     request: Request,
     db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
+    current_user=Depends(require_role("viewer")),
 ):
-    if not current_user:
-        raise HTTPException(status_code=401, detail="Not authenticated")
     queued = db.query(ConfigBackup).filter(ConfigBackup.queued.is_(True)).all()
     devices = db.query(Device).all()
     message = request.query_params.get("message")
@@ -259,6 +257,7 @@ async def save_tags(
     current_user=Depends(require_role("admin")),
 ):
     form = await request.form()
+    new_tags = {n.strip().lower() for n in form.get("new_tags", "").split(",") if n.strip()}
     devices = db.query(Device).all()
     for dev in devices:
         names = {n.strip().lower() for n in form.get(f"tags_{dev.id}", "").split(",") if n.strip()}
@@ -273,6 +272,8 @@ async def save_tags(
             add_tag_to_device(db, dev, tag, current_user)
         update_device_complete_tag(db, dev, current_user)
         update_device_attribute_tags(db, dev, user=current_user)
+    for name in new_tags:
+        get_or_create_tag(db, name)
     db.commit()
     return RedirectResponse(url="/tasks/edit-tags", status_code=302)
 

@@ -57,40 +57,34 @@
   </div>
 </div>
 
+<a href="/users/me/edit" class="mt-4 inline-block px-4 py-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded transition">Edit Profile</a>
+
 {% if current_user and current_user.id == user.id %}
-  <h2 class="text-lg mt-6 mb-2">SSH Credentials</h2>
-  <form method="post" action="/users/me/ssh" class="space-y-4">
-    <div class="form-row">
-      <div class="form-item">
-        <label for="ssh_username" class="block">SSH Username</label>
-        <input id="ssh_username" name="ssh_username" value="{{ user.ssh_username or '' }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" required />
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-item">
-        <label for="ssh_password" class="block">SSH Password</label>
-        <input id="ssh_password" type="password" name="ssh_password" value="{{ user.ssh_password or '' }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" />
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-item">
-        <label for="ssh_port" class="block">SSH Port</label>
-        <input id="ssh_port" type="number" min="1" max="65535" name="ssh_port" value="{{ user.ssh_port or 22 }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" />
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-item">
-        <span aria-label="Save" class="p-2 rounded transition cursor-pointer" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('save') }}</span>
-      </div>
-    </div>
-  </form>
 
 
 
-  <a href="/users/me/edit" class="block px-4 py-2 text-[var(--btn-text)] bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] rounded transition mt-4">Edit Profile</a>
   </div> {# end profile tab #}
   <div x-show="tab === 'ssh'" x-cloak>
     <a href="/user/ssh/new" class="underline">Add SSH Credential</a>
+    <form method="post" action="/users/me/ssh" class="my-4">
+      <div class="form-row">
+        <div class="form-item">
+          <label for="ssh_username" class="block">SSH Username</label>
+          <input id="ssh_username" name="ssh_username" value="{{ user.ssh_username or '' }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" required />
+        </div>
+        <div class="form-item">
+          <label for="ssh_password" class="block">SSH Password</label>
+          <input id="ssh_password" type="password" name="ssh_password" value="{{ user.ssh_password or '' }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" />
+        </div>
+        <div class="form-item">
+          <label for="ssh_port" class="block">SSH Port</label>
+          <input id="ssh_port" type="number" min="1" max="65535" name="ssh_port" value="{{ user.ssh_port or 22 }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" />
+        </div>
+        <div class="form-item flex items-end">
+          <span aria-label="Save" class="p-2 rounded transition cursor-pointer" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('save') }}</span>
+        </div>
+      </div>
+    </form>
     <div class="w-full overflow-auto">
       <table class="min-w-full table-fixed text-left mt-4">
         <thead>
