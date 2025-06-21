@@ -6,7 +6,8 @@ from modules.inventory.models import DeviceType, Device, Location, Tag
 from modules.network.models import VLAN, SSHCredential, SNMPCommunity
 from core.models.models import Site, User
 from core.utils.ip_utils import normalize_ip
-from core.utils.mac_utils import normalize_mac, MAC_RE
+from core.utils.mac_utils import normalize_mac
+
 from core.utils.db_session import SessionLocal
 from core.utils.audit import log_audit
 
