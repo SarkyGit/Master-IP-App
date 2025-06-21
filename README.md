@@ -534,6 +534,17 @@ sudo pip3 install --upgrade pyOpenSSL
 ### Modal window stays open after saving
 Forms posted via HTMX replace the `#modal` element with the server response. If the response uses HTTP 204 the dialog remains visible because no HTML is swapped in. Return a small snippet like `close_modal.html` to clear the container instead. See [docs/modals.md](docs/modals.md) for details.
 
+
+### 413 "Request Entity Too Large" when uploading images
+Nginx limits request bodies to 1 MB by default. Increase `client_max_body_size` in the proxy configuration if device type uploads fail:
+
+```nginx
+server {
+    client_max_body_size 10M;
+    # other settings
+}
+```
+
 ## Automated Installer
 
 For unattended deployments on a fresh server run the interactive installer.
