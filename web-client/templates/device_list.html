@@ -104,7 +104,9 @@
           {% endif %}
           {% if current_user and current_user.role in ['editor','admin','superadmin'] %}
           <a href="/devices/{{ device.id }}/edit" aria-label="Edit" class="icon-btn">{{ include_icon('pencil','text-blue-500','5') }}</a>
-          <button type="submit" form="delete-device-{{ device.id }}" aria-label="Delete" class="icon-btn cursor-pointer" onclick="return confirm('Delete device?')">{{ include_icon('trash-2','text-red-500','5') }}</button>
+          <form method="post" action="{{ request.url_for('delete_device', device_id=device.id) }}" style="display:inline;">
+            <button type="submit" aria-label="Delete" class="icon-btn cursor-pointer" onclick="return confirm('Delete device?')">{{ include_icon('trash-2','text-red-500','5') }}</button>
+          </form>
           {% endif %}
         </div>
       </td>
@@ -167,9 +169,4 @@
 </div>
 <span @click="bulkDelete" aria-label="Delete Selected" class="px-2 text-sm text-[var(--btn-text)] hover:text-[var(--btn-hover-text)] mt-2 cursor-pointer" role="button" tabindex="0">{{ include_icon('trash-2','text-red-500','5') }}</span>
 </form>
-<div class="hidden">
-{% for device in devices %}
-<form id="delete-device-{{ device.id }}" method="post" action="{{ request.url_for('delete_device', device_id=device.id) }}"></form>
-{% endfor %}
-</div>
 {% endblock %}
