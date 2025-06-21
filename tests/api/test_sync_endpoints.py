@@ -41,7 +41,7 @@ class DummyDB:
         with mock.patch("sqlalchemy.create_engine"), mock.patch(
             "sqlalchemy.schema.MetaData.create_all"
         ):
-            models = importlib.import_module("core.models.models")
+            models = importlib.import_module("core.models")
             import bcrypt
         self.models = models
         self.data = {

@@ -15,7 +15,7 @@ def _load_models():
     with mock.patch("sqlalchemy.create_engine"), mock.patch(
         "sqlalchemy.schema.MetaData.create_all"
     ):
-        return importlib.import_module("core.models.models")
+        return importlib.import_module("core.models")
 
 
 def test_soft_delete_device_clears_fields():
