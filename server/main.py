@@ -23,6 +23,7 @@ from base import (
     WELCOME_TEXT,
     INVENTORY_TEXT,
 )
+
 from server.routes import (
     devices_router,
     vlans_router,
