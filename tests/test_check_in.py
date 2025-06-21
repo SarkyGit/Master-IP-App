@@ -33,9 +33,11 @@ class DummyDB:
     def __init__(self):
         with mock.patch("sqlalchemy.create_engine"), mock.patch("sqlalchemy.schema.MetaData.create_all"):
             inv = importlib.import_module("modules.inventory.models")
+            net = importlib.import_module("modules.network.models")
             core = importlib.import_module("core.models")
             attrs = {name: getattr(core, name) for name in dir(core) if not name.startswith("_")}
             attrs.update({name: getattr(inv, name) for name in dir(inv) if not name.startswith("_")})
+            attrs.update({name: getattr(net, name) for name in dir(net) if not name.startswith("_")})
             models = types.SimpleNamespace(**attrs)
 
         self.models = models
@@ -94,9 +96,11 @@ client = get_test_client()
 
 def test_check_in_upserts():
     inv = importlib.import_module("modules.inventory.models")
+    net = importlib.import_module("modules.network.models")
     core = importlib.import_module("core.models")
     attrs = {name: getattr(core, name) for name in dir(core) if not name.startswith("_")}
     attrs.update({name: getattr(inv, name) for name in dir(inv) if not name.startswith("_")})
+    attrs.update({name: getattr(net, name) for name in dir(net) if not name.startswith("_")})
     models = types.SimpleNamespace(**attrs)
 
     db = DummyDB()

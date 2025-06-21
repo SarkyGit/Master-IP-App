@@ -49,8 +49,8 @@ class DummyDB:
 
 
 def test_update_images_hx_redirect(tmp_path, monkeypatch):
-    from core.models import models
-    dtype = models.DeviceType(id=1, name="Test")
+    from modules.inventory import models as inv_models
+    dtype = inv_models.DeviceType(id=1, name="Test")
     db = DummyDB(dtype)
     client = get_client(db)
     import server.routes.ui.admin_images as admin_images
