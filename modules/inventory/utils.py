@@ -5,6 +5,7 @@ from modules.network.models import VLAN, SSHCredential, SNMPCommunity
 from core.models.models import Site
 from core.utils.ip_utils import normalize_ip
 from core.utils.mac_utils import normalize_mac
+
 from core.utils.db_session import SessionLocal
 
 __all__ = [
