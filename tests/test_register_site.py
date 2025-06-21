@@ -39,6 +39,7 @@ class DummyDB:
             attrs = {name: getattr(core, name) for name in dir(core) if not name.startswith("_")}
             attrs.update({name: getattr(inv, name) for name in dir(inv) if not name.startswith("_")})
             models = types.SimpleNamespace(**attrs)
+
         self.models = models
         self.data = {
             models.ConnectedSite: [],
@@ -102,6 +103,7 @@ def test_register_site_upserts():
     attrs = {name: getattr(core, name) for name in dir(core) if not name.startswith("_")}
     attrs.update({name: getattr(inv, name) for name in dir(inv) if not name.startswith("_")})
     models = types.SimpleNamespace(**attrs)
+
     db = DummyDB()
     def _override():
         try:

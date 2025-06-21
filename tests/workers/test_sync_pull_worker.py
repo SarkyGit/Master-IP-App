@@ -43,6 +43,7 @@ class DummyDB:
             attrs = {name: getattr(core, name) for name in dir(core) if not name.startswith("_")}
             attrs.update({name: getattr(inv, name) for name in dir(inv) if not name.startswith("_")})
             models = types.SimpleNamespace(**attrs)
+
             import bcrypt
         self.models = models
         self.data = {
