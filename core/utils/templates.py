@@ -2,9 +2,16 @@ from fastapi.templating import Jinja2Templates
 from core.utils.db_session import SessionLocal
 from core.models.models import DeviceType, Tag, SystemTunable
 from datetime import datetime, timedelta
+from jinja2 import Environment, ChoiceLoader, FileSystemLoader
 
-# Templates now reside under the ``web-client`` folder
-templates = Jinja2Templates(directory="web-client/templates")
+# Templates may be provided by modules as well as the web-client package
+template_dirs = [
+    "web-client/templates",
+    "modules/inventory/templates",
+    "modules/network/templates",
+]
+env = Environment(loader=ChoiceLoader([FileSystemLoader(d) for d in template_dirs]), autoescape=True)
+templates = Jinja2Templates(env=env)
 
 
 def format_uptime(seconds: int | None) -> str:
