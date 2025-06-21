@@ -12,6 +12,7 @@ from core.utils.db_session import SessionLocal
 from modules.inventory.models import DeviceEditLog, Device
 from core.models.models import SystemTunable
 from core.models import models as model_module
+from modules.inventory import models as inventory_models  # noqa: F401
 from core.utils.versioning import apply_update
 from .cloud_sync import _get_sync_config, ensure_schema
 from core.utils.audit import log_audit
