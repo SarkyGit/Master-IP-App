@@ -1,4 +1,5 @@
-import os
+import sys, os
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__) + '/../'))
 from dotenv import load_dotenv
 load_dotenv()
 from alembic import context
@@ -7,7 +8,6 @@ from alembic.operations.ops import AddColumnOp
 from logging.config import fileConfig
 import types
 import importlib.util
-import sys
 
 # Load Base without importing core package to avoid side effects
 database_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'core', 'utils', 'database.py'))
