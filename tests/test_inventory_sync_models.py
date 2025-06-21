@@ -18,6 +18,8 @@ def test_workers_import_inventory_models():
     expected = {
         inv.Device.__tablename__,
         inv.DeviceType.__tablename__,
+        inv.DeviceEditLog.__tablename__,
+
         inv.Tag.__tablename__,
         inv.Location.__tablename__,
         inv.DeviceDamage.__tablename__,
