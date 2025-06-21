@@ -1,6 +1,10 @@
 from core.utils.db_session import SessionLocal, reset_pk_sequence
 import subprocess
 
+from modules.inventory.models import Device, DeviceType, Location
+from modules.network.models import SSHCredential, SNMPCommunity
+from core.models.models import Site
+
 
 def upgrade_db() -> None:
     """Apply any pending database migrations."""
@@ -8,14 +12,6 @@ def upgrade_db() -> None:
         subprocess.run(["alembic", "upgrade", "head"], check=True)
     except Exception as exc:  # pragma: no cover - best effort
         print(f"Warning: could not apply migrations: {exc}")
-from core.models.models import (
-    DeviceType,
-    SSHCredential,
-    SNMPCommunity,
-    Device,
-    Location,
-    Site,
-)
 
 
 def main():
