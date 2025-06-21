@@ -16,8 +16,14 @@ except ImportError:  # Fallback for older Starlette versions
 import os
 from settings import settings
 
-from server.routes import (
+from base import (
     auth_router,
+    user_pages_router,
+    dashboard_router,
+    WELCOME_TEXT,
+    INVENTORY_TEXT,
+)
+from server.routes import (
     devices_router,
     vlans_router,
     api_router,
@@ -27,17 +33,14 @@ from server.routes import (
     audit_router,
     admin_debug_router,
     device_types_router,
-    network_router,
     port_config_templates_router,
     task_views_router,
     admin_users_router,
-    user_pages_router,
     locations_router,
     ssh_tasks_router,
     ip_bans_router,
     user_ssh_router,
     login_events_router,
-    inventory_router,
     add_device_router,
     admin_site_router,
     bulk_router,
@@ -64,6 +67,8 @@ from server.routes import (
     api_ssh_credentials_router,
     api_system_router,
 )
+from modules.inventory import inventory_router
+from modules.network import network_router
 from server.routes.api.sync import router as api_sync_router
 from server.routes.api.register_site import router as register_site_router
 from server.routes.api.check_in import router as check_in_router
@@ -72,7 +77,6 @@ from server.routes.ui.tunables import router as tunables_router
 from server.routes.ui.editor import router as editor_router
 from server.websockets.editor import shell_ws
 from server.websockets.terminal import router as terminal_ws_router
-from server.routes.ui.welcome import router as welcome_router, WELCOME_TEXT, INVENTORY_TEXT
 from core.utils.auth import get_current_user
 from server.workers.queue_worker import start_queue_worker, stop_queue_worker
 from server.workers.config_scheduler import start_config_scheduler, stop_config_scheduler
@@ -209,7 +213,7 @@ app.include_router(admin_router)
 app.include_router(audit_router)
 app.include_router(admin_debug_router)
 app.include_router(terminal_ws_router)
-app.include_router(welcome_router)
+app.include_router(dashboard_router)
 app.include_router(device_types_router)
 app.include_router(network_router)
 app.include_router(port_config_templates_router)
