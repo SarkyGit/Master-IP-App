@@ -10,7 +10,9 @@ from sqlalchemy.orm import Session
 
 from core.utils.db_session import get_db
 from core.utils.auth import require_role, get_user_site_ids
-from core.models.models import Device, VLAN, ConfigBackup
+from modules.inventory.models import Device
+from modules.network.models import VLAN
+from core.models.models import ConfigBackup
 import zipfile
 from core.utils.audit import log_audit
 from core.utils.paths import STATIC_DIR

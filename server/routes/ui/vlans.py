@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from core.utils.db_session import get_db
 from core.utils.auth import require_role
-from core.models.models import VLAN
+from modules.network.models import VLAN
 from core.utils.deletion import soft_delete
 
 

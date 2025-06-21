@@ -8,7 +8,8 @@ from datetime import datetime, timezone
 import httpx
 
 from core.utils.db_session import SessionLocal
-from core.models.models import SystemTunable, Device
+from modules.inventory.models import Device
+from core.models.models import SystemTunable
 
 SYNC_INTERVAL = int(os.environ.get("SYNC_FREQUENCY", "300"))
 SYNC_TIMEOUT = int(os.environ.get("SYNC_TIMEOUT", "10"))

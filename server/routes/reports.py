@@ -7,7 +7,9 @@ from typing import Optional
 from core.utils.db_session import get_db
 from core.utils.auth import require_role
 from core.utils.templates import templates
-from core.models.models import Device, ConnectedSite, SiteKey
+from modules.inventory.models import Device
+from modules.network.models import ConnectedSite
+from core.models.models import SiteKey
 from server.utils import sync_conflicts
 from settings import settings
 

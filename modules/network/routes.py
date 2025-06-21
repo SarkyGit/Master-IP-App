@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from core.utils.db_session import get_db
 from core.utils.auth import get_current_user
-from core.models.models import Device
+from modules.inventory.models import Device
 
 
 

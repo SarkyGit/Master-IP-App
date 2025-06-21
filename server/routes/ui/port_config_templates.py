@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from core.utils.db_session import get_db
 from core.utils.auth import require_role
 from core.utils.templates import templates
-from core.models.models import PortConfigTemplate
+from modules.network.models import PortConfigTemplate
 
 router = APIRouter()
 

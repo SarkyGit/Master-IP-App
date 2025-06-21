@@ -8,7 +8,7 @@ from typing import List, Optional
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
 
-from core.models.models import Device
+from modules.inventory.models import Device
 from core.utils.versioning import clear_conflicts
 from core.utils.audit import log_audit
 from server.workers import sync_push_worker
@@ -107,7 +107,7 @@ def list_device_conflicts(
 
 def list_recent_sync_records(db: Session, limit: int = 100) -> list[dict]:
     """Return recently synced device records."""
-    from core.models.models import DeviceEditLog
+    from modules.inventory.models import DeviceEditLog
 
     logs = (
         db.query(DeviceEditLog)

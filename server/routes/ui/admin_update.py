@@ -36,7 +36,7 @@ def _unsynced_records_exist(db: Session) -> bool:
     if settings.role == "cloud":
         return False
     since = _load_last_sync(db)
-    from core.models.models import DeviceEditLog
+    from modules.inventory.models import DeviceEditLog
 
     return (
         db.query(DeviceEditLog)

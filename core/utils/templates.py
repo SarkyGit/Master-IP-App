@@ -1,6 +1,7 @@
 from fastapi.templating import Jinja2Templates
 from core.utils.db_session import SessionLocal
-from core.models.models import DeviceType, Tag, SystemTunable
+from modules.inventory.models import DeviceType, Tag
+from core.models.models import SystemTunable
 from datetime import datetime, timedelta
 from jinja2 import Environment, ChoiceLoader, FileSystemLoader
 

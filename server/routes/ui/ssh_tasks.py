@@ -8,7 +8,8 @@ from datetime import datetime, timezone
 
 from core.utils.db_session import get_db
 from core.utils.auth import require_role
-from core.models.models import Device, ConfigBackup, SystemTunable
+from modules.inventory.models import Device
+from core.models.models import ConfigBackup, SystemTunable
 from core.utils.ssh import build_conn_kwargs, resolve_ssh_credential
 from core.utils.device_detect import detect_ssh_platform
 from core.utils.templates import templates

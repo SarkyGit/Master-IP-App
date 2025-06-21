@@ -46,7 +46,7 @@ from core.utils.columns import (
     DEFAULT_DEVICE_COLUMNS,
     DEVICE_COLUMN_LABELS,
 )
-from core.models.models import DeviceEditLog
+from modules.inventory.models import DeviceEditLog
 
 import asyncssh
 import asyncio

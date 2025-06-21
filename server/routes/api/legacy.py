@@ -4,7 +4,8 @@ from sqlalchemy.orm import Session
 from core.utils.db_session import get_db
 from core.utils.auth import get_current_user
 from server.routes.ui.devices import suggest_vlan_from_ip
-from core.models.models import VLAN, TablePreference
+from modules.network.models import VLAN
+from core.models.models import TablePreference
 import json
 
 router = APIRouter()

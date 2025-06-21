@@ -40,7 +40,8 @@ class _SyslogProtocol(asyncio.DatagramProtocol):
                 pass
 
         db = SessionLocal()
-        from core.models.models import SyslogEntry, Device
+        from core.models.models import SyslogEntry
+        from modules.inventory.models import Device
 
         device = db.query(Device).filter(Device.ip == addr[0]).first()
         log = SyslogEntry(

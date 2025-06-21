@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from puresnmp import PyWrapper
-from core.models.models import Device, SSHCredential
+from modules.inventory.models import Device
+from modules.network.models import SSHCredential
 from core.utils.audit import log_audit
 
 PLATFORM_MAP = {
