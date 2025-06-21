@@ -1,10 +1,11 @@
 # Utility functions for inventory-related views
 from sqlalchemy.orm import Session
-from modules.inventory.models import DeviceType, Device, Location
+from modules.inventory.models import DeviceType, Device, Location, Tag
 from modules.network.models import VLAN, SSHCredential, SNMPCommunity
 from core.models.models import Site
 from core.utils.ip_utils import normalize_ip
-from core.utils.mac_utils import normalize_mac, MAC_RE
+from core.utils.mac_utils import normalize_mac
+from core.utils.db_session import SessionLocal
 
 __all__ = [
     "format_ip",
@@ -12,6 +13,8 @@ __all__ = [
     "suggest_vlan_from_ip",
     "load_form_options",
     "create_device_from_row",
+    "get_device_types",
+    "get_tags",
 ]
 
 
@@ -96,3 +99,19 @@ def create_device_from_row(db: Session, row: dict, user) -> None:
         created_by_id=user.id,
     )
     db.add(device)
+
+
+def get_device_types():
+    """Return all device types."""
+    db = SessionLocal()
+    types = db.query(DeviceType).all()
+    db.close()
+    return types
+
+
+def get_tags():
+    """Return all tags ordered by name."""
+    db = SessionLocal()
+    tags = db.query(Tag).order_by(Tag.name).all()
+    db.close()
+    return tags

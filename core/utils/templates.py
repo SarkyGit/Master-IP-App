@@ -1,6 +1,6 @@
 from fastapi.templating import Jinja2Templates
 from core.utils.db_session import SessionLocal
-from modules.inventory.models import DeviceType, Tag
+from modules.inventory.utils import get_device_types, get_tags
 from core.models.models import SystemTunable
 from datetime import datetime, timedelta
 from jinja2 import Environment, ChoiceLoader, FileSystemLoader
@@ -34,27 +34,12 @@ def format_uptime(seconds: int | None) -> str:
     return " ".join(parts)
 
 
-def get_device_types():
-    db = SessionLocal()
-    types = db.query(DeviceType).all()
-    db.close()
-    return types
-
-# Make function available in Jinja templates
-templates.env.globals["get_device_types"] = get_device_types
 templates.env.filters["format_uptime"] = format_uptime
 from core.utils.ip_utils import display_ip
 from core.utils.mac_utils import display_mac
 templates.env.filters["display_ip"] = display_ip
 templates.env.filters["display_mac"] = display_mac
-
-
-def get_tags():
-    db = SessionLocal()
-    tags = db.query(Tag).order_by(Tag.name).all()
-    db.close()
-    return tags
-
+templates.env.globals["get_device_types"] = get_device_types
 templates.env.globals["get_tags"] = get_tags
 
 import os
