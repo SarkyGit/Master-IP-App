@@ -122,6 +122,7 @@
       });
     }
 
+
     function update() {
       const disabled = stick.checked;
       fields.forEach(id => {
@@ -138,6 +139,7 @@
 
     stick.addEventListener('change', update);
     if (theme) theme.addEventListener('change', () => { if (stick.checked) applyDefaults(); });
+
     update();
   });
 </script>
