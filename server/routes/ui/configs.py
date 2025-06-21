@@ -5,7 +5,8 @@ import difflib
 
 from core.utils.db_session import get_db
 from core.utils.auth import get_current_user
-from core.models.models import Device, ConfigBackup
+from modules.inventory.models import Device
+from core.models.models import ConfigBackup
 from core.utils.audit import log_audit
 
 

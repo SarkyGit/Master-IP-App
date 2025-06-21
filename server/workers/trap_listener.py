@@ -14,7 +14,8 @@ _trap_running = False
 
 
 async def _trap_handler(host, port, message):
-    from core.models.models import SNMPTrapLog, Device
+    from core.models.models import SNMPTrapLog
+    from modules.inventory.models import Device
 
     trap_oid = None
     parts = []

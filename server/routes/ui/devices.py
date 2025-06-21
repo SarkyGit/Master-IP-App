@@ -16,22 +16,26 @@ from sqlalchemy import func
 
 from core.utils.db_session import get_db
 from core.utils.auth import get_current_user, require_role
-from core.models.models import (
+from modules.inventory.models import (
     Device,
+    DeviceType,
+    Location,
+    DeviceDamage,
+)
+from modules.network.models import (
     VLAN,
     SSHCredential,
     SNMPCommunity,
-    ConfigBackup,
-    DeviceType,
-    Location,
-    Site,
     PortConfigTemplate,
     PortStatusHistory,
     Interface,
     InterfaceChangeLog,
+)
+from core.models.models import (
+    ConfigBackup,
+    Site,
     UserSSHCredential,
     ColumnPreference,
-    DeviceDamage,
 )
 from core.utils.audit import log_audit
 from core.utils.tags import (
@@ -46,7 +50,7 @@ from core.utils.columns import (
     DEFAULT_DEVICE_COLUMNS,
     DEVICE_COLUMN_LABELS,
 )
-from core.models.models import DeviceEditLog
+from modules.inventory.models import DeviceEditLog
 
 import asyncssh
 import asyncio

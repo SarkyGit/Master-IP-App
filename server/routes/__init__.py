@@ -13,7 +13,7 @@ from .ui.admin_debug import router as admin_debug_router
 from .ui.sync_diagnostics import router as sync_diagnostics_router
 from base.routes.welcome import router as welcome_router
 from .ui.device_types import router as device_types_router
-from modules.network import network_router
+from modules.network.routes import router as network_router
 from .ui.port_config_templates import router as port_config_templates_router
 from .ui.task_views import router as task_views_router
 from .ui.admin_users import router as admin_users_router
@@ -23,7 +23,7 @@ from .ui.ssh_tasks import router as ssh_tasks_router
 from .ui.ip_bans import router as ip_bans_router
 from .ui.user_ssh import router as user_ssh_router
 from .ui.login_events import router as login_events_router
-from modules.inventory import inventory_router
+from modules.inventory.routes import router as inventory_router
 from .ui.add_device import router as add_device_router
 from .ui.admin_site import router as admin_site_router
 from .ui.bulk import router as bulk_router

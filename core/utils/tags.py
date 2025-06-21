@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 
-from core.models.models import Device, Tag, DeviceType, Location
+from modules.inventory.models import Device, Tag, DeviceType, Location
 from core.utils.audit import log_audit
 from core.models.models import User
 

@@ -11,14 +11,9 @@ import openpyxl
 from sqlalchemy.orm import Session
 import asyncssh
 
-from core.models.models import (
-    Device,
-    VLAN,
-    ConfigBackup,
-    PortConfigTemplate,
-    ImportLog,
-    Site,
-)
+from modules.inventory.models import Device
+from modules.network.models import VLAN, PortConfigTemplate
+from core.models.models import ConfigBackup, ImportLog, Site
 from core.utils.db_session import get_db
 from core.utils.auth import require_role, get_user_site_ids
 from core.utils.ssh import build_conn_kwargs, resolve_ssh_credential

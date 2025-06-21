@@ -6,7 +6,8 @@ import io
 
 from core.utils.db_session import get_db
 from core.utils.auth import require_role, get_user_site_ids
-from core.models.models import VLAN, Device
+from modules.inventory.models import Device
+from modules.network.models import VLAN
 from core.utils.templates import templates
 
 router = APIRouter(prefix="/reports")

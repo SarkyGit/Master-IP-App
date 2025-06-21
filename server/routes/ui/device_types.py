@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from core.utils.db_session import get_db
 from core.utils.auth import require_role
-from core.models.models import DeviceType
+from modules.inventory.models import DeviceType
 from core.utils.deletion import soft_delete
 import os
 import base64

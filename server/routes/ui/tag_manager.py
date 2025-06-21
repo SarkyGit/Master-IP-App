@@ -7,7 +7,7 @@ from core.utils.db_session import get_db
 from core.utils.auth import require_role, get_current_user
 from core.utils.templates import templates
 from core.utils.tags import add_tag_to_device, remove_tag_from_device
-from core.models.models import Tag
+from modules.inventory.models import Tag
 from core.utils.deletion import soft_delete
 
 router = APIRouter()

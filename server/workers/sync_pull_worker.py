@@ -9,7 +9,8 @@ import httpx
 from sqlalchemy.orm import Session
 
 from core.utils.db_session import SessionLocal
-from core.models.models import SystemTunable, DeviceEditLog, Device
+from modules.inventory.models import DeviceEditLog, Device
+from core.models.models import SystemTunable
 from core.models import models as model_module
 from core.utils.versioning import apply_update
 from .cloud_sync import _get_sync_config, ensure_schema

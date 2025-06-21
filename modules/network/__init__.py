@@ -1,5 +1,4 @@
 """Network module exports."""
 
-from .routes import router as network_router
-
-__all__ = ["network_router"]
+# Router is defined in modules.network.routes
+__all__ = []

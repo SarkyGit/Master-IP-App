@@ -20,104 +20,24 @@ from core.utils.types import GUID
 
 from core.utils.database import Base
 
-
-class VLAN(Base):
-    __tablename__ = "vlans"
-
-    id = Column(Integer, primary_key=True)
-    uuid = Column(
-        GUID(), default=uuid4, unique=True, nullable=False, index=True
-    )
-    version = Column(Integer, default=1, nullable=False)
-    conflict_data = Column(JSON, nullable=True)
-    sync_state = Column(JSON, nullable=True)
-    tag = Column(Integer, unique=True, nullable=False)
-    description = Column(String, nullable=True)
-    updated_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
-    deleted_at = Column(DateTime(timezone=True), nullable=True)
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
-
-    devices = relationship("Device", back_populates="vlan")
-
-
-class SSHCredential(Base):
-    __tablename__ = "ssh_credentials"
-
-    id = Column(Integer, primary_key=True)
-    uuid = Column(
-        GUID(), default=uuid4, unique=True, nullable=False, index=True
-    )
-    version = Column(Integer, default=1, nullable=False)
-    conflict_data = Column(JSON, nullable=True)
-    sync_state = Column(JSON, nullable=True)
-    name = Column(String, unique=True, nullable=False)
-    username = Column(String, nullable=False)
-    password = Column(String, nullable=True)
-    private_key = Column(Text, nullable=True)
-    updated_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
-    deleted_at = Column(DateTime(timezone=True), nullable=True)
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
-
-    devices = relationship("Device", back_populates="ssh_credential")
-
-
-class SNMPCommunity(Base):
-    __tablename__ = "snmp_communities"
-
-    id = Column(Integer, primary_key=True)
-    uuid = Column(
-        GUID(), default=uuid4, unique=True, nullable=False, index=True
-    )
-    version = Column(Integer, default=1, nullable=False)
-    conflict_data = Column(JSON, nullable=True)
-    sync_state = Column(JSON, nullable=True)
-    name = Column(String, unique=True, nullable=False)
-    community_string = Column(String, nullable=False)
-    snmp_version = Column(String, nullable=False)
-    updated_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
-    deleted_at = Column(DateTime(timezone=True), nullable=True)
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
-
-    devices = relationship("Device", back_populates="snmp_community")
-
-
-class Location(Base):
-    __tablename__ = "locations"
-
-    id = Column(Integer, primary_key=True)
-    uuid = Column(
-        GUID(), default=uuid4, unique=True, nullable=False, index=True
-    )
-    version = Column(Integer, default=1, nullable=False)
-    conflict_data = Column(JSON, nullable=True)
-    sync_state = Column(JSON, nullable=True)
-    name = Column(String, unique=True, nullable=False)
-    location_type = Column(String, nullable=False, default="Fixed")
-    updated_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
-    deleted_at = Column(DateTime(timezone=True), nullable=True)
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
-
-    devices = relationship("Device", back_populates="location_ref")
-
-
-class DeviceType(Base):
-    __tablename__ = "device_types"
-
-    id = Column(Integer, primary_key=True)
-    uuid = Column(
-        GUID(), default=uuid4, unique=True, nullable=False, index=True
-    )
-    version = Column(Integer, default=1, nullable=False)
-    conflict_data = Column(JSON, nullable=True)
-    sync_state = Column(JSON, nullable=True)
-    name = Column(String, unique=True, nullable=False)
-    upload_icon = Column(String, nullable=True)
-    upload_image = Column(String, nullable=True)
-    updated_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
-    deleted_at = Column(DateTime(timezone=True), nullable=True)
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
-
-    devices = relationship("Device", back_populates="device_type")
+from modules.inventory.models import (
+    Device,
+    DeviceType,
+    DeviceEditLog,
+    DeviceDamage,
+    Tag,
+    Location,
+)
+from modules.network.models import (
+    VLAN,
+    SNMPCommunity,
+    SSHCredential,
+    Interface,
+    InterfaceChangeLog,
+    PortStatusHistory,
+    PortConfigTemplate,
+    ConnectedSite,
+)
 
 
 class Site(Base):
@@ -150,115 +70,6 @@ class SiteMembership(Base):
 
     user = relationship("User", back_populates="site_memberships")
     site = relationship("Site", back_populates="memberships")
-
-
-device_tags = Table(
-    "device_tags",
-    Base.metadata,
-    Column("device_id", Integer, ForeignKey("devices.id"), primary_key=True),
-    Column("tag_id", Integer, ForeignKey("tags.id"), primary_key=True),
-)
-
-
-class Tag(Base):
-    __tablename__ = "tags"
-
-    id = Column(Integer, primary_key=True)
-    uuid = Column(
-        GUID(), default=uuid4, unique=True, nullable=False, index=True
-    )
-    version = Column(Integer, default=1, nullable=False)
-    conflict_data = Column(JSON, nullable=True)
-    sync_state = Column(JSON, nullable=True)
-    name = Column(String, unique=True, nullable=False)
-    updated_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
-    deleted_at = Column(DateTime(timezone=True), nullable=True)
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
-
-    devices = relationship("Device", secondary=device_tags, back_populates="tags")
-
-
-class Device(Base):
-    __tablename__ = "devices"
-
-    id = Column(Integer, primary_key=True)
-    uuid = Column(
-        GUID(), default=uuid4, unique=True, nullable=False, index=True
-    )
-    version = Column(Integer, default=1, nullable=False)
-    conflict_data = Column(JSON, nullable=True)
-    sync_state = Column(JSON, nullable=True)
-    hostname = Column(String, unique=True, nullable=False)
-    ip = Column(String, nullable=False)
-    mac = Column(String, nullable=True)
-    asset_tag = Column(String, nullable=True)
-    model = Column(String, nullable=True)
-    manufacturer = Column(String, nullable=False)
-    serial_number = Column(String, nullable=True)
-    device_type_id = Column(Integer, ForeignKey("device_types.id"), nullable=False)
-    location_id = Column(Integer, ForeignKey("locations.id"), nullable=True)
-    site_id = Column(Integer, ForeignKey("sites.id"), nullable=True)
-    on_lasso = Column(Boolean, default=False)
-    on_r1 = Column(Boolean, default=False)
-    priority = Column(Boolean, default=False)
-    status = Column(String, nullable=True)
-    vlan_id = Column(Integer, ForeignKey("vlans.id"))
-    ssh_credential_id = Column(Integer, ForeignKey("ssh_credentials.id"))
-    snmp_community_id = Column(Integer, ForeignKey("snmp_communities.id"))
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
-    created_by_id = Column(Integer, ForeignKey("users.id"), nullable=True)
-    updated_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
-    last_seen = Column(DateTime(timezone=True), nullable=True)
-
-    # SNMP status polling
-    uptime_seconds = Column(Integer, nullable=True)
-    last_snmp_check = Column(DateTime(timezone=True), nullable=True)
-    snmp_reachable = Column(Boolean, nullable=True)
-
-    # Auto-detection metadata
-    detected_platform = Column(String, nullable=True)
-    detected_via = Column(String, nullable=True)
-    ssh_profile_is_default = Column(Boolean, default=False)
-
-    # Interval for automated config pulls: 'hourly', 'daily', 'weekly', or 'none'
-    config_pull_interval = Column(String, nullable=False, default="none")
-
-    # Timestamp of the last successful scheduled pull
-    last_config_pull = Column(DateTime(timezone=True), nullable=True)
-
-    # Free-form notes about the device
-    notes = Column(Text, nullable=True)
-
-    # Soft deletion tracking
-    is_deleted = Column(Boolean, default=False)
-    deleted_by_id = Column(Integer, ForeignKey("users.id"), nullable=True)
-    deleted_at = Column(DateTime(timezone=True), nullable=True)
-    deleted_origin = Column(String, nullable=True)
-
-    vlan = relationship("VLAN", back_populates="devices")
-    ssh_credential = relationship("SSHCredential", back_populates="devices")
-    snmp_community = relationship("SNMPCommunity", back_populates="devices")
-    device_type = relationship("DeviceType", back_populates="devices")
-    location_ref = relationship("Location", back_populates="devices")
-    site = relationship("Site", back_populates="devices")
-    created_by = relationship("User", foreign_keys=[created_by_id])
-    backups = relationship(
-        "ConfigBackup",
-        back_populates="device",
-        cascade="all, delete-orphan",
-    )
-    tags = relationship("Tag", secondary="device_tags", back_populates="devices")
-    edit_logs = relationship(
-        "DeviceEditLog",
-        back_populates="device",
-        cascade="all, delete-orphan",
-    )
-    damage_reports = relationship(
-        "DeviceDamage",
-        back_populates="device",
-        cascade="all, delete-orphan",
-    )
-    deleted_by = relationship("User", foreign_keys=[deleted_by_id])
 
 
 class ConfigBackup(Base):
@@ -364,42 +175,7 @@ class AuditLog(Base):
     device = relationship("Device", passive_deletes=True)
 
 
-class PortConfigTemplate(Base):
-    """Reusable configuration snippets for switch ports."""
 
-    __tablename__ = "port_config_templates"
-
-    id = Column(Integer, primary_key=True)
-    name = Column(String, unique=True, nullable=False)
-    config_text = Column(Text, nullable=False)
-    last_edited = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
-    edited_by_id = Column(Integer, ForeignKey("users.id"), nullable=True)
-
-    edited_by = relationship("User")
-
-
-class DeviceEditLog(Base):
-    __tablename__ = "device_edit_logs"
-
-    id = Column(Integer, primary_key=True)
-    device_id = Column(Integer, ForeignKey("devices.id"), nullable=False)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
-    changes = Column(Text, nullable=True)
-
-    device = relationship("Device", back_populates="edit_logs")
-    user = relationship("User")
-
-
-class DeviceDamage(Base):
-    __tablename__ = "device_damage"
-
-    id = Column(Integer, primary_key=True)
-    device_id = Column(Integer, ForeignKey("devices.id"), nullable=False)
-    filename = Column(String, nullable=False)
-    uploaded_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
-
-    device = relationship("Device", back_populates="damage_reports")
 
 
 class BannedIP(Base):
@@ -441,21 +217,6 @@ class EmailLog(Base):
     site = relationship("Site")
 
 
-class PortStatusHistory(Base):
-    __tablename__ = "port_status_history"
-
-    id = Column(Integer, primary_key=True)
-    device_id = Column(Integer, ForeignKey("devices.id"), nullable=False)
-    interface_name = Column(String, nullable=False)
-    oper_status = Column(String, nullable=True)
-    admin_status = Column(String, nullable=True)
-    speed = Column(Integer, nullable=True)
-    poe_draw = Column(Integer, nullable=True)
-    timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
-
-    device = relationship("Device")
-
-
 class SNMPTrapLog(Base):
     __tablename__ = "snmp_trap_logs"
 
@@ -485,36 +246,6 @@ class SyslogEntry(Base):
 
     device = relationship("Device")
     site = relationship("Site")
-
-
-class Interface(Base):
-    __tablename__ = "interfaces"
-
-    id = Column(Integer, primary_key=True)
-    device_id = Column(Integer, ForeignKey("devices.id"), nullable=False)
-    name = Column(String, nullable=False)
-    description = Column(String, nullable=True)
-    vlan_id = Column(Integer, ForeignKey("vlans.id"), nullable=True)
-
-    device = relationship("Device")
-    vlan = relationship("VLAN")
-
-
-class InterfaceChangeLog(Base):
-    __tablename__ = "interface_change_logs"
-
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
-    device_id = Column(Integer, ForeignKey("devices.id"))
-    interface_name = Column(String, nullable=False)
-    old_desc = Column(String, nullable=True)
-    new_desc = Column(String, nullable=True)
-    old_vlan = Column(Integer, nullable=True)
-    new_vlan = Column(Integer, nullable=True)
-    timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
-
-    user = relationship("User")
-    device = relationship("Device")
 
 
 class DashboardWidget(Base):
@@ -580,26 +311,6 @@ class ImportLog(Base):
 
     user = relationship("User")
     site = relationship("Site")
-
-
-class ConnectedSite(Base):
-    """Cloud server record of registered local sites."""
-
-    __tablename__ = "connected_sites"
-
-    id = Column(Integer, primary_key=True)
-    site_id = Column(String, unique=True, nullable=False)
-    last_seen = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
-    last_version = Column(String, nullable=True)
-    sync_status = Column(String, nullable=True)
-    last_update_status = Column(String, nullable=True)
-    ip_address = Column(String, nullable=True)
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
-    updated_at = Column(
-        DateTime(timezone=True),
-        default=datetime.now(timezone.utc),
-        onupdate=datetime.now(timezone.utc),
-    )
 
 
 class SiteKey(Base):

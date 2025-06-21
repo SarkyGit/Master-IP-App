@@ -10,15 +10,15 @@ from puresnmp import Client, PyWrapper, V2C
 from core.utils.ssh import build_conn_kwargs
 from core.utils.device_detect import detect_ssh_platform
 from core.utils.db_session import SessionLocal
+from modules.inventory.models import Device
+from modules.network.models import PortStatusHistory
 from core.models.models import (
     ConfigBackup,
-    Device,
     Site,
     SiteMembership,
     User,
     AuditLog,
     EmailLog,
-    PortStatusHistory,
 )
 from core.utils.audit import log_audit
 from core.utils.email_utils import send_email
