@@ -1,6 +1,7 @@
 import os
 import sys
 import importlib
+import types
 from unittest import mock
 from fastapi.testclient import TestClient
 import pytest
@@ -67,7 +68,11 @@ class DummyDB:
     def __init__(self):
         with mock.patch("sqlalchemy.create_engine"), \
              mock.patch("sqlalchemy.schema.MetaData.create_all"):
-            models = importlib.import_module("core.models.models")
+            inv = importlib.import_module("modules.inventory.models")
+            core = importlib.import_module("core.models")
+            attrs = {name: getattr(core, name) for name in dir(core) if not name.startswith("_")}
+            attrs.update({name: getattr(inv, name) for name in dir(inv) if not name.startswith("_")})
+            models = types.SimpleNamespace(**attrs)
         self.models = models
         self.data = {
             models.User: [

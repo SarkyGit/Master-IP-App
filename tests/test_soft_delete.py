@@ -1,6 +1,5 @@
 import importlib
-from datetime import datetime, timezone
-import importlib
+import types
 from datetime import datetime, timezone
 from unittest import mock
 import uuid
@@ -15,7 +14,11 @@ def _load_models():
     with mock.patch("sqlalchemy.create_engine"), mock.patch(
         "sqlalchemy.schema.MetaData.create_all"
     ):
-        return importlib.import_module("core.models.models")
+        inv = importlib.import_module("modules.inventory.models")
+        core = importlib.import_module("core.models")
+        attrs = {name: getattr(core, name) for name in dir(core) if not name.startswith("_")}
+        attrs.update({name: getattr(inv, name) for name in dir(inv) if not name.startswith("_")})
+        return types.SimpleNamespace(**attrs)
 
 
 def test_soft_delete_device_clears_fields():
