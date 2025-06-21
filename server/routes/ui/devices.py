@@ -697,21 +697,19 @@ async def upload_damage_photo(
     return RedirectResponse(url=f"/devices/{device_id}/edit", status_code=302)
 
 
-@router.post("/devices/{device_id}/delete")
+@router.post("/devices/{device_id}/delete", name="delete_device")
 async def delete_device(
     device_id: int,
     db: Session = Depends(get_db),
-    current_user=Depends(require_role("editor")),
+    current_user=Depends(require_role("superadmin")),
 ):
-    """Delete the specified device."""
     device = db.query(Device).filter(Device.id == device_id).first()
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
-    dtype_id = device.device_type_id
-    unschedule_device_config_pull(device.id)
-    _soft_delete(device, current_user.id, "ui")
+
+    soft_delete(device, current_user.id, "ui")
     db.commit()
-    return RedirectResponse(url=f"/devices/type/{dtype_id}", status_code=302)
+    return RedirectResponse(url="/devices/table", status_code=302)
 
 @router.post("/devices/bulk-delete")
 async def bulk_delete_devices(
