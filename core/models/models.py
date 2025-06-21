@@ -20,24 +20,6 @@ from core.utils.types import GUID
 
 from core.utils.database import Base
 
-from modules.inventory.models import (
-    Device,
-    DeviceType,
-    DeviceEditLog,
-    DeviceDamage,
-    Tag,
-    Location,
-)
-from modules.network.models import (
-    VLAN,
-    SNMPCommunity,
-    SSHCredential,
-    Interface,
-    InterfaceChangeLog,
-    PortStatusHistory,
-    PortConfigTemplate,
-    ConnectedSite,
-)
 
 
 class Site(Base):
@@ -405,14 +387,7 @@ def _update_timestamp(mapper, connection, target) -> None:
 
 
 _SYNC_MODELS = [
-    VLAN,
-    SSHCredential,
-    SNMPCommunity,
-    Location,
-    DeviceType,
     Site,
-    Tag,
-    Device,
     User,
 ]
 

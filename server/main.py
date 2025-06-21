@@ -68,8 +68,7 @@ from server.routes import (
     api_ssh_credentials_router,
     api_system_router,
 )
-from modules.inventory.routes import router as inventory_router
-from modules.network.routes import router as network_router
+from modules import load_modules
 from server.routes.api.sync import router as api_sync_router
 from server.routes.api.register_site import router as register_site_router
 from server.routes.api.check_in import router as check_in_router
@@ -216,7 +215,7 @@ app.include_router(admin_debug_router)
 app.include_router(terminal_ws_router)
 app.include_router(dashboard_router)
 app.include_router(device_types_router)
-app.include_router(network_router)
+load_modules(app)
 app.include_router(port_config_templates_router)
 app.include_router(task_views_router)
 app.include_router(admin_users_router)
@@ -226,7 +225,6 @@ app.include_router(ssh_tasks_router)
 app.include_router(ip_bans_router)
 app.include_router(user_ssh_router)
 app.include_router(login_events_router)
-app.include_router(inventory_router)
 app.include_router(add_device_router)
 app.include_router(admin_site_router)
 app.include_router(bulk_router)

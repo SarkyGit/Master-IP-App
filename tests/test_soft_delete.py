@@ -15,9 +15,11 @@ def _load_models():
         "sqlalchemy.schema.MetaData.create_all"
     ):
         inv = importlib.import_module("modules.inventory.models")
+        net = importlib.import_module("modules.network.models")
         core = importlib.import_module("core.models")
         attrs = {name: getattr(core, name) for name in dir(core) if not name.startswith("_")}
         attrs.update({name: getattr(inv, name) for name in dir(inv) if not name.startswith("_")})
+        attrs.update({name: getattr(net, name) for name in dir(net) if not name.startswith("_")})
         return types.SimpleNamespace(**attrs)
 
 
