@@ -25,6 +25,7 @@ print([r.path for r in app.routes if '/inventory' in r.path])
 PY
 ```
 
+
 ```bash
 pytest -q
 ```
