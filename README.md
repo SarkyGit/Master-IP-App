@@ -15,6 +15,13 @@ Tailwind CSS has been removed from the project. Styling and components now rely 
 - `web-client/` stores HTML templates and static assets served by the app.
 - `mobile-client/` is a placeholder for a future mobile application.
 - Deleted records are never removed from the database. Instead `core.utils.deletion.soft_delete()` sets `deleted_at` and clears other fields so normal queries automatically exclude them.
+## Module System
+
+Inventory and network features are implemented as optional modules under `modules/`.
+At startup `server.main` calls `modules.load_modules(app)` which registers any enabled
+modules. Set `INVENTORY_ENABLED=0` or `NETWORK_ENABLED=0` in the environment to
+disable a module without modifying code.
+
 
 ## Quick Start for Beginners
 
