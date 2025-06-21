@@ -103,6 +103,7 @@ async def devices_grid(
         .all()
     )
     types = db.query(DeviceType).all()
+    message = request.query_params.get("message")
 
     context = {
         "request": request,
@@ -111,23 +112,11 @@ async def devices_grid(
         "current_user": current_user,
 
         "message": message,
-        "sort": sort,
-        "snmp": snmp,
-        "column_prefs": column_prefs,
-        "column_labels": DEVICE_COLUMN_LABELS,
-        "column_count": column_count,
-        "device_types": device_types,
-        "device_type": dtype,
-        "vlans": vlans,
-        "ssh_credentials": ssh_credentials,
-        "snmp_communities": snmp_communities,
-        "locations": locations,
-        "sites": sites,
-        "status_options": STATUS_OPTIONS,
-        "complete_count": complete_count,
-        "incomplete_count": incomplete_count,
     }
     return templates.TemplateResponse("devices_grid.html", context)
+
+
+
 
 
 
@@ -222,6 +211,7 @@ async def duplicate_report(
 async def list_devices_by_type(
     type_id: int,
     request: Request,
+    message: str | None = None,
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user),
 ):
@@ -283,7 +273,7 @@ async def list_devices_by_type(
         "duplicate_macs": duplicate_macs,
         "duplicate_tags": duplicate_tags,
         "personal_creds": personal_map,
-        "message": None,
+        "message": message,
         "column_prefs": column_prefs,
         "column_labels": DEVICE_COLUMN_LABELS,
         "column_count": column_count,
@@ -479,7 +469,6 @@ async def create_device(
     if device.site_id is not None and device.config_pull_interval != "none":
         schedule_device_config_pull(device)
     return RedirectResponse(url=f"/devices/type/{device.device_type_id}", status_code=302)
-
 
 
 @router.get("/devices/{device_id}/edit")
@@ -678,7 +667,6 @@ async def update_device(
     return RedirectResponse(url=f"/devices/type/{device.device_type_id}", status_code=302)
 
 
-
 @router.post("/devices/{device_id}/damage")
 async def upload_damage_photo(
     device_id: int,
@@ -724,8 +712,6 @@ async def delete_device(
     _soft_delete(device, current_user.id, "ui")
     db.commit()
     return RedirectResponse(url=f"/devices/type/{dtype_id}", status_code=302)
-
-
 
 @router.post("/devices/bulk-delete")
 async def bulk_delete_devices(
@@ -844,7 +830,6 @@ async def pull_device_config(
         return RedirectResponse(
             url=f"/devices/type/{device.device_type_id}?message=No+SSH+credentials",
             status_code=302,
-
         )
 
     conn_kwargs = build_conn_kwargs(cred)
@@ -863,7 +848,6 @@ async def pull_device_config(
         return RedirectResponse(
             url=f"/devices/type/{device.device_type_id}?message=SSH+error:+{str(exc)}",
             status_code=302,
-
         )
 
     backup = ConfigBackup(device_id=device.id, source="ssh", config_text=output)
@@ -893,7 +877,6 @@ async def pull_device_config(
         url=f"/devices/type/{device.device_type_id}?message=Config+pulled",
         status_code=302,
     )
-
 
 
 @router.get("/devices/{device_id}/push-config")
@@ -993,7 +976,6 @@ async def push_device_config(
         url=f"/devices/type/{device.device_type_id}?message={message}",
         status_code=302,
     )
-
 
 
 @router.get("/devices/{device_id}/template-config")
