@@ -128,7 +128,7 @@
             <td class="table-cell">{{ key.last_used_at or 'never' }}</td>
             <td class="actions-col text-center" style="width: 100px; min-width: 100px; max-width: 100px;">
               <div class="flex justify-center gap-1">
-                <button type="submit" formmethod="post" formaction="/admin/site-keys/{{ key.id }}/toggle" aria-label="{{ 'Disable' if key.active else 'Enable' }}" class="icon-btn" onclick="return {{ 'confirm(\'Disable key?\')' if key.active else 'true' }}">{{ include_icon(key.active and 'x-circle' or 'check-circle', key.active and 'text-red-500' or 'text-green-500', '5') }}</button>
+                <button type="submit" form="toggle-key-{{ key.id }}" formmethod="post" formaction="/admin/site-keys/{{ key.id }}/toggle" aria-label="{{ 'Disable' if key.active else 'Enable' }}" class="icon-btn" onclick="return {{ 'confirm(\'Disable key?\')' if key.active else 'true' }}">{{ include_icon(key.active and 'x-circle' or 'check-circle', key.active and 'text-red-500' or 'text-green-500', '5') }}</button>
                 <form method="post" action="/admin/site-keys/{{ key.id }}/delete" style="display:inline;">
                   <button type="submit" class="icon-btn" title="Delete" onclick="return confirm('Delete key?')">
                     {{ include_icon('trash-2','text-red-500','5') }}
