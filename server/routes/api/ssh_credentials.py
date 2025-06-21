@@ -3,14 +3,14 @@ from sqlalchemy.orm import Session
 
 from core.utils.db_session import get_db
 from modules.network.models import SSHCredential
-from core import schemas
+from modules.network import forms as network_forms
 from core.utils.versioning import apply_update
 from core.utils import auth as auth_utils
 from core.utils.deletion import soft_delete
 
 router = APIRouter(prefix="/api/v1/ssh-credentials", tags=["ssh_credentials"])
 
-@router.get("/", response_model=list[schemas.SSHCredentialRead])
+@router.get("/", response_model=list[network_forms.SSHCredentialRead])
 def list_creds(
     skip: int = 0,
     limit: int = 100,
@@ -23,9 +23,9 @@ def list_creds(
         q = q.filter(SSHCredential.name.ilike(f"%{search}%"))
     return q.offset(skip).limit(limit).all()
 
-@router.post("/", response_model=schemas.SSHCredentialRead)
+@router.post("/", response_model=network_forms.SSHCredentialRead)
 def create_cred(
-    cred: schemas.SSHCredentialCreate,
+    cred: network_forms.SSHCredentialCreate,
     db: Session = Depends(get_db),
     current_user: SSHCredential = Depends(auth_utils.require_role("admin")),
 ):
@@ -36,7 +36,7 @@ def create_cred(
     db.refresh(obj)
     return obj
 
-@router.get("/{cred_id}", response_model=schemas.SSHCredentialRead)
+@router.get("/{cred_id}", response_model=network_forms.SSHCredentialRead)
 def get_cred(
     cred_id: int,
     db: Session = Depends(get_db),
@@ -47,10 +47,10 @@ def get_cred(
         raise HTTPException(status_code=404, detail="Credential not found")
     return obj
 
-@router.put("/{cred_id}", response_model=schemas.SSHCredentialRead)
+@router.put("/{cred_id}", response_model=network_forms.SSHCredentialRead)
 def update_cred(
     cred_id: int,
-    update: schemas.SSHCredentialUpdate,
+    update: network_forms.SSHCredentialUpdate,
     db: Session = Depends(get_db),
     current_user: SSHCredential = Depends(auth_utils.require_role("admin")),
 ):

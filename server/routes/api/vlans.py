@@ -3,14 +3,14 @@ from sqlalchemy.orm import Session
 
 from core.utils.db_session import get_db
 from modules.network.models import VLAN
-from core import schemas
+from modules.network import forms as network_forms
 from core.utils.versioning import apply_update
 from core.utils import auth as auth_utils
 from core.utils.deletion import soft_delete
 
 router = APIRouter(prefix="/api/v1/vlans", tags=["vlans"])
 
-@router.get("/", response_model=list[schemas.VLANRead])
+@router.get("/", response_model=list[network_forms.VLANRead])
 def list_vlans(
     skip: int = 0,
     limit: int = 100,
@@ -23,9 +23,9 @@ def list_vlans(
         q = q.filter(VLAN.description.ilike(f"%{search}%"))
     return q.offset(skip).limit(limit).all()
 
-@router.post("/", response_model=schemas.VLANRead)
+@router.post("/", response_model=network_forms.VLANRead)
 def create_vlan(
-    vlan: schemas.VLANCreate,
+    vlan: network_forms.VLANCreate,
     db: Session = Depends(get_db),
     current_user: VLAN = Depends(auth_utils.require_role("editor")),
 ):
@@ -36,7 +36,7 @@ def create_vlan(
     db.refresh(obj)
     return obj
 
-@router.get("/{vlan_id}", response_model=schemas.VLANRead)
+@router.get("/{vlan_id}", response_model=network_forms.VLANRead)
 def get_vlan(
     vlan_id: int,
     db: Session = Depends(get_db),
@@ -47,10 +47,10 @@ def get_vlan(
         raise HTTPException(status_code=404, detail="VLAN not found")
     return obj
 
-@router.put("/{vlan_id}", response_model=schemas.VLANRead)
+@router.put("/{vlan_id}", response_model=network_forms.VLANRead)
 def update_vlan(
     vlan_id: int,
-    update: schemas.VLANUpdate,
+    update: network_forms.VLANUpdate,
     db: Session = Depends(get_db),
     current_user: VLAN = Depends(auth_utils.require_role("editor")),
 ):

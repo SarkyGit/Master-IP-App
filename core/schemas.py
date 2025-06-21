@@ -3,8 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any
 
-from pydantic import BaseModel, Field, ConfigDict, field_validator
-from core.utils.ip_utils import normalize_ip
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class ConflictEntry(BaseModel):
@@ -33,106 +32,6 @@ class ColumnSelection(BaseModel):
     selected: list[str] = []
 
 
-class VLANBase(BaseSchema):
-    tag: int
-    description: str | None = None
-
-
-class VLANCreate(BaseModel):
-    tag: int
-    description: str | None = None
-    version: int = Field(1, ge=1)
-    conflict_data: list[ConflictEntry] | None = None
-
-
-class VLANRead(VLANBase):
-    id: int
-
-    model_config = ConfigDict(from_attributes=True)
-
-
-class VLANUpdate(BaseModel):
-    tag: int | None = None
-    description: str | None = None
-    version: int | None = Field(None, ge=1)
-    conflict_data: list[ConflictEntry] | None = None
-
-
-class DeviceBase(BaseSchema):
-    hostname: str
-    ip: str
-    vlan_id: int | None = None
-    manufacturer: str | None = None
-    model: str | None = None
-
-
-class DeviceCreate(BaseModel):
-    hostname: str
-    ip: str
-    vlan_id: int | None = None
-    manufacturer: str | None = None
-    model: str | None = None
-    version: int = Field(1, ge=1)
-    conflict_data: list[ConflictEntry] | None = None
-
-    @field_validator("ip")
-    @classmethod
-    def _validate_ip(cls, v: str) -> str:
-        return normalize_ip(v)
-
-
-class DeviceRead(DeviceBase):
-    id: int
-
-    model_config = ConfigDict(from_attributes=True)
-
-
-class DeviceUpdate(BaseModel):
-    hostname: str | None = None
-    ip: str | None = None
-    vlan_id: int | None = None
-    manufacturer: str | None = None
-    model: str | None = None
-    version: int | None = Field(None, ge=1)
-    conflict_data: list[ConflictEntry] | None = None
-
-    @field_validator("ip")
-    @classmethod
-    def _validate_ip(cls, v: str | None) -> str | None:
-        if v is None:
-            return None
-        return normalize_ip(v)
-
-
-class SSHCredentialBase(BaseSchema):
-    name: str
-    username: str
-    password: str | None = None
-    private_key: str | None = None
-
-
-class SSHCredentialCreate(BaseModel):
-    name: str
-    username: str
-    password: str | None = None
-    private_key: str | None = None
-    version: int = Field(1, ge=1)
-    conflict_data: list[ConflictEntry] | None = None
-
-
-class SSHCredentialRead(SSHCredentialBase):
-    id: int
-
-    model_config = ConfigDict(from_attributes=True)
-
-
-class SSHCredentialUpdate(BaseModel):
-    name: str | None = None
-    username: str | None = None
-    password: str | None = None
-    private_key: str | None = None
-    version: int | None = Field(None, ge=1)
-    conflict_data: list[ConflictEntry] | None = None
 
 
 class UserBase(BaseSchema):
@@ -187,57 +86,6 @@ class TagUpdate(BaseModel):
     conflict_data: list[ConflictEntry] | None = None
 
 
-class DeviceTypeBase(BaseSchema):
-    name: str
-    upload_icon: str | None = None
-    upload_image: str | None = None
-
-
-class DeviceTypeCreate(BaseModel):
-    name: str
-    version: int = Field(1, ge=1)
-    conflict_data: list[ConflictEntry] | None = None
-    upload_icon: str | None = None
-    upload_image: str | None = None
-
-
-class DeviceTypeRead(DeviceTypeBase):
-    id: int
-
-    model_config = ConfigDict(from_attributes=True)
-
-
-class DeviceTypeUpdate(BaseModel):
-    name: str | None = None
-    version: int | None = Field(None, ge=1)
-    conflict_data: list[ConflictEntry] | None = None
-    upload_icon: str | None = None
-    upload_image: str | None = None
-
-
-class LocationBase(BaseSchema):
-    name: str
-    location_type: str = "Fixed"
-
-
-class LocationCreate(BaseModel):
-    name: str
-    location_type: str = "Fixed"
-    version: int = Field(1, ge=1)
-    conflict_data: list[ConflictEntry] | None = None
-
-
-class LocationRead(LocationBase):
-    id: int
-
-    model_config = ConfigDict(from_attributes=True)
-
-
-class LocationUpdate(BaseModel):
-    name: str | None = None
-    location_type: str | None = None
-    version: int | None = Field(None, ge=1)
-    conflict_data: list[ConflictEntry] | None = None
 
 
 class SiteBase(BaseSchema):
