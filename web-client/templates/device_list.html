@@ -8,7 +8,7 @@
   </form>
   {% endset %}
 {% endif %}
-<form method="post" action="{{ request.url_for('bulk_delete_devices') }}" x-data="tableControls()" id="device-table-form" class="space-y-2 full-width" data-bulk-delete-url="{{ request.url_for('bulk_delete_devices') }}" data-bulk-update-url="{{ request.url_for('bulk_update_devices') }}">
+<form method="post" action="{{ request.url_for('bulk_delete_devices') }}" x-data="tableControls()" id="device-table-form" class="space-y-2 full-width" data-bulk-delete-url="{{ request.url_for('bulk_delete_devices') }}" data-bulk-update-url="{{ request.url_for('bulk_update_devices') }}" style="display:inline;">
 <div class="flex justify-end items-center">
   <input x-model="search" type="text" placeholder="Search" class="rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)] px-2 py-1" />
   {% if refresh_button is defined %}{{ refresh_button }}{% endif %}
@@ -167,8 +167,12 @@
   </div>
 </div>
 </div>
-<button type="submit" aria-label="Delete Selected" class="px-2 text-sm text-[var(--btn-text)] hover:text-[var(--btn-hover-text)] mt-2 cursor-pointer" onclick="return confirm('Delete selected devices?')">
+<span aria-label="Delete Selected"
+      class="px-2 text-sm text-[var(--btn-text)] hover:text-[var(--btn-hover-text)] mt-2 cursor-pointer"
+      role="button"
+      tabindex="0"
+      onclick="if(confirm('Delete selected devices?')) this.closest('form').submit()">
   {{ include_icon('trash-2','text-red-500','5') }}
-</button>
+</span>
 </form>
 {% endblock %}
