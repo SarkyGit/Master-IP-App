@@ -38,7 +38,7 @@ from core.models.models import (
     ColumnPreference,
 )
 from core.utils.audit import log_audit
-from core.utils.tags import (
+from modules.inventory.utils import (
     update_device_complete_tag,
     update_device_attribute_tags,
     get_or_create_tag,
