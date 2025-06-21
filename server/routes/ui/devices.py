@@ -8,7 +8,7 @@ from fastapi import (
     File,
     Body,
 )
-from fastapi.responses import RedirectResponse, HTMLResponse
+from fastapi.responses import RedirectResponse
 from core.schemas import ColumnSelection
 from core.utils.templates import templates
 from sqlalchemy.orm import Session
@@ -87,105 +87,33 @@ TEMPLATE_OPTIONS = [
 
 
 @router.get("/devices")
-async def list_devices(
-    request: Request,
-    sort: str | None = None,
-    snmp: str | None = None,
-    db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
-):
-    """Render a read-only list of all devices."""
-    if not current_user:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-
-    query = db.query(Device)
-    if snmp == "reachable":
-        query = query.filter(Device.snmp_reachable.is_(True))
-    elif snmp == "unreachable":
-        query = query.filter(Device.snmp_reachable.is_(False))
-    if sort in {"uptime", "-uptime"}:
-        order = Device.uptime_seconds.asc() if sort == "uptime" else Device.uptime_seconds.desc()
-        query = query.order_by(order)
-    devices = [d for d in query.all() if not getattr(d, "is_deleted", False)]
-    dup_ips = {}
-    dup_macs = {}
-    dup_tags = {}
-    for d in devices:
-        if d.ip:
-            dup_ips.setdefault(d.ip, []).append(d.hostname)
-        if d.mac:
-            nm = normalize_mac(d.mac)
-            dup_macs.setdefault(nm, []).append(d.hostname)
-        if d.asset_tag:
-            dup_tags.setdefault(d.asset_tag, []).append(d.hostname)
-    duplicate_ips = {k: v for k, v in dup_ips.items() if len(v) > 1}
-    duplicate_macs = {k: v for k, v in dup_macs.items() if len(v) > 1}
-    duplicate_tags = {k: v for k, v in dup_tags.items() if len(v) > 1}
-    personal_map = {}
-    for d in devices:
-        if d.ssh_credential:
-            personal = (
-                db.query(UserSSHCredential)
-                .filter(
-                    UserSSHCredential.user_id == current_user.id,
-                    UserSSHCredential.name == d.ssh_credential.name,
-                )
-                .first()
-            )
-            if personal:
-                personal_map[d.id] = True
-    column_prefs = load_column_preferences(db, current_user.id, "device_list")
-    column_count = 1 + sum(1 for v in column_prefs.values() if v)
-    message = request.query_params.get("message")
-    complete_count = sum(1 for d in devices if any(t.name == "complete" for t in d.tags))
-    incomplete_count = sum(1 for d in devices if any(t.name == "incomplete" for t in d.tags))
-    (
-        device_types,
-        vlans,
-        ssh_credentials,
-        snmp_communities,
-        locations,
-        _models,
-        sites,
-    ) = _load_form_options(db)
-    context = {
-        "request": request,
-        "devices": devices,
-        "duplicate_ips": duplicate_ips,
-        "duplicate_macs": duplicate_macs,
-        "duplicate_tags": duplicate_tags,
-        "personal_creds": personal_map,
-        "current_user": current_user,
-        "message": message,
-        "sort": sort,
-        "snmp": snmp,
-        "column_prefs": column_prefs,
-        "column_labels": DEVICE_COLUMN_LABELS,
-        "column_count": column_count,
-        "device_types": device_types,
-        "vlans": vlans,
-        "ssh_credentials": ssh_credentials,
-        "snmp_communities": snmp_communities,
-        "locations": locations,
-        "sites": sites,
-        "status_options": STATUS_OPTIONS,
-        "complete_count": complete_count,
-        "incomplete_count": incomplete_count,
-    }
-    return templates.TemplateResponse("device_list.html", context)
-
-
-@router.get("/devices")
 async def devices_grid(
     request: Request,
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user),
 ):
+    """Render a grid of device types."""
     if not current_user:
         raise HTTPException(status_code=401, detail="Not authenticated")
+
+    counts = dict(
+        db.query(Device.device_type_id, func.count(Device.id))
+        .filter(Device.is_deleted.is_(False))
+        .group_by(Device.device_type_id)
+        .all()
+    )
     types = db.query(DeviceType).all()
-    context = {"request": request, "types": types, "current_user": current_user}
+    message = request.query_params.get("message")
+    context = {
+        "request": request,
+        "types": types,
+        "counts": counts,
+        "current_user": current_user,
+        "message": message,
+    }
     return templates.TemplateResponse("devices_grid.html", context)
+
+
 
 
 @router.get("/devices/column-prefs")
@@ -279,6 +207,7 @@ async def duplicate_report(
 async def list_devices_by_type(
     type_id: int,
     request: Request,
+    message: str | None = None,
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user),
 ):
@@ -340,7 +269,7 @@ async def list_devices_by_type(
         "duplicate_macs": duplicate_macs,
         "duplicate_tags": duplicate_tags,
         "personal_creds": personal_map,
-        "message": None,
+        "message": message,
         "column_prefs": column_prefs,
         "column_labels": DEVICE_COLUMN_LABELS,
         "column_count": column_count,
@@ -535,7 +464,7 @@ async def create_device(
     db.commit()
     if device.site_id is not None and device.config_pull_interval != "none":
         schedule_device_config_pull(device)
-    return RedirectResponse(url="/devices", status_code=302)
+    return RedirectResponse(url=f"/devices/type/{device.device_type_id}", status_code=302)
 
 
 @router.get("/devices/{device_id}/edit")
@@ -731,7 +660,7 @@ async def update_device(
         )
         db.commit()
 
-    return RedirectResponse(url="/devices", status_code=302)
+    return RedirectResponse(url=f"/devices/type/{device.device_type_id}", status_code=302)
 
 
 @router.post("/devices/{device_id}/damage")
@@ -774,10 +703,11 @@ async def delete_device(
     device = db.query(Device).filter(Device.id == device_id).first()
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
+    dtype_id = device.device_type_id
     unschedule_device_config_pull(device.id)
     _soft_delete(device, current_user.id, "ui")
     db.commit()
-    return RedirectResponse(url="/devices", status_code=302)
+    return RedirectResponse(url=f"/devices/type/{dtype_id}", status_code=302)
 
 
 @router.post("/devices/bulk-delete")
@@ -895,7 +825,8 @@ async def pull_device_config(
     cred, _ = resolve_ssh_credential(db, device, current_user)
     if not cred:
         return RedirectResponse(
-            url="/devices?message=No+SSH+credentials", status_code=302
+            url=f"/devices/type/{device.device_type_id}?message=No+SSH+credentials",
+            status_code=302,
         )
 
     conn_kwargs = build_conn_kwargs(cred)
@@ -912,7 +843,8 @@ async def pull_device_config(
     except Exception as exc:
         log_audit(db, current_user, "debug", device, f"SSH pull error: {exc}")
         return RedirectResponse(
-            url=f"/devices?message=SSH+error:+{str(exc)}", status_code=302
+            url=f"/devices/type/{device.device_type_id}?message=SSH+error:+{str(exc)}",
+            status_code=302,
         )
 
     backup = ConfigBackup(device_id=device.id, source="ssh", config_text=output)
@@ -938,7 +870,10 @@ async def pull_device_config(
             log_audit(db, current_user, "delete", device, f"Deleted backup {old.id}")
         db.commit()
 
-    return RedirectResponse(url="/devices?message=Config+pulled", status_code=302)
+    return RedirectResponse(
+        url=f"/devices/type/{device.device_type_id}?message=Config+pulled",
+        status_code=302,
+    )
 
 
 @router.get("/devices/{device_id}/push-config")
@@ -1034,7 +969,10 @@ async def push_device_config(
         db.commit()
 
     message = "Config+pushed" if success else "Config+queued"
-    return RedirectResponse(url=f"/devices?message={message}", status_code=302)
+    return RedirectResponse(
+        url=f"/devices/type/{device.device_type_id}?message={message}",
+        status_code=302,
+    )
 
 
 @router.get("/devices/{device_id}/template-config")
