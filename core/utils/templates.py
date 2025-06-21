@@ -7,6 +7,7 @@ from jinja2 import Environment, ChoiceLoader, FileSystemLoader
 # Templates may be provided by modules as well as the web-client package
 template_dirs = [
     "web-client/templates",
+    "base/templates",
     "modules/inventory/templates",
     "modules/network/templates",
 ]

@@ -59,7 +59,7 @@ async def my_profile(
         "fonts": ["sans", "serif", "mono"],
         "icon_sets": ["lucide", "fontawesome", "material", "bootstrap"],
     }
-    return templates.TemplateResponse("user_detail.html", context)
+    return templates.TemplateResponse("base/user_detail.html", context)
 
 
 @router.get("/users/me/theme")
@@ -85,7 +85,7 @@ async def theme_preferences(
         "menu_styles": ["tabbed", "dropdown", "folder"],
         "icon_sets": ["lucide", "fontawesome", "material", "bootstrap"],
     }
-    return templates.TemplateResponse("user_theme.html", context)
+    return templates.TemplateResponse("base/user_theme.html", context)
 
 
 @router.get("/users/me/edit")
@@ -111,7 +111,7 @@ async def edit_my_profile_form(
         "menu_styles": ["tabbed", "dropdown", "folder"],
         "icon_sets": ["lucide", "fontawesome", "material", "bootstrap"],
     }
-    return templates.TemplateResponse("user_form.html", context)
+    return templates.TemplateResponse("base/user_form.html", context)
 
 
 @router.post("/users/me/edit")
@@ -153,7 +153,7 @@ async def update_my_profile(
             "menu_styles": ["tabbed", "dropdown", "folder"],
             "icon_sets": ["lucide", "fontawesome", "material", "bootstrap"],
         }
-        return templates.TemplateResponse("user_form.html", context)
+        return templates.TemplateResponse("base/user_form.html", context)
 
     current_user.email = email
     current_user.theme = theme
@@ -247,4 +247,4 @@ async def user_detail(
         "current_user": current_user,
         "api_key": api_key,
     }
-    return templates.TemplateResponse("user_detail.html", context)
+    return templates.TemplateResponse("base/user_detail.html", context)

@@ -22,7 +22,7 @@ router = APIRouter()
 async def login_form(request: Request):
     """Render the login form."""
     context = {"request": request, "error": None, "current_user": None}
-    return templates.TemplateResponse("login.html", context)
+    return templates.TemplateResponse("base/login.html", context)
 
 
 @router.post("/login")
@@ -40,7 +40,7 @@ async def login(
         log_audit(db, None, "failed_login", details=f"IP={ip} banned")
         log_login_event(db, None, ip, user_agent, False)
         context = {"request": request, "error": "Invalid credentials", "current_user": None}
-        return templates.TemplateResponse("login.html", context)
+        return templates.TemplateResponse("base/login.html", context)
 
     user = db.query(User).filter(User.email == email, User.is_active.is_(True)).first()
     if not user or not auth_utils.verify_password(password, user.hashed_password):
@@ -50,7 +50,7 @@ async def login(
         if banned_now:
             log_audit(db, None, "auto_ban_ip", details=f"{ip}")
         context = {"request": request, "error": "Invalid credentials", "current_user": None}
-        return templates.TemplateResponse("login.html", context)
+        return templates.TemplateResponse("base/login.html", context)
 
     clear_attempts(ip)
     request.session["user_id"] = user.id
