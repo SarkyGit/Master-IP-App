@@ -9,6 +9,7 @@ import httpx
 
 from core.utils.db_session import SessionLocal
 from modules.inventory.models import Device
+from modules.inventory import models as inventory_models  # noqa: F401
 from core.models.models import SystemTunable
 
 SYNC_INTERVAL = int(os.environ.get("SYNC_FREQUENCY", "300"))

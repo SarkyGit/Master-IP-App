@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import or_
 
 from modules.inventory.models import Device
+from modules.inventory import models as inventory_models  # noqa: F401
 from core.utils.versioning import clear_conflicts
 from core.utils.audit import log_audit
 from server.workers import sync_push_worker
