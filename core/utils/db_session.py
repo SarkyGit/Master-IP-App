@@ -13,6 +13,10 @@ if DATABASE_URL and not DATABASE_URL.startswith("postgresql"):
 engine = create_engine(DATABASE_URL) if DATABASE_URL else None
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+# Import module models so all tables are registered before creation
+import modules.inventory.models  # noqa: F401
+import modules.network.models  # noqa: F401
+
 if engine:
     # Ensure all tables are created
     Base.metadata.create_all(bind=engine)
