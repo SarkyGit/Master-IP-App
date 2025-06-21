@@ -37,8 +37,18 @@ function tableControls() {
         if (state) this.selectedIds.push(cb.value)
       })
     },
-    bulkDelete() { this.$el.action = this.$el.dataset.bulkDeleteUrl; this.$el.submit() },
-    bulkUpdate() { this.$el.action = this.$el.dataset.bulkUpdateUrl; this.$el.submit() },
+    bulkDelete() {
+      if (this.$el.dataset.bulkDeleteUrl) {
+        this.$el.action = this.$el.dataset.bulkDeleteUrl
+      }
+      this.$el.submit()
+    },
+    bulkUpdate() {
+      if (this.$el.dataset.bulkUpdateUrl) {
+        this.$el.action = this.$el.dataset.bulkUpdateUrl
+      }
+      this.$el.submit()
+    },
     sort(idx) {
       if (this.sortIndex === idx) {
         if (this.sortAsc) {
