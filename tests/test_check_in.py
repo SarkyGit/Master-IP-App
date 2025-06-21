@@ -31,7 +31,7 @@ class DummyQuery:
 class DummyDB:
     def __init__(self):
         with mock.patch("sqlalchemy.create_engine"), mock.patch("sqlalchemy.schema.MetaData.create_all"):
-            models = importlib.import_module("core.models.models")
+            models = importlib.import_module("core.models")
         self.models = models
         self.data = {
             models.ConnectedSite: [],
@@ -87,7 +87,7 @@ client = get_test_client()
 
 
 def test_check_in_upserts():
-    models = importlib.import_module("core.models.models")
+    models = importlib.import_module("core.models")
     db = DummyDB()
     def _override():
         try:

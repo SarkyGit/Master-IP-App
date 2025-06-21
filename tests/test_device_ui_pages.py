@@ -35,7 +35,7 @@ class DummyQuery:
 class DummyDB:
     def __init__(self):
         inv_models = importlib.import_module("modules.inventory.models")
-        core_models = importlib.import_module("core.models.models")
+        core_models = importlib.import_module("core.models")
         self.inv = inv_models
         self.core = core_models
         self.device = inv_models.Device(
