@@ -64,27 +64,6 @@ class UserUpdate(BaseModel):
     conflict_data: list[ConflictEntry] | None = None
 
 
-class TagBase(BaseSchema):
-    name: str
-
-
-class TagCreate(BaseModel):
-    name: str
-    version: int = Field(1, ge=1)
-    conflict_data: list[ConflictEntry] | None = None
-
-
-class TagRead(TagBase):
-    id: int
-
-    model_config = ConfigDict(from_attributes=True)
-
-
-class TagUpdate(BaseModel):
-    name: str | None = None
-    version: int | None = Field(None, ge=1)
-    conflict_data: list[ConflictEntry] | None = None
-
 
 
 
