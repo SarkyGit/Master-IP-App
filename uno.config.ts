@@ -13,7 +13,11 @@ export default defineConfig({
     presetUno(),
   ],
   extract: {
-    include: ['web-client/templates/**/*.html'],
+    include: [
+      'web-client/templates/**/*.html',
+      'base/templates/**/*.html',
+      'modules/**/templates/**/*.html',
+    ],
   },
   // Semantic shortcuts used throughout the templates
   shortcuts: {

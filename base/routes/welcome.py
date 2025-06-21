@@ -119,7 +119,7 @@ async def welcome_role(role: str, request: Request, current_user=Depends(get_cur
         "inventory_text": inventory,
         "current_user": current_user,
     }
-    return templates.TemplateResponse("welcome.html", context)
+    return templates.TemplateResponse("base/welcome.html", context)
 
 
 @router.get("/network/dashboard")
@@ -131,7 +131,7 @@ async def dashboard(
 ):
     if not current_user:
         return templates.TemplateResponse(
-            "index.html", {"request": request, "current_user": None, "message": ""}
+            "base/index.html", {"request": request, "current_user": None, "message": ""}
         )
     site_ids = get_user_site_ids(db, current_user)
     selectable_sites = None
@@ -155,7 +155,7 @@ async def dashboard(
             "site": None,
             "selectable_sites": selectable_sites,
         }
-        return templates.TemplateResponse("dashboard.html", context)
+        return templates.TemplateResponse("base/dashboard.html", context)
 
     prefs = load_widget_preferences(db, current_user.id, site_id)
 
@@ -273,7 +273,7 @@ async def dashboard(
         "priority_devices": priority_devices,
         "no_site": False,
     }
-    return templates.TemplateResponse("dashboard.html", context)
+    return templates.TemplateResponse("base/dashboard.html", context)
 
 
 @router.get("/network/dashboard/preferences")
@@ -294,7 +294,7 @@ async def dashboard_prefs(
         "widget_labels": WIDGET_LABELS,
         "current_user": current_user,
     }
-    return templates.TemplateResponse("dashboard_prefs.html", context)
+    return templates.TemplateResponse("base/dashboard_prefs.html", context)
 
 
 @router.post("/network/dashboard/preferences")
