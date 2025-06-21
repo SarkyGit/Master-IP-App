@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from core.utils.db_session import get_db
 from modules.inventory.models import Device
-from core import schemas
+from modules.inventory import forms as inventory_forms
 from core.utils.versioning import apply_update
 from core.utils import auth as auth_utils
 from core.utils.deletion import soft_delete
@@ -11,7 +11,7 @@ from datetime import datetime, timezone
 
 router = APIRouter(prefix="/api/v1/devices", tags=["devices"])
 
-@router.get("/", response_model=list[schemas.DeviceRead])
+@router.get("/", response_model=list[inventory_forms.DeviceRead])
 def list_devices(
     skip: int = 0,
     limit: int = 100,
@@ -25,9 +25,9 @@ def list_devices(
     devices = q.offset(skip).limit(limit).all()
     return [d for d in devices if not getattr(d, "is_deleted", False)]
 
-@router.post("/", response_model=schemas.DeviceRead)
+@router.post("/", response_model=inventory_forms.DeviceRead)
 def create_device(
-    device: schemas.DeviceCreate,
+    device: inventory_forms.DeviceCreate,
     db: Session = Depends(get_db),
     current_user: Device = Depends(auth_utils.require_role("editor")),
 ):
@@ -38,7 +38,7 @@ def create_device(
     db.refresh(obj)
     return obj
 
-@router.get("/{device_id}", response_model=schemas.DeviceRead)
+@router.get("/{device_id}", response_model=inventory_forms.DeviceRead)
 def get_device(
     device_id: int,
     db: Session = Depends(get_db),
@@ -49,10 +49,10 @@ def get_device(
         raise HTTPException(status_code=404, detail="Device not found")
     return obj
 
-@router.put("/{device_id}", response_model=schemas.DeviceRead)
+@router.put("/{device_id}", response_model=inventory_forms.DeviceRead)
 def update_device(
     device_id: int,
-    update: schemas.DeviceUpdate,
+    update: inventory_forms.DeviceUpdate,
     db: Session = Depends(get_db),
     current_user: Device = Depends(auth_utils.require_role("editor")),
 ):
