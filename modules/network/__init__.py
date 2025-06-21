@@ -1,3 +1,3 @@
-from server.routes.ui.network import router
+from server.routes.ui.network import router as network_router
 
-__all__ = ["router"]
+__all__ = ["network_router"]
