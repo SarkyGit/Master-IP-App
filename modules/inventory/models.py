@@ -17,6 +17,7 @@ from sqlalchemy.dialects.postgresql import UUID
 
 from core.utils.types import GUID
 from core.utils.database import Base
+from sqlalchemy import event
 
 
 class Location(Base):
@@ -163,4 +164,13 @@ class DeviceDamage(Base):
     uploaded_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
 
     device = relationship("Device", back_populates="damage_reports")
+
+
+def _update_timestamp(mapper, connection, target) -> None:
+    """Refresh the updated_at field before persisting changes."""
+    target.updated_at = datetime.now(timezone.utc)
+
+
+for _model in (Device, DeviceType, Location, Tag):
+    event.listen(_model, "before_update", _update_timestamp)
 

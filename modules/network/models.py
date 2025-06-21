@@ -16,6 +16,7 @@ from sqlalchemy.dialects.postgresql import UUID
 
 from core.utils.types import GUID
 from core.utils.database import Base
+from sqlalchemy import event
 
 
 class VLAN(Base):
@@ -149,4 +150,12 @@ class ConnectedSite(Base):
         default=datetime.now(timezone.utc),
         onupdate=datetime.now(timezone.utc),
     )
+
+
+def _update_timestamp(mapper, connection, target) -> None:
+    target.updated_at = datetime.now(timezone.utc)
+
+
+for _model in (VLAN, SSHCredential, SNMPCommunity, ConnectedSite):
+    event.listen(_model, "before_update", _update_timestamp)
 
