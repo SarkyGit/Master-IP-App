@@ -1,4 +1,4 @@
-from .ui.auth import router as auth_router
+from base.routes.auth import router as auth_router
 from .ui.devices import router as devices_router
 from .ui.vlans import router as vlans_router
 from .ui.tunables import router as tunables_router
@@ -11,13 +11,13 @@ from .ui.admin import router as admin_router
 from .ui.audit import router as audit_router
 from .ui.admin_debug import router as admin_debug_router
 from .ui.sync_diagnostics import router as sync_diagnostics_router
-from .ui.welcome import router as welcome_router
+from base.routes.welcome import router as welcome_router
 from .ui.device_types import router as device_types_router
 from modules.network import network_router
 from .ui.port_config_templates import router as port_config_templates_router
 from .ui.task_views import router as task_views_router
 from .ui.admin_users import router as admin_users_router
-from .ui.user_pages import router as user_pages_router
+from base.routes.user_pages import router as user_pages_router
 from .ui.locations import router as locations_router
 from .ui.ssh_tasks import router as ssh_tasks_router
 from .ui.ip_bans import router as ip_bans_router

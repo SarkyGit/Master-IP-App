@@ -33,8 +33,8 @@ async def ip_search(
 
 @router.get('/network/dashboard')
 async def network_dashboard(request: Request, site_id: int | None = None, db: Session = Depends(get_db), current_user=Depends(get_current_user)):
-    # reuse dashboard logic from welcome.dashboard
-    from .welcome import dashboard as dash_func
+    # reuse dashboard logic from base welcome module
+    from base.routes.welcome import dashboard as dash_func
     return await dash_func(request=request, site_id=site_id, db=db, current_user=current_user)
 
 @router.get('/network/conf')
