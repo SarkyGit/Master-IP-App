@@ -8,7 +8,7 @@ from core.utils.auth import require_role
 from core.utils.db_session import get_db, reset_pk_sequence
 from modules.inventory.models import Device, DeviceType, Location
 from server.routes.ui.task_views import _open_sheet
-from server.routes.ui.devices import _format_ip
+from modules.inventory.utils import create_device_from_row, format_ip
 
 router = APIRouter()
 
@@ -25,42 +25,6 @@ SUPPORTED_FIELDS = [
 ]
 
 
-def _create_device_from_row(db: Session, row: dict, user) -> None:
-    hostname = row.get("hostname", "").strip()
-    ip = row.get("ip", "").strip()
-    manufacturer = row.get("manufacturer", "").strip()
-    dtype_name = row.get("device_type")
-    if not hostname or not ip or not manufacturer or not dtype_name:
-        raise ValueError("Missing required fields")
-    dtype = (
-        db.query(DeviceType).filter(DeviceType.name.ilike(dtype_name.strip())).first()
-    )
-    if not dtype:
-        raise ValueError(f"Unknown device type {dtype_name}")
-    location = None
-    if row.get("location"):
-        location = (
-            db.query(Location)
-            .filter(Location.name.ilike(row["location"].strip()))
-            .first()
-        )
-    try:
-        norm_ip = _format_ip(ip)
-    except ValueError:
-        raise ValueError(f"Invalid IP address {ip}")
-    device = Device(
-        hostname=hostname,
-        ip=norm_ip,
-        mac=row.get("mac") or None,
-        asset_tag=row.get("asset_tag") or None,
-        model=row.get("model") or None,
-        serial_number=row.get("serial_number") or None,
-        manufacturer=manufacturer,
-        device_type_id=dtype.id,
-        location_id=location.id if location else None,
-        created_by_id=user.id,
-    )
-    db.add(device)
 
 
 @router.get("/inventory/add-device")
@@ -111,7 +75,7 @@ async def add_device_manual(
             "manufacturer": mans[i] if i < len(mans) else "",
         }
         try:
-            _create_device_from_row(db, row, current_user)
+            create_device_from_row(db, row, current_user)
             added += 1
         except Exception as exc:
             errors.append(str(exc))
@@ -136,7 +100,7 @@ async def add_device_csv(
     for row in reader:
         filtered = {k: row.get(k, "") for k in SUPPORTED_FIELDS}
         try:
-            _create_device_from_row(db, filtered, current_user)
+            create_device_from_row(db, filtered, current_user)
             added += 1
         except Exception as exc:
             errors.append(str(exc))
@@ -170,7 +134,7 @@ async def add_device_google(
         row = {headers[i]: row_vals[i] if i < len(row_vals) else "" for i in range(len(headers))}
         filtered = {k: row.get(k, "") for k in SUPPORTED_FIELDS}
         try:
-            _create_device_from_row(db, filtered, current_user)
+            create_device_from_row(db, filtered, current_user)
             added += 1
         except Exception as exc:
             errors.append(str(exc))

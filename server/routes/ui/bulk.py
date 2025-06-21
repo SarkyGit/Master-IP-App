@@ -21,7 +21,7 @@ from core.utils.device_detect import detect_ssh_platform
 from core.utils.templates import templates
 from core.utils.audit import log_audit
 from core.utils.tags import get_or_create_tag, add_tag_to_device
-from server.routes.ui.devices import _format_ip
+from modules.inventory.utils import format_ip
 
 router = APIRouter(prefix="/bulk")
 
@@ -279,7 +279,7 @@ async def device_import_wizard(
                 errors.append(f"Missing required fields in row {row}")
                 continue
             try:
-                ip = _format_ip(ip)
+                ip = format_ip(ip)
             except ValueError:
                 errors.append(f"Invalid IP address {ip} in row {row}")
                 continue

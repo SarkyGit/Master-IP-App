@@ -67,6 +67,13 @@ from server.workers.config_scheduler import (
     unschedule_device_config_pull,
 )
 from core.utils.paths import STATIC_DIR
+from modules.inventory.utils import (
+    format_ip,
+    format_mac,
+    load_form_options,
+    suggest_vlan_from_ip,
+)
+from core.utils.mac_utils import normalize_mac, MAC_RE
 
 
 router = APIRouter()
@@ -267,7 +274,7 @@ async def list_devices_by_type(
         locations,
         _models,
         sites,
-    ) = _load_form_options(db)
+    ) = load_form_options(db)
     context = {
         "request": request,
         "devices": devices,
@@ -294,59 +301,6 @@ async def list_devices_by_type(
     return templates.TemplateResponse("device_list.html", context)
 
 
-def _load_form_options(db: Session):
-    """Helper to load dropdown options for device forms."""
-    device_types = db.query(DeviceType).all()
-    vlans = db.query(VLAN).all()
-    ssh_credentials = db.query(SSHCredential).all()
-    snmp_communities = db.query(SNMPCommunity).all()
-    locations = db.query(Location).all()
-    sites = db.query(Site).all()
-    models = [
-        m[0]
-        for m in db.query(Device.model).filter(Device.model.is_not(None)).distinct()
-    ]
-    return (
-        device_types,
-        vlans,
-        ssh_credentials,
-        snmp_communities,
-        locations,
-        models,
-        sites,
-    )
-
-
-from core.utils.ip_utils import normalize_ip
-from core.utils.mac_utils import normalize_mac, MAC_RE
-
-
-def _format_ip(ip: str) -> str:
-    return normalize_ip(ip)
-
-
-def _format_mac(mac: str | None) -> str | None:
-    return normalize_mac(mac) if mac else None
-
-
-def suggest_vlan_from_ip(db: Session, ip: str):
-    """Return VLAN suggestion based on the IP's second octet."""
-    try:
-        second_octet = int(ip.split(".")[1])
-    except (IndexError, ValueError):
-        return None, None
-
-    if second_octet == 100:
-        # Special case mapping
-        return 1, None
-    if second_octet == 101:
-        # Label for CAPWAP networks
-        return None, "CAPWAP"
-
-    vlan = db.query(VLAN).filter(VLAN.tag == second_octet).first()
-    if vlan:
-        return vlan.id, vlan.description
-    return None, None
 
 
 @router.get("/devices/new")
@@ -364,7 +318,7 @@ async def new_device_form(
         locations,
         model_list,
         sites,
-    ) = _load_form_options(db)
+    ) = load_form_options(db)
     context = {
         "request": request,
         "device": None,
@@ -409,7 +363,7 @@ async def create_device(
 ):
     """Create a new device from form data."""
     try:
-        formatted_ip = _format_ip(ip)
+        formatted_ip = format_ip(ip)
     except ValueError:
         context = await new_device_form(request, db, current_user)
         context["error"] = "Invalid IP address"
@@ -423,7 +377,7 @@ async def create_device(
             "serial_number": serial_number,
         }
         return templates.TemplateResponse("device_form.html", context)
-    formatted_mac = _format_mac(mac)
+    formatted_mac = format_mac(mac)
     if formatted_mac and not MAC_RE.fullmatch(formatted_mac):
         context = await new_device_form(request, db, current_user)
         context["error"] = "Invalid MAC address"
@@ -500,7 +454,7 @@ async def edit_device_form(
         locations,
         model_list,
         sites,
-    ) = _load_form_options(db)
+    ) = load_form_options(db)
     from core.models.models import SyslogEntry
     logs = (
         db.query(SyslogEntry)
@@ -598,12 +552,12 @@ async def update_device(
 
     device.hostname = hostname
     try:
-        device.ip = _format_ip(ip)
+        device.ip = format_ip(ip)
     except ValueError:
         context = await edit_device_form(device_id, request, db, current_user)
         context["error"] = "Invalid IP address"
         return templates.TemplateResponse("device_form.html", context)
-    formatted_mac = _format_mac(mac)
+    formatted_mac = format_mac(mac)
     if formatted_mac and not MAC_RE.fullmatch(formatted_mac):
         context = await edit_device_form(device_id, request, db, current_user)
         context["error"] = "Invalid MAC address"
@@ -771,11 +725,11 @@ async def bulk_update_devices(
             device.hostname = hostname
         if ip:
             try:
-                device.ip = _format_ip(ip)
+                device.ip = format_ip(ip)
             except ValueError:
                 pass
         if mac:
-            fm = _format_mac(mac)
+            fm = format_mac(mac)
             if fm and MAC_RE.fullmatch(fm):
                 device.mac = fm
         if asset_tag:
