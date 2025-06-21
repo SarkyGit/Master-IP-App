@@ -8,15 +8,14 @@ from core.utils.auth import get_current_user, get_user_site_ids
 from core.utils.db_session import get_db
 from core.models.models import (
     LoginEvent,
-    Device,
-    DeviceType,
     ConfigBackup,
-    PortStatusHistory,
     SNMPTrapLog,
     SyslogEntry,
     Site,
     DashboardWidget,
 )
+from modules.inventory.models import Device, DeviceType
+from modules.network.models import PortStatusHistory
 from core.utils.dashboard import (
     load_widget_preferences,
     DEFAULT_WIDGETS,
