@@ -1,3 +1,5 @@
+"""Tests for the table preference API endpoints."""
+
 import os
 import sys
 import importlib
