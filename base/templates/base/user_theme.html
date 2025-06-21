@@ -96,3 +96,49 @@
   </div>
 </form>
 {% endblock %}
+
+{% block extra_scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const stick = document.getElementById('menu_stick_theme');
+    const theme = document.getElementById('theme');
+    const fields = ['font','icon_style','menu_style','table_grid_style','admin_color','inventory_color','network_color','menu_tab_color','menu_bg_color'];
+
+    function applyDefaults() {
+      const root = document.documentElement;
+      const map = {
+        menu_tab_color: '--tab-bg',
+        menu_bg_color: '--submenu-bg',
+        inventory_color: '--inventory-tab-bg',
+        network_color: '--network-tab-bg',
+        admin_color: '--admin-tab-bg'
+      };
+      Object.entries(map).forEach(([id, cssVar]) => {
+        const el = document.getElementById(id);
+        if (el) {
+          const val = getComputedStyle(root).getPropertyValue(cssVar).trim();
+          if (val) el.value = val;
+        }
+      });
+    }
+
+    function update() {
+      const disabled = stick.checked;
+      fields.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (disabled) {
+          el.setAttribute('disabled', '');
+        } else {
+          el.removeAttribute('disabled');
+        }
+      });
+      if (disabled) applyDefaults();
+    }
+
+    stick.addEventListener('change', update);
+    if (theme) theme.addEventListener('change', () => { if (stick.checked) applyDefaults(); });
+    update();
+  });
+</script>
+{% endblock %}

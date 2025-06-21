@@ -56,11 +56,11 @@
             <span class="text-[var(--btn-text)] text-base">CEST Master IP and Config Tool</span>
           </a>
             <div class="login-area flex items-center space-x-2">
-              <a href="/help" class="px-4 py-1.5 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded shadow transition">Help</a>
+              <a href="/help" class="px-4 py-1.5 text-base bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded shadow transition">Help</a>
               {% if current_user %}
-              <a href="/auth/logout" class="px-4 py-1.5 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded shadow transition logged-in">Logout</a>
+              <a href="/auth/logout" class="px-4 py-1.5 text-base bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded shadow transition logged-in">Logout</a>
               {% else %}
-              <a href="/auth/login" class="px-4 py-1.5 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded shadow transition logged-out">Login</a>
+              <a href="/auth/login" class="px-4 py-1.5 text-base bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded shadow transition logged-out">Login</a>
               {% endif %}
             </div>
         </div>

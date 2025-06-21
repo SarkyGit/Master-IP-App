@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 import difflib
 
 from core.utils.db_session import get_db
-from core.utils.auth import get_current_user
+from core.utils.auth import require_role
 from modules.inventory.models import Device
 from core.models.models import ConfigBackup
 from core.utils.audit import log_audit
@@ -18,10 +18,8 @@ async def list_device_configs(
     device_id: int,
     request: Request,
     db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
+    current_user=Depends(require_role("viewer")),
 ):
-    if not current_user:
-        raise HTTPException(status_code=401, detail="Not authenticated")
 
     device = db.query(Device).filter(Device.id == device_id).first()
     if not device:
@@ -47,10 +45,8 @@ async def diff_config(
     config_id: int,
     request: Request,
     db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
+    current_user=Depends(require_role("viewer")),
 ):
-    if not current_user:
-        raise HTTPException(status_code=401, detail="Not authenticated")
 
     backup = db.query(ConfigBackup).filter(ConfigBackup.id == config_id).first()
     if not backup:
@@ -97,11 +93,9 @@ async def compare_configs(
     backup_a: int | None = None,
     backup_b: int | None = None,
     db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
+    current_user=Depends(require_role("viewer")),
 ):
     """Manually compare two config backups from any device."""
-    if not current_user:
-        raise HTTPException(status_code=401, detail="Not authenticated")
 
     devices = (
         db.query(Device)
