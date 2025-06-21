@@ -711,7 +711,7 @@ async def delete_device(
     db.commit()
     return RedirectResponse(url="/devices/table", status_code=302)
 
-@router.post("/devices/bulk-delete")
+@router.post("/devices/bulk-delete", name="bulk_delete_devices")
 async def bulk_delete_devices(
     selected: list[int] = Form(...),
     db: Session = Depends(get_db),
@@ -731,7 +731,7 @@ async def bulk_delete_devices(
     return RedirectResponse(url="/devices/table", status_code=302)
 
 
-@router.post("/devices/bulk-update")
+@router.post("/devices/bulk-update", name="bulk_update_devices")
 async def bulk_update_devices(
     selected: list[int] = Form(...),
     hostname: str | None = Form(None),
