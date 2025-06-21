@@ -1,5 +1,6 @@
+import sys, os
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__) + '/../'))
 import asyncio
-import sys
 import httpx
 
 from core.utils.env_file import set_env_vars

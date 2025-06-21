@@ -1,3 +1,5 @@
+import sys, os
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__) + '/../'))
 from core.utils.db_session import SessionLocal, reset_pk_sequence
 from core.models.models import User, Site, SiteMembership
 import subprocess
