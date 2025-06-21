@@ -29,7 +29,7 @@ async def ip_search(
         "ip": ip,
         "current_user": current_user,
     }
-    return templates.TemplateResponse("ip_search.html", context)
+    return templates.TemplateResponse("network/ip_search.html", context)
 
 @router.get('/network/dashboard')
 async def network_dashboard(request: Request, site_id: int | None = None, db: Session = Depends(get_db), current_user=Depends(get_current_user)):
@@ -49,7 +49,7 @@ async def network_conf_menu(request: Request, current_user=Depends(get_current_u
         {'label': 'Port Config Templates', 'href': '/network/port-configs', 'img': ''},
     ]
     context = {'request': request, 'items': items, 'current_user': current_user}
-    return templates.TemplateResponse('network_conf_grid.html', context)
+    return templates.TemplateResponse('network/network_conf_grid.html', context)
 
 @router.get('/network/show')
 async def network_show_menu(request: Request, current_user=Depends(get_current_user)):
@@ -64,7 +64,7 @@ async def network_show_menu(request: Request, current_user=Depends(get_current_u
         {'label': 'IP Search', 'href': '/network/ip-search', 'img': ''},
     ]
     context = {'request': request, 'items': items, 'current_user': current_user}
-    return templates.TemplateResponse('network_show_grid.html', context)
+    return templates.TemplateResponse('network/network_show_grid.html', context)
 
 @router.get('/network/tasks')
 async def network_tasks_menu(request: Request, current_user=Depends(get_current_user)):
@@ -75,7 +75,7 @@ async def network_tasks_menu(request: Request, current_user=Depends(get_current_
         {'label': 'Task Queue', 'href': '/tasks', 'img': ''},
     ]
     context = {'request': request, 'items': items, 'current_user': current_user}
-    return templates.TemplateResponse('network_tasks_grid.html', context)
+    return templates.TemplateResponse('network/network_tasks_grid.html', context)
 
 @router.get('/network/settings')
 async def network_settings_menu(request: Request, current_user=Depends(get_current_user)):
@@ -87,18 +87,18 @@ async def network_settings_menu(request: Request, current_user=Depends(get_curre
         {'label': 'SNMP', 'href': '/admin/snmp', 'img': ''},
     ]
     context = {'request': request, 'items': items, 'current_user': current_user}
-    return templates.TemplateResponse('network_settings_grid.html', context)
+    return templates.TemplateResponse('network/network_settings_grid.html', context)
 
 @router.get('/network/switch-config')
 async def switch_config_placeholder(request: Request, current_user=Depends(get_current_user)):
     if not current_user:
         raise HTTPException(status_code=401, detail='Not authenticated')
     context = {'request': request, 'current_user': current_user}
-    return templates.TemplateResponse('switch_config.html', context)
+    return templates.TemplateResponse('network/switch_config.html', context)
 
 @router.get('/network/tasks/scheduler')
 async def task_scheduler_placeholder(request: Request, current_user=Depends(get_current_user)):
     if not current_user:
         raise HTTPException(status_code=401, detail='Not authenticated')
     context = {'request': request, 'current_user': current_user}
-    return templates.TemplateResponse('task_scheduler.html', context)
+    return templates.TemplateResponse('network/task_scheduler.html', context)

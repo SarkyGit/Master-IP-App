@@ -29,25 +29,25 @@ def _render_inventory(request: Request, current_user, db: Session, device_type: 
         "title": title or device_type or "Inventory",
         "show_r1": show_r1,
     }
-    return templates.TemplateResponse("inventory_table.html", context)
+    return templates.TemplateResponse("inventory/inventory_table.html", context)
 
 @router.get('/inventory/audit')
 async def inventory_audit(request: Request, current_user=Depends(require_role("viewer"))):
     """Placeholder page for audit information."""
     context = {"request": request, "current_user": current_user}
-    return templates.TemplateResponse('inventory_audit.html', context)
+    return templates.TemplateResponse('inventory/inventory_audit.html', context)
 
 @router.get('/inventory/trailers')
 async def inventory_trailers(request: Request, current_user=Depends(require_role("viewer"))):
     """Placeholder page for trailer inventory."""
     context = {"request": request, "current_user": current_user}
-    return templates.TemplateResponse('inventory_trailer.html', context)
+    return templates.TemplateResponse('inventory/inventory_trailer.html', context)
 
 @router.get('/inventory/sites')
 async def inventory_sites(request: Request, current_user=Depends(require_role("viewer"))):
     """Placeholder page for site inventory."""
     context = {"request": request, "current_user": current_user}
-    return templates.TemplateResponse('inventory_site.html', context)
+    return templates.TemplateResponse('inventory/inventory_site.html', context)
 
 
 @router.get('/inventory/switches')
@@ -114,19 +114,19 @@ async def show_pad_grid(
         {"label": "Site Inventory", "href": "/inventory/sites", "img": images["site_inventory"]},
     ]
     context = {"request": request, "items": items, "current_user": current_user}
-    return templates.TemplateResponse('show_pad_grid.html', context)
+    return templates.TemplateResponse('inventory/show_pad_grid.html', context)
 
 
 @router.get('/inventory/consumables-order')
 async def consumables_order(request: Request, current_user=Depends(require_role("viewer"))):
     context = {"request": request, "current_user": current_user}
-    return templates.TemplateResponse('consumables_order.html', context)
+    return templates.TemplateResponse('inventory/consumables_order.html', context)
 
 
 @router.get('/inventory/end-of-show-consumables')
 async def end_show_consumables(request: Request, current_user=Depends(require_role("viewer"))):
     context = {"request": request, "current_user": current_user}
-    return templates.TemplateResponse('end_show_consumables.html', context)
+    return templates.TemplateResponse('inventory/end_show_consumables.html', context)
 
 
 @router.get('/inventory/reports')
@@ -159,19 +159,19 @@ async def inventory_reports(
     if current_user.role in ["admin", "superadmin"]:
         items.append({"label": "Sync Conflicts", "href": "/reports/conflicts", "img": images["conflicts"]})
     context = {"request": request, "items": items, "current_user": current_user}
-    return templates.TemplateResponse('reports_grid.html', context)
+    return templates.TemplateResponse('inventory/reports_grid.html', context)
 
 
 @router.get('/inventory/consumables-report')
 async def consumables_report(request: Request, current_user=Depends(require_role("viewer"))):
     context = {"request": request, "current_user": current_user}
-    return templates.TemplateResponse('consumables_report.html', context)
+    return templates.TemplateResponse('inventory/consumables_report.html', context)
 
 
 @router.get('/inventory/current-kits')
 async def current_kits(request: Request, current_user=Depends(require_role("viewer"))):
     context = {"request": request, "current_user": current_user}
-    return templates.TemplateResponse('current_kits.html', context)
+    return templates.TemplateResponse('inventory/current_kits.html', context)
 
 @router.get('/inventory/settings')
 async def inventory_settings(request: Request, current_user=Depends(require_role("viewer")), db: Session = Depends(get_db)):
@@ -185,4 +185,4 @@ async def inventory_settings(request: Request, current_user=Depends(require_role
     if current_user.role in ['editor','admin','superadmin']:
         items.append({"label": "Add Device", "href": "/inventory/add-device", "img": images.get("add_device", "")})
     context = {"request": request, "items": items, "current_user": current_user}
-    return templates.TemplateResponse('inventory_settings.html', context)
+    return templates.TemplateResponse('inventory/inventory_settings.html', context)
