@@ -8,15 +8,10 @@ from fastapi import UploadFile, File, Form
 from core.utils.auth import get_current_user, require_role
 from core.models.models import (
     ConfigBackup,
-    Device,
-    VLAN,
-    DeviceType,
-    SSHCredential,
-    SNMPCommunity,
-    PortConfigTemplate,
     SystemTunable,
-    Tag,
 )
+from modules.inventory.models import Device, DeviceType, Tag
+from modules.network.models import VLAN, SSHCredential, SNMPCommunity, PortConfigTemplate
 import csv
 import io
 import urllib.parse
