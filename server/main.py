@@ -256,7 +256,7 @@ async def unauthorized_handler(request: Request, exc: HTTPException):
     if exc.status_code == 401:
         context = {"request": request}
         return templates.TemplateResponse(
-            "not_authorised.html", context, status_code=exc.status_code
+            "base/not_authorised.html", context, status_code=exc.status_code
         )
     return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
 
@@ -274,9 +274,9 @@ async def read_root(request: Request, current_user=Depends(get_current_user)):
             "inventory_text": inventory,
             "current_user": current_user,
         }
-        return templates.TemplateResponse("welcome.html", context)
+        return templates.TemplateResponse("base/welcome.html", context)
     context = {"request": request, "message": "", "current_user": None}
-    return templates.TemplateResponse("index.html", context)
+    return templates.TemplateResponse("base/index.html", context)
 
 
 @app.websocket("/ws/editor")
