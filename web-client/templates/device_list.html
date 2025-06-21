@@ -167,6 +167,8 @@
   </div>
 </div>
 </div>
-<span @click="bulkDelete" aria-label="Delete Selected" class="px-2 text-sm text-[var(--btn-text)] hover:text-[var(--btn-hover-text)] mt-2 cursor-pointer" role="button" tabindex="0">{{ include_icon('trash-2','text-red-500','5') }}</span>
+<button type="submit" aria-label="Delete Selected" class="px-2 text-sm text-[var(--btn-text)] hover:text-[var(--btn-hover-text)] mt-2 cursor-pointer" onclick="return confirm('Delete selected devices?')">
+  {{ include_icon('trash-2','text-red-500','5') }}
+</button>
 </form>
 {% endblock %}
