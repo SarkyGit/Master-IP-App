@@ -120,6 +120,11 @@
           if (val) el.value = val;
         }
       });
+      ['font','icon_style','menu_style','table_grid_style'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el && el.options && el.options.length)
+          el.value = el.options[0].value;
+      });
     }
 
 
