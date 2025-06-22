@@ -19,6 +19,10 @@
       <h2 class="text-lg mb-2">Network</h2>
       <canvas id="netChart"></canvas>
     </div>
+    <div class="bg-[var(--card-bg)] p-4 rounded shadow">
+      <h2 class="text-lg mb-2">Disk Usage</h2>
+      <canvas id="diskChart"></canvas>
+    </div>
   </div>
   <div class="bg-[var(--card-bg)] p-4 rounded shadow">
     <h2 class="text-lg mb-2">Gunicorn Workers</h2>
@@ -46,6 +50,7 @@ window.monitor = function(){
     memChart: null,
     loadChart: null,
     netChart: null,
+    diskChart: null,
     workers: '',
     datasets: {},
     init(){
@@ -53,10 +58,12 @@ window.monitor = function(){
       const ctxM = document.getElementById('memChart');
       const ctxL = document.getElementById('loadChart');
       const ctxN = document.getElementById('netChart');
+      const ctxD = document.getElementById('diskChart');
       this.cpuChart = new Chart(ctxC,{type:'line',data:{labels:[],datasets:[]},options:{animation:false}});
       this.memChart = new Chart(ctxM,{type:'line',data:{labels:[],datasets:[{label:'% Used',data:[],borderColor:'#60a5fa'}]},options:{animation:false}});
       this.loadChart = new Chart(ctxL,{type:'bar',data:{labels:['1m','5m','15m'],datasets:[{label:'load',data:[],backgroundColor:'#fbbf24'}]},options:{animation:false}});
       this.netChart = new Chart(ctxN,{type:'line',data:{labels:[],datasets:[]},options:{animation:false}});
+      this.diskChart = new Chart(ctxD,{type:'bar',data:{labels:['Used %'],datasets:[{label:'Disk Usage',data:[],backgroundColor:'#f87171'}]},options:{animation:false,scales:{y:{beginAtZero:true,max:100}}}});
       if(window.__context__){
         this.updateCharts(window.__context__);
       }
@@ -98,6 +105,11 @@ window.monitor = function(){
         });
       });
       this.netChart.update();
+      if(d.disk_usage){
+        const percent = (d.disk_usage.used / d.disk_usage.total) * 100;
+        this.diskChart.data.datasets[0].data = [percent];
+        this.diskChart.update();
+      }
       this.workers = d.worker_stats.map(w=>`<tr class='border-t border-gray-700'><td class='table-cell'>${w.pid}</td><td class='table-cell'>${w.cpu_percent}</td><td class='table-cell'>${Math.round(w.uptime)}</td></tr>`).join('');
     }
   }
