@@ -8,4 +8,36 @@
   <li><a href="/install" class="underline">/install</a></li>
   <li><a href="/editor" class="underline">/editor</a></li>
 </ul>
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-0 mt-4">
+  <a href="/admin/menu" class="relative h-40 flex items-center justify-center text-white font-bold text-xl transition transform hover:scale-105" style="background-image: url(''); background-size: cover; background-position: center;">
+    <span class="bg-black bg-opacity-50 px-2 py-1 rounded">Admin Menu</span>
+  </a>
+  <a href="/sites/{site_id}/manage" class="relative h-40 flex items-center justify-center text-white font-bold text-xl transition transform hover:scale-105" style="background-image: url(''); background-size: cover; background-position: center;">
+    <span class="bg-black bg-opacity-50 px-2 py-1 rounded">Manage Site</span>
+  </a>
+  <a href="/sites/{site_id}/settings" class="relative h-40 flex items-center justify-center text-white font-bold text-xl transition transform hover:scale-105" style="background-image: url(''); background-size: cover; background-position: center;">
+    <span class="bg-black bg-opacity-50 px-2 py-1 rounded">Site Settings</span>
+  </a>
+  <a href="/admin/check-update" class="relative h-40 flex items-center justify-center text-white font-bold text-xl transition transform hover:scale-105" style="background-image: url(''); background-size: cover; background-position: center;">
+    <span class="bg-black bg-opacity-50 px-2 py-1 rounded">Check Update</span>
+  </a>
+  <a href="/devices/duplicates" class="relative h-40 flex items-center justify-center text-white font-bold text-xl transition transform hover:scale-105" style="background-image: url(''); background-size: cover; background-position: center;">
+    <span class="bg-black bg-opacity-50 px-2 py-1 rounded">Duplicate Devices</span>
+  </a>
+  <a href="/devices/type/{type_id}" class="relative h-40 flex items-center justify-center text-white font-bold text-xl transition transform hover:scale-105" style="background-image: url(''); background-size: cover; background-position: center;">
+    <span class="bg-black bg-opacity-50 px-2 py-1 rounded">Device Type</span>
+  </a>
+  <a href="/devices/new" class="relative h-40 flex items-center justify-center text-white font-bold text-xl transition transform hover:scale-105" style="background-image: url(''); background-size: cover; background-position: center;">
+    <span class="bg-black bg-opacity-50 px-2 py-1 rounded">New Device</span>
+  </a>
+  <a href="/admin/login-events" class="relative h-40 flex items-center justify-center text-white font-bold text-xl transition transform hover:scale-105" style="background-image: url(''); background-size: cover; background-position: center;">
+    <span class="bg-black bg-opacity-50 px-2 py-1 rounded">Login Events</span>
+  </a>
+  <a href="/tags/{tag_name}" class="relative h-40 flex items-center justify-center text-white font-bold text-xl transition transform hover:scale-105" style="background-image: url(''); background-size: cover; background-position: center;">
+    <span class="bg-black bg-opacity-50 px-2 py-1 rounded">Tag View</span>
+  </a>
+  <a href="/tasks/edit-tags" class="relative h-40 flex items-center justify-center text-white font-bold text-xl transition transform hover:scale-105" style="background-image: url(''); background-size: cover; background-position: center;">
+    <span class="bg-black bg-opacity-50 px-2 py-1 rounded">Edit Tags</span>
+  </a>
+</div>
 {% endblock %}
