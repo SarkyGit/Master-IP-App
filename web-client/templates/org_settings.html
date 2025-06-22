@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-xl mb-4">Organisation Settings</h1>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+  <div class="bg-[var(--card-bg)] p-4 rounded shadow">
+    <h2 class="text-lg mb-2">Upload Logo</h2>
+    <form method="post" action="/admin/logo" enctype="multipart/form-data">
+      {% if logo_exists %}
+      <img src="{{ request.url_for('static', path='logo.png') }}" alt="Logo" class="h-12 mb-2">
+      {% endif %}
+      <input type="file" name="logo" accept="image/*" class="mb-2 text-[var(--input-text)]" required>
+      <button type="submit" class="px-4 py-1 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded">Upload</button>
+    </form>
+  </div>
+  <div class="bg-[var(--card-bg)] p-4 rounded shadow">
+    <h2 class="text-lg mb-2">Locations</h2>
+    <a href="/admin/locations/new" class="underline">Add Location</a>
+    <form method="post" action="/admin/locations/bulk-delete" class="full-width">
+      <div class="w-full overflow-auto">
+        <table class="min-w-full table-fixed text-left mt-2">
+          <thead>
+            <tr>
+              <th class="px-2" style="width: 40px; min-width: 40px; max-width: 40px;"><input type="checkbox" id="select-all"></th>
+              <th class="px-4 py-2 text-left">Name</th>
+              <th class="px-4 py-2 text-left">Type</th>
+              <th class="table-header actions-col" style="width: 100px; min-width: 100px; max-width: 100px;"></th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for loc in locations %}
+            <tr class="border-t border-gray-700">
+              <td class="px-2" style="width: 40px; min-width: 40px; max-width: 40px;"><input type="checkbox" name="selected" value="{{ loc.id }}"></td>
+              <td class="px-4 py-2">{{ loc.name }}</td>
+              <td class="px-4 py-2">{{ loc.location_type }}</td>
+              <td class="actions-col px-4 py-2" style="width: 100px; min-width: 100px; max-width: 100px;">
+                <div class="flex gap-1">
+                  <a href="/admin/locations/{{ loc.id }}/edit" aria-label="Edit" class="icon-btn">{{ include_icon('pencil','text-blue-500','5') }}</a>
+                  <button type="submit" form="delete-location-{{ loc.id }}" aria-label="Delete" class="icon-btn cursor-pointer" onclick="return confirm('Delete location?')">{{ include_icon('trash-2','text-red-500','5') }}</button>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <span aria-label="Delete Selected" class="p-2 rounded transition cursor-pointer" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('trash-2','text-red-500','5') }}</span>
+    </form>
+    <div class="hidden">
+      {% for loc in locations %}
+      <form id="delete-location-{{ loc.id }}" method="post" action="/admin/locations/{{ loc.id }}/delete"></form>
+      {% endfor %}
+    </div>
+    <script>
+      document.getElementById('select-all').addEventListener('change', function(e){
+        document.querySelectorAll('input[name="selected"]').forEach(cb => cb.checked = e.target.checked);
+      });
+    </script>
+  </div>
+  <div class="bg-[var(--card-bg)] p-4 rounded shadow">
+    <h2 class="text-lg mb-2">Upload Image</h2>
+    <button hx-get="/admin/org-settings/upload-image-modal" hx-target="#modal" hx-swap="innerHTML" class="px-4 py-1 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded">Upload Image</button>
+  </div>
+  <div class="bg-[var(--card-bg)] p-4 rounded shadow">
+    <h2 class="text-lg mb-2">Users</h2>
+    <a href="/admin/users/new" aria-label="Add User" class="px-4 py-1.5 mb-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded shadow transition inline-block">{{ include_icon('plus') }}</a>
+    <div class="w-full overflow-auto">
+      <table class="min-w-full table-fixed text-left mt-2">
+        <thead>
+          <tr>
+            <th class="px-4 py-2 text-left">Email</th>
+            <th class="px-4 py-2 text-left">Role</th>
+            <th class="px-4 py-2 text-left">Status</th>
+            <th class="px-4 py-2 text-left">Version</th>
+            <th class="px-4 py-2 text-left">Created</th>
+            <th style="width: 100px; min-width: 100px; max-width: 100px;"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for user in users %}
+          <tr class="border-t border-gray-700 {% if not user.is_active %}opacity-50{% endif %}" {% if user.conflict_data %}style="background-color:#7f1d1d"{% endif %}>
+            <td class="px-4 py-2">{{ user.email }}</td>
+            <td class="px-4 py-2">{{ user.role }}</td>
+            <td class="px-4 py-2">{{ 'active' if user.is_active else 'inactive' }}</td>
+            <td class="px-4 py-2">
+              {{ user.version }}
+              {% if user.conflict_data %}{{ include_icon('alert-triangle','text-red-500','1.5') }}{% endif %}
+            </td>
+            <td class="px-4 py-2">{{ user.created_at }}</td>
+            <td class="px-4 py-2" style="width: 100px; min-width: 100px; max-width: 100px;">
+              <a href="/admin/users/{{ user.id }}/edit" aria-label="Edit" class="icon-btn h-full flex items-center p-2 mr-2">{{ include_icon('pencil','text-blue-500','1.5') }}</a>
+              {% if user.is_active %}
+              <form method="post" action="/admin/users/{{ user.id }}/deactivate" class="inline">
+                <span aria-label="Disable" class="icon-btn h-full flex items-center p-2 mr-2 cursor-pointer" role="button" tabindex="0" onclick="if(confirm('Deactivate user?')) { this.closest('form').submit() }">{{ include_icon('minus-circle','text-red-500','1.5') }}</span>
+              </form>
+              {% endif %}
+              <form method="post" action="/admin/users/{{ user.id }}/reset-password" class="inline">
+                <span aria-label="Reset Password" class="icon-btn h-full flex items-center p-2 text-yellow-400 cursor-pointer" role="button" tabindex="0" onclick="if(confirm('Reset password?')) { this.closest('form').submit() }">{{ include_icon('refresh-ccw','text-yellow-400','1.5') }}</span>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="bg-[var(--card-bg)] p-4 rounded shadow md:col-span-2">
+    <h2 class="text-lg mb-2">Backup</h2>
+    <div class="flex flex-wrap gap-2">
+      <a href="/export/config-snapshot.zip" class="px-4 py-1 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded">Download Config Snapshot</a>
+      <a href="/compare-configs" class="px-4 py-1 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded">Compare Configs</a>
+    </div>
+  </div>
+</div>
+<div id="modal"></div>
+{% endblock %}
