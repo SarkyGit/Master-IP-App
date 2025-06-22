@@ -1,19 +1,18 @@
 """baseline
 
-Revision ID: 1a2b3c4d5e6f
-Revises:
-Create Date: 2025-06-22 15:44:55.000000
+Revision ID: 4fa5ed6e5a8e
+Revises: 
+Create Date: 2025-06-22 15:59:27.014889
 
 """
 from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
-import core.utils.types
 
 
 # revision identifiers, used by Alembic.
-revision: str = '1a2b3c4d5e6f'
+revision: str = '4fa5ed6e5a8e'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -81,14 +80,6 @@ def upgrade() -> None:
     sa.Column('timestamp', sa.DateTime(timezone=True), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('manual_sql_errors',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('statement', sa.Text(), nullable=False),
-    sa.Column('error_message', sa.String(), nullable=False),
-    sa.Column('traceback', sa.Text(), nullable=False),
-    sa.Column('timestamp', sa.DateTime(timezone=True), nullable=True),
-    sa.PrimaryKeyConstraint('id')
-    )
     op.create_table('device_types',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('uuid', core.utils.types.GUID(length=36), nullable=False),
@@ -128,6 +119,14 @@ def upgrade() -> None:
     sa.UniqueConstraint('name')
     )
     op.create_index(op.f('ix_locations_uuid'), 'locations', ['uuid'], unique=True)
+    op.create_table('manual_sql_errors',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('statement', sa.Text(), nullable=False),
+    sa.Column('error_message', sa.String(), nullable=False),
+    sa.Column('traceback', sa.Text(), nullable=False),
+    sa.Column('timestamp', sa.DateTime(timezone=True), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
     op.create_table('schema_versions',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('alembic_revision_id', sa.String(), nullable=False),
@@ -624,13 +623,13 @@ def downgrade() -> None:
     op.drop_table('snmp_communities')
     op.drop_table('site_keys')
     op.drop_table('schema_versions')
+    op.drop_table('manual_sql_errors')
     op.drop_index(op.f('ix_locations_uuid'), table_name='locations')
     op.drop_table('locations')
     op.drop_table('duplicate_resolution_logs')
     op.drop_index(op.f('ix_device_types_uuid'), table_name='device_types')
     op.drop_table('device_types')
     op.drop_table('db_errors')
-    op.drop_table('manual_sql_errors')
     op.drop_table('custom_columns')
     op.drop_table('connected_sites')
     op.drop_table('conflict_logs')
