@@ -9,6 +9,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse, RedirectResponse
 
 from starlette.middleware.sessions import SessionMiddleware
+
 try:
     from starlette.middleware.proxy_headers import ProxyHeadersMiddleware
 except ImportError:  # Fallback for older Starlette versions
@@ -78,14 +79,26 @@ from server.websockets.editor import shell_ws
 from server.websockets.terminal import router as terminal_ws_router
 from core.utils.auth import get_current_user
 from server.workers.queue_worker import start_queue_worker, stop_queue_worker
-from server.workers.config_scheduler import start_config_scheduler, stop_config_scheduler
+from server.workers.config_scheduler import (
+    start_config_scheduler,
+    stop_config_scheduler,
+)
 from server.workers.trap_listener import setup_trap_listener
 from server.workers.syslog_listener import setup_syslog_listener
 from server.workers.cloud_sync import start_cloud_sync, stop_cloud_sync
-from server.workers.sync_push_worker import start_sync_push_worker, stop_sync_push_worker
-from server.workers.sync_pull_worker import start_sync_pull_worker, stop_sync_pull_worker
+from server.workers.sync_push_worker import (
+    start_sync_push_worker,
+    stop_sync_push_worker,
+)
+from server.workers.sync_pull_worker import (
+    start_sync_pull_worker,
+    stop_sync_pull_worker,
+)
 from server.workers.heartbeat import start_heartbeat, stop_heartbeat
-from server.workers.system_metrics_logger import start_metrics_logger, stop_metrics_logger
+from server.workers.system_metrics_logger import (
+    start_metrics_logger,
+    stop_metrics_logger,
+)
 from server.utils.system_metrics import HAS_PSUTIL
 from core.utils.templates import templates
 from core.utils.db_session import engine, SessionLocal
@@ -97,8 +110,7 @@ from core.utils.schema import (
     reset_local_database,
     log_schema_validation_details,
 )
-from alembic.config import Config
-from alembic import command
+from core.utils.schema import safe_alembic_upgrade
 import traceback
 from core.models.models import SystemTunable, SchemaValidationIssue
 
@@ -126,12 +138,12 @@ def check_install_required() -> bool:
 
 INSTALL_REQUIRED = check_install_required()
 
+
 # Allow deploying the app under a URL prefix by setting ROOT_PATH.
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     try:
-        alembic_cfg = Config("alembic.ini")
-        command.upgrade(alembic_cfg, "head")
+        safe_alembic_upgrade()
     except Exception as exc:  # pragma: no cover - best effort
         log_boot_error(str(exc), traceback.format_exc(), settings.role)
     record_schema_version(settings.role)
@@ -213,6 +225,7 @@ async def lifespan(app: FastAPI):
             await stop_heartbeat()
     logging.shutdown()
 
+
 app = FastAPI(lifespan=lifespan)
 # Respect headers like X-Forwarded-Proto so generated URLs use the
 # correct scheme when behind a reverse proxy.
@@ -226,7 +239,6 @@ async def install_redirect(request: Request, call_next):
     if INSTALL_REQUIRED:
         INSTALL_REQUIRED = check_install_required()
     return await call_next(request)
-
 
 
 # Path to the ``static`` directory under ``web-client``

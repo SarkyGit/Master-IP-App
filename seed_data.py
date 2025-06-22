@@ -1,6 +1,8 @@
 import sys, os
-sys.path.insert(0, os.path.abspath(os.path.dirname(__file__) + '/../'))
+
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__) + "/../"))
 from core.utils.db_session import SessionLocal, reset_pk_sequence
+from core.utils.schema import safe_alembic_upgrade
 import subprocess
 
 from modules.inventory.models import Device, DeviceType, Location
@@ -11,7 +13,7 @@ from core.models.models import Site
 def upgrade_db() -> None:
     """Apply any pending database migrations."""
     try:
-        subprocess.run(["alembic", "upgrade", "head"], check=True)
+        safe_alembic_upgrade()
     except Exception as exc:  # pragma: no cover - best effort
         print(f"Warning: could not apply migrations: {exc}")
 
@@ -65,28 +67,28 @@ def main():
 
         # Seed device types
         switch_type = db.query(DeviceType).filter_by(name="Switch").first()
-            if not switch_type:
-                switch_type = DeviceType(name="Switch")
-                try:
-                    db.add(switch_type)
-                except Exception:
-                    db.rollback()
+        if not switch_type:
+            switch_type = DeviceType(name="Switch")
+            try:
+                db.add(switch_type)
+            except Exception:
+                db.rollback()
 
         ap_type = db.query(DeviceType).filter_by(name="AP").first()
-            if not ap_type:
-                ap_type = DeviceType(name="AP")
-                try:
-                    db.add(ap_type)
-                except Exception:
-                    db.rollback()
+        if not ap_type:
+            ap_type = DeviceType(name="AP")
+            try:
+                db.add(ap_type)
+            except Exception:
+                db.rollback()
 
         camera_type = db.query(DeviceType).filter_by(name="IP Camera").first()
-            if not camera_type:
-                camera_type = DeviceType(name="IP Camera")
-                try:
-                    db.add(camera_type)
-                except Exception:
-                    db.rollback()
+        if not camera_type:
+            camera_type = DeviceType(name="IP Camera")
+            try:
+                db.add(camera_type)
+            except Exception:
+                db.rollback()
 
         for dtype in ["PTP", "PTMP", "IPTV", "VOG", "IoT Device"]:
             if not db.query(DeviceType).filter_by(name=dtype).first():

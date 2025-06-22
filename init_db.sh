@@ -41,7 +41,7 @@ psql "$PG_URL" -tc "SELECT 1 FROM pg_database WHERE datname = '$DB_NAME';" | gre
 pip install -r requirements.txt
 
 # Apply all migrations to create the schema
-alembic upgrade head
+python scripts/run_migrations.py
 
 # Seed default superuser account
 python seed_superuser.py

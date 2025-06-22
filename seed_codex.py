@@ -2,6 +2,7 @@
 
 import subprocess
 from core.utils.db_session import SessionLocal
+from core.utils.schema import safe_alembic_upgrade
 from core.models.models import User
 from modules.inventory.models import (
     Device,
@@ -11,7 +12,7 @@ from modules.inventory.models import (
 )
 
 try:
-    subprocess.run(["alembic", "upgrade", "head"], check=True)
+    safe_alembic_upgrade()
 except Exception:
     pass
 

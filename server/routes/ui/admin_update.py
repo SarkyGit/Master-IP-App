@@ -77,7 +77,11 @@ async def _run_update(user: User, force_reboot: bool) -> None:
     try:
         old = _git(["git", "rev-parse", "HEAD"])
         _broadcast(f"Current version {old[:7]}")
-        sync_row = db.query(SystemTunable).filter(SystemTunable.name == "Enable Cloud Sync").first()
+        sync_row = (
+            db.query(SystemTunable)
+            .filter(SystemTunable.name == "Enable Cloud Sync")
+            .first()
+        )
         if sync_row and str(sync_row.value).lower() == "true":
             _broadcast("Cloud sync enabled - update will propagate")
         _git(["git", "fetch", "origin"])
@@ -89,7 +93,7 @@ async def _run_update(user: User, force_reboot: bool) -> None:
         _broadcast("Building frontend")
         _git(["npm", "run", "build:web"])
         _broadcast("Applying migrations")
-        _git(["alembic", "upgrade", "head"])
+        _git(["python", "scripts/run_migrations.py"])
         reboot = _determine_reboot(changed, force_reboot)
         if reboot:
             _broadcast("Update complete. Rebooting system...")

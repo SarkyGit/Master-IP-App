@@ -34,7 +34,7 @@ python wait_for_db.py
 sleep 2
 
 # Apply any pending database migrations before seeding
-alembic upgrade head
+python scripts/run_migrations.py
 
 if [ "${AUTO_SEED:-1}" != "0" ] && [ "${AUTO_SEED}" != "false" ]; then
     python seed_superuser.py

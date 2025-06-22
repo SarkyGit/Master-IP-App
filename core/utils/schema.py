@@ -5,7 +5,10 @@ import json
 import os
 import time
 from pathlib import Path
-from sqlalchemy import text, inspect, or_
+from sqlalchemy import text, inspect, or_, exc as sa_exc
+from alembic.config import Config
+from alembic import command
+import psycopg2
 
 from .db_session import engine, Base, _BaseSessionLocal, SessionLocal
 from core.models.models import SyncIssue, SyncError
@@ -19,12 +22,66 @@ def get_schema_revision() -> str:
         return ""
     try:
         with engine.connect() as conn:
-            row = conn.execute(text("SELECT version_num FROM alembic_version")).fetchone()
+            row = conn.execute(
+                text("SELECT version_num FROM alembic_version")
+            ).fetchone()
             if row:
                 return str(row[0])
     except Exception:
         pass
     return ""
+
+
+def safe_alembic_upgrade(
+    retry_once: bool = True, cfg_path: str = "alembic.ini"
+) -> None:
+    """Run Alembic upgrade with duplicate table handling on local instances."""
+    if engine is None:
+        return
+    role = os.environ.get("ROLE", "local")
+    alembic_cfg = Config(cfg_path)
+    attempts = 0
+    while True:
+        try:
+            if role != "cloud":
+                with engine.begin() as conn:
+                    exists = conn.execute(
+                        text(
+                            "SELECT 1 FROM information_schema.tables "
+                            "WHERE table_name='alembic_version' AND table_schema='public'"
+                        )
+                    ).scalar()
+                    if exists:
+                        row = conn.execute(
+                            text("SELECT version_num FROM alembic_version LIMIT 1")
+                        ).fetchone()
+                        if not row or not row[0]:
+                            conn.execute(text("DROP TABLE IF EXISTS alembic_version"))
+            command.upgrade(alembic_cfg, "head")
+            break
+        except (psycopg2.errors.UniqueViolation, sa_exc.IntegrityError) as exc:
+            logging.getLogger(__name__).warning(
+                "Alembic upgrade failed due to duplicate version table: %s", exc
+            )
+            if role == "cloud" or not retry_once or attempts:
+                logging.getLogger(__name__).error(
+                    "Migration failed after retry. Consider resetting the database."
+                )
+                raise
+            attempts += 1
+            with engine.begin() as conn:
+                try:
+                    conn.execute(text("DROP TABLE IF EXISTS alembic_version"))
+                except Exception as drop_exc:
+                    log_manual_sql_error(
+                        "DROP TABLE alembic_version",
+                        str(drop_exc),
+                        traceback.format_exc(),
+                    )
+                    raise
+        except Exception as exc:
+            logging.getLogger(__name__).error("Alembic upgrade failed: %s", exc)
+            raise
 
 
 def verify_schema() -> str:
@@ -33,12 +90,14 @@ def verify_schema() -> str:
         return ""
     before = get_schema_revision()
     try:
-        subprocess.run(["alembic", "upgrade", "head"], check=True, capture_output=True)
+        safe_alembic_upgrade()
     except Exception as exc:  # pragma: no cover - best effort
         logging.getLogger(__name__).error("Could not apply migrations: %s", exc)
     after = get_schema_revision()
     if after != before:
-        logging.getLogger(__name__).info("Database schema upgraded from %s to %s", before, after)
+        logging.getLogger(__name__).info(
+            "Database schema upgraded from %s to %s", before, after
+        )
     return after
 
 
@@ -77,7 +136,12 @@ def log_schema_issues(db, model_cls, instance: str = "local") -> list[tuple[str,
     for issue, field in diffs:
         exists = (
             db.query(SyncIssue)
-            .filter_by(model_name=model_cls.__tablename__, field_name=field, issue_type=issue, instance=instance)
+            .filter_by(
+                model_name=model_cls.__tablename__,
+                field_name=field,
+                issue_type=issue,
+                instance=instance,
+            )
             .first()
         )
         if not exists:
@@ -98,7 +162,9 @@ _logged_error_hashes: set[str] = set()
 
 def log_sync_error(model: str, action: str, exc: Exception) -> None:
     """Store a sync error if not already logged in this run."""
-    h = hashlib.sha1(f"{model}:{action}:{type(exc).__name__}:{exc}".encode()).hexdigest()
+    h = hashlib.sha1(
+        f"{model}:{action}:{type(exc).__name__}:{exc}".encode()
+    ).hexdigest()
     if h in _logged_error_hashes:
         return
     _logged_error_hashes.add(h)
@@ -190,9 +256,7 @@ def log_schema_validation_details(result: dict, instance: str) -> None:
     """Store a summary of schema validation issues in ``boot_errors``."""
     parts: list[str] = []
     if result.get("missing_tables"):
-        parts.append(
-            "missing tables: " + ", ".join(sorted(result["missing_tables"]))
-        )
+        parts.append("missing tables: " + ", ".join(sorted(result["missing_tables"])))
     for table, cols in result.get("missing_columns", {}).items():
         joined = ", ".join(sorted(cols))
         parts.append(f"missing columns in {table}: {joined}")
@@ -211,6 +275,7 @@ def log_boot_error(msg: str, tb: str, instance: str) -> None:
     db = _BaseSessionLocal()
     try:
         from core.models.models import BootError
+
         db.add(BootError(error_message=msg, traceback=tb, instance_type=instance))
         db.commit()
     except Exception:
@@ -219,11 +284,22 @@ def log_boot_error(msg: str, tb: str, instance: str) -> None:
         db.close()
 
 
-def log_db_error(model: str, action: str, msg: str, tb: str, user: str | None = None) -> None:
+def log_db_error(
+    model: str, action: str, msg: str, tb: str, user: str | None = None
+) -> None:
     db = _BaseSessionLocal()
     try:
         from core.models.models import DBError
-        db.add(DBError(model_name=model, action=action, error_message=msg, traceback=tb, user=user))
+
+        db.add(
+            DBError(
+                model_name=model,
+                action=action,
+                error_message=msg,
+                traceback=tb,
+                user=user,
+            )
+        )
         db.commit()
     except Exception:
         db.rollback()
@@ -235,9 +311,8 @@ def log_manual_sql_error(stmt: str, msg: str, tb: str) -> None:
     db = _BaseSessionLocal()
     try:
         from core.models.models import ManualSQLError
-        db.add(
-            ManualSQLError(statement=stmt, error_message=msg, traceback=tb)
-        )
+
+        db.add(ManualSQLError(statement=stmt, error_message=msg, traceback=tb))
         db.commit()
     except Exception:
         db.rollback()
@@ -252,6 +327,7 @@ def record_schema_version(instance: str) -> None:
     db = SessionLocal()
     try:
         from core.models.models import SchemaVersion
+
         db.add(SchemaVersion(alembic_revision_id=rev, instance_type=instance))
         db.commit()
     except Exception:
@@ -326,7 +402,11 @@ def export_unsynced_records(path: Path) -> int:
 
 def import_unsynced_records(path: Path) -> int:
     """Replay unsynced rows from ``path``."""
-    if os.environ.get("ROLE", "local") != "local" or not path.exists() or engine is None:
+    if (
+        os.environ.get("ROLE", "local") != "local"
+        or not path.exists()
+        or engine is None
+    ):
         return 0
     db = SessionLocal()
     inserted = 0
@@ -334,7 +414,9 @@ def import_unsynced_records(path: Path) -> int:
         with open(path, "r", encoding="utf-8") as fh:
             payload = json.load(fh)
         for table, rows in payload.items():
-            cls = next((c for c in Base.__subclasses__() if c.__tablename__ == table), None)
+            cls = next(
+                (c for c in Base.__subclasses__() if c.__tablename__ == table), None
+            )
             if not cls:
                 continue
             insp = inspect(cls)
@@ -373,7 +455,7 @@ def reset_local_database(reason: str) -> None:
     Base.metadata.reflect(bind=engine)
     Base.metadata.drop_all(bind=engine)
     try:
-        subprocess.run(["alembic", "upgrade", "head"], check=True)
+        safe_alembic_upgrade()
         subprocess.run([sys.executable, "seed_tunables.py"], check=True)
         subprocess.run([sys.executable, "seed_superuser.py"], check=True)
     except Exception as exc:  # pragma: no cover - best effort
@@ -396,4 +478,3 @@ def reset_local_database(reason: str) -> None:
     finally:
         db.close()
     import_unsynced_records(backup_path)
-
