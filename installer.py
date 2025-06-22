@@ -252,16 +252,22 @@ def install():
         }
     )
 
+    from core.utils.schema import (
+        safe_alembic_upgrade,
+        validate_schema_integrity,
+        log_schema_validation_details,
+    )
     try:
-        run("python scripts/run_migrations.py")
-    except subprocess.CalledProcessError as exc:
+        safe_alembic_upgrade()
+    except Exception as exc:
         print(f"Migration failed: {exc}")
+        import traceback
+        print(traceback.format_exc())
         return
-
-    from core.utils.schema import validate_schema_integrity
 
     check = validate_schema_integrity()
     if not check.get("valid"):
+        log_schema_validation_details(check, mode)
         print("Schema validation failed. Aborting installation.")
         print(check)
         return
