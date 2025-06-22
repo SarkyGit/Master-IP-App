@@ -14,6 +14,8 @@ from .tunables import grouped_tunables
 from server.workers.heartbeat import send_heartbeat_once
 from server.workers import sync_push_worker, sync_pull_worker
 from core.utils.env_file import set_env_vars
+from core.utils.schema import get_schema_revision
+import httpx
 
 router = APIRouter()
 
@@ -80,6 +82,26 @@ def _render_sync(request: Request, db: Session, current_user, message: str = "")
 
     enabled = tunables.get("Enable Cloud Sync", "false").lower() in {"true", "1", "yes"}
 
+    local_rev = get_schema_revision()
+    remote_rev = None
+    schema_mismatch = False
+    cloud_url = tunables.get("Cloud Base URL")
+    site_id = tunables.get("Cloud Site ID")
+    api_key = tunables.get("Cloud API Key")
+    if settings.role != "cloud" and cloud_url and site_id and api_key:
+        try:
+            resp = httpx.get(
+                cloud_url.rstrip("/") + "/api/v1/sync/schema",
+                headers={"Site-ID": site_id, "API-Key": api_key},
+                timeout=5,
+            )
+            resp.raise_for_status()
+            remote_rev = resp.json().get("revision")
+            if remote_rev and remote_rev != local_rev:
+                schema_mismatch = True
+        except Exception:
+            pass
+
     context = {
         "request": request,
         "tunables": tunables,
@@ -101,6 +123,9 @@ def _render_sync(request: Request, db: Session, current_user, message: str = "")
         "sync_groups": sync_groups,
         "cloud_message": message,
         "current_user": current_user,
+        "schema_mismatch": schema_mismatch,
+        "local_schema": local_rev,
+        "remote_schema": remote_rev,
         "last_push": last_push,
         "last_pull": last_pull,
         "last_push_worker": last_push_worker,

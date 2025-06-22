@@ -46,6 +46,11 @@
         <li><strong>Last Sync:</strong> {{ last_contact or 'never' }}</li>
         <li><strong>Type:</strong> {{ connection_type }}</li>
       </ul>
+      {% if schema_mismatch %}
+      <p class="p-2 mt-2 rounded bg-[var(--alert-bg)] text-yellow-300">
+        Schema mismatch: local {{ local_schema }} vs cloud {{ remote_schema }}
+      </p>
+      {% endif %}
     </div>
     {% if role == 'cloud' %}
     <div class="p-3 bg-[var(--card-bg)] rounded">

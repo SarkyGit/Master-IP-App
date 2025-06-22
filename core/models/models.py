@@ -403,6 +403,36 @@ class SyncError(Base):
     timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
 
 
+class BootError(Base):
+    __tablename__ = "boot_errors"
+
+    id = Column(Integer, primary_key=True)
+    timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    error_message = Column(String, nullable=False)
+    traceback = Column(Text, nullable=False)
+    instance_type = Column(String, nullable=False)
+
+
+class DBError(Base):
+    __tablename__ = "db_errors"
+
+    id = Column(Integer, primary_key=True)
+    model_name = Column(String, nullable=True)
+    action = Column(String, nullable=True)
+    error_message = Column(String, nullable=False)
+    traceback = Column(Text, nullable=False)
+    user = Column(String, nullable=True)
+    timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+
+
+class SchemaVersion(Base):
+    __tablename__ = "schema_versions"
+
+    id = Column(Integer, primary_key=True)
+    alembic_revision_id = Column(String, nullable=False)
+    updated_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    instance_type = Column(String, nullable=False)
+
 def _update_timestamp(mapper, connection, target) -> None:
     """Refresh the updated_at field before persisting changes."""
     target.updated_at = datetime.now(timezone.utc)

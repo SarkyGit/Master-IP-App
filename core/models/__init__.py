@@ -25,6 +25,9 @@ from .models import (
     DeletionLog,
     SyncIssue,
     SyncError,
+    BootError,
+    DBError,
+    SchemaVersion,
 )
 
 __all__ = [
@@ -54,4 +57,7 @@ __all__ = [
     "DeletionLog",
     "SyncIssue",
     "SyncError",
+    "BootError",
+    "DBError",
+    "SchemaVersion",
 ]

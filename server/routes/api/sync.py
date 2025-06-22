@@ -12,8 +12,9 @@ from core.utils.sync_logging import log_sync, log_conflict, log_duplicate
 from core.utils.deletion import soft_delete
 
 from core.utils.db_session import get_db
-from core.utils.schema import verify_schema, get_schema_revision
+from core.utils.schema import verify_schema, get_schema_revision, validate_db_schema
 from core.utils.site_auth import validate_site_key
+from settings import settings
 
 router = APIRouter(prefix="/api/v1/sync", tags=["sync"])
 
@@ -38,6 +39,8 @@ async def sync_payload(
     key=Depends(validate_site_key),
 ):
     """Accept a batch of updates for multiple models."""
+    if not validate_db_schema(settings.role):
+        raise HTTPException(status_code=400, detail="Schema mismatch")
     if not isinstance(payload, dict):
         raise HTTPException(status_code=400, detail="Invalid payload")
 
@@ -104,6 +107,9 @@ async def push_changes(
 ):
     """Receive a batch of updates from another site."""
     log = logging.getLogger(__name__)
+
+    if not validate_db_schema(settings.role):
+        raise HTTPException(status_code=400, detail="Schema mismatch")
 
     if not isinstance(payload, dict):
         raise HTTPException(status_code=400, detail="Invalid payload")
@@ -308,6 +314,9 @@ async def pull_changes(
 ):
     """Return records updated since the provided timestamp."""
     log = logging.getLogger(__name__)
+
+    if not validate_db_schema(settings.role):
+        raise HTTPException(status_code=400, detail="Schema mismatch")
 
     if not isinstance(payload, dict):
         raise HTTPException(status_code=400, detail="Invalid payload")
