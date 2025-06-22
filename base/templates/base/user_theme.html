@@ -101,8 +101,15 @@
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     const stick = document.getElementById('menu_stick_theme');
-    const theme = document.getElementById('theme');
-    const fields = ['font','icon_style','menu_style','table_grid_style','admin_color','inventory_color','network_color','menu_tab_color','menu_bg_color'];
+    const fields = ['theme','font','icon_style','menu_style','table_grid_style','admin_color','inventory_color','network_color','menu_tab_color','menu_bg_color'];
+
+    const defaults = {
+      theme: '{{ user.theme }}',
+      font: '{{ user.font }}',
+      icon_style: '{{ user.icon_style }}',
+      menu_style: '{{ user.menu_style }}',
+      table_grid_style: '{{ user.table_grid_style }}'
+    };
 
     function applyDefaults() {
       const root = document.documentElement;
@@ -120,10 +127,9 @@
           if (val) el.value = val;
         }
       });
-      ['font','icon_style','menu_style','table_grid_style'].forEach(id => {
+      Object.entries(defaults).forEach(([id, val]) => {
         const el = document.getElementById(id);
-        if (el && el.options && el.options.length)
-          el.value = el.options[0].value;
+        if (el) el.value = val;
       });
     }
 
@@ -143,7 +149,6 @@
     }
 
     stick.addEventListener('change', update);
-    if (theme) theme.addEventListener('change', () => { if (stick.checked) applyDefaults(); });
 
     update();
   });
