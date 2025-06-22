@@ -86,6 +86,7 @@ from server.workers.sync_push_worker import start_sync_push_worker, stop_sync_pu
 from server.workers.sync_pull_worker import start_sync_pull_worker, stop_sync_pull_worker
 from server.workers.heartbeat import start_heartbeat, stop_heartbeat
 from server.workers.system_metrics_logger import start_metrics_logger, stop_metrics_logger
+from server.utils.system_metrics import HAS_PSUTIL
 from core.utils.templates import templates
 from core.utils.db_session import engine, SessionLocal
 from core.utils.schema import verify_schema
@@ -119,29 +120,33 @@ INSTALL_REQUIRED = check_install_required()
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     verify_schema()
-    if settings.role == "local" and not INSTALL_REQUIRED:
+    if not INSTALL_REQUIRED:
         if settings.enable_background_workers:
-            start_queue_worker()
-            start_config_scheduler()
-            setup_trap_listener()
-            setup_syslog_listener()
+            if settings.role == "local":
+                start_queue_worker()
+                start_config_scheduler()
+                setup_trap_listener()
+                setup_syslog_listener()
             start_metrics_logger()
-        if settings.enable_cloud_sync:
+        if settings.role == "local" and settings.enable_cloud_sync:
             start_cloud_sync()
             start_heartbeat()
-        if settings.enable_sync_push_worker:
+        if settings.role == "local" and settings.enable_sync_push_worker:
             start_sync_push_worker()
-        if settings.enable_sync_pull_worker:
+        if settings.role == "local" and settings.enable_sync_pull_worker:
             start_sync_pull_worker()
     yield
-    if settings.role == "local" and not INSTALL_REQUIRED:
-        await stop_queue_worker()
-        stop_config_scheduler()
-        await stop_cloud_sync()
-        await stop_sync_push_worker()
-        await stop_sync_pull_worker()
-        await stop_heartbeat()
-        await stop_metrics_logger()
+    if not INSTALL_REQUIRED:
+        if settings.enable_background_workers:
+            if settings.role == "local":
+                await stop_queue_worker()
+                stop_config_scheduler()
+            await stop_metrics_logger()
+        if settings.role == "local":
+            await stop_cloud_sync()
+            await stop_sync_push_worker()
+            await stop_sync_pull_worker()
+            await stop_heartbeat()
     logging.shutdown()
 
 app = FastAPI(lifespan=lifespan)
@@ -180,6 +185,8 @@ elif not INSTALL_REQUIRED:
     print(f"Cloud sync worker enabled: {settings.enable_cloud_sync}")
     print(f"Sync push worker enabled: {settings.enable_sync_push_worker}")
     print(f"Sync pull worker enabled: {settings.enable_sync_pull_worker}")
+if not HAS_PSUTIL:
+    logging.warning("psutil not installed; system metrics will be unavailable")
 
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 

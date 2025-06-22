@@ -2,6 +2,7 @@
 {% block content %}
 <h1 class="text-xl mb-4">System Monitor</h1>
 <div x-data="monitor()" x-init="init()" class="space-y-4">
+  <div x-show="error" class="text-red-600">⚠️ System metrics unavailable.</div>
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <div class="bg-[var(--card-bg)] p-4 rounded shadow">
       <h2 class="text-lg mb-2">CPU Usage</h2>
@@ -53,6 +54,7 @@ window.monitor = function(){
     diskChart: null,
     workers: '',
     datasets: {},
+    error: false,
     init(){
       const ctxC = document.getElementById('cpuChart');
       const ctxM = document.getElementById('memChart');
@@ -73,8 +75,16 @@ window.monitor = function(){
     },
     async fetchMetrics(){
       const r = await fetch('/api/system/metrics');
-      if(!r.ok) return;
+      if(!r.ok){
+        this.error = true;
+        return;
+      }
       const d = await r.json();
+      if(d.error){
+        this.error = true;
+        return;
+      }
+      this.error = false;
       this.updateCharts(d);
     },
     updateCharts(d){
