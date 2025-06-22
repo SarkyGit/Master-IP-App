@@ -30,6 +30,7 @@ from .models import (
     ManualSQLError,
     SchemaValidationIssue,
     SchemaVersion,
+    SchemaReset,
 )
 
 __all__ = [
@@ -64,4 +65,5 @@ __all__ = [
     "ManualSQLError",
     "SchemaValidationIssue",
     "SchemaVersion",
+    "SchemaReset",
 ]

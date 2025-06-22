@@ -94,6 +94,7 @@ from core.utils.schema import (
     record_schema_version,
     log_boot_error,
     validate_schema_integrity,
+    reset_local_database,
 )
 from alembic.config import Config
 from alembic import command
@@ -174,6 +175,14 @@ async def lifespan(app: FastAPI):
             db.commit()
         finally:
             db.close()
+        log_boot_error("Schema mismatch detected", "", settings.role)
+        if settings.role != "cloud":
+            try:
+                reset_local_database("schema mismatch")
+                validation = validate_schema_integrity()
+                schema_ok = validation["valid"]
+            except Exception as exc:  # pragma: no cover - safety
+                log_boot_error(str(exc), traceback.format_exc(), settings.role)
     if not INSTALL_REQUIRED:
         if settings.enable_background_workers and schema_ok:
             if settings.role == "local":

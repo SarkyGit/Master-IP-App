@@ -1,8 +1,9 @@
 import subprocess
 import logging
+import sys
 from sqlalchemy import text, inspect
 
-from .db_session import engine, Base, _BaseSessionLocal
+from .db_session import engine, Base, _BaseSessionLocal, SessionLocal
 from core.models.models import SyncIssue, SyncError
 import hashlib
 import traceback
@@ -225,6 +226,37 @@ def record_schema_version(instance: str) -> None:
     try:
         from core.models.models import SchemaVersion
         db.add(SchemaVersion(alembic_revision_id=rev, instance_type=instance))
+        db.commit()
+    except Exception:
+        db.rollback()
+    finally:
+        db.close()
+
+
+def reset_local_database(reason: str) -> None:
+    """Drop all tables, reapply migrations, seed data and log the reset."""
+    if engine is None:
+        return
+    Base.metadata.reflect(bind=engine)
+    Base.metadata.drop_all(bind=engine)
+    try:
+        subprocess.run(["alembic", "upgrade", "head"], check=True)
+        subprocess.run([sys.executable, "seed_tunables.py"], check=True)
+        subprocess.run([sys.executable, "seed_superuser.py"], check=True)
+    except Exception as exc:  # pragma: no cover - best effort
+        logging.getLogger(__name__).warning("Reset commands failed: %s", exc)
+    try:
+        import importlib, asyncio
+
+        cloud_sync = importlib.import_module("server.workers.cloud_sync")
+        asyncio.run(cloud_sync.run_sync_once())
+    except Exception as exc:  # pragma: no cover - best effort
+        logging.getLogger(__name__).warning("Initial cloud sync failed: %s", exc)
+    db = SessionLocal()
+    try:
+        from core.models.models import SchemaReset
+
+        db.add(SchemaReset(reason=reason))
         db.commit()
     except Exception:
         db.rollback()
