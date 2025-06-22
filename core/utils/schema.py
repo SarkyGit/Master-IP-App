@@ -1,7 +1,11 @@
 import subprocess
 import logging
 import sys
-from sqlalchemy import text, inspect
+import json
+import os
+import time
+from pathlib import Path
+from sqlalchemy import text, inspect, or_
 
 from .db_session import engine, Base, _BaseSessionLocal, SessionLocal
 from core.models.models import SyncIssue, SyncError
@@ -114,6 +118,8 @@ def log_sync_error(model: str, action: str, exc: Exception) -> None:
             db.commit()
     finally:
         db.close()
+    import_unsynced_records(backup_path)
+    import_unsynced_records(backup_path)
 
 
 def validate_db_schema(instance: str = "local") -> bool:
@@ -254,10 +260,116 @@ def record_schema_version(instance: str) -> None:
         db.close()
 
 
+def log_recovery_event(success: bool, num_records: int, filename: str) -> None:
+    """Record a backup or restore attempt."""
+    db = SessionLocal()
+    try:
+        from core.models.models import LocalRecoveryEvent
+
+        db.add(
+            LocalRecoveryEvent(
+                success=success, num_records=num_records, filename=filename
+            )
+        )
+        db.commit()
+    except Exception:
+        db.rollback()
+    finally:
+        db.close()
+
+
+def export_unsynced_records(path: Path) -> int:
+    """Write unsynced local rows to ``path`` and return the count."""
+    if os.environ.get("ROLE", "local") != "local" or engine is None:
+        return 0
+    if path.exists() and time.time() - path.stat().st_mtime < 3600:
+        return 0
+    db = SessionLocal()
+    count = 0
+    data: dict[str, list[dict]] = {}
+    try:
+        for cls in Base.__subclasses__():
+            has_status = hasattr(cls, "sync_status")
+            has_last = hasattr(cls, "last_synced_at")
+            if not (has_status or has_last):
+                continue
+            query = db.query(cls)
+            filters = []
+            if has_status:
+                filters.append(cls.sync_status != "synced")
+            if has_last:
+                filters.append(cls.last_synced_at.is_(None))
+            if filters:
+                query = query.filter(or_(*filters))
+            rows = query.all()
+            if not rows:
+                continue
+            serialized = []
+            insp = inspect(cls)
+            cols = [c.key for c in insp.columns]
+            for row in rows:
+                rec = {k: to_jsonable(getattr(row, k)) for k in cols}
+                serialized.append(rec)
+                count += 1
+            data[cls.__tablename__] = serialized
+        if count:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            with open(path, "w", encoding="utf-8") as fh:
+                json.dump(data, fh)
+        log_recovery_event(True, count, path.name)
+    except Exception:
+        log_recovery_event(False, 0, path.name)
+    finally:
+        db.close()
+    return count
+
+
+def import_unsynced_records(path: Path) -> int:
+    """Replay unsynced rows from ``path``."""
+    if os.environ.get("ROLE", "local") != "local" or not path.exists() or engine is None:
+        return 0
+    db = SessionLocal()
+    inserted = 0
+    try:
+        with open(path, "r", encoding="utf-8") as fh:
+            payload = json.load(fh)
+        for table, rows in payload.items():
+            cls = next((c for c in Base.__subclasses__() if c.__tablename__ == table), None)
+            if not cls:
+                continue
+            insp = inspect(cls)
+            cols = {c.key for c in insp.columns}
+            pk = "id" if "id" in cols else None
+            for rec in rows:
+                exists = None
+                if pk and rec.get(pk) is not None:
+                    exists = db.query(cls).filter_by(**{pk: rec[pk]}).first()
+                elif "uuid" in cols and rec.get("uuid"):
+                    exists = db.query(cls).filter_by(uuid=rec["uuid"]).first()
+                if exists:
+                    continue
+                obj_data = {k: rec[k] for k in rec if k in cols}
+                if hasattr(cls, "sync_status"):
+                    obj_data["sync_status"] = "pending"
+                obj = cls(**obj_data)
+                db.add(obj)
+                inserted += 1
+        db.commit()
+        log_recovery_event(True, inserted, path.name)
+    except Exception:
+        db.rollback()
+        log_recovery_event(False, 0, path.name)
+    finally:
+        db.close()
+    return inserted
+
+
 def reset_local_database(reason: str) -> None:
     """Drop all tables, reapply migrations, seed data and log the reset."""
     if engine is None:
         return
+    backup_path = Path("backups/unsynced_backup.json")
+    export_unsynced_records(backup_path)
     Base.metadata.reflect(bind=engine)
     Base.metadata.drop_all(bind=engine)
     try:
@@ -283,3 +395,5 @@ def reset_local_database(reason: str) -> None:
         db.rollback()
     finally:
         db.close()
+    import_unsynced_records(backup_path)
+
