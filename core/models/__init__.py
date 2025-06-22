@@ -27,6 +27,7 @@ from .models import (
     SyncError,
     BootError,
     DBError,
+    ManualSQLError,
     SchemaVersion,
 )
 
@@ -59,5 +60,6 @@ __all__ = [
     "SyncError",
     "BootError",
     "DBError",
+    "ManualSQLError",
     "SchemaVersion",
 ]

@@ -1,5 +1,6 @@
 # seed_codex.py
 
+import subprocess
 from core.utils.db_session import SessionLocal
 from core.models.models import User
 from modules.inventory.models import (
@@ -9,18 +10,29 @@ from modules.inventory.models import (
     Tag,
 )
 
+try:
+    subprocess.run(["alembic", "upgrade", "head"], check=True)
+except Exception:
+    pass
+
 db = SessionLocal()
 
 # Add minimal data
 if not db.query(User).filter_by(username="codexuser").first():
-    db.add(User(username="codexuser", password="codex", is_admin=True))
+    try:
+        db.add(User(username="codexuser", password="codex", is_admin=True))
+    except Exception:
+        db.rollback()
 
 devtype = DeviceType(name="Test Type")
 location = Location(name="Test Location")
 tag = Tag(name="codex")
 
-db.add_all([devtype, location, tag])
-db.flush()
+try:
+    db.add_all([devtype, location, tag])
+    db.flush()
+except Exception:
+    db.rollback()
 
 device = Device(
     hostname="codex-device",
@@ -32,7 +44,10 @@ device = Device(
     tags=[tag],
 )
 
-db.add(device)
-db.commit()
+try:
+    db.add(device)
+    db.commit()
+except Exception:
+    db.rollback()
 
 print("✅ Codex seed data inserted.")

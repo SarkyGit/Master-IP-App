@@ -219,12 +219,18 @@ def install():
             role="superadmin",
             is_active=True,
         )
-        db.add(user)
-        db.commit()
+        try:
+            db.add(user)
+            db.commit()
+        except Exception:
+            db.rollback()
         site = db.query(Site).first()
         if site:
-            db.add(SiteMembership(user_id=user.id, site_id=site.id))
-            db.commit()
+            try:
+                db.add(SiteMembership(user_id=user.id, site_id=site.id))
+                db.commit()
+            except Exception:
+                db.rollback()
     finally:
         db.close()
 

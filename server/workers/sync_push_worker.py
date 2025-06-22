@@ -18,7 +18,7 @@ from modules.inventory import models as inventory_models  # noqa: F401
 from .cloud_sync import _request_with_retry, _get_sync_config, ensure_schema
 from core.utils.audit import log_audit
 from core.utils.sync_logging import log_sync_attempt
-from core.utils.schema import log_schema_issues, log_sync_error
+from core.utils.schema import log_schema_issues, log_sync_error, validate_db_schema
 from server.utils.cloud import set_tunable
 
 SYNC_PUSH_INTERVAL = int(os.environ.get("SYNC_PUSH_INTERVAL", "60"))
@@ -120,6 +120,9 @@ async def push_once(log: logging.Logger) -> None:
         return
     base = push_url.rsplit("/", 1)[0]
     await ensure_schema(base, log, site_id, api_key)
+    if not validate_db_schema("local"):
+        log.error("Schema mismatch detected; aborting push")
+        return
     db = SessionLocal()
     try:
         since = _load_last_sync(db)

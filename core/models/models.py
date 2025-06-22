@@ -425,6 +425,16 @@ class DBError(Base):
     timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
 
 
+class ManualSQLError(Base):
+    __tablename__ = "manual_sql_errors"
+
+    id = Column(Integer, primary_key=True)
+    statement = Column(Text, nullable=False)
+    error_message = Column(String, nullable=False)
+    traceback = Column(Text, nullable=False)
+    timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+
+
 class SchemaVersion(Base):
     __tablename__ = "schema_versions"
 
