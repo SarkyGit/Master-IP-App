@@ -40,7 +40,6 @@ from server.routes import (
     locations_router,
     ssh_tasks_router,
     ip_bans_router,
-    user_ssh_router,
     login_events_router,
     add_device_router,
     admin_site_router,
@@ -223,7 +222,6 @@ app.include_router(user_pages_router)
 app.include_router(locations_router)
 app.include_router(ssh_tasks_router)
 app.include_router(ip_bans_router)
-app.include_router(user_ssh_router)
 app.include_router(login_events_router)
 app.include_router(add_device_router)
 app.include_router(admin_site_router)
