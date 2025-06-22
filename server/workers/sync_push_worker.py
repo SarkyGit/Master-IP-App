@@ -18,6 +18,7 @@ from modules.inventory import models as inventory_models  # noqa: F401
 from .cloud_sync import _request_with_retry, _get_sync_config, ensure_schema
 from core.utils.audit import log_audit
 from core.utils.sync_logging import log_sync_attempt
+from core.utils.schema import log_schema_issues, log_sync_error
 from server.utils.cloud import set_tunable
 
 SYNC_PUSH_INTERVAL = int(os.environ.get("SYNC_PUSH_INTERVAL", "60"))
@@ -141,6 +142,11 @@ async def push_once(log: logging.Logger) -> None:
                 )
                 continue
 
+            diffs = log_schema_issues(db, model_cls, instance="local")
+            if diffs:
+                log.warning("Schema mismatch for %s - skipping sync", model_cls.__tablename__)
+                continue
+
             created_col = getattr(model_cls, "created_at", None)
             updated_col = getattr(model_cls, "updated_at", None)
             deleted_col = getattr(model_cls, "deleted_at", None)
@@ -206,7 +212,12 @@ async def push_once(log: logging.Logger) -> None:
         for obj in pushed_objs:
             if hasattr(obj, "sync_state"):
                 obj.sync_state = _serialize(obj)
-        db.commit()
+        try:
+            db.commit()
+        except Exception as exc:
+            db.rollback()
+            log_sync_error("push_commit", "update", exc)
+            raise
 
         conflicts = 0
         if isinstance(result, dict):

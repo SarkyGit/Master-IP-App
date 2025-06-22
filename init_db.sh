@@ -40,14 +40,8 @@ psql "$PG_URL" -tc "SELECT 1 FROM pg_database WHERE datname = '$DB_NAME';" | gre
 # Ensure required Python packages are installed
 pip install -r requirements.txt
 
-# Create the initial database schema before running migrations
-python - <<'PY'
-from core.utils.db_session import Base, engine
-Base.metadata.create_all(bind=engine)
-PY
-
-# Mark database as up-to-date with migrations
-alembic stamp head
+# Apply all migrations to create the schema
+alembic upgrade head
 
 # Seed default superuser account
 python seed_superuser.py

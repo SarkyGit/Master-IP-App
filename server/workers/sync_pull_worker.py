@@ -17,6 +17,7 @@ from core.utils.versioning import apply_update
 from .cloud_sync import _get_sync_config, ensure_schema
 from core.utils.audit import log_audit
 from core.utils.sync_logging import log_sync_attempt
+from core.utils.schema import log_schema_issues, log_sync_error
 from server.utils.cloud import set_tunable
 from sqlalchemy import inspect
 from server.workers import sync_push_worker
@@ -95,7 +96,12 @@ def _remap_user_references(db: Session, old_id: int, new_id: int) -> None:
             col = fk["constrained_columns"][0]
             stmt = table.update().where(table.c[col] == old_id).values({col: new_id})
             db.execute(stmt)
-    db.commit()
+    try:
+        db.commit()
+    except Exception as exc:
+        db.rollback()
+        log_sync_error("remap", "update", exc)
+        raise
 
 
 def _load_last_sync(db: Session) -> datetime:
@@ -165,7 +171,12 @@ def _update_last_sync(db: Session, count: int, conflicts: int = 0) -> None:
                 data_type="text",
             )
         )
-    db.commit()
+    try:
+        db.commit()
+    except Exception as exc:
+        db.rollback()
+        log_sync_error("_update_last_sync", "update", exc)
+        raise
 
 
 async def _fetch_with_retry(
@@ -233,6 +244,10 @@ async def pull_once(log: logging.Logger) -> None:
                 log.warning("Skipping malformed record: %s", rec)
                 continue
             model_cls = model_map[model_name]
+            diffs = log_schema_issues(db, model_cls, instance="local")
+            if diffs:
+                log.warning("Schema mismatch for %s - skipping record", model_name)
+                continue
             print(f"[🛠] Applying update for ID={record_id} on model='{model_name}'")
             query = db.query(model_cls)
             if hasattr(query, "execution_options"):
@@ -249,21 +264,41 @@ async def pull_once(log: logging.Logger) -> None:
                     obj.version = version
                     obj.sync_state = sync_push_worker._serialize(obj)
                     obj.conflict_data = None
-                    db.commit()
+                    try:
+                        db.commit()
+                    except Exception as exc:
+                        db.rollback()
+                        log_sync_error(model_name, "update", exc)
+                        continue
                     continue
                 else:
                     existing_ids = [u.id for u in db.query(model_cls).all()]
                     new_id = (max(existing_ids) if existing_ids else 0) + 1
                     old_id = obj.id
                     obj.id = new_id
-                    db.commit()
+                    try:
+                        db.commit()
+                    except Exception as exc:
+                        db.rollback()
+                        log_sync_error(model_name, "update", exc)
+                        continue
                     _remap_user_references(db, old_id, new_id)
-                    db.commit()
+                    try:
+                        db.commit()
+                    except Exception as exc:
+                        db.rollback()
+                        log_sync_error(model_name, "update", exc)
+                        continue
                     new_obj = model_cls(
                         **{k: v for k, v in rec.items() if k not in {"model", "table"}}
                     )
                     db.add(new_obj)
-                    db.commit()
+                    try:
+                        db.commit()
+                    except Exception as exc:
+                        db.rollback()
+                        log_sync_error(model_name, "insert", exc)
+                        continue
                     continue
             if obj and rec.get("deleted_at"):
                 try:
@@ -288,7 +323,12 @@ async def pull_once(log: logging.Logger) -> None:
                     obj.conflict_data = obj.conflict_data or []
                     obj.conflict_data.append(make_json_safe(conflict))
                     conflicts_total += 1
-                    db.commit()
+                    try:
+                        db.commit()
+                    except Exception as exc:
+                        db.rollback()
+                        log_sync_error(model_name, "update", exc)
+                        continue
                     print(f"[⏩] No new records for '{model_name}' since {since}")
                     continue
                 _soft_delete(obj, 0, "cloud")
@@ -296,7 +336,12 @@ async def pull_once(log: logging.Logger) -> None:
                 obj.updated_at = remote_ts_dt
                 obj.version = version
                 obj.sync_state = sync_push_worker._serialize(obj)
-                db.commit()
+                try:
+                    db.commit()
+                except Exception as exc:
+                    db.rollback()
+                    log_sync_error(model_name, "update", exc)
+                    continue
                 continue
             if obj:
                 try:
@@ -325,7 +370,12 @@ async def pull_once(log: logging.Logger) -> None:
                                 changes="sync_pull:" + ",".join(changed),
                             )
                         )
-                    db.commit()
+                    try:
+                        db.commit()
+                    except Exception as exc:
+                        db.rollback()
+                        log_sync_error(model_name, "insert", exc)
+                        continue
                     db.refresh(obj)
                 except Exception as exc:
                     db.rollback()
@@ -340,7 +390,12 @@ async def pull_once(log: logging.Logger) -> None:
                         **{k: v for k, v in rec.items() if k not in {"model", "table"}}
                     )
                     db.add(obj)
-                    db.commit()
+                    try:
+                        db.commit()
+                    except Exception as exc:
+                        db.rollback()
+                        log_sync_error(model_name, "insert", exc)
+                        continue
                     if model_cls is Device:
                         db.add(
                             DeviceEditLog(
@@ -349,7 +404,12 @@ async def pull_once(log: logging.Logger) -> None:
                                 changes="sync_pull:created",
                             )
                         )
-                        db.commit()
+                        try:
+                            db.commit()
+                        except Exception as exc:
+                            db.rollback()
+                            log_sync_error(model_name, "insert", exc)
+                            continue
                 except Exception as exc:
                     db.rollback()
                     log.error(

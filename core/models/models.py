@@ -381,6 +381,28 @@ class DeletionLog(Base):
     origin = Column(String, nullable=True)
 
 
+class SyncIssue(Base):
+    __tablename__ = "sync_issues"
+
+    id = Column(Integer, primary_key=True)
+    model_name = Column(String, nullable=False)
+    field_name = Column(String, nullable=False)
+    issue_type = Column(String, nullable=False)
+    instance = Column(String, nullable=False)
+    timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+
+
+class SyncError(Base):
+    __tablename__ = "sync_errors"
+
+    id = Column(Integer, primary_key=True)
+    model_name = Column(String, nullable=False)
+    action = Column(String, nullable=False)
+    error_trace = Column(Text, nullable=False)
+    error_hash = Column(String, unique=True, nullable=False)
+    timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+
+
 def _update_timestamp(mapper, connection, target) -> None:
     """Refresh the updated_at field before persisting changes."""
     target.updated_at = datetime.now(timezone.utc)
