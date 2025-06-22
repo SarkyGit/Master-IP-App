@@ -24,6 +24,7 @@ This application is a modular FastAPI system using Jinja2 templates, UnoCSS styl
   - Automatically validate schema on boot.
   - If schema mismatch is detected, unsynced data is safely exported and the DB is rebuilt from cloud.
   - No permanent data is stored locally.
+  - Local instances do not persist unique data. All updates are expected to sync to the cloud. If sync fails and a reset is triggered, unsynced data is backed up and replayed after rebuild.
 
 ---
 
