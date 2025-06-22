@@ -38,7 +38,6 @@
         {% if current_user.role == 'superadmin' %}
         <a href="/users/me" :class="active('/users/me')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">My Profile</a>
         <a href="/admin/system" :class="active('/admin/system')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">System</a>
-        <a href="/admin/org-settings" :class="active('/admin/org-settings')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Organisation Settings</a>
         <a href="/admin/users" :class="active('/admin/users')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Users</a>
         <a href="/admin/system-monitor" :class="active('/admin/system-monitor')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">System Monitor</a>
         <a href="/admin/cloud-sync" :class="active('/admin/cloud-sync')" class="block px-2 py-1 rounded hover:bg-[var(--submenu-hover-bg)]">Cloud Sync / API's</a>
