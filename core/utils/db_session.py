@@ -17,9 +17,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 import modules.inventory.models  # noqa: F401
 import modules.network.models  # noqa: F401
 
-if engine:
-    # Ensure all tables are created
-    Base.metadata.create_all(bind=engine)
+# Database schema managed exclusively via Alembic migrations
 
 @event.listens_for(Session, "do_orm_execute")
 def _filter_deleted(execute_state):

@@ -23,6 +23,8 @@ from .models import (
     ConflictLog,
     DuplicateResolutionLog,
     DeletionLog,
+    SyncIssue,
+    SyncError,
 )
 
 __all__ = [
@@ -50,4 +52,6 @@ __all__ = [
     "ConflictLog",
     "DuplicateResolutionLog",
     "DeletionLog",
+    "SyncIssue",
+    "SyncError",
 ]
