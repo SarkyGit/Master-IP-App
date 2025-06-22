@@ -272,10 +272,12 @@ def install():
                 "superadmin",
                 "super_admin",
             }:
-                print("Cloud user lacks super admin privileges; ignoring result")
+                print(
+                    "Cloud user lacks super admin privileges; ignoring result and falling back"
+                )
                 admin_data = None
             if not admin_data:
-                print("Admin not found on cloud; creating new user")
+                print("Admin not found on cloud; creating new user locally")
                 name = questionary.text("Name").ask()
                 password = questionary.password("Password").ask()
                 payload = {
