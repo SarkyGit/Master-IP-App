@@ -82,7 +82,7 @@ def ensure_ipapp_user() -> None:
 
 def fetch_cloud_superadmins(base_url: str, api_key: str) -> list[dict]:
     """Return list of super admin users from the cloud server."""
-
+    import httpx
     url = base_url.rstrip("/") + "/api/super-admins"
     headers = {"Authorization": f"Bearer {api_key}"}
     try:
@@ -241,7 +241,11 @@ def install():
         if cloud_url and api_key:
             admins = fetch_cloud_superadmins(cloud_url, api_key)
             if admins:
-                choices = [f"{a.get('email','user')} ({a.get('id',a.get('uuid',''))})" for a in admins]
+                choices = [
+                    f"{a.get('email', 'user')} ({a.get('uuid', a.get('id', ''))})"
+                    for a in admins
+                ]
+
                 choices.append("Create new")
                 selection = questionary.select("Select super admin", choices=choices).ask()
                 if selection == "Create new":
@@ -291,7 +295,7 @@ def install():
             hashed_password=admin_data.get("hashed_password"),
             role=admin_data.get("role", "superadmin"),
             is_active=admin_data.get("is_active", True),
-            uuid=admin_data.get("uuid"),
+            uuid=admin_data.get("uuid", admin_data.get("id")),
         )
         try:
             db.add(user)
