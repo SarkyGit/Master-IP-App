@@ -462,6 +462,18 @@ class SchemaReset(Base):
     timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
     reason = Column(String, nullable=False)
 
+
+class LocalRecoveryEvent(Base):
+    """Log backup and restore attempts for unsynced records."""
+
+    __tablename__ = "local_recovery_events"
+
+    id = Column(Integer, primary_key=True)
+    timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    success = Column(Boolean, nullable=False)
+    num_records = Column(Integer, nullable=False)
+    filename = Column(String, nullable=False)
+
 def _update_timestamp(mapper, connection, target) -> None:
     """Refresh the updated_at field before persisting changes."""
     target.updated_at = datetime.now(timezone.utc)

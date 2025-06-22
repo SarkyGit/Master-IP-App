@@ -31,6 +31,7 @@ from .models import (
     SchemaValidationIssue,
     SchemaVersion,
     SchemaReset,
+    LocalRecoveryEvent,
 )
 
 __all__ = [
@@ -66,4 +67,5 @@ __all__ = [
     "SchemaValidationIssue",
     "SchemaVersion",
     "SchemaReset",
+    "LocalRecoveryEvent",
 ]
