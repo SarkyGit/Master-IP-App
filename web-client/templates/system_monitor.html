@@ -43,7 +43,6 @@
 {% block extra_scripts %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-window.__context__ = {{ metrics | tojson | safe }};
 window.monitor = function(){
   return {
     timer: null,
@@ -66,26 +65,34 @@ window.monitor = function(){
       this.loadChart = new Chart(ctxL,{type:'bar',data:{labels:['1m','5m','15m'],datasets:[{label:'load',data:[],backgroundColor:'#fbbf24'}]},options:{animation:false}});
       this.netChart = new Chart(ctxN,{type:'line',data:{labels:[],datasets:[]},options:{animation:false}});
       this.diskChart = new Chart(ctxD,{type:'bar',data:{labels:['Used %'],datasets:[{label:'Disk Usage',data:[],backgroundColor:'#f87171'}]},options:{animation:false,scales:{y:{beginAtZero:true,max:100}}}});
-      if(window.__context__){
-        this.updateCharts(window.__context__);
-      }
       this.fetchMetrics();
       this.timer = setInterval(()=>this.fetchMetrics(),5000);
-      document.addEventListener('visibilitychange',()=>{if(document.hidden){clearInterval(this.timer);}else{this.timer=setInterval(()=>this.fetchMetrics(),5000);}});
+      document.addEventListener('visibilitychange',()=>{
+        if(document.hidden){
+          clearInterval(this.timer);
+        }else{
+          clearInterval(this.timer);
+          this.timer = setInterval(()=>this.fetchMetrics(),5000);
+        }
+      });
     },
     async fetchMetrics(){
-      const r = await fetch('/api/system/metrics');
-      if(!r.ok){
+      try{
+        const r = await fetch('/api/system/metrics');
+        if(!r.ok){
+          this.error = true;
+          return;
+        }
+        const d = await r.json();
+        if(d.error){
+          this.error = true;
+          return;
+        }
+        this.error = false;
+        this.updateCharts(d);
+      }catch(e){
         this.error = true;
-        return;
       }
-      const d = await r.json();
-      if(d.error){
-        this.error = true;
-        return;
-      }
-      this.error = false;
-      this.updateCharts(d);
     },
     updateCharts(d){
       const t = new Date().toLocaleTimeString();
