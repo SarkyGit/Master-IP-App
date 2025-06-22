@@ -9,7 +9,7 @@
       <h2 class="text-lg mt-4 mb-2">{{ section.label }}</h2>
       {% endif %}
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-0 mb-4">
-        {% for item in section.items %}
+        {% for item in section.items if item.label not in ["Locations", "Upload Logo", "Upload Image", "Users"] %}
         <a href="{{ item.href }}" class="relative h-40 flex items-center justify-center text-white font-bold text-xl transition transform hover:scale-105" style="background-image: url('{{ item.img or '' }}'); background-size: cover; background-position: center;">
           <span class="bg-black bg-opacity-50 px-2 py-1 rounded">{{ item.label }}</span>
         </a>
@@ -18,7 +18,7 @@
     {% endfor %}
   {% else %}
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-0">
-    {% for item in items %}
+    {% for item in items if item.label not in ["Locations", "Upload Logo", "Upload Image", "Users"] %}
     <a href="{{ item.href }}" class="relative h-40 flex items-center justify-center text-white font-bold text-xl transition transform hover:scale-105" style="background-image: url('{{ item.img or '' }}'); background-size: cover; background-position: center;">
       <span class="bg-black bg-opacity-50 px-2 py-1 rounded">{{ item.label }}</span>
     </a>
