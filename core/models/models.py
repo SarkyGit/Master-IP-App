@@ -435,6 +435,17 @@ class ManualSQLError(Base):
     timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
 
 
+class SchemaValidationIssue(Base):
+    __tablename__ = "schema_validation_issues"
+
+    id = Column(Integer, primary_key=True)
+    table_name = Column(String, nullable=False)
+    column_name = Column(String, nullable=True)
+    expected_type = Column(String, nullable=True)
+    actual_type = Column(String, nullable=True)
+    issue_type = Column(String, nullable=False)
+    timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+
 class SchemaVersion(Base):
     __tablename__ = "schema_versions"
 
