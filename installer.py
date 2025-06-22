@@ -284,51 +284,34 @@ def install():
             api_key = questionary.text("Cloud API Key (optional)").ask().strip()
 
         if cloud_url and api_key:
-            while True:
-                admin_email = questionary.text("Admin email").ask().strip()
-                admin_data = lookup_cloud_user(cloud_url, api_key, admin_email)
-                if admin_data:
-                    if str(admin_data.get("role", "")).lower() not in {
-                        "superadmin",
-                        "super_admin",
-                    }:
-                        print("Cloud user lacks super admin privileges.")
-                        if questionary.confirm(
-                            "Enter a different cloud user?",
-                            default=True,
-                        ).ask():
-                            continue
-                        admin_data = None
-                    else:
-                        from_cloud = True
-                    break
-                else:
-                    print("Admin not found on cloud.")
-                    if questionary.confirm(
-                        "Create this user on the cloud?",
-                        default=True,
-                    ).ask():
-                        name = questionary.text("Name").ask()
-                        password = questionary.password("Password").ask()
-                        payload = {
-                            "email": admin_email,
-                            "name": name,
-                            "hashed_password": get_password_hash(password),
-                            "role": "superadmin",
-                            "is_active": True,
-                        }
-                        created = create_cloud_user(cloud_url, api_key, payload)
-                        if created:
-                            created["hashed_password"] = payload["hashed_password"]
-                            admin_data = created
-                            from_cloud = True
-                            break
-                        print("Cloud user creation failed")
-                    if not questionary.confirm(
-                        "Try another email?",
-                        default=False,
-                    ).ask():
-                        break
+            admin_email = questionary.text("Admin email").ask().strip()
+            admin_data = lookup_cloud_user(cloud_url, api_key, admin_email)
+            if admin_data:
+                if str(admin_data.get("role", "")).lower() not in {
+                    "superadmin",
+                    "super_admin",
+                }:
+                    print("Cloud user lacks super admin privileges. Aborting install.")
+                    return
+                from_cloud = True
+            else:
+                print("Admin not found on cloud. Creating...")
+                name = questionary.text("Name").ask()
+                password = questionary.password("Password").ask()
+                payload = {
+                    "email": admin_email,
+                    "name": name,
+                    "hashed_password": get_password_hash(password),
+                    "role": "superadmin",
+                    "is_active": True,
+                }
+                created = create_cloud_user(cloud_url, api_key, payload)
+                if not created:
+                    print("Cloud user creation failed. Aborting install.")
+                    return
+                created["hashed_password"] = payload["hashed_password"]
+                admin_data = created
+                from_cloud = True
         else:
             print("No cloud information provided; creating standalone admin")
 
