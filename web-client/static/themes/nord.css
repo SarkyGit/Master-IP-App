@@ -1,0 +1,98 @@
+body {
+  background-color: #2e3440;
+  color: #eceff4;
+}
+
+:root {
+  --nav-bg: #3b4252;
+  --nav-text: #eceff4;
+  --submenu-bg: #434c5e;
+  --submenu-text: #d8dee9;
+  --submenu-hover-bg: #4c566a;
+  --tab-bg: #81a1c1;
+  --tab-hover: #88c0d0;
+  --tab-text: #2e3440;
+  --inventory-tab-bg: var(--tab-bg);
+  --inventory-tab-text: var(--tab-text);
+  --inventory-submenu-bg: var(--submenu-bg);
+  --inventory-submenu-text: var(--submenu-text);
+  --inventory-btn-bg: var(--btn-bg);
+  --inventory-btn-text: var(--btn-text);
+  --network-tab-bg: var(--tab-bg);
+  --network-tab-text: var(--tab-text);
+  --network-submenu-bg: var(--submenu-bg);
+  --network-submenu-text: var(--submenu-text);
+  --network-btn-bg: var(--btn-bg);
+  --network-btn-text: var(--btn-text);
+  --admin-tab-bg: var(--tab-bg);
+  --admin-tab-text: var(--tab-text);
+  --admin-submenu-bg: var(--submenu-bg);
+  --admin-submenu-text: var(--submenu-text);
+  --admin-btn-bg: var(--btn-bg);
+  --admin-btn-text: var(--btn-text);
+  --table-border-width: 1px;
+  --btn-bg:        #81a1c1;
+  --btn-hover:     #88c0d0;
+  --btn-text:      #2e3440;
+  --btn-hover-text: #2e3440;
+  --card-bg:       #3b4252;
+  --card-text:     #eceff4;
+  --input-bg:      #434c5e;
+  --input-text:    #eceff4;
+  --table-bg:      #3b4252;
+  --code-text: #eceff4;
+  --code-bg: #2e3440;
+  --alert-bg:      #bf616a;
+  --border-color:  #4c566a;
+  --hover-muted:   #4c566a;
+}
+
+.duplicate {
+  background-color: #bf616a;
+}
+
+nav.bg-gray-800 {
+  background-color: var(--nav-bg) !important;
+}
+
+.bg-black {
+  background-color: var(--card-bg) !important;
+}
+
+.border-gray-700 {
+  border-color: var(--border-color) !important;
+}
+
+.diff_add { background-color: #a3be8c; }
+.diff_chg { background-color: #ebcb8b; }
+.diff_sub { background-color: #bf616a; }
+table.diff { width: 100%; }
+
+.card,
+.table,
+.form-control,
+.dropdown-menu {
+  background-color: var(--card-bg);
+  color: var(--card-text);
+  border: 1px solid var(--border-color);
+}
+
+.table tbody tr {
+  border-bottom: var(--table-border-width) solid var(--border-color);
+}
+
+.table tbody tr:nth-child(even) {
+  background-color: #3f4757;
+}
+
+.table tbody tr:nth-child(odd) {
+  background-color: #36404f;
+}
+
+.table tbody tr:hover,
+.dropdown-menu .active,
+.dropdown-menu .dropdown-item:hover {
+  background-color: var(--hover-muted);
+}
+
+/* Theme-aware button colours */

@@ -299,7 +299,7 @@ The `mobile-client/` folder now contains a minimal React Native app that lists d
 
 ## Interface Themes
 
-Several visual themes are bundled under `web-client/static/themes`.  The available options are `dark_colourful`, `dark`, `light`, `blue`, `bw` and `homebrew`.  New users are created with the **dark_colourful** theme by default.
+Several visual themes are bundled under `web-client/static/themes`.  The available options are `dark_colourful`, `dark`, `light`, `blue`, `bw`, `homebrew`, `apple_glass`, `dracula`, `nord`, `solarized_dark` and `gruvbox`.  New users are created with the **dark_colourful** theme by default.
 
 To switch themes, open **My Profile** from the user menu (or visit `/users/me`) and click **Edit Profile**.  Select a theme from the **Theme** drop‑down and submit the form to save the preference.
 
