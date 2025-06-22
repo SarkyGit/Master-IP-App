@@ -12,6 +12,8 @@ from sqlalchemy import (
     Float,
     JSON,
     event,
+    Index,
+    text,
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy import Table
@@ -70,6 +72,14 @@ class User(Base):
     """User account with role-based permissions."""
 
     __tablename__ = "users"
+    __table_args__ = (
+        Index(
+            "ix_users_cloud_user_id_unique",
+            "cloud_user_id",
+            unique=True,
+            postgresql_where=text("cloud_user_id IS NOT NULL"),
+        ),
+    )
 
     id = Column(Integer, primary_key=True)
     uuid = Column(GUID(), default=uuid4, unique=True, nullable=False, index=True)
