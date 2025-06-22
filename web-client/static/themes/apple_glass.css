@@ -1,24 +1,17 @@
+body {
+  background-color: rgba(0,0,0,0.4);
+  color: #ffffff;
+}
+
 :root {
   --nav-bg: rgba(255, 255, 255, 0.1);
   --nav-text: #ffffff;
-  --btn-bg: rgba(255, 255, 255, 0.15);
-  --btn-hover: rgba(255, 255, 255, 0.25);
-  --btn-text: #ffffff;
-  --tab-bg: rgba(255, 255, 255, 0.1);
-  --tab-hover: rgba(255, 255, 255, 0.25);
-  --tab-text: #ffffff;
   --submenu-bg: rgba(255, 255, 255, 0.08);
   --submenu-text: #ffffff;
   --submenu-hover-bg: rgba(255, 255, 255, 0.15);
-  --border-color: rgba(255, 255, 255, 0.2);
-  --alert-bg: rgba(255, 255, 255, 0.15);
-  --card-bg: rgba(255, 255, 255, 0.05);
-  --card-text: #ffffff;
-  --code-bg: rgba(0, 0, 0, 0.5);
-  --code-text: #dee5ff;
-  --font-size: 0.95rem;
-  --submenu-font-size: calc(var(--font-size) * 0.9);
-  --glass-blur: blur(12px);
+  --tab-bg: rgba(255, 255, 255, 0.1);
+  --tab-hover: rgba(255, 255, 255, 0.25);
+  --tab-text: #ffffff;
   --inventory-tab-bg: var(--tab-bg);
   --inventory-tab-text: var(--tab-text);
   --inventory-submenu-bg: var(--submenu-bg);
@@ -38,9 +31,24 @@
   --admin-btn-bg: var(--btn-bg);
   --admin-btn-text: var(--btn-text);
   --table-border-width: 1px;
+  --btn-bg: rgba(255, 255, 255, 0.15);
+  --btn-hover: rgba(255, 255, 255, 0.25);
+  --btn-text: #ffffff;
+  --btn-hover-text: #ffffff;
+  --card-bg: rgba(255, 255, 255, 0.05);
+  --card-text: #ffffff;
+  --input-bg: rgba(255, 255, 255, 0.05);
+  --input-text: #ffffff;
+  --table-bg: rgba(255, 255, 255, 0.05);
+  --code-text: #dee5ff;
+  --code-bg: rgba(0, 0, 0, 0.5);
+  --alert-bg: rgba(255, 255, 255, 0.15);
+  --border-color: rgba(255, 255, 255, 0.2);
+  --hover-muted: rgba(255, 255, 255, 0.15);
+  --font-size: 0.95rem;
+  --submenu-font-size: calc(var(--font-size) * 0.9);
+  --glass-blur: blur(12px);
 }
-
-
 
 nav, .top-header, .card, .modal, .dropdown, .bg-[var(--card-bg)] {
   backdrop-filter: var(--glass-blur);
@@ -57,11 +65,42 @@ input, select, textarea {
   border: 1px solid var(--border-color);
 }
 
-.table-row {
-  background-color: rgba(255, 255, 255, 0.05);
+.duplicate {
+  background-color: rgba(255, 255, 255, 0.25);
+}
+
+nav.bg-gray-800 {
+  background-color: var(--nav-bg) !important;
+}
+
+.bg-black {
+  background-color: var(--card-bg) !important;
+}
+
+.border-gray-700 {
+  border-color: var(--border-color) !important;
+}
+
+.table-row,
+.table tbody tr {
+  background-color: var(--table-bg);
   border-bottom: var(--table-border-width) solid var(--border-color);
 }
 
-.table-row:nth-child(even) {
+.table-row:nth-child(even),
+.table tbody tr:nth-child(even) {
   background-color: rgba(255, 255, 255, 0.08);
 }
+
+.diff_add { background-color: rgba(0, 255, 0, 0.2); }
+.diff_chg { background-color: rgba(255, 255, 0, 0.2); }
+.diff_sub { background-color: rgba(255, 0, 0, 0.2); }
+table.diff { width: 100%; }
+
+.dropdown-menu .active,
+.dropdown-menu .dropdown-item:hover,
+.table tbody tr:hover {
+  background-color: var(--hover-muted);
+}
+
+/* Theme-aware button colours */
