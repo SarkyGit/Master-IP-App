@@ -232,7 +232,29 @@ def install():
         run("nginx -t")
         run("systemctl reload nginx")
 
-    # import password hashing after dependencies installed
+    os.environ.update(
+        {
+            "DATABASE_URL": db_url,
+            "ROLE": mode,
+            "SECRET_KEY": secret_key,
+        }
+    )
+
+    try:
+        run("python scripts/run_migrations.py")
+    except subprocess.CalledProcessError as exc:
+        print(f"Migration failed: {exc}")
+        return
+
+    from core.utils.schema import validate_schema_integrity
+
+    check = validate_schema_integrity()
+    if not check.get("valid"):
+        print("Schema validation failed. Aborting installation.")
+        print(check)
+        return
+
+    # import password hashing after successful schema setup
     from core.utils.auth import get_password_hash
 
     admin_data = None
@@ -283,28 +305,6 @@ def install():
             "role": "superadmin",
             "is_active": True,
         }
-
-    os.environ.update(
-        {
-            "DATABASE_URL": db_url,
-            "ROLE": mode,
-            "SECRET_KEY": secret_key,
-        }
-    )
-
-    try:
-        run("python scripts/run_migrations.py")
-    except subprocess.CalledProcessError as exc:
-        print(f"Migration failed: {exc}")
-        return
-
-    from core.utils.schema import validate_schema_integrity
-
-    check = validate_schema_integrity()
-    if not check.get("valid"):
-        print("Schema validation failed. Aborting installation.")
-        print(check)
-        return
 
     # create admin account using selected data
     from core.utils.db_session import SessionLocal
