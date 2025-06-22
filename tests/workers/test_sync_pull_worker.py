@@ -3,6 +3,7 @@ import importlib
 import types
 from unittest import mock
 from datetime import datetime, timezone, timedelta
+import uuid
 
 import pytest
 
@@ -209,3 +210,89 @@ def test_pull_continues_on_error(monkeypatch):
     assert db.data[models.User][0].email == old_email
     # Second record should still be inserted
     assert any(u.id == 2 for u in db.data[models.User])
+
+
+@pytest.mark.unit
+def test_user_uuid_conflict_merge(monkeypatch):
+    db = DummyDB()
+    models = db.models
+    db.data[models.User][0].uuid = uuid.UUID("11111111-1111-1111-1111-111111111111")
+
+    sample = [
+        {
+            "model": models.User.__tablename__,
+            "id": 1,
+            "uuid": "22222222-2222-2222-2222-222222222222",
+            "email": "viewer@example.com",
+            "hashed_password": "cloudpw",
+            "role": "viewer",
+            "is_active": True,
+            "version": 5,
+        }
+    ]
+
+    monkeypatch.setattr(sync_pull_worker, "SessionLocal", lambda: db)
+    monkeypatch.setattr(
+        sync_pull_worker,
+        "_get_sync_config",
+        lambda: ("http://push", "http://pull", "site1", ""),
+    )
+    async def _noop(*a, **k):
+        pass
+    monkeypatch.setattr(sync_pull_worker, "ensure_schema", _noop)
+    async def fake_fetch(url, payload, log, site_id, api_key):
+        return sample
+    monkeypatch.setattr(sync_pull_worker, "_fetch_with_retry", fake_fetch)
+    monkeypatch.setattr(sync_pull_worker, "_remap_user_references", lambda *a, **k: None)
+
+    asyncio.run(sync_pull_worker.pull_once(mock.Mock()))
+
+    assert len(db.data[models.User]) == 1
+    user = db.data[models.User][0]
+    assert str(user.uuid) == sample[0]["uuid"]
+    assert user.hashed_password == "cloudpw"
+    assert user.version == 5
+
+
+@pytest.mark.unit
+def test_user_uuid_conflict_remap(monkeypatch):
+    db = DummyDB()
+    models = db.models
+    db.data[models.User][0].uuid = uuid.UUID("11111111-1111-1111-1111-111111111111")
+
+    sample = [
+        {
+            "model": models.User.__tablename__,
+            "id": 1,
+            "uuid": "33333333-3333-3333-3333-333333333333",
+            "email": "new@example.com",
+            "hashed_password": "x",
+            "role": "viewer",
+            "is_active": True,
+            "version": 2,
+        }
+    ]
+
+    monkeypatch.setattr(sync_pull_worker, "SessionLocal", lambda: db)
+    monkeypatch.setattr(
+        sync_pull_worker,
+        "_get_sync_config",
+        lambda: ("http://push", "http://pull", "site1", ""),
+    )
+    async def _noop(*a, **k):
+        pass
+    monkeypatch.setattr(sync_pull_worker, "ensure_schema", _noop)
+    async def fake_fetch(url, payload, log, site_id, api_key):
+        return sample
+    monkeypatch.setattr(sync_pull_worker, "_fetch_with_retry", fake_fetch)
+
+    captured = {}
+    def fake_remap(db_, old_id, new_id):
+        captured["new_id"] = new_id
+    monkeypatch.setattr(sync_pull_worker, "_remap_user_references", fake_remap)
+
+    asyncio.run(sync_pull_worker.pull_once(mock.Mock()))
+
+    assert len(db.data[models.User]) == 2
+    assert any(u.email == "new@example.com" and u.id == 1 for u in db.data[models.User])
+    assert any(u.email == "viewer@example.com" and u.id == captured.get("new_id") for u in db.data[models.User])
