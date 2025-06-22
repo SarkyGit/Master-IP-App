@@ -1,10 +1,10 @@
-from fastapi import APIRouter, Request, Depends, Form, HTTPException
+from fastapi import APIRouter, Request, Depends, Form
 from fastapi.responses import RedirectResponse
 from core.utils.templates import templates
 from sqlalchemy.orm import Session
 
 from sqlalchemy import func
-from core.utils.auth import get_current_user, get_user_site_ids
+from core.utils.auth import get_current_user, get_user_site_ids, require_role
 from core.utils.db_session import get_db
 from core.models.models import (
     LoginEvent,
@@ -108,7 +108,11 @@ INVENTORY_TEXT = {
 }
 
 @router.get("/welcome/{role}")
-async def welcome_role(role: str, request: Request, current_user=Depends(get_current_user)):
+async def welcome_role(
+    role: str,
+    request: Request,
+    current_user=Depends(require_role("viewer")),
+):
     text = WELCOME_TEXT.get(role, [])
     inventory = INVENTORY_TEXT.get(role, [])
     context = {
@@ -126,12 +130,8 @@ async def dashboard(
     request: Request,
     site_id: int | None = None,
     db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
+    current_user=Depends(require_role("viewer")),
 ):
-    if not current_user:
-        return templates.TemplateResponse(
-            "base/index.html", {"request": request, "current_user": None, "message": ""}
-        )
     site_ids = get_user_site_ids(db, current_user)
     selectable_sites = None
     if current_user.role == "superadmin":
@@ -280,10 +280,8 @@ async def dashboard_prefs(
     request: Request,
     site_id: int | None = None,
     db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
+    current_user=Depends(require_role("viewer")),
 ):
-    if not current_user:
-        raise HTTPException(status_code=401, detail="Not authenticated")
     if site_id is None:
         site_id = request.session.get("active_site_id")
     prefs = load_widget_preferences(db, current_user.id, site_id)
@@ -302,10 +300,8 @@ async def save_dashboard_prefs(
     widgets: list[str] = Form([]),
     site_id: int | None = None,
     db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
+    current_user=Depends(require_role("viewer")),
 ):
-    if not current_user:
-        raise HTTPException(status_code=401, detail="Not authenticated")
     if site_id is None:
         site_id = request.session.get("active_site_id")
     db.query(DashboardWidget).filter_by(user_id=current_user.id, site_id=site_id).delete()
