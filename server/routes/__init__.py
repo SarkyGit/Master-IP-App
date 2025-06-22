@@ -20,7 +20,6 @@ from base.routes.user_pages import router as user_pages_router
 from .ui.locations import router as locations_router
 from .ui.ssh_tasks import router as ssh_tasks_router
 from .ui.ip_bans import router as ip_bans_router
-from .ui.user_ssh import router as user_ssh_router
 from .ui.login_events import router as login_events_router
 from .ui.add_device import router as add_device_router
 from .ui.admin_site import router as admin_site_router
@@ -73,7 +72,6 @@ __all__ = [
     "locations_router",
     "ssh_tasks_router",
     "ip_bans_router",
-    "user_ssh_router",
     "login_events_router",
     "add_device_router",
     "admin_site_router",

@@ -2,14 +2,7 @@
 
 {% block content %}
 <h1 class="text-xl mb-4">User Details</h1>
-<div x-data="{tab: 'profile'}">
-  <div class="flex space-x-2 mb-4">
-    <button @click="tab = 'profile'" :class="{'bg-[var(--tab-hover)]': tab === 'profile'}" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Profile</button>
-    <button @click="tab = 'ssh'" :class="{'bg-[var(--tab-hover)]': tab === 'ssh'}" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">SSH Profiles</button>
-    <a href="/users/me/theme" class="rounded-t-lg border border-[var(--border-color)] border-b-0 px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] transition">Theme</a>
-  </div>
-  <div x-show="tab === 'profile'">
-    <div class="flex flex-wrap gap-4 items-start">
+<div class="flex flex-wrap gap-4 items-start">
   <div class="flex-1 min-w-[200px] overflow-auto">
     <table class="min-w-full table-fixed text-left">
       <tbody>
@@ -49,7 +42,7 @@
     </table>
   </div>
   <div class="mt-4">
-    <a href="/users/me/edit" class="inline-block px-4 py-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded shadow transition">Edit Profile</a>
+    <a href="/users/me/edit" class="inline-block px-4 py-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded shadow transition">Edit Details</a>
   </div>
   <div class="w-96 h-64 rounded overflow-hidden" id="map-container">
     {% if user.last_location_lat and user.last_location_lon and api_key %}
@@ -59,61 +52,65 @@
     {% endif %}
   </div>
 
-{% if current_user and current_user.id == user.id %}
-
-
-
-  </div> {# end profile tab #}
-  <div x-show="tab === 'ssh'" x-cloak>
-    <a href="/user/ssh/new" class="underline">Add SSH Credential</a>
-    <form method="post" action="/users/me/ssh" class="my-4">
-      <div class="form-row">
-        <div class="form-item">
-          <label for="ssh_username" class="block">SSH Username</label>
-          <input id="ssh_username" name="ssh_username" value="{{ user.ssh_username or '' }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" required />
-        </div>
-        <div class="form-item">
-          <label for="ssh_password" class="block">SSH Password</label>
-          <input id="ssh_password" type="password" name="ssh_password" value="{{ user.ssh_password or '' }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" />
-        </div>
-        <div class="form-item">
-          <label for="ssh_port" class="block">SSH Port</label>
-          <input id="ssh_port" type="number" min="1" max="65535" name="ssh_port" value="{{ user.ssh_port or 22 }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" />
-        </div>
-        <div class="form-item flex items-end">
-          <span aria-label="Save" class="p-2 rounded transition cursor-pointer" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('save') }}</span>
-        </div>
+{% set can_edit = current_user.role in ['admin','superadmin'] or current_user.id == user.id %}
+{% if current_user and (current_user.id == user.id or current_user.role in ['admin','superadmin']) %}
+<div class="mt-6">
+  <h2 class="text-lg mb-2">SSH Credentials</h2>
+  <a href="/user/ssh/new" class="underline">Add SSH Credential</a>
+  {% if can_edit %}
+  <form method="post" action="{{ '/users/me/ssh' if current_user.id == user.id else '/users/' ~ user.id ~ '/ssh' }}" class="my-4">
+    <div class="form-row">
+      <div class="form-item">
+        <label for="ssh_username" class="block">SSH Username</label>
+        <input id="ssh_username" name="ssh_username" value="{{ user.ssh_username or '' }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" required />
       </div>
-    </form>
-    <div class="w-full overflow-auto">
-      <table class="min-w-full table-fixed text-left mt-4">
-        <thead>
-          <tr>
-            <th class="px-4 py-2 text-left">Name</th>
-            <th class="px-4 py-2 text-left">Username</th>
-            <th style="width: 100px; min-width: 100px; max-width: 100px;"></th>
-          </tr>
-        </thead>
-        <tbody>
-        {% for cred in creds %}
-          <tr class="border-t border-gray-700">
-            <td class="px-4 py-2">{{ cred.name }}</td>
-            <td class="px-4 py-2">{{ cred.username }}</td>
-            <td class="px-4 py-2" style="width: 100px; min-width: 100px; max-width: 100px;">
-              <a href="/user/ssh/{{ cred.id }}/edit" aria-label="Edit" class="p-2 rounded transition mr-2">{{ include_icon('pencil','text-blue-500','1.5') }}</a>
-              <form method="post" action="/user/ssh/{{ cred.id }}/delete" style="display:inline;">
-                <button type="submit" class="icon-btn" title="Delete" onclick="return confirm('Delete profile?')">
-                  {{ include_icon('trash-2','text-red-500','1.5') }}
-                </button>
-              </form>
-            </td>
-          </tr>
-        {% endfor %}
-        </tbody>
-      </table>
+      <div class="form-item">
+        <label for="ssh_password" class="block">SSH Password</label>
+        <input id="ssh_password" type="password" name="ssh_password" value="{{ user.ssh_password or '' }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" />
+      </div>
+      <div class="form-item">
+        <label for="ssh_port" class="block">SSH Port</label>
+        <input id="ssh_port" type="number" min="1" max="65535" name="ssh_port" value="{{ user.ssh_port or 22 }}" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" />
+      </div>
+      <div class="form-item flex items-end">
+        <span aria-label="Save" class="p-2 rounded transition cursor-pointer" role="button" tabindex="0" onclick="this.closest('form').submit()">{{ include_icon('save') }}</span>
+      </div>
     </div>
-  </div> {# end ssh tab #}
-</div> {# end tab container #}
+  </form>
+  {% else %}
+  <div class="form-row">
+    <div class="form-item"><strong>SSH Username:</strong> {{ user.ssh_username or 'N/A' }}</div>
+    <div class="form-item"><strong>SSH Port:</strong> {{ user.ssh_port or 22 }}</div>
+  </div>
+  {% endif %}
+  <div class="w-full overflow-auto">
+    <table class="min-w-full table-fixed text-left mt-4">
+      <thead>
+        <tr>
+          <th class="px-4 py-2 text-left">Name</th>
+          <th class="px-4 py-2 text-left">Username</th>
+          <th style="width: 100px; min-width: 100px; max-width: 100px;"></th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for cred in creds %}
+        <tr class="border-t border-gray-700">
+          <td class="px-4 py-2">{{ cred.name }}</td>
+          <td class="px-4 py-2">{{ cred.username }}</td>
+          <td class="px-4 py-2" style="width: 100px; min-width: 100px; max-width: 100px;">
+            <a href="/user/ssh/{{ cred.id }}/edit" aria-label="Edit" class="p-2 rounded transition mr-2">{{ include_icon('pencil','text-blue-500','1.5') }}</a>
+            <form method="post" action="/user/ssh/{{ cred.id }}/delete" style="display:inline;">
+              <button type="submit" class="icon-btn" title="Delete" onclick="return confirm('Delete profile?')">
+                {{ include_icon('trash-2','text-red-500','1.5') }}
+              </button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
 {% endif %}
 {% endblock %}
 
