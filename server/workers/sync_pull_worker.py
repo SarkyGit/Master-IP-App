@@ -18,6 +18,7 @@ from .cloud_sync import _get_sync_config, ensure_schema
 from core.utils.audit import log_audit
 from core.utils.sync_logging import log_sync_attempt
 from server.utils.cloud import set_tunable
+from sqlalchemy import inspect
 from server.workers import sync_push_worker
 from core.utils.deletion import soft_delete
 
@@ -63,6 +64,32 @@ SITE_ID = os.environ.get("SITE_ID")
 def _soft_delete(device: Device, user_id: int, origin: str) -> None:
     """Mark the device as deleted and clear nullable fields."""
     soft_delete(device, user_id, origin)
+
+
+def _remap_user_references(db: Session, old_id: int, new_id: int) -> None:
+    """Update foreign key references from ``old_id`` to ``new_id``."""
+    if not getattr(db, "bind", None):  # pragma: no cover - testing stub
+        return
+
+    insp = inspect(db.bind)
+    metadata = model_module.Base.metadata
+    for table_name in insp.get_table_names():
+        fks = [
+            fk
+            for fk in insp.get_foreign_keys(table_name)
+            if fk.get("referred_table") == "users"
+            and fk.get("referred_columns") == ["id"]
+        ]
+        if not fks:
+            continue
+        table = metadata.tables.get(table_name)
+        if not table:
+            continue
+        for fk in fks:
+            col = fk["constrained_columns"][0]
+            stmt = table.update().where(table.c[col] == old_id).values({col: new_id})
+            db.execute(stmt)
+    db.commit()
 
 
 def _load_last_sync(db: Session) -> datetime:
@@ -205,6 +232,33 @@ async def pull_once(log: logging.Logger) -> None:
             if hasattr(query, "execution_options"):
                 query = query.execution_options(include_deleted=True)
             obj = query.filter_by(id=record_id).first()
+            if model_name == "users" and obj and rec.get("uuid") and str(obj.uuid) != str(rec.get("uuid")):
+                remote_email = rec.get("email")
+                if remote_email and obj.email == remote_email:
+                    for k, v in rec.items():
+                        if k in {"id", "model", "table"}:
+                            continue
+                        setattr(obj, k, v)
+                    obj.uuid = rec["uuid"]
+                    obj.version = version
+                    obj.sync_state = sync_push_worker._serialize(obj)
+                    obj.conflict_data = None
+                    db.commit()
+                    continue
+                else:
+                    existing_ids = [u.id for u in db.query(model_cls).all()]
+                    new_id = (max(existing_ids) if existing_ids else 0) + 1
+                    old_id = obj.id
+                    obj.id = new_id
+                    db.commit()
+                    _remap_user_references(db, old_id, new_id)
+                    db.commit()
+                    new_obj = model_cls(
+                        **{k: v for k, v in rec.items() if k not in {"model", "table"}}
+                    )
+                    db.add(new_obj)
+                    db.commit()
+                    continue
             if obj and rec.get("deleted_at"):
                 try:
                     remote_ts = rec.get("updated_at") or rec["deleted_at"]
