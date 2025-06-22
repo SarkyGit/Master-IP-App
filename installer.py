@@ -80,6 +80,34 @@ def ensure_ipapp_user() -> None:
         os.chmod(sudoers, 0o440)
 
 
+def fetch_cloud_superadmins(base_url: str, api_key: str) -> list[dict]:
+    """Return list of super admin users from the cloud server."""
+    import httpx
+    url = base_url.rstrip("/") + "/api/super-admins"
+    headers = {"Authorization": f"Bearer {api_key}"}
+    try:
+        resp = httpx.get(url, headers=headers, timeout=10)
+        resp.raise_for_status()
+        return resp.json()
+    except Exception as exc:  # pragma: no cover - best effort
+        print(f"Cloud request failed: {exc}")
+        return []
+
+
+def create_cloud_superadmin(base_url: str, api_key: str, data: dict) -> dict | None:
+    """Create a super admin user on the cloud server and return the result."""
+    import httpx
+    url = base_url.rstrip("/") + "/api/super-admins"
+    headers = {"Authorization": f"Bearer {api_key}"}
+    try:
+        resp = httpx.post(url, json=data, headers=headers, timeout=10)
+        resp.raise_for_status()
+        return resp.json()
+    except Exception as exc:  # pragma: no cover - best effort
+        print(f"User creation failed: {exc}")
+        return None
+
+
 def install():
     global questionary
     if os.geteuid() != 0:
@@ -107,8 +135,6 @@ def install():
     install_domain = questionary.text(
         "Domain for HTTPS (leave blank for self-signed)", default=""
     ).ask()
-    admin_email = questionary.text("Admin email").ask()
-    admin_password = questionary.password("Admin password").ask()
     install_nginx = questionary.confirm("Install and configure nginx?", default=True).ask()
     seed_demo = questionary.confirm("Seed demo data?", default=False).ask()
 
@@ -122,8 +148,6 @@ def install():
         "database_url": db_url,
         "secret_key": secret_key,
         "install_domain": install_domain,
-        "admin_email": admin_email,
-        "admin_password": admin_password,
         "seed": "yes" if seed_demo else "no",
     }
 
@@ -201,7 +225,58 @@ def install():
 
     run("./init_db.sh")
 
-    # create admin account specified during install
+    # import password hashing after dependencies installed
+    from core.utils.auth import get_password_hash
+
+    # prompt for cloud admin sync only on local installs
+    admin_data = None
+    if mode == "local":
+        cloud_url = questionary.text("Cloud base URL (optional)").ask().strip()
+        api_key = ""
+        if cloud_url:
+            api_key = questionary.text("Cloud API Key (optional)").ask().strip()
+
+        if cloud_url and api_key:
+            admins = fetch_cloud_superadmins(cloud_url, api_key)
+            if admins:
+                choices = [
+                    f"{a.get('email', 'user')} ({a.get('uuid', a.get('id', ''))})"
+                    for a in admins
+                ]
+                choices.append("Create new")
+                selection = questionary.select("Select super admin", choices=choices).ask()
+                if selection == "Create new":
+                    name = questionary.text("Name").ask()
+                    email = questionary.text("Email").ask()
+                    password = questionary.password("Password").ask()
+                    payload = {
+                        "email": email,
+                        "hashed_password": get_password_hash(password),
+                        "role": "superadmin",
+                        "is_active": True,
+                        "name": name,
+                    }
+                    created = create_cloud_superadmin(cloud_url, api_key, payload)
+                    if created:
+                        created["hashed_password"] = payload["hashed_password"]
+                        admin_data = created
+                else:
+                    idx = choices.index(selection)
+                    admin_data = admins[idx]
+            else:
+                print("Cloud request returned no users")
+
+    if not admin_data:
+        admin_email = questionary.text("Admin email").ask()
+        admin_password = questionary.password("Admin password").ask()
+        admin_data = {
+            "email": admin_email,
+            "hashed_password": get_password_hash(admin_password),
+            "role": "superadmin",
+            "is_active": True,
+        }
+
+    # create admin account using selected data
     os.environ.update({
         "DATABASE_URL": db_url,
         "ROLE": mode,
@@ -209,15 +284,15 @@ def install():
     })
     from core.utils.db_session import SessionLocal
     from core.models.models import User, Site, SiteMembership
-    from core.utils.auth import get_password_hash
 
     try:
         db = SessionLocal()
         user = User(
-            email=admin_email,
-            hashed_password=get_password_hash(admin_password),
-            role="superadmin",
-            is_active=True,
+            email=admin_data.get("email"),
+            hashed_password=admin_data.get("hashed_password"),
+            role=admin_data.get("role", "superadmin"),
+            is_active=admin_data.get("is_active", True),
+            uuid=admin_data.get("uuid", admin_data.get("id")),
         )
         try:
             db.add(user)
