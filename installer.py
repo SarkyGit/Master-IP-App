@@ -97,6 +97,7 @@ def fetch_cloud_superadmins(base_url: str, api_key: str) -> list[dict]:
 def create_cloud_superadmin(base_url: str, api_key: str, data: dict) -> dict | None:
     """Create a super admin user on the cloud server and return the result."""
     import httpx
+
     url = base_url.rstrip("/") + "/api/super-admins"
     headers = {"Authorization": f"Bearer {api_key}"}
     try:
@@ -228,6 +229,7 @@ def install():
     # import password hashing after dependencies installed
     from core.utils.auth import get_password_hash
 
+
     # prompt for cloud admin sync only on local installs
     admin_data = None
     if mode == "local":
@@ -243,6 +245,7 @@ def install():
                     f"{a.get('email', 'user')} ({a.get('uuid', a.get('id', ''))})"
                     for a in admins
                 ]
+
                 choices.append("Create new")
                 selection = questionary.select("Select super admin", choices=choices).ask()
                 if selection == "Create new":
