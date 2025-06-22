@@ -32,7 +32,9 @@ def main() -> None:
 
             log_manual_sql_error("DROP/CREATE SCHEMA", str(exc), traceback.format_exc())
             raise
-    subprocess.run(["alembic", "upgrade", "head"], check=True)
+    from core.utils.schema import safe_alembic_upgrade
+
+    safe_alembic_upgrade()
     subprocess.run(["python", "seed_superuser.py"], check=True)
     subprocess.run(["python", "seed_data.py"], check=True)
     print("Database reset complete")

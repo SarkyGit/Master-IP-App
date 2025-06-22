@@ -8,8 +8,10 @@ router = APIRouter()
 
 # Simple multi-step install wizard storing data in session
 
+
 def _next_step(step: int) -> RedirectResponse:
     return RedirectResponse(f"/install?step={step}", status_code=303)
+
 
 @router.get("/install")
 async def install_get(request: Request):
@@ -18,10 +20,12 @@ async def install_get(request: Request):
     context = {"request": request, "step": step, "data": data}
     return templates.TemplateResponse(f"install/step{step}.html", context)
 
+
 @router.post("/install/step1")
 async def install_step1(request: Request, mode: str = Form(...)):
     request.session["install"] = {"mode": mode}
     return _next_step(2)
+
 
 @router.post("/install/step2")
 async def install_step2(
@@ -45,6 +49,7 @@ async def install_step2(
     request.session["install"] = data
     return _next_step(3)
 
+
 @router.post("/install/step3")
 async def install_step3(
     request: Request,
@@ -61,6 +66,7 @@ async def install_step3(
     request.session["install"] = data
     return _next_step(4)
 
+
 @router.post("/install/step4")
 async def install_step4(
     request: Request,
@@ -71,6 +77,7 @@ async def install_step4(
     data.update({"admin_email": admin_email, "admin_password": admin_password})
     request.session["install"] = data
     return _next_step(5)
+
 
 @router.post("/install/finish")
 async def install_finish(request: Request, seed: str = Form("no")):
@@ -90,14 +97,17 @@ async def install_finish(request: Request, seed: str = Form("no")):
         f.write("\n".join(lines) + "\n")
 
     env = os.environ.copy()
-    env.update({
-        "DATABASE_URL": data["database_url"],
-        "ROLE": data.get("mode", "local"),
-        "SECRET_KEY": data["secret_key"],
-    })
-    subprocess.run(["alembic", "upgrade", "head"], check=True, env=env)
+    env.update(
+        {
+            "DATABASE_URL": data["database_url"],
+            "ROLE": data.get("mode", "local"),
+            "SECRET_KEY": data["secret_key"],
+        }
+    )
+    subprocess.run([sys.executable, "scripts/run_migrations.py"], check=True, env=env)
 
     import json, base64
+
     payload = {
         "email": data["admin_email"],
         "password": data["admin_password"],

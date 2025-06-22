@@ -1,17 +1,18 @@
 import sys, os
-sys.path.insert(0, os.path.abspath(os.path.dirname(__file__) + '/../'))
+
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__) + "/../"))
 from core.utils.db_session import SessionLocal, reset_pk_sequence
 from core.models.models import User, Site, SiteMembership, SchemaValidationIssue
+from core.utils.schema import safe_alembic_upgrade, validate_schema_integrity
+from core.utils.auth import get_password_hash, verify_password
 import subprocess
 
 
 def upgrade_db() -> None:
     try:
-        subprocess.run(["alembic", "upgrade", "head"], check=True)
+        safe_alembic_upgrade()
     except Exception as exc:  # pragma: no cover - best effort
         print(f"Warning: could not apply migrations: {exc}")
-from core.utils.auth import get_password_hash, verify_password
-from core.utils.schema import validate_schema_integrity
 
 
 def main():
@@ -23,7 +24,11 @@ def main():
                 db.add(SchemaValidationIssue(table_name=t, issue_type="missing_table"))
             for t, cols in check["missing_columns"].items():
                 for c in cols:
-                    db.add(SchemaValidationIssue(table_name=t, column_name=c, issue_type="missing_column"))
+                    db.add(
+                        SchemaValidationIssue(
+                            table_name=t, column_name=c, issue_type="missing_column"
+                        )
+                    )
             for t, cols in check["mismatched_columns"].items():
                 for c, types in cols.items():
                     db.add(

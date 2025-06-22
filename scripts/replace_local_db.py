@@ -9,7 +9,7 @@ if not DB_URL:
 
 print("WARNING: This will drop ALL local data and recreate the schema from migrations.")
 confirm = input("Type 'REPLACE' to continue: ")
-if confirm != 'REPLACE':
+if confirm != "REPLACE":
     print("Aborted")
     sys.exit(0)
 
@@ -25,5 +25,7 @@ with engine.begin() as conn:
         log_manual_sql_error("DROP/CREATE SCHEMA", str(exc), traceback.format_exc())
         raise
 
-os.system("alembic upgrade head")
+from core.utils.schema import safe_alembic_upgrade
+
+safe_alembic_upgrade()
 print("Local database recreated. You may now sync from cloud.")
