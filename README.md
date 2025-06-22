@@ -583,6 +583,13 @@ server, logs the rebuild in the `schema_resets` table and then re-runs the
 initial sync. **All local data will be erased** during this process. This safety
 net is never executed on cloud deployments.
 
+Before wiping the database, any rows that have not yet synced are exported to
+`backups/unsynced_backup.json`. The export runs only on local instances and is
+skipped if a recent backup already exists. After the database is rebuilt the
+file is replayed, reinserting the rows with `sync_status` set to `pending`. Both
+the export and the restore are recorded in the `local_recovery_events` table so
+administrators can audit recovery attempts.
+
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
