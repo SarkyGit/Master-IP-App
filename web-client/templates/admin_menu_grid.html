@@ -14,6 +14,11 @@
           <span class="bg-black bg-opacity-50 px-2 py-1 rounded">{{ item.label }}</span>
         </a>
         {% endfor %}
+        {% if section.label in ["System", "Organisation Settings"] %}
+        <a href="/tasks/google-sheets" class="relative h-40 flex items-center justify-center text-white font-bold text-xl transition transform hover:scale-105" style="background-image: url(''); background-size: cover; background-position: center;">
+          <span class="bg-black bg-opacity-50 px-2 py-1 rounded">Google Sheets</span>
+        </a>
+        {% endif %}
       </div>
     {% endfor %}
   {% else %}
