@@ -238,6 +238,11 @@ pip install -r requirements.txt
 pytest -q
 ```
 
+The tests spin up an ephemeral PostgreSQL instance. Migrations run only during
+the first invocation and the initialised database is cached under
+`tests/.pg_cache` for subsequent runs. Delete this directory or set
+`RESET_TEST_DB=1` if migrations change and the cache needs rebuilding.
+
 All tests should pass without errors. Node.js packages are not required when
 running the tests.
 
