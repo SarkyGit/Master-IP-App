@@ -17,14 +17,14 @@
         <a href="/network/settings" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Network Settings</a>
         {% if current_user.role in ['admin','superadmin'] %}
           {% if current_user.role == 'superadmin' %}
-          {% set admin_items = [
-            {'label':'My Profile','href':'/users/me'},
-            {'label':'System','href':'/admin/system'},
-            {'label':'Organisation Settings','href':'/admin/org-settings'},
-            {'label':'Users','href':'/admin/users'},
-            {'label':'Cloud Sync / API\'s','href':'/admin/cloud-sync'},
-            {'label':'Logs','href':'/admin/logs'}
-          ] %}
+          <a href="/users/me" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">My Profile</a>
+          <a href="/admin/system" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">System</a>
+          <span class="mt-2 font-bold">System</span>
+          <a href="/admin/org-settings" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Organisation Settings</a>
+          <a href="/admin/users" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Users</a>
+          <a href="/admin/system-monitor" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">System Monitor</a>
+          <a href="/admin/cloud-sync" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Cloud Sync / API's</a>
+          <a href="/admin/logs" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">Logs</a>
           {% else %}
           {% set admin_items = [
             {'label':'My Profile','href':'/users/me'},
@@ -32,10 +32,10 @@
             {'label':'SSH Credentials','href':'/admin/ssh'},
             {'label':'Device Import','href':'/bulk/device-import'}
           ] %}
-          {% endif %}
           {% for item in admin_items %}
           <a href="{{ item.href }}" class="px-4 py-2 text-[var(--font-size)] text-[var(--tab-text)] bg-[var(--tab-bg)] hover:bg-[var(--tab-hover)] rounded transition">{{ item.label }}</a>
           {% endfor %}
+          {% endif %}
         {% endif %}
       </div>
       {% endif %}
