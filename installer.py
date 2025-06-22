@@ -88,11 +88,20 @@ def lookup_cloud_user(base_url: str, api_key: str, email: str) -> dict | None:
     url = base_url.rstrip("/") + "/api/users/lookup"
     headers = {"Authorization": f"Bearer {api_key}"} if api_key else {}
     try:
-        resp = httpx.get(url, params={"email": email}, headers=headers, timeout=10)
+        resp = httpx.get(
+            url,
+            params={"email": email},
+            headers=headers,
+            timeout=10,
+        )
         if resp.status_code == 404:
             return None
         resp.raise_for_status()
-        return resp.json()
+        data = resp.json()
+        # Treat empty responses as not found
+        if not data:
+            return None
+        return data
     except Exception as exc:  # pragma: no cover - best effort
         print(f"User lookup failed: {exc}")
         return None
@@ -107,7 +116,10 @@ def create_cloud_user(base_url: str, api_key: str, data: dict) -> dict | None:
     try:
         resp = httpx.post(url, json=data, headers=headers, timeout=10)
         resp.raise_for_status()
-        return resp.json()
+        result = resp.json()
+        if not result:
+            return None
+        return result
     except Exception as exc:  # pragma: no cover - best effort
         print(f"User creation failed: {exc}")
         return None
