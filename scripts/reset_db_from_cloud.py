@@ -23,8 +23,15 @@ def main() -> None:
         return
     engine = create_engine(db_url)
     with engine.begin() as conn:
-        conn.execute(text("DROP SCHEMA public CASCADE"))
-        conn.execute(text("CREATE SCHEMA public"))
+        try:
+            conn.execute(text("DROP SCHEMA public CASCADE"))
+            conn.execute(text("CREATE SCHEMA public"))
+        except Exception as exc:
+            import traceback
+            from core.utils.schema import log_manual_sql_error
+
+            log_manual_sql_error("DROP/CREATE SCHEMA", str(exc), traceback.format_exc())
+            raise
     subprocess.run(["alembic", "upgrade", "head"], check=True)
     subprocess.run(["python", "seed_superuser.py"], check=True)
     subprocess.run(["python", "seed_data.py"], check=True)

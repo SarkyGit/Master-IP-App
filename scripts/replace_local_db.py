@@ -15,8 +15,15 @@ if confirm != 'REPLACE':
 
 engine = create_engine(DB_URL)
 with engine.begin() as conn:
-    conn.execute(text("DROP SCHEMA public CASCADE"))
-    conn.execute(text("CREATE SCHEMA public"))
+    try:
+        conn.execute(text("DROP SCHEMA public CASCADE"))
+        conn.execute(text("CREATE SCHEMA public"))
+    except Exception as exc:
+        import traceback
+        from core.utils.schema import log_manual_sql_error
+
+        log_manual_sql_error("DROP/CREATE SCHEMA", str(exc), traceback.format_exc())
+        raise
 
 os.system("alembic upgrade head")
 print("Local database recreated. You may now sync from cloud.")

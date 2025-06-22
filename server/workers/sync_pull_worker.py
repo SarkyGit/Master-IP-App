@@ -17,7 +17,13 @@ from core.utils.versioning import apply_update
 from .cloud_sync import _get_sync_config, ensure_schema
 from core.utils.audit import log_audit
 from core.utils.sync_logging import log_sync_attempt
-from core.utils.schema import log_schema_issues, log_sync_error
+from core.utils.schema import (
+    log_schema_issues,
+    log_sync_error,
+    log_manual_sql_error,
+    validate_db_schema,
+)
+import traceback
 from server.utils.cloud import set_tunable
 from sqlalchemy import inspect
 from server.workers import sync_push_worker
@@ -95,7 +101,12 @@ def _remap_user_references(db: Session, old_id: int, new_id: int) -> None:
         for fk in fks:
             col = fk["constrained_columns"][0]
             stmt = table.update().where(table.c[col] == old_id).values({col: new_id})
-            db.execute(stmt)
+            try:
+                db.execute(stmt)
+            except Exception as exc:
+                db.rollback()
+                log_manual_sql_error(str(stmt), str(exc), traceback.format_exc())
+                raise
     try:
         db.commit()
     except Exception as exc:
@@ -208,6 +219,9 @@ async def pull_once(log: logging.Logger) -> None:
         _, pull_url, site_id, api_key = _get_sync_config()
         base = pull_url.rsplit("/", 1)[0]
         await ensure_schema(base, log, site_id, api_key)
+        if not validate_db_schema("local"):
+            log.error("Schema mismatch detected; aborting pull")
+            return
         payload: dict[str, Any] = {
             "since": since.isoformat(),
             "models": SYNC_PULL_MODELS,

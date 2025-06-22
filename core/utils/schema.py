@@ -151,6 +151,20 @@ def log_db_error(model: str, action: str, msg: str, tb: str, user: str | None = 
         db.close()
 
 
+def log_manual_sql_error(stmt: str, msg: str, tb: str) -> None:
+    db = _BaseSessionLocal()
+    try:
+        from core.models.models import ManualSQLError
+        db.add(
+            ManualSQLError(statement=stmt, error_message=msg, traceback=tb)
+        )
+        db.commit()
+    except Exception:
+        db.rollback()
+    finally:
+        db.close()
+
+
 def record_schema_version(instance: str) -> None:
     rev = get_schema_revision()
     if not rev:

@@ -23,8 +23,11 @@ def main():
         cred = db.query(SSHCredential).filter_by(name="Home").first()
         if not cred:
             cred = SSHCredential(name="Home", username="admin", password="C0pperpa!r")
-            db.add(cred)
-            db.commit()
+            try:
+                db.add(cred)
+                db.commit()
+            except Exception:
+                db.rollback()
 
         # Seed SNMP community
         snmp = db.query(SNMPCommunity).filter_by(name="Home").first()
@@ -35,42 +38,66 @@ def main():
                 snmp_version="v2c",
                 version=1,
             )
-            db.add(snmp)
-            db.commit()
+            try:
+                db.add(snmp)
+                db.commit()
+            except Exception:
+                db.rollback()
 
         # Seed default location
         loc = db.query(Location).filter_by(name="Main Site").first()
         if not loc:
             loc = Location(name="Main Site", location_type="Fixed")
-            db.add(loc)
-            db.commit()
+            try:
+                db.add(loc)
+                db.commit()
+            except Exception:
+                db.rollback()
 
         site = db.query(Site).filter_by(name="Main Site").first()
         if not site:
             site = Site(name="Main Site", description="Default site")
-            db.add(site)
-            db.commit()
+            try:
+                db.add(site)
+                db.commit()
+            except Exception:
+                db.rollback()
 
         # Seed device types
         switch_type = db.query(DeviceType).filter_by(name="Switch").first()
-        if not switch_type:
-            switch_type = DeviceType(name="Switch")
-            db.add(switch_type)
+            if not switch_type:
+                switch_type = DeviceType(name="Switch")
+                try:
+                    db.add(switch_type)
+                except Exception:
+                    db.rollback()
 
         ap_type = db.query(DeviceType).filter_by(name="AP").first()
-        if not ap_type:
-            ap_type = DeviceType(name="AP")
-            db.add(ap_type)
+            if not ap_type:
+                ap_type = DeviceType(name="AP")
+                try:
+                    db.add(ap_type)
+                except Exception:
+                    db.rollback()
 
         camera_type = db.query(DeviceType).filter_by(name="IP Camera").first()
-        if not camera_type:
-            camera_type = DeviceType(name="IP Camera")
-            db.add(camera_type)
+            if not camera_type:
+                camera_type = DeviceType(name="IP Camera")
+                try:
+                    db.add(camera_type)
+                except Exception:
+                    db.rollback()
 
         for dtype in ["PTP", "PTMP", "IPTV", "VOG", "IoT Device"]:
             if not db.query(DeviceType).filter_by(name=dtype).first():
-                db.add(DeviceType(name=dtype))
-        db.commit()
+                try:
+                    db.add(DeviceType(name=dtype))
+                except Exception:
+                    db.rollback()
+        try:
+            db.commit()
+        except Exception:
+            db.rollback()
 
         # Seed sample switches if none exist
         if not db.query(Device).first():
@@ -96,8 +123,14 @@ def main():
                     site_id=site.id,
                     config_pull_interval="none",
                 )
-                db.add(device)
-            db.commit()
+                try:
+                    db.add(device)
+                except Exception:
+                    db.rollback()
+            try:
+                db.commit()
+            except Exception:
+                db.rollback()
             reset_pk_sequence(db, Device)
             print("Sample data seeded")
         else:

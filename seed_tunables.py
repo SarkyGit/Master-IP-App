@@ -247,8 +247,11 @@ def main():
                 description="Reboot after update when system files change",
             ),
         ]
-        db.add_all(samples)
-        db.commit()
+        try:
+            db.add_all(samples)
+            db.commit()
+        except Exception:
+            db.rollback()
         print("Tunables seeded")
     finally:
         db.close()

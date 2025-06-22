@@ -1,10 +1,9 @@
 from fastapi import APIRouter, Request, Depends, Form, HTTPException
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
-from sqlalchemy import text
 
 from core.utils.auth import require_role
-from core.utils.db_session import get_db, engine
+from core.utils.db_session import get_db, engine, safe_execute
 import sqlalchemy as sa
 from core.models.models import CustomColumn
 from core.utils.templates import templates
@@ -44,8 +43,13 @@ async def create_column(
     stmt = f"ALTER TABLE {table_name} ADD COLUMN {full_name} {data_type}"
     if default_value:
         stmt += " DEFAULT :default"
+    inspector = sa.inspect(engine)
+    if not inspector.has_table(table_name):
+        raise HTTPException(status_code=400, detail="Table does not exist")
+    if full_name in {c["name"] for c in inspector.get_columns(table_name)}:
+        raise HTTPException(status_code=400, detail="Column already exists")
     try:
-        db.execute(text(stmt), {"default": default_value})
+        safe_execute(db, stmt, {"default": default_value})
         db.add(
             CustomColumn(
                 table_name=table_name,
@@ -67,8 +71,15 @@ async def delete_column(col_id: int, db: Session = Depends(get_db), current_user
     col = db.query(CustomColumn).filter_by(id=col_id).first()
     if not col:
         raise HTTPException(status_code=404, detail="Not found")
+    inspector = sa.inspect(engine)
+    if not inspector.has_table(col.table_name):
+        raise HTTPException(status_code=400, detail="Table does not exist")
+    if col.column_name not in {c["name"] for c in inspector.get_columns(col.table_name)}:
+        db.delete(col)
+        db.commit()
+        return RedirectResponse("/admin/columns", status_code=302)
     try:
-        db.execute(text(f"ALTER TABLE {col.table_name} DROP COLUMN {col.column_name}"))
+        safe_execute(db, f"ALTER TABLE {col.table_name} DROP COLUMN {col.column_name}")
         db.delete(col)
         db.commit()
     except Exception:

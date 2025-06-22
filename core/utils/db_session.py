@@ -12,18 +12,49 @@ if DATABASE_URL and not DATABASE_URL.startswith("postgresql"):
     raise RuntimeError("Only PostgreSQL is supported. DATABASE_URL must begin with 'postgresql'.")
 engine = create_engine(DATABASE_URL) if DATABASE_URL else None
 
-_BaseSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
 
 class SafeSession(Session):
     """Session that rolls back and logs errors on commit failures."""
+
+    def add(self, instance, _warn=True):
+        try:
+            super().add(instance, _warn=_warn)
+        except Exception as exc:
+            super().rollback()
+            import traceback
+            from core.utils.schema import log_db_error
+
+            model = getattr(instance, "__class__", type(instance)).__name__
+            log_db_error(
+                model,
+                "add",
+                str(exc),
+                traceback.format_exc(),
+                getattr(self, "current_user", None),
+            )
+
+    def add_all(self, instances, *args, **kwargs):
+        try:
+            super().add_all(instances, *args, **kwargs)
+        except Exception as exc:
+            super().rollback()
+            import traceback
+            from core.utils.schema import log_db_error
+
+            models = ",".join(i.__class__.__name__ for i in instances)
+            log_db_error(
+                models,
+                "add_all",
+                str(exc),
+                traceback.format_exc(),
+                getattr(self, "current_user", None),
+            )
 
     def commit(self):
         try:
             super().commit()
         except Exception as exc:
             super().rollback()
-            from datetime import datetime, timezone
             import traceback
             from core.utils.schema import log_db_error
 
@@ -35,6 +66,8 @@ class SafeSession(Session):
                 traceback.format_exc(),
                 getattr(self, "current_user", None),
             )
+
+_BaseSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine, class_=SafeSession)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine, class_=SafeSession)
 
@@ -76,4 +109,23 @@ def reset_pk_sequence(db, model):
         f"SELECT setval(pg_get_serial_sequence('{table}', 'id'), "
         f"COALESCE((SELECT MAX(id) FROM {table}), 0) + 1, false)"
     )
-    db.execute(seq_sql)
+    try:
+        db.execute(seq_sql)
+    except Exception as exc:
+        db.rollback()
+        import traceback
+        from core.utils.schema import log_manual_sql_error
+
+        log_manual_sql_error(str(seq_sql), str(exc), traceback.format_exc())
+
+
+def safe_execute(db: Session, stmt: str, params: dict | None = None) -> None:
+    try:
+        db.execute(text(stmt), params or {})
+    except Exception as exc:
+        db.rollback()
+        import traceback
+        from core.utils.schema import log_manual_sql_error
+
+        log_manual_sql_error(stmt, str(exc), traceback.format_exc())
+        raise

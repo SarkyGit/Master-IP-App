@@ -1,8 +1,8 @@
 """baseline
 
-Revision ID: 72c285a123a3
-Revises: 
-Create Date: 2025-06-22 15:25:40.715070
+Revision ID: 1a2b3c4d5e6f
+Revises:
+Create Date: 2025-06-22 15:44:55.000000
 
 """
 from typing import Sequence, Union
@@ -13,7 +13,7 @@ import core.utils.types
 
 
 # revision identifiers, used by Alembic.
-revision: str = '72c285a123a3'
+revision: str = '1a2b3c4d5e6f'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -78,6 +78,14 @@ def upgrade() -> None:
     sa.Column('error_message', sa.String(), nullable=False),
     sa.Column('traceback', sa.Text(), nullable=False),
     sa.Column('user', sa.String(), nullable=True),
+    sa.Column('timestamp', sa.DateTime(timezone=True), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('manual_sql_errors',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('statement', sa.Text(), nullable=False),
+    sa.Column('error_message', sa.String(), nullable=False),
+    sa.Column('traceback', sa.Text(), nullable=False),
     sa.Column('timestamp', sa.DateTime(timezone=True), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
@@ -622,6 +630,7 @@ def downgrade() -> None:
     op.drop_index(op.f('ix_device_types_uuid'), table_name='device_types')
     op.drop_table('device_types')
     op.drop_table('db_errors')
+    op.drop_table('manual_sql_errors')
     op.drop_table('custom_columns')
     op.drop_table('connected_sites')
     op.drop_table('conflict_logs')
