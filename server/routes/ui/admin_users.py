@@ -45,7 +45,7 @@ async def new_user_form(request: Request, current_user=Depends(require_role("sup
         "icon_sets": ["lucide", "fontawesome", "material", "bootstrap"],
         "current_user": current_user,
     }
-    return templates.TemplateResponse("user_form.html", context)
+    return templates.TemplateResponse("base/user_form.html", context)
 
 
 @router.post("/admin/users/new")
@@ -86,7 +86,7 @@ async def create_user(
         "icon_sets": ["lucide", "fontawesome", "material", "bootstrap"],
         "current_user": current_user,
     }
-        return templates.TemplateResponse("user_form.html", context)
+        return templates.TemplateResponse("base/user_form.html", context)
 
     if role not in ROLE_CHOICES:
         role = "viewer"
@@ -141,7 +141,7 @@ async def edit_user_form(
         "icon_sets": ["lucide", "fontawesome", "material", "bootstrap"],
         "current_user": current_user,
     }
-    return templates.TemplateResponse("user_form.html", context)
+    return templates.TemplateResponse("base/user_form.html", context)
 
 
 @router.post("/admin/users/{user_id}/edit")
