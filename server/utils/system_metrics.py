@@ -5,8 +5,10 @@ from typing import Any, Dict
 
 try:
     import psutil
+    HAS_PSUTIL = True
 except Exception:  # pragma: no cover - optional dependency
     psutil = None
+    HAS_PSUTIL = False
 
 
 def gather_metrics() -> Dict[str, Any]:
