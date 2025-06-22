@@ -89,7 +89,10 @@ from server.workers.system_metrics_logger import start_metrics_logger, stop_metr
 from server.utils.system_metrics import HAS_PSUTIL
 from core.utils.templates import templates
 from core.utils.db_session import engine, SessionLocal
-from core.utils.schema import verify_schema
+from core.utils.schema import verify_schema, record_schema_version, log_boot_error
+from alembic.config import Config
+from alembic import command
+import traceback
 from core.models.models import SystemTunable
 
 
@@ -119,6 +122,12 @@ INSTALL_REQUIRED = check_install_required()
 # Allow deploying the app under a URL prefix by setting ROOT_PATH.
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    try:
+        alembic_cfg = Config("alembic.ini")
+        command.upgrade(alembic_cfg, "head")
+    except Exception as exc:  # pragma: no cover - best effort
+        log_boot_error(str(exc), traceback.format_exc(), settings.role)
+    record_schema_version(settings.role)
     verify_schema()
     if not INSTALL_REQUIRED:
         if settings.enable_background_workers:

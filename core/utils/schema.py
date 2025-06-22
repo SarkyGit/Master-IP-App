@@ -2,7 +2,7 @@ import subprocess
 import logging
 from sqlalchemy import text, inspect
 
-from .db_session import engine, Base, SessionLocal
+from .db_session import engine, Base, _BaseSessionLocal
 from core.models.models import SyncIssue, SyncError
 import hashlib
 import traceback
@@ -98,7 +98,7 @@ def log_sync_error(model: str, action: str, exc: Exception) -> None:
         return
     _logged_error_hashes.add(h)
     tb = traceback.format_exc()
-    db = SessionLocal()
+    db = _BaseSessionLocal()
     try:
         exists = db.query(SyncError).filter_by(error_hash=h).first()
         if not exists:
@@ -111,5 +111,56 @@ def log_sync_error(model: str, action: str, exc: Exception) -> None:
                 )
             )
             db.commit()
+    finally:
+        db.close()
+
+
+def validate_db_schema(instance: str = "local") -> bool:
+    """Return True if DB schema matches models, logging issues."""
+    db = _BaseSessionLocal()
+    try:
+        mismatches = []
+        for cls in Base.__subclasses__():
+            mismatches.extend(log_schema_issues(db, cls, instance))
+        return len(mismatches) == 0
+    finally:
+        db.close()
+
+
+def log_boot_error(msg: str, tb: str, instance: str) -> None:
+    db = _BaseSessionLocal()
+    try:
+        from core.models.models import BootError
+        db.add(BootError(error_message=msg, traceback=tb, instance_type=instance))
+        db.commit()
+    except Exception:
+        db.rollback()
+    finally:
+        db.close()
+
+
+def log_db_error(model: str, action: str, msg: str, tb: str, user: str | None = None) -> None:
+    db = _BaseSessionLocal()
+    try:
+        from core.models.models import DBError
+        db.add(DBError(model_name=model, action=action, error_message=msg, traceback=tb, user=user))
+        db.commit()
+    except Exception:
+        db.rollback()
+    finally:
+        db.close()
+
+
+def record_schema_version(instance: str) -> None:
+    rev = get_schema_revision()
+    if not rev:
+        return
+    db = SessionLocal()
+    try:
+        from core.models.models import SchemaVersion
+        db.add(SchemaVersion(alembic_revision_id=rev, instance_type=instance))
+        db.commit()
+    except Exception:
+        db.rollback()
     finally:
         db.close()

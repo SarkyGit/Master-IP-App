@@ -11,7 +11,32 @@ DATABASE_URL = os.environ.get("DATABASE_URL")
 if DATABASE_URL and not DATABASE_URL.startswith("postgresql"):
     raise RuntimeError("Only PostgreSQL is supported. DATABASE_URL must begin with 'postgresql'.")
 engine = create_engine(DATABASE_URL) if DATABASE_URL else None
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+_BaseSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+
+class SafeSession(Session):
+    """Session that rolls back and logs errors on commit failures."""
+
+    def commit(self):
+        try:
+            super().commit()
+        except Exception as exc:
+            super().rollback()
+            from datetime import datetime, timezone
+            import traceback
+            from core.utils.schema import log_db_error
+
+            models = {obj.__class__.__name__ for obj in self.new.union(self.dirty).union(self.deleted)}
+            log_db_error(
+                ",".join(sorted(models)) or "unknown",
+                "commit",
+                str(exc),
+                traceback.format_exc(),
+                getattr(self, "current_user", None),
+            )
+
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine, class_=SafeSession)
 
 # Import module models so all tables are registered before creation
 import modules.inventory.models  # noqa: F401

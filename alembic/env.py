@@ -38,6 +38,19 @@ models_spec = importlib.util.spec_from_file_location('core.models.models', model
 models = importlib.util.module_from_spec(models_spec)
 models_spec.loader.exec_module(models)
 sys.modules['core.models.models'] = models
+
+# Load module models so all tables are registered
+inv_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'modules', 'inventory', 'models.py'))
+inv_spec = importlib.util.spec_from_file_location('modules.inventory.models', inv_path)
+inv_models = importlib.util.module_from_spec(inv_spec)
+inv_spec.loader.exec_module(inv_models)
+sys.modules['modules.inventory.models'] = inv_models
+
+net_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'modules', 'network', 'models.py'))
+net_spec = importlib.util.spec_from_file_location('modules.network.models', net_path)
+net_models = importlib.util.module_from_spec(net_spec)
+net_spec.loader.exec_module(net_models)
+sys.modules['modules.network.models'] = net_models
 Base = database.Base
 
 config = context.config
