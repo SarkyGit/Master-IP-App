@@ -2,6 +2,7 @@ import sys, os
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__) + '/../'))
 import subprocess
 from pathlib import Path
+import httpx
 
 try:
     import questionary
@@ -82,7 +83,7 @@ def ensure_ipapp_user() -> None:
 
 def fetch_cloud_superadmins(base_url: str, api_key: str) -> list[dict]:
     """Return list of super admin users from the cloud server."""
-    import httpx
+
     url = base_url.rstrip("/") + "/api/super-admins"
     headers = {"Authorization": f"Bearer {api_key}"}
     try:
@@ -97,6 +98,7 @@ def fetch_cloud_superadmins(base_url: str, api_key: str) -> list[dict]:
 def create_cloud_superadmin(base_url: str, api_key: str, data: dict) -> dict | None:
     """Create a super admin user on the cloud server and return the result."""
     import httpx
+
     url = base_url.rstrip("/") + "/api/super-admins"
     headers = {"Authorization": f"Bearer {api_key}"}
     try:
@@ -227,6 +229,7 @@ def install():
 
     # import password hashing after dependencies installed
     from core.utils.auth import get_password_hash
+
 
     # prompt for cloud admin sync only on local installs
     admin_data = None
