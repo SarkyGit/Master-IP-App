@@ -12,6 +12,20 @@ Running the full test suite verifies that:
 - Disabling the Network module via `NETWORK_ENABLED=0` still allows the
   application to start and the Inventory routes to function.
 
+A minimal check with the environment variables set confirms only the
+Inventory endpoints load:
+
+```bash
+INVENTORY_ENABLED=1 NETWORK_ENABLED=0 python - <<'PY'
+from fastapi import FastAPI
+from modules import load_modules
+app = FastAPI()
+load_modules(app)
+print([r.path for r in app.routes if '/inventory' in r.path])
+PY
+```
+
+
 ```bash
 pytest -q
 ```
