@@ -10,6 +10,37 @@ import os
 
 router = APIRouter()
 
+
+@router.get("/admin/menu")
+async def super_admin_menu(
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("superadmin")),
+):
+    items = [
+        {"label": "My Profile", "href": "/users/me"},
+        {"label": "Organisation Settings", "href": "/admin/org-settings", "category": "System"},
+        {"label": "Users", "href": "/admin/users", "category": "System"},
+        {"label": "System Monitor", "href": "/admin/system-monitor", "category": "System"},
+        {"label": "Cloud Sync / API's", "href": "/admin/cloud-sync"},
+    ]
+    for item in items:
+        item["img"] = _menu_image(db, item["label"])
+    categories = []
+    general = [i for i in items if not i.get("category")]
+    if general:
+        categories.append({"label": None, "items": general})
+    system_items = [i for i in items if i.get("category") == "System"]
+    if system_items:
+        categories.append({"label": "System", "items": system_items})
+    context = {
+        "request": request,
+        "categories": categories,
+        "title": "Super Admin",
+        "current_user": current_user,
+    }
+    return templates.TemplateResponse("admin_menu_grid.html", context)
+
 def _slug(label: str) -> str:
     return label.lower().replace(" ", "_")
 
