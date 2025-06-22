@@ -1,5 +1,6 @@
 import sys, os
-sys.path.insert(0, os.path.abspath(os.path.dirname(__file__) + '/../'))
+
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__) + "/../"))
 import subprocess
 from pathlib import Path
 
@@ -139,7 +140,9 @@ def install():
     install_domain = questionary.text(
         "Domain for HTTPS (leave blank for self-signed)", default=""
     ).ask()
-    install_nginx = questionary.confirm("Install and configure nginx?", default=True).ask()
+    install_nginx = questionary.confirm(
+        "Install and configure nginx?", default=True
+    ).ask()
     seed_demo = questionary.confirm("Seed demo data?", default=False).ask()
 
     db_url = f"postgresql://{db_user}:{db_pass}@localhost:5432/{db_name}"
@@ -159,7 +162,9 @@ def install():
     write_env_file(env_content)
 
     run("apt-get update")
-    run("apt-get install -y git python3 python3-venv python3-pip postgresql curl python-is-python3")
+    run(
+        "apt-get install -y git python3 python3-venv python3-pip postgresql curl python-is-python3"
+    )
     if install_nginx:
         run("apt-get install -y nginx")
     run("curl -fsSL https://deb.nodesource.com/setup_20.x | bash -")
@@ -181,9 +186,7 @@ def install():
     if pg_database_exists(db_name):
         print(f"PostgreSQL database '{db_name}' already exists; skipping creation.")
     else:
-        run(
-            f"sudo -u postgres psql -c \"CREATE DATABASE {db_name} OWNER {db_user};\""
-        )
+        run(f'sudo -u postgres psql -c "CREATE DATABASE {db_name} OWNER {db_user};"')
 
     if install_nginx:
         domain = install_domain.strip().lower()
@@ -219,7 +222,9 @@ def install():
             "    location /static/ {\n        proxy_pass http://127.0.0.1:8000/static/;\n        proxy_set_header Host $host;\n        proxy_set_header X-Forwarded-Proto $scheme;\n    }\n}"
         )
         Path("/etc/nginx/sites-available/master_ip.conf").write_text(nginx_conf)
-        run("ln -sf /etc/nginx/sites-available/master_ip.conf /etc/nginx/sites-enabled/master_ip.conf")
+        run(
+            "ln -sf /etc/nginx/sites-available/master_ip.conf /etc/nginx/sites-enabled/master_ip.conf"
+        )
         if os.path.exists("/etc/nginx/sites-enabled/default"):
             os.remove("/etc/nginx/sites-enabled/default")
         if os.path.exists("/etc/nginx/sites-enabled/000-default"):
@@ -231,6 +236,7 @@ def install():
     from core.utils.auth import get_password_hash
 
     admin_data = None
+    from_cloud = False
     if mode == "local":
         cloud_url = questionary.text("Cloud base URL (optional)").ask().strip()
         api_key = ""
@@ -240,6 +246,12 @@ def install():
         if cloud_url and api_key:
             admin_email = questionary.text("Admin email").ask().strip()
             admin_data = lookup_cloud_user(cloud_url, api_key, admin_email)
+            if admin_data and str(admin_data.get("role", "")).lower() not in {
+                "superadmin",
+                "super_admin",
+            }:
+                print("Cloud user lacks super admin privileges; ignoring result")
+                admin_data = None
             if not admin_data:
                 print("Admin not found on cloud; creating new user")
                 name = questionary.text("Name").ask()
@@ -257,6 +269,8 @@ def install():
                     admin_data = created
                 else:
                     print("Cloud user creation failed")
+            if admin_data:
+                from_cloud = True
         else:
             print("No cloud information provided; creating standalone admin")
 
@@ -270,19 +284,26 @@ def install():
             "is_active": True,
         }
 
-    os.environ.update({
-        "DATABASE_URL": db_url,
-        "ROLE": mode,
-        "SECRET_KEY": secret_key,
-    })
+    os.environ.update(
+        {
+            "DATABASE_URL": db_url,
+            "ROLE": mode,
+            "SECRET_KEY": secret_key,
+        }
+    )
 
-    run("python scripts/run_migrations.py")
+    try:
+        run("python scripts/run_migrations.py")
+    except subprocess.CalledProcessError as exc:
+        print(f"Migration failed: {exc}")
+        return
 
     from core.utils.schema import validate_schema_integrity
 
     check = validate_schema_integrity()
     if not check.get("valid"):
         print("Schema validation failed. Aborting installation.")
+        print(check)
         return
 
     # create admin account using selected data
@@ -297,6 +318,7 @@ def install():
             role=admin_data.get("role", "superadmin"),
             is_active=admin_data.get("is_active", True),
             uuid=admin_data.get("uuid", admin_data.get("id")),
+            cloud_user_id=admin_data.get("id") if from_cloud else None,
         )
         try:
             db.add(user)

@@ -21,14 +21,11 @@ from core.utils.types import GUID
 from core.utils.database import Base
 
 
-
 class Site(Base):
     __tablename__ = "sites"
 
     id = Column(Integer, primary_key=True)
-    uuid = Column(
-        GUID(), default=uuid4, unique=True, nullable=False, index=True
-    )
+    uuid = Column(GUID(), default=uuid4, unique=True, nullable=False, index=True)
     version = Column(Integer, default=1, nullable=False)
     conflict_data = Column(JSON, nullable=True)
     sync_state = Column(JSON, nullable=True)
@@ -75,9 +72,8 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True)
-    uuid = Column(
-        GUID(), default=uuid4, unique=True, nullable=False, index=True
-    )
+    uuid = Column(GUID(), default=uuid4, unique=True, nullable=False, index=True)
+    cloud_user_id = Column(String, nullable=True)
     version = Column(Integer, default=1, nullable=False)
     conflict_data = Column(JSON, nullable=True)
     sync_state = Column(JSON, nullable=True)
@@ -155,9 +151,6 @@ class AuditLog(Base):
 
     user = relationship("User")
     device = relationship("Device", passive_deletes=True)
-
-
-
 
 
 class BannedIP(Base):
@@ -446,6 +439,7 @@ class SchemaValidationIssue(Base):
     issue_type = Column(String, nullable=False)
     timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
 
+
 class SchemaVersion(Base):
     __tablename__ = "schema_versions"
 
@@ -473,6 +467,7 @@ class LocalRecoveryEvent(Base):
     success = Column(Boolean, nullable=False)
     num_records = Column(Integer, nullable=False)
     filename = Column(String, nullable=False)
+
 
 def _update_timestamp(mapper, connection, target) -> None:
     """Refresh the updated_at field before persisting changes."""
