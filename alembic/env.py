@@ -1,4 +1,4 @@
-import sys, os
+import sys, os, builtins
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__) + '/../'))
 from dotenv import load_dotenv
 load_dotenv()
@@ -27,6 +27,8 @@ sys.modules['core.utils.types'] = types_module
 core_pkg = types.ModuleType('core')
 utils_pkg = types.ModuleType('core.utils')
 sys.modules['core'] = core_pkg
+core = core_pkg
+builtins.core = core_pkg
 sys.modules['core.utils'] = utils_pkg
 core_pkg.utils = utils_pkg
 utils_pkg.database = database
