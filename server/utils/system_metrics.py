@@ -1,5 +1,6 @@
 import os
 import time
+import shutil
 from typing import Any, Dict
 
 try:
@@ -22,13 +23,20 @@ def gather_metrics() -> Dict[str, Any]:
         iface: {"bytes_sent": stats.bytes_sent, "bytes_recv": stats.bytes_recv}
         for iface, stats in net_io.items()
     }
-    disk = None
+    disk_io = None
     try:
         d = psutil.disk_io_counters()
         if d:
-            disk = {"read_bytes": d.read_bytes, "write_bytes": d.write_bytes}
+            disk_io = {"read_bytes": d.read_bytes, "write_bytes": d.write_bytes}
     except Exception:
-        disk = None
+        disk_io = None
+
+    disk_usage = None
+    try:
+        u = shutil.disk_usage("/")
+        disk_usage = {"total": u.total, "used": u.used, "free": u.free}
+    except Exception:
+        disk_usage = None
     workers = []
     for proc in psutil.process_iter(["pid", "cmdline", "cpu_percent", "create_time"]):
         cmd = " ".join(proc.info.get("cmdline") or [])
@@ -46,7 +54,8 @@ def gather_metrics() -> Dict[str, Any]:
         "memory": {"total": vm.total, "used": vm.used, "percent": vm.percent},
         "load_average": {"1": load1, "5": load5, "15": load15},
         "network": network,
-        "disk": disk,
+        "disk_io": disk_io,
+        "disk_usage": disk_usage,
         "gunicorn_workers": len(workers),
         "worker_stats": workers,
     }
