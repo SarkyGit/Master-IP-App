@@ -454,6 +454,14 @@ class SchemaVersion(Base):
     updated_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
     instance_type = Column(String, nullable=False)
 
+
+class SchemaReset(Base):
+    __tablename__ = "schema_resets"
+
+    id = Column(Integer, primary_key=True)
+    timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    reason = Column(String, nullable=False)
+
 def _update_timestamp(mapper, connection, target) -> None:
     """Refresh the updated_at field before persisting changes."""
     target.updated_at = datetime.now(timezone.utc)
