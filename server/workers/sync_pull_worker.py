@@ -21,6 +21,12 @@ from server.utils.cloud import set_tunable
 from sqlalchemy import inspect
 from server.workers import sync_push_worker
 from core.utils.deletion import soft_delete
+from core.utils.serialization import to_jsonable
+
+
+def make_json_safe(val: Any) -> Any:
+    """Convert common objects to JSON serializable values."""
+    return to_jsonable(val)
 
 # Only log changes for fields that users can edit
 USER_EDITABLE_DEVICE_FIELDS: Set[str] = {
@@ -269,21 +275,18 @@ async def pull_once(log: logging.Logger) -> None:
                 except Exception:
                     remote_ts_dt = datetime.now(timezone.utc)
                 if obj.updated_at and obj.updated_at > remote_ts_dt:
+                    conflict = {
+                        "field": "deleted_at",
+                        "local_value": None,
+                        "remote_value": rec.get("deleted_at"),
+                        "conflict_detected_at": datetime.now(timezone.utc).isoformat(),
+                        "source": "sync_pull",
+                        "local_version": obj.version,
+                        "remote_version": version,
+                        "conflict_type": "delete",
+                    }
                     obj.conflict_data = obj.conflict_data or []
-                    obj.conflict_data.append(
-                        {
-                            "field": "deleted_at",
-                            "local_value": None,
-                            "remote_value": rec.get("deleted_at"),
-                            "conflict_detected_at": datetime.now(
-                                timezone.utc
-                            ).isoformat(),
-                            "source": "sync_pull",
-                            "local_version": obj.version,
-                            "remote_version": version,
-                            "conflict_type": "delete",
-                        }
-                    )
+                    obj.conflict_data.append(make_json_safe(conflict))
                     conflicts_total += 1
                     db.commit()
                     print(f"[⏩] No new records for '{model_name}' since {since}")

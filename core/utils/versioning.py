@@ -57,7 +57,7 @@ def apply_update(
 
     obj.sync_state = sync_state
     obj.version = current_version + 1
-    obj.conflict_data = conflicts or None
+    obj.conflict_data = [to_jsonable(c) for c in conflicts] or None
     return conflicts or None
 
 
