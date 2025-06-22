@@ -1,7 +1,7 @@
 import sys, os
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__) + '/../'))
 from core.utils.db_session import SessionLocal, reset_pk_sequence
-from core.models.models import User, Site, SiteMembership
+from core.models.models import User, Site, SiteMembership, SchemaValidationIssue
 import subprocess
 
 
@@ -11,9 +11,36 @@ def upgrade_db() -> None:
     except Exception as exc:  # pragma: no cover - best effort
         print(f"Warning: could not apply migrations: {exc}")
 from core.utils.auth import get_password_hash, verify_password
+from core.utils.schema import validate_schema_integrity
 
 
 def main():
+    check = validate_schema_integrity()
+    if not check["valid"]:
+        db = SessionLocal()
+        try:
+            for t in check["missing_tables"]:
+                db.add(SchemaValidationIssue(table_name=t, issue_type="missing_table"))
+            for t, cols in check["missing_columns"].items():
+                for c in cols:
+                    db.add(SchemaValidationIssue(table_name=t, column_name=c, issue_type="missing_column"))
+            for t, cols in check["mismatched_columns"].items():
+                for c, types in cols.items():
+                    db.add(
+                        SchemaValidationIssue(
+                            table_name=t,
+                            column_name=c,
+                            expected_type=types[0],
+                            actual_type=types[1],
+                            issue_type="mismatched_column",
+                        )
+                    )
+            db.commit()
+        finally:
+            db.close()
+        print("Schema validation failed. Aborting seeding.")
+        return
+
     db = SessionLocal()
     reset_pk_sequence(db, User)
     try:

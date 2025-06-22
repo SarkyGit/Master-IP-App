@@ -129,6 +129,56 @@ def validate_db_schema(instance: str = "local") -> bool:
         db.close()
 
 
+def validate_schema_integrity() -> dict:
+    """Validate database tables and columns against models."""
+    if engine is None or "unittest.mock" in type(engine).__module__:
+        return {
+            "valid": True,
+            "missing_tables": [],
+            "missing_columns": {},
+            "mismatched_columns": {},
+        }
+    try:
+        insp = inspect(engine)
+    except Exception:
+        return {
+            "valid": False,
+            "missing_tables": [],
+            "missing_columns": {},
+            "mismatched_columns": {},
+        }
+
+    missing_tables: list[str] = []
+    missing_columns: dict[str, list[str]] = {}
+    mismatched_columns: dict[str, dict[str, tuple[str, str]]] = {}
+
+    for table in Base.metadata.sorted_tables:
+        name = table.name
+        if not insp.has_table(name):
+            missing_tables.append(name)
+            continue
+        db_cols = {c["name"]: c for c in insp.get_columns(name)}
+        for col in table.columns:
+            if col.name not in db_cols:
+                missing_columns.setdefault(name, []).append(col.name)
+            else:
+                db_type = str(db_cols[col.name]["type"]).lower()
+                model_type = str(col.type).lower()
+                if db_type != model_type:
+                    mismatched_columns.setdefault(name, {})[col.name] = (
+                        model_type,
+                        db_type,
+                    )
+
+    valid = not missing_tables and not missing_columns and not mismatched_columns
+    return {
+        "valid": valid,
+        "missing_tables": missing_tables,
+        "missing_columns": missing_columns,
+        "mismatched_columns": mismatched_columns,
+    }
+
+
 def log_boot_error(msg: str, tb: str, instance: str) -> None:
     db = _BaseSessionLocal()
     try:

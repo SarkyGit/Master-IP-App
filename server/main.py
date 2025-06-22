@@ -89,11 +89,16 @@ from server.workers.system_metrics_logger import start_metrics_logger, stop_metr
 from server.utils.system_metrics import HAS_PSUTIL
 from core.utils.templates import templates
 from core.utils.db_session import engine, SessionLocal
-from core.utils.schema import verify_schema, record_schema_version, log_boot_error
+from core.utils.schema import (
+    verify_schema,
+    record_schema_version,
+    log_boot_error,
+    validate_schema_integrity,
+)
 from alembic.config import Config
 from alembic import command
 import traceback
-from core.models.models import SystemTunable
+from core.models.models import SystemTunable, SchemaValidationIssue
 
 
 def check_install_required() -> bool:
@@ -129,20 +134,60 @@ async def lifespan(app: FastAPI):
         log_boot_error(str(exc), traceback.format_exc(), settings.role)
     record_schema_version(settings.role)
     verify_schema()
+    validation = validate_schema_integrity()
+    schema_ok = validation["valid"]
+    if not schema_ok:
+        db = SessionLocal()
+        try:
+            for tbl in validation["missing_tables"]:
+                db.add(
+                    SchemaValidationIssue(
+                        table_name=tbl,
+                        column_name=None,
+                        expected_type=None,
+                        actual_type=None,
+                        issue_type="missing_table",
+                    )
+                )
+            for tbl, cols in validation["missing_columns"].items():
+                for col in cols:
+                    db.add(
+                        SchemaValidationIssue(
+                            table_name=tbl,
+                            column_name=col,
+                            expected_type=None,
+                            actual_type=None,
+                            issue_type="missing_column",
+                        )
+                    )
+            for tbl, cols in validation["mismatched_columns"].items():
+                for col, types in cols.items():
+                    db.add(
+                        SchemaValidationIssue(
+                            table_name=tbl,
+                            column_name=col,
+                            expected_type=types[0],
+                            actual_type=types[1],
+                            issue_type="mismatched_column",
+                        )
+                    )
+            db.commit()
+        finally:
+            db.close()
     if not INSTALL_REQUIRED:
-        if settings.enable_background_workers:
+        if settings.enable_background_workers and schema_ok:
             if settings.role == "local":
                 start_queue_worker()
                 start_config_scheduler()
                 setup_trap_listener()
                 setup_syslog_listener()
             start_metrics_logger()
-        if settings.role == "local" and settings.enable_cloud_sync:
+        if settings.role == "local" and settings.enable_cloud_sync and schema_ok:
             start_cloud_sync()
             start_heartbeat()
-        if settings.role == "local" and settings.enable_sync_push_worker:
+        if settings.role == "local" and settings.enable_sync_push_worker and schema_ok:
             start_sync_push_worker()
-        if settings.role == "local" and settings.enable_sync_pull_worker:
+        if settings.role == "local" and settings.enable_sync_pull_worker and schema_ok:
             start_sync_pull_worker()
     yield
     if not INSTALL_REQUIRED:
