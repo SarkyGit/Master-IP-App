@@ -95,6 +95,7 @@ from core.utils.schema import (
     log_boot_error,
     validate_schema_integrity,
     reset_local_database,
+    log_schema_validation_details,
 )
 from alembic.config import Config
 from alembic import command
@@ -138,6 +139,7 @@ async def lifespan(app: FastAPI):
     validation = validate_schema_integrity()
     schema_ok = validation["valid"]
     if not schema_ok:
+        log_schema_validation_details(validation, settings.role)
         db = SessionLocal()
         try:
             for tbl in validation["missing_tables"]:
@@ -175,7 +177,6 @@ async def lifespan(app: FastAPI):
             db.commit()
         finally:
             db.close()
-        log_boot_error("Schema mismatch detected", "", settings.role)
         if settings.role != "cloud":
             try:
                 reset_local_database("schema mismatch")

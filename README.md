@@ -572,10 +572,11 @@ once installation completes.
 ## Automatic Schema Recovery
 
 Local instances verify the database schema at startup. If a mismatch is detected
-the application will wipe the local database, fetch the schema and seed data
-from the configured cloud server and then re-run the initial sync. **All local
-data will be erased** during this process. This safety net is never executed on
-cloud deployments.
+the application records the details in the `boot_errors` table and wipes the
+local database. It fetches the schema and seed data from the configured cloud
+server, logs the rebuild in the `schema_resets` table and then re-runs the
+initial sync. **All local data will be erased** during this process. This safety
+net is never executed on cloud deployments.
 
 ## License
 

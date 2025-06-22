@@ -180,6 +180,27 @@ def validate_schema_integrity() -> dict:
     }
 
 
+def log_schema_validation_details(result: dict, instance: str) -> None:
+    """Store a summary of schema validation issues in ``boot_errors``."""
+    parts: list[str] = []
+    if result.get("missing_tables"):
+        parts.append(
+            "missing tables: " + ", ".join(sorted(result["missing_tables"]))
+        )
+    for table, cols in result.get("missing_columns", {}).items():
+        joined = ", ".join(sorted(cols))
+        parts.append(f"missing columns in {table}: {joined}")
+    for table, cols in result.get("mismatched_columns", {}).items():
+        for col, types in cols.items():
+            parts.append(
+                f"mismatched column {table}.{col} expected {types[0]} got {types[1]}"
+            )
+    if not parts:
+        parts.append("schema mismatch detected")
+    message = "; ".join(parts)
+    log_boot_error(message, "", instance)
+
+
 def log_boot_error(msg: str, tb: str, instance: str) -> None:
     db = _BaseSessionLocal()
     try:
