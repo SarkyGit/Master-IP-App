@@ -11,16 +11,13 @@ from core.utils.deletion import soft_delete
 
 
 def _load_models():
-    with mock.patch("sqlalchemy.create_engine"), mock.patch(
-        "sqlalchemy.schema.MetaData.create_all"
-    ):
-        inv = importlib.import_module("modules.inventory.models")
-        net = importlib.import_module("modules.network.models")
-        core = importlib.import_module("core.models")
-        attrs = {name: getattr(core, name) for name in dir(core) if not name.startswith("_")}
-        attrs.update({name: getattr(inv, name) for name in dir(inv) if not name.startswith("_")})
-        attrs.update({name: getattr(net, name) for name in dir(net) if not name.startswith("_")})
-        return types.SimpleNamespace(**attrs)
+    inv = importlib.import_module("modules.inventory.models")
+    net = importlib.import_module("modules.network.models")
+    core = importlib.import_module("core.models")
+    attrs = {name: getattr(core, name) for name in dir(core) if not name.startswith("_")}
+    attrs.update({name: getattr(inv, name) for name in dir(inv) if not name.startswith("_")})
+    attrs.update({name: getattr(net, name) for name in dir(net) if not name.startswith("_")})
+    return types.SimpleNamespace(**attrs)
 
 
 def test_soft_delete_device_clears_fields():
@@ -47,12 +44,11 @@ def test_soft_delete_device_clears_fields():
     assert dev.hostname == "dev"
 
 
-def test_query_filters_deleted():
+def test_query_filters_deleted(pg_engine):
     models = _load_models()
-    engine = sa.create_engine("sqlite:///:memory:")
-    Session = sessionmaker(bind=engine)
+    Session = sessionmaker(bind=pg_engine)
     import core.utils.database as database
-    database.Base.metadata.create_all(bind=engine)
+    database.Base.metadata.create_all(bind=pg_engine)
     db = Session()
     now = datetime.now(timezone.utc)
     db.add_all([
