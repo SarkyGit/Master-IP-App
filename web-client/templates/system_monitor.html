@@ -38,7 +38,8 @@
 {% block extra_scripts %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-function monitor(){
+window.__context__ = {{ metrics | tojson | safe }};
+window.monitor = function(){
   return {
     timer: null,
     cpuChart: null,
@@ -56,6 +57,9 @@ function monitor(){
       this.memChart = new Chart(ctxM,{type:'line',data:{labels:[],datasets:[{label:'% Used',data:[],borderColor:'#60a5fa'}]},options:{animation:false}});
       this.loadChart = new Chart(ctxL,{type:'bar',data:{labels:['1m','5m','15m'],datasets:[{label:'load',data:[],backgroundColor:'#fbbf24'}]},options:{animation:false}});
       this.netChart = new Chart(ctxN,{type:'line',data:{labels:[],datasets:[]},options:{animation:false}});
+      if(window.__context__){
+        this.updateCharts(window.__context__);
+      }
       this.fetchMetrics();
       this.timer = setInterval(()=>this.fetchMetrics(),5000);
       document.addEventListener('visibilitychange',()=>{if(document.hidden){clearInterval(this.timer);}else{this.timer=setInterval(()=>this.fetchMetrics(),5000);}});
@@ -64,6 +68,9 @@ function monitor(){
       const r = await fetch('/api/system/metrics');
       if(!r.ok) return;
       const d = await r.json();
+      this.updateCharts(d);
+    },
+    updateCharts(d){
       const t = new Date().toLocaleTimeString();
       if(this.cpuChart.data.labels.length>20){this.cpuChart.data.labels.shift();this.cpuChart.data.datasets.forEach(ds=>ds.data.shift());}
       this.cpuChart.data.labels.push(t);
