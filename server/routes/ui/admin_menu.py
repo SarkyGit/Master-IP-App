@@ -69,7 +69,9 @@ async def system_menu(
         {"label": "Upload Image", "href": "/admin/upload-image"},
         {"label": "Update System", "href": "/admin/update"},
         {"label": "Tunables", "href": "/tunables"},
+        {"label": "Organisation Settings", "href": "/admin/org-settings"},
         {"label": "Users", "href": "/admin/users"},
+        {"label": "Logs", "href": "/admin/logs"},
         {"label": "System Monitor", "href": "/admin/system-monitor"},
         {"label": "UI to be Sorted", "href": "/admin/ui-to-be-sorted"},
     ]
