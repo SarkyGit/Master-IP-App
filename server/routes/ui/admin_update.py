@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request, Depends, HTTPException, Form
+from fastapi import APIRouter, Request, Depends, HTTPException, Form, WebSocket
 from fastapi.responses import HTMLResponse, JSONResponse
 from sqlalchemy.orm import Session
 
@@ -122,7 +122,10 @@ async def _run_update(user: User, force_reboot: bool) -> None:
 
 
 @router.websocket("/ws/update")
-async def update_ws(websocket):
+async def update_ws(
+    websocket: WebSocket,
+    current_user=Depends(require_role("admin")),
+):
     await websocket.accept()
     q = progress.new_queue()
     try:

@@ -127,7 +127,10 @@ async def live_session(
 
 
 @router.get("/tasks/download-template/{table_name}")
-async def download_template(table_name: str):
+async def download_template(
+    table_name: str,
+    current_user=Depends(require_role("viewer")),
+):
     table = CSV_TABLES.get(table_name)
     if not table:
         raise HTTPException(status_code=404, detail="Invalid table")

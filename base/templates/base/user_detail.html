@@ -47,6 +47,7 @@
         </tr>
       </tbody>
     </table>
+    <a href="/users/me/edit" class="mt-4 inline-block px-4 py-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded shadow transition">Edit Profile</a>
   </div>
   <div class="w-96 h-64 rounded overflow-hidden" id="map-container">
     {% if user.last_location_lat and user.last_location_lon and api_key %}
@@ -55,9 +56,6 @@
     <div class="w-full h-full flex items-center justify-center bg-[var(--card-bg)] text-[var(--card-text)] rounded">Login location unavailable</div>
     {% endif %}
   </div>
-</div>
-
-<a href="/users/me/edit" class="mt-4 inline-block px-4 py-2 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded transition">Edit Profile</a>
 
 {% if current_user and current_user.id == user.id %}
 
