@@ -58,7 +58,6 @@ from server.routes import (
     admin_menu_router,
     admin_images_router,
     admin_columns_router,
-    org_settings_router,
     help_router,
     system_monitor_router,
     api_devices_router,
@@ -74,6 +73,7 @@ from server.routes.api.check_in import router as check_in_router
 from server.routes.ui.sync_diagnostics import router as sync_diagnostics_router
 from server.routes.ui.tunables import router as tunables_router
 from server.routes.ui.editor import router as editor_router
+from server.routes.ui import org_settings as org_settings_router
 from server.websockets.editor import shell_ws
 from server.websockets.terminal import router as terminal_ws_router
 from core.utils.auth import get_current_user
@@ -240,7 +240,7 @@ app.include_router(cloud_router)
 app.include_router(admin_menu_router)
 app.include_router(admin_images_router)
 app.include_router(admin_columns_router)
-app.include_router(org_settings_router)
+app.include_router(org_settings_router.router)
 app.include_router(help_router)
 app.include_router(system_monitor_router)
 app.include_router(api_system_router)
