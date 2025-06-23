@@ -433,5 +433,6 @@ if __name__ == "__main__":
             run("apt-get install -y python3-venv")
             run(f"{sys.executable} -m venv venv")
         print("🔁 Re-running installer inside virtualenv...")
-        os.execv("venv/bin/python", ["venv/bin/python", "installer.py"])
+        os.environ["VIRTUAL_ENV"] = str(Path("venv").resolve())
+        os.execve("venv/bin/python", ["venv/bin/python", "installer.py"], os.environ)
     install()
