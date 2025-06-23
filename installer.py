@@ -33,9 +33,10 @@ def write_env_file(content: str, path: str = ".env") -> None:
     Path(path).write_text(content, encoding="utf-8")
 
 
-def run(cmd: str) -> None:
+def run(cmd: str, env: dict | None = None) -> None:
+    """Run a shell command, optionally with a custom environment."""
     print(f"Running: {cmd}")
-    subprocess.run(cmd, shell=True, check=True)
+    subprocess.run(cmd, shell=True, check=True, env=env)
 
 
 def pg_role_exists(role: str) -> bool:
@@ -355,7 +356,9 @@ def install():
         db.close()
 
     try:
-        run("./start.sh")
+        start_env = os.environ.copy()
+        start_env["PATH"] = str(Path("venv/bin")) + os.pathsep + start_env.get("PATH", "")
+        run("./start.sh", env=start_env)
     except KeyboardInterrupt:
         print("Start script interrupted; exiting installer")
 
