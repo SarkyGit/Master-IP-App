@@ -11,6 +11,15 @@ except ImportError:
     questionary = None
 
 
+if not sys.stdin.isatty():
+    print(
+        "\u26A0\uFE0F Non-interactive shell detected. Skipping prompts and falling back to local-only setup."
+    )
+    interactive = False
+else:
+    interactive = True
+
+
 ENV_TEMPLATE = """ROLE={mode}
 DATABASE_URL={db_url}
 SECRET_KEY={secret_key}
@@ -199,23 +208,37 @@ def install():
         run("venv/bin/pip install questionary")
         import questionary
 
-    mode = questionary.select(
-        "Server mode", choices=["local", "cloud"], default="local"
-    ).ask()
-    server_name = questionary.text("Server name (for nginx server_name)").ask()
-    site_id = questionary.text("Site ID", default="1").ask()
-    timezone = questionary.text("Timezone", default="UTC").ask()
-    db_user = questionary.text("PostgreSQL user", default="masteruser").ask()
-    db_pass = questionary.password("PostgreSQL password").ask()
-    db_name = questionary.text("Database name", default="master_ip_db").ask()
-    secret_key = questionary.text("Secret key", default="change-me").ask()
-    install_domain = questionary.text(
-        "Domain for HTTPS (leave blank for self-signed)", default=""
-    ).ask()
-    install_nginx = questionary.confirm(
-        "Install and configure nginx?", default=True
-    ).ask()
-    seed_demo = questionary.confirm("Seed demo data?", default=False).ask()
+    if interactive:
+        mode = questionary.select(
+            "Server mode", choices=["local", "cloud"], default="local"
+        ).ask()
+        server_name = questionary.text("Server name (for nginx server_name)").ask()
+        site_id = questionary.text("Site ID", default="1").ask()
+        timezone = questionary.text("Timezone", default="UTC").ask()
+        db_user = questionary.text("PostgreSQL user", default="masteruser").ask()
+        db_pass = questionary.password("PostgreSQL password").ask()
+        db_name = questionary.text("Database name", default="master_ip_db").ask()
+        secret_key = questionary.text("Secret key", default="change-me").ask()
+        install_domain = questionary.text(
+            "Domain for HTTPS (leave blank for self-signed)", default=""
+        ).ask()
+        install_nginx = questionary.confirm(
+            "Install and configure nginx?", default=True
+        ).ask()
+        seed_demo = questionary.confirm("Seed demo data?", default=False).ask()
+    else:
+        mode = "local"
+        server_name = ""
+        site_id = "1"
+        timezone = "UTC"
+        db_user = "masteruser"
+        db_pass = ""
+        db_name = "master_ip_db"
+        secret_key = "change-me"
+        install_domain = ""
+        install_nginx = True
+        seed_demo = False
+        print("Cloud setup skipped due to non-interactive mode.")
 
     db_url = f"postgresql://{db_user}:{db_pass}@localhost:5432/{db_name}"
 
@@ -338,46 +361,57 @@ def install():
     admin_data = None
     from_cloud = False
     if mode == "local":
-        cloud_url = questionary.text("Cloud base URL (optional)").ask().strip()
-        api_key = ""
-        if cloud_url:
-            api_key = questionary.text("Cloud API Key (optional)").ask().strip()
+        if interactive:
+            cloud_url = questionary.text("Cloud base URL (optional)").ask().strip()
+            api_key = ""
+            if cloud_url:
+                api_key = questionary.text("Cloud API Key (optional)").ask().strip()
 
-        if cloud_url and api_key:
-            admin_email = questionary.text("Admin email").ask().strip()
-            admin_data = lookup_cloud_user(cloud_url, api_key, admin_email)
-            if admin_data:
-                if str(admin_data.get("role", "")).lower() not in {
-                    "superadmin",
-                    "super_admin",
-                }:
-                    print("Cloud user lacks super admin privileges. Aborting install.")
-                    return
-                from_cloud = True
+            if cloud_url and api_key:
+                admin_email = questionary.text("Admin email").ask().strip()
+                admin_data = lookup_cloud_user(cloud_url, api_key, admin_email)
+                if admin_data:
+                    if str(admin_data.get("role", "")).lower() not in {
+                        "superadmin",
+                        "super_admin",
+                    }:
+                        print("Cloud user lacks super admin privileges. Aborting install.")
+                        return
+                    from_cloud = True
+                else:
+                    print("Admin not found on cloud. Creating...")
+                    name = questionary.text("Name").ask()
+                    password = questionary.password("Password").ask()
+                    payload = {
+                        "email": admin_email,
+                        "name": name,
+                        "hashed_password": get_password_hash(password),
+                        "role": "superadmin",
+                        "is_active": True,
+                    }
+                    created = create_cloud_user(cloud_url, api_key, payload)
+                    if not created:
+                        print("Cloud user creation failed. Aborting install.")
+                        return
+                    created["hashed_password"] = payload["hashed_password"]
+                    admin_data = created
+                    from_cloud = True
             else:
-                print("Admin not found on cloud. Creating...")
-                name = questionary.text("Name").ask()
-                password = questionary.password("Password").ask()
-                payload = {
-                    "email": admin_email,
-                    "name": name,
-                    "hashed_password": get_password_hash(password),
-                    "role": "superadmin",
-                    "is_active": True,
-                }
-                created = create_cloud_user(cloud_url, api_key, payload)
-                if not created:
-                    print("Cloud user creation failed. Aborting install.")
-                    return
-                created["hashed_password"] = payload["hashed_password"]
-                admin_data = created
-                from_cloud = True
+                print("No cloud information provided; creating standalone admin")
         else:
-            print("No cloud information provided; creating standalone admin")
+            cloud_url = ""
+            api_key = ""
+            from_cloud = False
+            print("Cloud setup skipped due to non-interactive mode.")
 
     if not admin_data:
-        admin_email = questionary.text("Admin email").ask()
-        admin_password = questionary.password("Admin password").ask()
+        if interactive:
+            admin_email = questionary.text("Admin email").ask()
+            admin_password = questionary.password("Admin password").ask()
+        else:
+            admin_email = "admin@example.com"
+            admin_password = "change-me"
+            print("Using default admin credentials due to non-interactive mode.")
         admin_data = {
             "email": admin_email,
             "hashed_password": get_password_hash(admin_password),
@@ -424,6 +458,10 @@ def install():
     print(
         "Installation complete. The virtual environment is fully self-contained and can run on a fresh system without preinstalled Python packages."
     )
+    if not interactive:
+        print(
+            "\u2714\uFE0F Installer completed in local-only fallback mode. Cloud sync is disabled by default."
+        )
 
 
 if __name__ == "__main__":
