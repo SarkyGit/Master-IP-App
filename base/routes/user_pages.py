@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Request, Depends, HTTPException, Form
+import secrets
 from fastapi.responses import RedirectResponse
 from core.utils.templates import templates
 from sqlalchemy.orm import Session
@@ -10,6 +11,7 @@ from core.utils.auth import (
     ROLE_HIERARCHY,
     get_password_hash,
 )
+from core.models import models as core_models
 from core.models.models import UserSSHCredential
 from core.models.models import User, SystemTunable, LoginEvent
 from core.utils.deletion import soft_delete
@@ -36,6 +38,13 @@ async def my_profile(
         .order_by(LoginEvent.timestamp.desc())
         .first()
     )
+    api_keys = (
+        db.query(core_models.UserAPIKey)
+        .filter(core_models.UserAPIKey.user_id == current_user.id)
+        .order_by(core_models.UserAPIKey.created_at.desc())
+        .all()
+    )
+    new_api_key = request.session.pop("new_api_key", None)
     creds = (
         db.query(UserSSHCredential)
         .filter(UserSSHCredential.user_id == current_user.id)
@@ -48,6 +57,8 @@ async def my_profile(
         "api_key": api_key,
         "last_login": last_login,
         "creds": creds,
+        "api_keys": api_keys,
+        "new_api_key": new_api_key,
         "themes": [
             "dark_colourful",
             "dark",
@@ -365,6 +376,37 @@ async def delete_user_cred(
         raise HTTPException(status_code=404, detail="Credential not found")
     soft_delete(cred, current_user.id, "ui")
     db.commit()
+    return RedirectResponse(url="/users/me", status_code=302)
+
+
+@router.post("/users/me/api-keys/new")
+async def create_user_api_key(
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role("viewer")),
+):
+    key_value = secrets.token_urlsafe(32)
+    entry = core_models.UserAPIKey(user_id=current_user.id, key=key_value, status="active")
+    db.add(entry)
+    db.commit()
+    request.session["new_api_key"] = key_value
+    return RedirectResponse(url="/users/me", status_code=302)
+
+
+@router.post("/users/me/api-keys/{key_id}/delete")
+async def delete_user_api_key(
+    key_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role("viewer")),
+):
+    key = (
+        db.query(core_models.UserAPIKey)
+        .filter(core_models.UserAPIKey.id == key_id, core_models.UserAPIKey.user_id == current_user.id)
+        .first()
+    )
+    if key:
+        key.status = "revoked"
+        db.commit()
     return RedirectResponse(url="/users/me", status_code=302)
 
 

@@ -10,6 +10,14 @@ from core.utils.deletion import soft_delete
 
 router = APIRouter(prefix="/api/v1/users", tags=["users"])
 
+@router.get("/lookup", response_model=schemas.UserRead | None)
+def lookup_user(
+    email: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(auth_utils.require_role("viewer")),
+):
+    return db.query(User).filter(User.email == email).first()
+
 @router.get("/", response_model=list[schemas.UserRead])
 def list_users(
     skip: int = 0,
@@ -27,7 +35,7 @@ def list_users(
 def create_user(
     user: schemas.UserCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(auth_utils.require_role("admin")),
+    current_user: User = Depends(auth_utils.require_role("superadmin")),
 ):
     obj = User(**user.dict())
     obj.version = 1
