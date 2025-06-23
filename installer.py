@@ -10,23 +10,27 @@ except ImportError:  # pragma: no cover - environment may lack dependency
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import subprocess
 
-# Ensure a .env file exists before loading environment variables
+# -- Environment setup -----------------------------------------------------
 if not os.path.exists(".env"):
     with open(".env", "w") as f:
         pass
 
-if load_dotenv:
+try:
+    from dotenv import load_dotenv
     load_dotenv()
-else:
+except ImportError:
     print("\u26A0\uFE0F 'python-dotenv' not installed; skipping .env loading.")
 
-# Auto-generate a SECRET_KEY if missing and persist it to .env
-if not os.getenv("SECRET_KEY"):
+secret_key_value = os.getenv("SECRET_KEY")
+if not secret_key_value:
     generated_key = secrets.token_hex(32)
     with open(".env", "a") as f:
         f.write(f"\nSECRET_KEY={generated_key}\n")
-    os.environ["SECRET_KEY"] = generated_key
-    print("\ud83d\udd10 Generated new SECRET_KEY and added it to .env.")
+    secret_key_value = generated_key
+    try:
+        print("Generated new SECRET_KEY and added it to .env.")
+    except UnicodeEncodeError:
+        print("Generated new SECRET_KEY.")
 
 try:
     import questionary
@@ -268,7 +272,6 @@ def install():
         db_user = questionary.text("PostgreSQL user", default="masteruser").ask()
         db_pass = questionary.password("PostgreSQL password").ask()
         db_name = questionary.text("Database name", default="master_ip_db").ask()
-        secret_key = questionary.text("Secret key", default="change-me").ask()
         install_domain = questionary.text(
             "Domain for HTTPS (leave blank for self-signed)", default=""
         ).ask()
@@ -284,7 +287,6 @@ def install():
         db_user = "masteruser"
         db_pass = "masterpass"
         db_name = "master_ip_db"
-        secret_key = "change-me"
         install_domain = ""
         install_nginx = True
         seed_demo = False
@@ -298,12 +300,11 @@ def install():
         "site_id": site_id,
         "timezone": timezone,
         "database_url": db_url,
-        "secret_key": secret_key,
         "install_domain": install_domain,
         "seed": "yes" if seed_demo else "no",
     }
 
-    env_content = build_env_content(data)
+    env_content = build_env_content({**data, "secret_key": secret_key_value})
     write_env_file(env_content)
 
     run("apt-get update")
@@ -382,7 +383,6 @@ def install():
         {
             "DATABASE_URL": db_url,
             "ROLE": mode,
-            "SECRET_KEY": secret_key,
         }
     )
 
@@ -419,14 +419,14 @@ def install():
     if mode == "local":
         if interactive:
             cloud_url = questionary.text("Cloud base URL (optional)").ask().strip()
-            api_key = ""
+            cloud_api_key = ""
             if cloud_url:
-                api_key = questionary.text("Cloud API Key (optional)").ask().strip()
-            sync_enabled = bool(cloud_url and api_key)
+                cloud_api_key = questionary.text("Cloud API Key (optional)").ask().strip()
+            sync_enabled = bool(cloud_url and cloud_api_key)
 
-            if cloud_url and api_key:
+            if cloud_url and cloud_api_key:
                 admin_email = questionary.text("Admin email").ask().strip()
-                admin_data = lookup_cloud_user(cloud_url, api_key, admin_email)
+                admin_data = lookup_cloud_user(cloud_url, cloud_api_key, admin_email)
                 if admin_data and "id" in admin_data:
                     role = str(admin_data.get("role", "")).lower()
                     if role not in {"superadmin", "super_admin"}:
@@ -445,11 +445,11 @@ def install():
                         "password": admin_password,
                         "role": "superadmin",
                     }
-                    created = create_cloud_user(cloud_url, api_key, user_payload)
+                    created = create_cloud_user(cloud_url, cloud_api_key, user_payload)
                     if not created:
                         print("Cloud user creation failed. Aborting install.")
                         return
-                    admin_data = lookup_cloud_user(cloud_url, api_key, admin_email)
+                    admin_data = lookup_cloud_user(cloud_url, cloud_api_key, admin_email)
                     if not admin_data or "id" not in admin_data:
                         print("Failed to retrieve created cloud user. Aborting install.")
                         return
@@ -460,7 +460,7 @@ def install():
                 print("No cloud information provided; creating standalone admin")
         else:
             cloud_url = ""
-            api_key = ""
+            cloud_api_key = ""
             from_cloud = False
             sync_enabled = False
             print("Cloud setup skipped due to non-interactive mode.")
@@ -514,13 +514,21 @@ def install():
     finally:
         db.close()
 
+    if not sync_enabled:
+        try:
+            subprocess.run([sys.executable, "seed_tunables.py"], check=True)
+            if seed_demo:
+                subprocess.run([sys.executable, "seed_data.py"], check=True)
+        except Exception as exc:
+            print(f"Seeding failed: {exc}")
+
     if sync_enabled:
         print("🔄 Syncing from cloud...")
         from core.sync.client import sync_pull_all
         try:
             sync_pull_all(
                 base_url=cloud_url,
-                api_key=api_key,
+                api_key=cloud_api_key,
                 local_site_id=active_site.id,
             )
             print("\u2705 Cloud sync complete.")
