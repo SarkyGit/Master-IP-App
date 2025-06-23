@@ -44,6 +44,8 @@ if [ "${AUTO_SEED:-1}" != "0" ] && [ "${AUTO_SEED}" != "false" ]; then
     venv/bin/python seed_superuser.py
 fi
 
+echo "✔ Installation complete. Starting server on port ${PORT:-8000}..."
+
 exec gunicorn server.main:app \
     --worker-class uvicorn.workers.UvicornWorker \
     --workers "${WORKERS:-4}" \
