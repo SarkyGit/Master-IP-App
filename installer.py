@@ -451,7 +451,7 @@ def install():
     try:
         start_env = os.environ.copy()
         start_env["PATH"] = str(Path("venv/bin")) + os.pathsep + start_env.get("PATH", "")
-        run("bash start.sh", env=start_env)
+        run("bash run_app.sh", env=start_env)
     except KeyboardInterrupt:
         print("Start script interrupted; exiting installer")
 
