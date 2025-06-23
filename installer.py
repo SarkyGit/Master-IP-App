@@ -5,6 +5,10 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import subprocess
 
+if not os.environ.get("SECRET_KEY"):
+    print("\u274c SECRET_KEY is not set in .env. Login sessions will fail.")
+    sys.exit(1)
+
 try:
     import questionary
 except ImportError:
@@ -367,9 +371,12 @@ def install():
         return
 
     # import password hashing after successful schema setup
-    from core.utils.auth import get_password_hash
+    from core.utils.auth import get_password_hash as hash_password
 
     admin_data = None
+    admin_email = None
+    admin_password = None
+    hashed_pw = None
     from_cloud = False
     cloud_user_id = None
     if mode == "local":
@@ -389,13 +396,15 @@ def install():
                         return
                     print("\u2714\uFE0F Found existing cloud user.")
                     cloud_user_id = admin_data["id"]
+                    admin_password = questionary.password("Password").ask().strip()
+                    hashed_pw = hash_password(admin_password)
                     from_cloud = True
                 else:
                     print("Admin not found on cloud. Creating...")
-                    password = questionary.password("Password").ask().strip()
+                    admin_password = questionary.password("Password").ask().strip()
                     user_payload = {
                         "email": admin_email,
-                        "password": password,
+                        "password": admin_password,
                         "role": "superadmin",
                     }
                     created = create_cloud_user(cloud_url, api_key, user_payload)
@@ -407,7 +416,7 @@ def install():
                         print("Failed to retrieve created cloud user. Aborting install.")
                         return
                     cloud_user_id = admin_data["id"]
-                    admin_data["hashed_password"] = get_password_hash(password)
+                    hashed_pw = hash_password(admin_password)
                     from_cloud = True
             else:
                 print("No cloud information provided; creating standalone admin")
@@ -425,9 +434,9 @@ def install():
             admin_email = "admin@example.com"
             admin_password = "change-me"
             print("Using default admin credentials due to non-interactive mode.")
+        hashed_pw = hash_password(admin_password)
         admin_data = {
             "email": admin_email,
-            "hashed_password": get_password_hash(admin_password),
             "role": "superadmin",
             "is_active": True,
         }
@@ -438,23 +447,28 @@ def install():
 
     try:
         db = SessionLocal()
-        user = User(
-            email=admin_data.get("email"),
-            hashed_password=admin_data.get("hashed_password"),
-            role=admin_data.get("role", "superadmin"),
-            is_active=admin_data.get("is_active", True),
-            uuid=admin_data.get("uuid", admin_data.get("id")),
+        existing = db.query(User).filter_by(email=admin_email).first()
+        if existing:
+            print("Admin user already exists. Skipping creation.")
+            return
+
+        new_user = User(
+            email=admin_email,
+            hashed_password=hashed_pw,
+            role="superadmin",
             cloud_user_id=cloud_user_id if from_cloud else None,
         )
         try:
-            db.add(user)
+            db.add(new_user)
+            db.flush()
             db.commit()
         except Exception:
             db.rollback()
         site = db.query(Site).first()
         if site:
             try:
-                db.add(SiteMembership(user_id=user.id, site_id=site.id))
+                db.add(SiteMembership(user_id=new_user.id, site_id=site.id))
+                db.flush()
                 db.commit()
             except Exception:
                 db.rollback()
