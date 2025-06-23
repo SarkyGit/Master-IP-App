@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
+# Activate the virtual environment
 source "$(dirname "$0")/venv/bin/activate"
+# Ensure project root is on PYTHONPATH so imports succeed
+export PYTHONPATH="$(dirname "$0")"
 # Start Gunicorn with Uvicorn workers for production
 set -e
 
@@ -31,14 +34,14 @@ fi
 npm run build:web
 
 # Wait for the database to become available
-python wait_for_db.py
+venv/bin/python wait_for_db.py
 sleep 2
 
 # Apply any pending database migrations before seeding
-python scripts/run_migrations.py
+venv/bin/python scripts/run_migrations.py
 
 if [ "${AUTO_SEED:-1}" != "0" ] && [ "${AUTO_SEED}" != "false" ]; then
-    python seed_superuser.py
+    venv/bin/python seed_superuser.py
 fi
 
 exec gunicorn server.main:app \
