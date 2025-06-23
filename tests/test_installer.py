@@ -1,4 +1,5 @@
 from installer import build_env_content
+from installer import run
 
 
 def test_build_env_content_handles_quotes():
@@ -47,3 +48,17 @@ def test_create_cloud_user_empty(monkeypatch):
     monkeypatch.setattr('installer.httpx.post', fake_post)
     result = create_cloud_user('https://cloud', 'k', {'email': 'x'})
     assert result is None
+
+
+def test_run_passes_env(monkeypatch):
+    captured = {}
+
+    def fake_run(cmd, shell=True, check=True, env=None):
+        captured['cmd'] = cmd
+        captured['env'] = env
+
+    monkeypatch.setattr('installer.subprocess.run', fake_run)
+
+    run('echo hi', env={'FOO': 'BAR'})
+
+    assert captured['env'] == {'FOO': 'BAR'}
