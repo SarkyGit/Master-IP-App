@@ -34,6 +34,22 @@ def test_lookup_cloud_user_empty(monkeypatch):
     assert result is None
 
 
+def test_lookup_cloud_user_unauthorized(monkeypatch):
+    def fake_get(url, params=None, headers=None, timeout=10):
+        return httpx.Response(401, json={'detail': 'Not authenticated'})
+    monkeypatch.setattr('installer.httpx.get', fake_get)
+    result = lookup_cloud_user('https://cloud', 'k', 'a@b.com')
+    assert result is None
+
+
+def test_lookup_cloud_user_missing_id(monkeypatch):
+    def fake_get(url, params=None, headers=None, timeout=10):
+        return httpx.Response(200, json={'email': 'a@b.com'})
+    monkeypatch.setattr('installer.httpx.get', fake_get)
+    result = lookup_cloud_user('https://cloud', 'k', 'a@b.com')
+    assert result is None
+
+
 def test_create_cloud_user_success(monkeypatch):
     def fake_post(url, json=None, headers=None, timeout=10):
         return httpx.Response(200, json={'id': 'u1'})
