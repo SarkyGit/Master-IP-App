@@ -1,8 +1,9 @@
-import sys, os
-
-sys.path.insert(0, os.path.abspath(os.path.dirname(__file__) + "/../"))
-import subprocess
+import os
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import subprocess
 
 try:
     import questionary

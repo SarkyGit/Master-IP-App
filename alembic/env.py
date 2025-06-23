@@ -1,5 +1,9 @@
-import sys, os, builtins
-sys.path.insert(0, os.path.abspath(os.path.dirname(__file__) + '/../'))
+import sys
+import os
+import builtins
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 from dotenv import load_dotenv
 load_dotenv()
 from alembic import context
