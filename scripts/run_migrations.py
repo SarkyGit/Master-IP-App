@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 """Apply Alembic migrations safely."""
 import logging
-import os
 import sys
+from pathlib import Path
 
 # Ensure repository root is on the Python path so ``core`` imports resolve
-sys.path.insert(0, os.path.abspath(os.path.dirname(__file__) + "/../"))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from core.utils.schema import safe_alembic_upgrade
 

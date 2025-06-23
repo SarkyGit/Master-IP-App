@@ -1,6 +1,7 @@
-import sys, os
+import sys
+from pathlib import Path
 
-sys.path.insert(0, os.path.abspath(os.path.dirname(__file__) + "/../"))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 from core.utils.db_session import SessionLocal
 from core.models.models import SystemTunable
 from core.utils.schema import safe_alembic_upgrade
