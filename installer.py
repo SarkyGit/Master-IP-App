@@ -188,6 +188,13 @@ def install():
 
     ensure_ipapp_user()
 
+    try:
+        run("apt-get update")
+        run("apt-get install -y python3-venv")
+    except subprocess.CalledProcessError:
+        print("\N{cross mark} Failed to install python3-venv. This is required to create a virtual environment.")
+        sys.exit(1)
+
     if questionary is None:
         run("apt-get update")
         run("apt-get install -y python3-pip")
@@ -416,7 +423,9 @@ def install():
     except KeyboardInterrupt:
         print("Start script interrupted; exiting installer")
 
-    print("Installation complete. Use the virtualenv for all future Python commands.")
+    print(
+        "Installation complete. The virtual environment is fully self-contained and can run on a fresh system without preinstalled Python packages."
+    )
 
 
 if __name__ == "__main__":
