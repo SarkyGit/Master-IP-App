@@ -2,6 +2,7 @@ import os
 import sys
 from pathlib import Path
 import secrets
+
 try:
     from dotenv import load_dotenv
 except ImportError:  # pragma: no cover - environment may lack dependency
@@ -17,9 +18,10 @@ if not os.path.exists(".env"):
 
 try:
     from dotenv import load_dotenv
+
     load_dotenv()
 except ImportError:
-    print("\u26A0\uFE0F 'python-dotenv' not installed; skipping .env loading.")
+    print("\u26a0\ufe0f 'python-dotenv' not installed; skipping .env loading.")
 
 secret_key_value = os.getenv("SECRET_KEY")
 if not secret_key_value:
@@ -40,7 +42,7 @@ except ImportError:
 
 if not sys.stdin.isatty():
     print(
-        "\u26A0\uFE0F Non-interactive shell detected. Skipping prompts and falling back to local-only setup."
+        "\u26a0\ufe0f Non-interactive shell detected. Skipping prompts and falling back to local-only setup."
     )
     interactive = False
 else:
@@ -76,14 +78,15 @@ def reload_dotenv() -> None:
     if load_dotenv is None:
         try:
             from dotenv import load_dotenv as ld
+
             load_dotenv = ld
         except Exception:  # pragma: no cover - best effort
-            print("\u26A0\uFE0F python-dotenv still missing; cannot load .env.")
+            print("\u26a0\ufe0f python-dotenv still missing; cannot load .env.")
             return
     try:
         load_dotenv()
     except Exception as exc:  # pragma: no cover - best effort
-        print(f"\u26A0\uFE0F Failed to load .env: {exc}")
+        print(f"\u26a0\ufe0f Failed to load .env: {exc}")
 
 
 def run(cmd: str, env: dict | None = None) -> None:
@@ -238,6 +241,49 @@ def create_cloud_user(base_url: str, api_key: str, data: dict) -> dict | None:
         return None
 
 
+from sqlalchemy.orm import Session
+from core.utils.db_session import engine
+from core.models.models import Site, SiteMembership
+
+
+def create_admin_user(admin_email: str, admin_password: str) -> None:
+    """Seed the local admin user without contacting any cloud services."""
+    from core.models.models import User
+    from core.utils.auth import get_password_hash as hash_password
+
+    db = Session(engine)
+    try:
+        site = db.query(Site).first()
+        if not site:
+            site = Site(name="Cloud")
+            db.add(site)
+            db.commit()
+
+        existing = db.query(User).filter_by(email=admin_email).first()
+        if not existing:
+            hashed_pw = hash_password(admin_password)
+            new_user = User(
+                email=admin_email,
+                hashed_password=hashed_pw,
+                role="superadmin",
+                is_active=True,
+                theme="dark_colourful",
+                font="sans",
+                menu_style="tabbed",
+                table_grid_style="normal",
+                icon_style="lucide",
+            )
+            db.add(new_user)
+            db.flush()
+            db.add(SiteMembership(user_id=new_user.id, site_id=site.id))
+            db.commit()
+            print(f"✅ Admin user created: {admin_email}")
+        else:
+            print("ℹ️ Admin user already exists, skipping creation.")
+    finally:
+        db.close()
+
+
 def install():
     global questionary
     if os.geteuid() != 0:
@@ -250,7 +296,7 @@ def install():
         run("apt-get install -y python3-venv")
     except subprocess.CalledProcessError:
         print(
-            "\N{cross mark} Failed to install python3-venv. This is required to create a virtual environment."
+            "\N{CROSS MARK} Failed to install python3-venv. This is required to create a virtual environment."
         )
         sys.exit(1)
 
@@ -391,11 +437,13 @@ def install():
         validate_schema_integrity,
         log_schema_validation_details,
     )
+
     try:
         safe_alembic_upgrade()
     except Exception as exc:
         print(f"Migration failed: {exc}")
         import traceback
+
         print(traceback.format_exc())
         return
 
@@ -409,23 +457,25 @@ def install():
     # import password hashing after successful schema setup
     from core.utils.auth import get_password_hash as hash_password
 
-    admin_data = None
+    sync_enabled = False
     admin_email = None
     admin_password = None
     hashed_pw = None
     from_cloud = False
     cloud_user_id = None
     cloud_user_email = None
-    sync_enabled = False
     if mode == "local":
         if interactive:
             cloud_url = questionary.text("Cloud base URL (optional)").ask().strip()
             cloud_api_key = ""
             if cloud_url:
-                cloud_api_key = questionary.text("Cloud API Key (optional)").ask().strip()
+                cloud_api_key = (
+                    questionary.text("Cloud API Key (optional)").ask().strip()
+                )
 
             if cloud_url and cloud_api_key:
                 import requests
+
                 try:
                     response = requests.get(
                         f"{cloud_url.rstrip('/')}/api/v1/users/me",
@@ -433,9 +483,11 @@ def install():
                     )
                     response.raise_for_status()
                     cloud_user_email = response.json().get("email")
-                    print(f"\u2705 Cloud API key validated. Connected as {cloud_user_email}.")
+                    print(
+                        f"\u2705 Cloud API key validated. Connected as {cloud_user_email}."
+                    )
                 except Exception as e:
-                    print(f"\u274C Invalid Cloud API Key: {e}")
+                    print(f"\u274c Invalid Cloud API Key: {e}")
                     print("Installer will continue without cloud sync.")
                     cloud_url = None
                     cloud_api_key = None
@@ -462,7 +514,7 @@ def install():
             sync_enabled = False
             print("Cloud setup skipped due to non-interactive mode.")
 
-    if not admin_data:
+    if mode == "cloud":
         if interactive:
             admin_email = questionary.text("Admin email").ask()
             admin_password = questionary.password("Admin password").ask()
@@ -470,6 +522,16 @@ def install():
             admin_email = "admin@example.com"
             admin_password = "change-me"
             print("Using default admin credentials due to non-interactive mode.")
+        create_admin_user(admin_email, admin_password)
+    else:
+        if not admin_email:
+            if interactive:
+                admin_email = questionary.text("Admin email").ask()
+                admin_password = questionary.password("Admin password").ask()
+            else:
+                admin_email = "admin@example.com"
+                admin_password = "change-me"
+                print("Using default admin credentials due to non-interactive mode.")
         hashed_pw = hash_password(admin_password)
         admin_data = {
             "email": admin_email,
@@ -477,39 +539,40 @@ def install():
             "is_active": True,
         }
 
-    # create admin account using selected data
-    from core.utils.db_session import SessionLocal
-    from core.models.models import User, Site, SiteMembership
+    if mode != "cloud":
+        # create admin account using selected data
+        from core.utils.db_session import SessionLocal
+        from core.models.models import User, Site, SiteMembership
 
-    try:
-        db = SessionLocal()
-        existing = db.query(User).filter_by(email=admin_email).first()
-        if existing:
-            print("Admin user already exists. Skipping creation.")
-            return
-
-        new_user = User(
-            email=admin_email,
-            hashed_password=hashed_pw,
-            role="superadmin",
-            cloud_user_id=cloud_user_id if from_cloud else None,
-        )
         try:
-            db.add(new_user)
-            db.flush()
-            db.commit()
-        except Exception:
-            db.rollback()
-        active_site = db.query(Site).first()
-        if active_site:
+            db = SessionLocal()
+            existing = db.query(User).filter_by(email=admin_email).first()
+            if existing:
+                print("Admin user already exists. Skipping creation.")
+                return
+
+            new_user = User(
+                email=admin_email,
+                hashed_password=hashed_pw,
+                role="superadmin",
+                cloud_user_id=cloud_user_id if from_cloud else None,
+            )
             try:
-                db.add(SiteMembership(user_id=new_user.id, site_id=active_site.id))
+                db.add(new_user)
                 db.flush()
                 db.commit()
             except Exception:
                 db.rollback()
-    finally:
-        db.close()
+            active_site = db.query(Site).first()
+            if active_site:
+                try:
+                    db.add(SiteMembership(user_id=new_user.id, site_id=active_site.id))
+                    db.flush()
+                    db.commit()
+                except Exception:
+                    db.rollback()
+        finally:
+            db.close()
 
     if not sync_enabled:
         try:
@@ -522,6 +585,7 @@ def install():
     if sync_enabled:
         print("🔄 Syncing from cloud...")
         from core.sync.client import sync_pull_all
+
         try:
             sync_pull_all(
                 base_url=cloud_url,
@@ -530,12 +594,14 @@ def install():
             )
             print("\u2705 Cloud sync complete.")
         except Exception as e:
-            print(f"\u26A0\uFE0F Cloud sync failed: {e}")
+            print(f"\u26a0\ufe0f Cloud sync failed: {e}")
             print("Installer will continue without cloud data.")
 
     try:
         start_env = os.environ.copy()
-        start_env["PATH"] = str(Path("venv/bin")) + os.pathsep + start_env.get("PATH", "")
+        start_env["PATH"] = (
+            str(Path("venv/bin")) + os.pathsep + start_env.get("PATH", "")
+        )
         run("bash run_app.sh", env=start_env)
     except KeyboardInterrupt:
         print("Start script interrupted; exiting installer")
@@ -545,7 +611,7 @@ def install():
     )
     if not interactive:
         print(
-            "\u2714\uFE0F Installer completed in local-only fallback mode. Cloud sync is disabled by default."
+            "\u2714\ufe0f Installer completed in local-only fallback mode. Cloud sync is disabled by default."
         )
 
 
