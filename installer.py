@@ -2,7 +2,10 @@ import os
 import sys
 from pathlib import Path
 import secrets
-from dotenv import load_dotenv
+try:
+    from dotenv import load_dotenv
+except ImportError:  # pragma: no cover - environment may lack dependency
+    load_dotenv = None
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import subprocess
@@ -12,7 +15,10 @@ if not os.path.exists(".env"):
     with open(".env", "w") as f:
         pass
 
-load_dotenv()
+if load_dotenv:
+    load_dotenv()
+else:
+    print("\u26A0\uFE0F 'python-dotenv' not installed; skipping .env loading.")
 
 # Auto-generate a SECRET_KEY if missing and persist it to .env
 if not os.getenv("SECRET_KEY"):
@@ -58,6 +64,22 @@ def build_env_content(data: dict) -> str:
 
 def write_env_file(content: str, path: str = ".env") -> None:
     Path(path).write_text(content, encoding="utf-8")
+
+
+def reload_dotenv() -> None:
+    """Load environment variables from .env if python-dotenv is available."""
+    global load_dotenv
+    if load_dotenv is None:
+        try:
+            from dotenv import load_dotenv as ld
+            load_dotenv = ld
+        except Exception:  # pragma: no cover - best effort
+            print("\u26A0\uFE0F python-dotenv still missing; cannot load .env.")
+            return
+    try:
+        load_dotenv()
+    except Exception as exc:  # pragma: no cover - best effort
+        print(f"\u26A0\uFE0F Failed to load .env: {exc}")
 
 
 def run(cmd: str, env: dict | None = None) -> None:
@@ -295,6 +317,7 @@ def install():
 
     run(f"{sys.executable} -m venv venv")
     run("venv/bin/pip install -r requirements.txt")
+    reload_dotenv()
     run("npm install")
     run("npm run build:web")
 
