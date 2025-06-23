@@ -41,9 +41,16 @@ def run(cmd: str, env: dict | None = None) -> None:
 
 def pg_role_exists(role: str) -> bool:
     """Return True if the given PostgreSQL role already exists."""
+    role_sql = role.replace("'", "''")
     result = subprocess.run(
-        f"sudo -u postgres psql -tAc \"SELECT 1 FROM pg_roles WHERE rolname='{role}'\"",
-        shell=True,
+        [
+            "sudo",
+            "-u",
+            "postgres",
+            "psql",
+            "-tAc",
+            f"SELECT 1 FROM pg_roles WHERE rolname='{role_sql}'",
+        ],
         capture_output=True,
         text=True,
     )
@@ -52,13 +59,54 @@ def pg_role_exists(role: str) -> bool:
 
 def pg_database_exists(name: str) -> bool:
     """Return True if the given PostgreSQL database already exists."""
+    name_sql = name.replace("'", "''")
     result = subprocess.run(
-        f"sudo -u postgres psql -tAc \"SELECT 1 FROM pg_database WHERE datname='{name}'\"",
-        shell=True,
+        [
+            "sudo",
+            "-u",
+            "postgres",
+            "psql",
+            "-tAc",
+            f"SELECT 1 FROM pg_database WHERE datname='{name_sql}'",
+        ],
         capture_output=True,
         text=True,
     )
     return result.stdout.strip() == "1"
+
+
+def create_pg_user(user: str, password: str) -> None:
+    """Create a PostgreSQL user with the given password."""
+    user_sql = user.replace('"', '""')
+    pass_sql = password.replace("'", "''")
+    subprocess.run(
+        [
+            "sudo",
+            "-u",
+            "postgres",
+            "psql",
+            "-c",
+            f"CREATE USER \"{user_sql}\" WITH PASSWORD '{pass_sql}';",
+        ],
+        check=True,
+    )
+
+
+def create_pg_database(name: str, owner: str) -> None:
+    """Create a PostgreSQL database owned by the specified user."""
+    db_sql = name.replace('"', '""')
+    owner_sql = owner.replace('"', '""')
+    subprocess.run(
+        [
+            "sudo",
+            "-u",
+            "postgres",
+            "psql",
+            "-c",
+            f'CREATE DATABASE "{db_sql}" OWNER "{owner_sql}";',
+        ],
+        check=True,
+    )
 
 
 def pip_supports_break_system_packages() -> bool:
@@ -192,14 +240,12 @@ def install():
     if pg_role_exists(db_user):
         print(f"PostgreSQL role '{db_user}' already exists; skipping creation.")
     else:
-        run(
-            f"sudo -u postgres psql -c \"CREATE USER {db_user} WITH PASSWORD '{db_pass}';\""
-        )
+        create_pg_user(db_user, db_pass)
 
     if pg_database_exists(db_name):
         print(f"PostgreSQL database '{db_name}' already exists; skipping creation.")
     else:
-        run(f'sudo -u postgres psql -c "CREATE DATABASE {db_name} OWNER {db_user};"')
+        create_pg_database(db_name, db_user)
 
     if install_nginx:
         domain = install_domain.strip().lower()
