@@ -23,6 +23,6 @@ RUN npm install
 # Build static assets
 RUN npm run build:web
 
-RUN chmod +x start.sh init_db.sh
+RUN chmod +x start.sh init_db.sh run_app.sh
 
-CMD ["./start.sh"]
+CMD ["./run_app.sh"]

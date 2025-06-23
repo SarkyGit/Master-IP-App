@@ -15,7 +15,7 @@ services:
   web:
     build:
       context: ../..
-    command: ./start.sh
+    command: ./run_app.sh
     env_file:
       - .env.local
     depends_on:

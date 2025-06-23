@@ -14,7 +14,7 @@ services:
 
   web:
     build: .
-    command: ./start.sh
+    command: ./run_app.sh
     depends_on:
       - db
     environment:
