@@ -186,14 +186,17 @@ def install():
         print("This installer must be run as root.")
         return
 
-    ensure_ipapp_user()
-
+    # Ensure the venv module is available before any pip or venv commands
+    run("apt-get update")
     try:
-        run("apt-get update")
         run("apt-get install -y python3-venv")
     except subprocess.CalledProcessError:
-        print("\N{cross mark} Failed to install python3-venv. This is required to create a virtual environment.")
+        print(
+            "\N{cross mark} Failed to install python3-venv. This is required to create a virtual environment."
+        )
         sys.exit(1)
+
+    ensure_ipapp_user()
 
     if questionary is None:
         run("apt-get update")
