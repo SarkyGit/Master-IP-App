@@ -383,31 +383,31 @@ def install():
                 admin_email = questionary.text("Admin email").ask().strip()
                 admin_data = lookup_cloud_user(cloud_url, api_key, admin_email)
                 if admin_data and "id" in admin_data:
-                    print("\u2714\uFE0F Found existing cloud user.")
-                    cloud_user_id = admin_data["id"]
-                    if str(admin_data.get("role", "")).lower() not in {
-                        "superadmin",
-                        "super_admin",
-                    }:
+                    role = str(admin_data.get("role", "")).lower()
+                    if role not in {"superadmin", "super_admin"}:
                         print("Cloud user lacks super admin privileges. Aborting install.")
                         return
+                    print("\u2714\uFE0F Found existing cloud user.")
+                    cloud_user_id = admin_data["id"]
                     from_cloud = True
                 else:
                     print("Admin not found on cloud. Creating...")
-                    password = questionary.password("Password").ask()
-                    payload = {
+                    password = questionary.password("Password").ask().strip()
+                    user_payload = {
                         "email": admin_email,
-                        "hashed_password": get_password_hash(password),
+                        "password": password,
                         "role": "superadmin",
-                        "is_active": True,
                     }
-                    created = create_cloud_user(cloud_url, api_key, payload)
+                    created = create_cloud_user(cloud_url, api_key, user_payload)
                     if not created:
                         print("Cloud user creation failed. Aborting install.")
                         return
-                    created["hashed_password"] = payload["hashed_password"]
-                    admin_data = created
-                    cloud_user_id = created.get("id")
+                    admin_data = lookup_cloud_user(cloud_url, api_key, admin_email)
+                    if not admin_data or "id" not in admin_data:
+                        print("Failed to retrieve created cloud user. Aborting install.")
+                        return
+                    cloud_user_id = admin_data["id"]
+                    admin_data["hashed_password"] = get_password_hash(password)
                     from_cloud = True
             else:
                 print("No cloud information provided; creating standalone admin")
