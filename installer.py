@@ -379,12 +379,14 @@ def install():
     hashed_pw = None
     from_cloud = False
     cloud_user_id = None
+    sync_enabled = False
     if mode == "local":
         if interactive:
             cloud_url = questionary.text("Cloud base URL (optional)").ask().strip()
             api_key = ""
             if cloud_url:
                 api_key = questionary.text("Cloud API Key (optional)").ask().strip()
+            sync_enabled = bool(cloud_url and api_key)
 
             if cloud_url and api_key:
                 admin_email = questionary.text("Admin email").ask().strip()
@@ -424,6 +426,7 @@ def install():
             cloud_url = ""
             api_key = ""
             from_cloud = False
+            sync_enabled = False
             print("Cloud setup skipped due to non-interactive mode.")
 
     if not admin_data:
@@ -464,16 +467,30 @@ def install():
             db.commit()
         except Exception:
             db.rollback()
-        site = db.query(Site).first()
-        if site:
+        active_site = db.query(Site).first()
+        if active_site:
             try:
-                db.add(SiteMembership(user_id=new_user.id, site_id=site.id))
+                db.add(SiteMembership(user_id=new_user.id, site_id=active_site.id))
                 db.flush()
                 db.commit()
             except Exception:
                 db.rollback()
     finally:
         db.close()
+
+    if sync_enabled:
+        print("🔄 Syncing from cloud...")
+        from core.sync.client import sync_pull_all
+        try:
+            sync_pull_all(
+                base_url=cloud_url,
+                api_key=api_key,
+                local_site_id=active_site.id,
+            )
+            print("\u2705 Cloud sync complete.")
+        except Exception as e:
+            print(f"\u26A0\uFE0F Cloud sync failed: {e}")
+            print("Installer will continue without cloud data.")
 
     try:
         start_env = os.environ.copy()
