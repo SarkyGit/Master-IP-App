@@ -6,16 +6,14 @@ from sqlalchemy import (
     Integer,
     String,
     ForeignKey,
-    DateTime,
     Text,
     Boolean,
     Table,
     JSON,
 )
 from sqlalchemy.orm import relationship
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import UUID, TIMESTAMP, DOUBLE_PRECISION
 
-from core.utils.types import GUID
 from core.utils.database import Base
 from sqlalchemy import event
 
@@ -24,15 +22,15 @@ class Location(Base):
     __tablename__ = "locations"
 
     id = Column(Integer, primary_key=True)
-    uuid = Column(GUID(), default=uuid4, unique=True, nullable=False, index=True)
+    uuid = Column(UUID(as_uuid=False), default=uuid4, unique=True, nullable=False, index=True)
     version = Column(Integer, default=1, nullable=False)
     conflict_data = Column(JSON, nullable=True)
     sync_state = Column(JSON, nullable=True)
     name = Column(String, unique=True, nullable=False)
     location_type = Column(String, nullable=False, default="Fixed")
-    updated_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
-    deleted_at = Column(DateTime(timezone=True), nullable=True)
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    updated_at = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
+    deleted_at = Column(TIMESTAMP(timezone=False), nullable=True)
+    created_at = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
 
     devices = relationship("Device", back_populates="location_ref")
 
@@ -41,16 +39,16 @@ class DeviceType(Base):
     __tablename__ = "device_types"
 
     id = Column(Integer, primary_key=True)
-    uuid = Column(GUID(), default=uuid4, unique=True, nullable=False, index=True)
+    uuid = Column(UUID(as_uuid=False), default=uuid4, unique=True, nullable=False, index=True)
     version = Column(Integer, default=1, nullable=False)
     conflict_data = Column(JSON, nullable=True)
     sync_state = Column(JSON, nullable=True)
     name = Column(String, unique=True, nullable=False)
     upload_icon = Column(String, nullable=True)
     upload_image = Column(String, nullable=True)
-    updated_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
-    deleted_at = Column(DateTime(timezone=True), nullable=True)
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    updated_at = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
+    deleted_at = Column(TIMESTAMP(timezone=False), nullable=True)
+    created_at = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
 
     devices = relationship("Device", back_populates="device_type")
 
@@ -67,14 +65,14 @@ class Tag(Base):
     __tablename__ = "tags"
 
     id = Column(Integer, primary_key=True)
-    uuid = Column(GUID(), default=uuid4, unique=True, nullable=False, index=True)
+    uuid = Column(UUID(as_uuid=False), default=uuid4, unique=True, nullable=False, index=True)
     version = Column(Integer, default=1, nullable=False)
     conflict_data = Column(JSON, nullable=True)
     sync_state = Column(JSON, nullable=True)
     name = Column(String, unique=True, nullable=False)
-    updated_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
-    deleted_at = Column(DateTime(timezone=True), nullable=True)
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    updated_at = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
+    deleted_at = Column(TIMESTAMP(timezone=False), nullable=True)
+    created_at = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
 
     devices = relationship("Device", secondary=device_tags, back_populates="tags")
 
@@ -83,7 +81,7 @@ class Device(Base):
     __tablename__ = "devices"
 
     id = Column(Integer, primary_key=True)
-    uuid = Column(GUID(), default=uuid4, unique=True, nullable=False, index=True)
+    uuid = Column(UUID(as_uuid=False), default=uuid4, unique=True, nullable=False, index=True)
     version = Column(Integer, default=1, nullable=False)
     conflict_data = Column(JSON, nullable=True)
     sync_state = Column(JSON, nullable=True)
@@ -104,13 +102,13 @@ class Device(Base):
     vlan_id = Column(Integer, ForeignKey("vlans.id"))
     ssh_credential_id = Column(Integer, ForeignKey("ssh_credentials.id"))
     snmp_community_id = Column(Integer, ForeignKey("snmp_communities.id"))
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    created_at = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
     created_by_id = Column(Integer, ForeignKey("users.id"), nullable=True)
-    updated_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
-    last_seen = Column(DateTime(timezone=True), nullable=True)
+    updated_at = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
+    last_seen = Column(TIMESTAMP(timezone=False), nullable=True)
 
     uptime_seconds = Column(Integer, nullable=True)
-    last_snmp_check = Column(DateTime(timezone=True), nullable=True)
+    last_snmp_check = Column(TIMESTAMP(timezone=False), nullable=True)
     snmp_reachable = Column(Boolean, nullable=True)
 
     detected_platform = Column(String, nullable=True)
@@ -119,13 +117,13 @@ class Device(Base):
 
     config_pull_interval = Column(String, nullable=False, default="none")
 
-    last_config_pull = Column(DateTime(timezone=True), nullable=True)
+    last_config_pull = Column(TIMESTAMP(timezone=False), nullable=True)
 
     notes = Column(Text, nullable=True)
 
     is_deleted = Column(Boolean, default=False)
     deleted_by_id = Column(Integer, ForeignKey("users.id"), nullable=True)
-    deleted_at = Column(DateTime(timezone=True), nullable=True)
+    deleted_at = Column(TIMESTAMP(timezone=False), nullable=True)
     deleted_origin = Column(String, nullable=True)
 
     vlan = relationship("VLAN", back_populates="devices")
@@ -148,7 +146,7 @@ class DeviceEditLog(Base):
     id = Column(Integer, primary_key=True)
     device_id = Column(Integer, ForeignKey("devices.id"), nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    timestamp = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
     changes = Column(Text, nullable=True)
 
     device = relationship("Device", back_populates="edit_logs")
@@ -161,7 +159,7 @@ class DeviceDamage(Base):
     id = Column(Integer, primary_key=True)
     device_id = Column(Integer, ForeignKey("devices.id"), nullable=False)
     filename = Column(String, nullable=False)
-    uploaded_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    uploaded_at = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
 
     device = relationship("Device", back_populates="damage_reports")
 
