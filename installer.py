@@ -415,6 +415,7 @@ def install():
     hashed_pw = None
     from_cloud = False
     cloud_user_id = None
+    cloud_user_email = None
     sync_enabled = False
     if mode == "local":
         if interactive:
@@ -422,45 +423,41 @@ def install():
             cloud_api_key = ""
             if cloud_url:
                 cloud_api_key = questionary.text("Cloud API Key (optional)").ask().strip()
-            sync_enabled = bool(cloud_url and cloud_api_key)
 
             if cloud_url and cloud_api_key:
-                admin_email = questionary.text("Admin email").ask().strip()
-                admin_data = lookup_cloud_user(cloud_url, cloud_api_key, admin_email)
-                if admin_data and "id" in admin_data:
-                    role = str(admin_data.get("role", "")).lower()
-                    if role not in {"superadmin", "super_admin"}:
-                        print("Cloud user lacks super admin privileges. Aborting install.")
-                        return
-                    print("\u2714\uFE0F Found existing cloud user.")
-                    cloud_user_id = admin_data["id"]
-                    admin_password = questionary.password("Password").ask().strip()
-                    hashed_pw = hash_password(admin_password)
-                    from_cloud = True
-                else:
-                    print("Admin not found on cloud. Creating...")
-                    admin_password = questionary.password("Password").ask().strip()
-                    user_payload = {
-                        "email": admin_email,
-                        "password": admin_password,
-                        "role": "superadmin",
-                    }
-                    created = create_cloud_user(cloud_url, cloud_api_key, user_payload)
-                    if not created:
-                        print("Cloud user creation failed. Aborting install.")
-                        return
-                    admin_data = lookup_cloud_user(cloud_url, cloud_api_key, admin_email)
-                    if not admin_data or "id" not in admin_data:
-                        print("Failed to retrieve created cloud user. Aborting install.")
-                        return
-                    cloud_user_id = admin_data["id"]
-                    hashed_pw = hash_password(admin_password)
-                    from_cloud = True
+                import requests
+                try:
+                    response = requests.get(
+                        f"{cloud_url.rstrip('/')}/api/v1/users/me",
+                        headers={"Authorization": f"Bearer {cloud_api_key}"},
+                    )
+                    response.raise_for_status()
+                    cloud_user_email = response.json().get("email")
+                    print(f"\u2705 Cloud API key validated. Connected as {cloud_user_email}.")
+                except Exception as e:
+                    print(f"\u274C Invalid Cloud API Key: {e}")
+                    print("Installer will continue without cloud sync.")
+                    cloud_url = None
+                    cloud_api_key = None
+
+            sync_enabled = bool(cloud_user_email and cloud_api_key)
+
+            if sync_enabled:
+                admin_email = cloud_user_email
+                admin_password = questionary.password("Admin password").ask().strip()
+                hashed_pw = hash_password(admin_password)
+                admin_data = {
+                    "email": admin_email,
+                    "role": "superadmin",
+                    "is_active": True,
+                }
+                from_cloud = True
             else:
                 print("No cloud information provided; creating standalone admin")
         else:
             cloud_url = ""
             cloud_api_key = ""
+            cloud_user_email = None
             from_cloud = False
             sync_enabled = False
             print("Cloud setup skipped due to non-interactive mode.")
