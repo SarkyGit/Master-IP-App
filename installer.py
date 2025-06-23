@@ -157,9 +157,20 @@ def lookup_cloud_user(base_url: str, api_key: str, email: str) -> dict | None:
             return None
         resp.raise_for_status()
         data = resp.json()
-        # Treat empty responses as not found
-        if not data:
+
+        # Log the result for debugging
+        print("🔍 Cloud user lookup response:", data)
+
+        # If unauthorized or malformed, abort early
+        if "detail" in data and "not authenticated" in str(data["detail"]).lower():
+            print("❌ API key is not authorized to look up users.")
             return None
+
+        # If 'id' is missing, this is not a valid user record
+        if "id" not in data:
+            print("⚠️ Cloud response did not include a user ID; treating as not found.")
+            return None
+
         return data
     except Exception as exc:  # pragma: no cover - best effort
         print(f"User lookup failed: {exc}")
