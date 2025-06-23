@@ -170,7 +170,7 @@ def create_cloud_user(base_url: str, api_key: str, data: dict) -> dict | None:
     """Create a user on the cloud server and return the result."""
     import httpx
 
-    url = base_url.rstrip("/") + "/api/users"
+    url = base_url.rstrip("/") + "/api/v1/users"
     headers = {"Authorization": f"Bearer {api_key}"}
     try:
         resp = httpx.post(url, json=data, headers=headers, timeout=10)
