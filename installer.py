@@ -1,5 +1,22 @@
-import os
+import subprocess
 import sys
+import os
+
+REQUIRED_MODULES = ["sqlalchemy", "psycopg2", "dotenv", "questionary"]
+
+missing = []
+for mod in REQUIRED_MODULES:
+    try:
+        __import__(mod)
+    except ImportError:
+        missing.append(mod)
+
+if missing:
+    print(f"\ud83d\udce6 Installing missing Python modules: {', '.join(missing)}")
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"])
+    print("\u2705 Dependencies installed. Re-running installer...")
+    os.execv(sys.executable, [sys.executable] + sys.argv)
+
 from pathlib import Path
 import secrets
 
@@ -9,7 +26,6 @@ except ImportError:  # pragma: no cover - environment may lack dependency
     load_dotenv = None
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-import subprocess
 
 # -- Environment setup -----------------------------------------------------
 if not os.path.exists(".env"):
