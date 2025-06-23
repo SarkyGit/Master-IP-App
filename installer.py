@@ -229,10 +229,10 @@ def install():
     else:
         mode = "local"
         server_name = ""
-        site_id = "1"
+        site_id = "99"
         timezone = "UTC"
         db_user = "masteruser"
-        db_pass = ""
+        db_pass = "masterpass"
         db_name = "master_ip_db"
         secret_key = "change-me"
         install_domain = ""
