@@ -360,6 +360,7 @@ def install():
 
     admin_data = None
     from_cloud = False
+    cloud_user_id = None
     if mode == "local":
         if interactive:
             cloud_url = questionary.text("Cloud base URL (optional)").ask().strip()
@@ -370,7 +371,9 @@ def install():
             if cloud_url and api_key:
                 admin_email = questionary.text("Admin email").ask().strip()
                 admin_data = lookup_cloud_user(cloud_url, api_key, admin_email)
-                if admin_data:
+                if admin_data and "id" in admin_data:
+                    print("\u2714\uFE0F Found existing cloud user.")
+                    cloud_user_id = admin_data["id"]
                     if str(admin_data.get("role", "")).lower() not in {
                         "superadmin",
                         "super_admin",
@@ -380,11 +383,9 @@ def install():
                     from_cloud = True
                 else:
                     print("Admin not found on cloud. Creating...")
-                    name = questionary.text("Name").ask()
                     password = questionary.password("Password").ask()
                     payload = {
                         "email": admin_email,
-                        "name": name,
                         "hashed_password": get_password_hash(password),
                         "role": "superadmin",
                         "is_active": True,
@@ -395,6 +396,7 @@ def install():
                         return
                     created["hashed_password"] = payload["hashed_password"]
                     admin_data = created
+                    cloud_user_id = created.get("id")
                     from_cloud = True
             else:
                 print("No cloud information provided; creating standalone admin")
@@ -431,7 +433,7 @@ def install():
             role=admin_data.get("role", "superadmin"),
             is_active=admin_data.get("is_active", True),
             uuid=admin_data.get("uuid", admin_data.get("id")),
-            cloud_user_id=admin_data.get("id") if from_cloud else None,
+            cloud_user_id=cloud_user_id if from_cloud else None,
         )
         try:
             db.add(user)
