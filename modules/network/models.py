@@ -6,15 +6,13 @@ from sqlalchemy import (
     Integer,
     String,
     ForeignKey,
-    DateTime,
     Text,
     Boolean,
     JSON,
 )
 from sqlalchemy.orm import relationship
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import UUID, TIMESTAMP, DOUBLE_PRECISION
 
-from core.utils.types import GUID
 from core.utils.database import Base
 from sqlalchemy import event
 
@@ -23,15 +21,15 @@ class VLAN(Base):
     __tablename__ = "vlans"
 
     id = Column(Integer, primary_key=True)
-    uuid = Column(GUID(), default=uuid4, unique=True, nullable=False, index=True)
+    uuid = Column(UUID(as_uuid=False), default=uuid4, unique=True, nullable=False, index=True)
     version = Column(Integer, default=1, nullable=False)
     conflict_data = Column(JSON, nullable=True)
     sync_state = Column(JSON, nullable=True)
     tag = Column(Integer, unique=True, nullable=False)
     description = Column(String, nullable=True)
-    updated_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
-    deleted_at = Column(DateTime(timezone=True), nullable=True)
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    updated_at = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
+    deleted_at = Column(TIMESTAMP(timezone=False), nullable=True)
+    created_at = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
 
     devices = relationship("Device", back_populates="vlan")
 
@@ -40,7 +38,7 @@ class SSHCredential(Base):
     __tablename__ = "ssh_credentials"
 
     id = Column(Integer, primary_key=True)
-    uuid = Column(GUID(), default=uuid4, unique=True, nullable=False, index=True)
+    uuid = Column(UUID(as_uuid=False), default=uuid4, unique=True, nullable=False, index=True)
     version = Column(Integer, default=1, nullable=False)
     conflict_data = Column(JSON, nullable=True)
     sync_state = Column(JSON, nullable=True)
@@ -48,9 +46,9 @@ class SSHCredential(Base):
     username = Column(String, nullable=False)
     password = Column(String, nullable=True)
     private_key = Column(Text, nullable=True)
-    updated_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
-    deleted_at = Column(DateTime(timezone=True), nullable=True)
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    updated_at = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
+    deleted_at = Column(TIMESTAMP(timezone=False), nullable=True)
+    created_at = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
 
     devices = relationship("Device", back_populates="ssh_credential")
 
@@ -59,16 +57,16 @@ class SNMPCommunity(Base):
     __tablename__ = "snmp_communities"
 
     id = Column(Integer, primary_key=True)
-    uuid = Column(GUID(), default=uuid4, unique=True, nullable=False, index=True)
+    uuid = Column(UUID(as_uuid=False), default=uuid4, unique=True, nullable=False, index=True)
     version = Column(Integer, default=1, nullable=False)
     conflict_data = Column(JSON, nullable=True)
     sync_state = Column(JSON, nullable=True)
     name = Column(String, unique=True, nullable=False)
     community_string = Column(String, nullable=False)
     snmp_version = Column(String, nullable=False)
-    updated_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
-    deleted_at = Column(DateTime(timezone=True), nullable=True)
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    updated_at = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
+    deleted_at = Column(TIMESTAMP(timezone=False), nullable=True)
+    created_at = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
 
     devices = relationship("Device", back_populates="snmp_community")
 
@@ -83,7 +81,7 @@ class PortStatusHistory(Base):
     admin_status = Column(String, nullable=True)
     speed = Column(Integer, nullable=True)
     poe_draw = Column(Integer, nullable=True)
-    timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    timestamp = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
 
     device = relationship("Device")
 
@@ -112,7 +110,7 @@ class InterfaceChangeLog(Base):
     new_desc = Column(String, nullable=True)
     old_vlan = Column(Integer, nullable=True)
     new_vlan = Column(Integer, nullable=True)
-    timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    timestamp = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
 
     user = relationship("User")
     device = relationship("Device")
@@ -126,7 +124,7 @@ class PortConfigTemplate(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True, nullable=False)
     config_text = Column(Text, nullable=False)
-    last_edited = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    last_edited = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
     edited_by_id = Column(Integer, ForeignKey("users.id"), nullable=True)
 
     edited_by = relationship("User")
@@ -139,14 +137,14 @@ class ConnectedSite(Base):
 
     id = Column(Integer, primary_key=True)
     site_id = Column(String, unique=True, nullable=False)
-    last_seen = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    last_seen = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
     last_version = Column(String, nullable=True)
     sync_status = Column(String, nullable=True)
     last_update_status = Column(String, nullable=True)
     ip_address = Column(String, nullable=True)
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    created_at = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
     updated_at = Column(
-        DateTime(timezone=True),
+        TIMESTAMP(timezone=False),
         default=datetime.now(timezone.utc),
         onupdate=datetime.now(timezone.utc),
     )

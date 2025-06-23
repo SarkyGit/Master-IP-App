@@ -6,19 +6,17 @@ from sqlalchemy import (
     Integer,
     String,
     ForeignKey,
-    DateTime,
     Text,
     Boolean,
-    Float,
     JSON,
     event,
     Index,
     text,
 )
+from sqlalchemy.dialects.postgresql import UUID, TIMESTAMP, DOUBLE_PRECISION
 from sqlalchemy.orm import relationship
 from sqlalchemy import Table
-from sqlalchemy.dialects.postgresql import UUID
-from core.utils.types import GUID
+
 
 from core.utils.database import Base
 
@@ -27,16 +25,16 @@ class Site(Base):
     __tablename__ = "sites"
 
     id = Column(Integer, primary_key=True)
-    uuid = Column(GUID(), default=uuid4, unique=True, nullable=False, index=True)
+    uuid = Column(UUID(as_uuid=False), default=uuid4, unique=True, nullable=False, index=True)
     version = Column(Integer, default=1, nullable=False)
     conflict_data = Column(JSON, nullable=True)
     sync_state = Column(JSON, nullable=True)
     name = Column(String, unique=True, nullable=False)
     description = Column(Text, nullable=True)
     created_by_id = Column(Integer, ForeignKey("users.id"), nullable=True)
-    updated_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
-    deleted_at = Column(DateTime(timezone=True), nullable=True)
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    updated_at = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
+    deleted_at = Column(TIMESTAMP(timezone=False), nullable=True)
+    created_at = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
 
     created_by = relationship("User")
     devices = relationship("Device", back_populates="site")
@@ -58,7 +56,7 @@ class ConfigBackup(Base):
 
     id = Column(Integer, primary_key=True)
     device_id = Column(Integer, ForeignKey("devices.id"), nullable=False)
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    created_at = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
     config_text = Column(Text, nullable=False)
     source = Column(String, nullable=False)
     queued = Column(Boolean, default=False)
@@ -82,7 +80,7 @@ class User(Base):
     )
 
     id = Column(Integer, primary_key=True)
-    uuid = Column(GUID(), default=uuid4, unique=True, nullable=False, index=True)
+    uuid = Column(UUID(as_uuid=False), default=uuid4, unique=True, nullable=False, index=True)
     cloud_user_id = Column(String, nullable=True)
     version = Column(Integer, default=1, nullable=False)
     conflict_data = Column(JSON, nullable=True)
@@ -104,12 +102,12 @@ class User(Base):
     ssh_username = Column(String, nullable=True)
     ssh_password = Column(String, nullable=True)
     ssh_port = Column(Integer, nullable=True, default=22)
-    updated_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
-    deleted_at = Column(DateTime(timezone=True), nullable=True)
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
-    last_login = Column(DateTime(timezone=True), nullable=True)
-    last_location_lat = Column(Float, nullable=True)
-    last_location_lon = Column(Float, nullable=True)
+    updated_at = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
+    deleted_at = Column(TIMESTAMP(timezone=False), nullable=True)
+    created_at = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
+    last_login = Column(TIMESTAMP(timezone=False), nullable=True)
+    last_location_lat = Column(DOUBLE_PRECISION, nullable=True)
+    last_location_lon = Column(DOUBLE_PRECISION, nullable=True)
 
     site_memberships = relationship("SiteMembership", back_populates="user")
 
@@ -123,7 +121,7 @@ class UserSSHCredential(Base):
     username = Column(String, nullable=False)
     password = Column(String, nullable=True)
     private_key = Column(Text, nullable=True)
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    created_at = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
 
     user = relationship("User")
 
@@ -156,7 +154,7 @@ class AuditLog(Base):
         ForeignKey("devices.id", ondelete="SET NULL"),
         nullable=True,
     )
-    timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    timestamp = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
     details = Column(Text, nullable=True)
 
     user = relationship("User")
@@ -169,7 +167,7 @@ class BannedIP(Base):
     id = Column(Integer, primary_key=True)
     ip_address = Column(String, unique=True, nullable=False)
     ban_reason = Column(String, nullable=False)
-    banned_until = Column(DateTime(timezone=True), nullable=False)
+    banned_until = Column(TIMESTAMP(timezone=False), nullable=False)
     attempt_count = Column(Integer, default=0)
 
 
@@ -180,7 +178,7 @@ class LoginEvent(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     ip_address = Column(String, nullable=False)
     user_agent = Column(String, nullable=True)
-    timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    timestamp = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
     success = Column(Boolean, default=False)
     location = Column(String, nullable=True)
 
@@ -194,7 +192,7 @@ class EmailLog(Base):
 
     id = Column(Integer, primary_key=True)
     site_id = Column(Integer, ForeignKey("sites.id"), nullable=False)
-    date_sent = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    date_sent = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
     recipient_count = Column(Integer, nullable=False)
     success = Column(Boolean, default=True)
     details = Column(Text, nullable=True)
@@ -206,7 +204,7 @@ class SNMPTrapLog(Base):
     __tablename__ = "snmp_trap_logs"
 
     id = Column(Integer, primary_key=True)
-    timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    timestamp = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
     source_ip = Column(String, nullable=False)
     trap_oid = Column(String, nullable=True)
     message = Column(Text, nullable=True)
@@ -221,7 +219,7 @@ class SyslogEntry(Base):
     __tablename__ = "syslog_entries"
 
     id = Column(Integer, primary_key=True)
-    timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    timestamp = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
     device_id = Column(Integer, ForeignKey("devices.id"), nullable=True)
     site_id = Column(Integer, ForeignKey("sites.id"), nullable=True)
     source_ip = Column(String, nullable=False)
@@ -287,7 +285,7 @@ class ImportLog(Base):
 
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    timestamp = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
     file_name = Column(String, nullable=False)
     device_count = Column(Integer, default=0)
     site_id = Column(Integer, ForeignKey("sites.id"), nullable=True)
@@ -307,8 +305,8 @@ class SiteKey(Base):
     site_id = Column(String, unique=True, nullable=False)
     site_name = Column(String, nullable=False)
     api_key = Column(String, nullable=False)
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
-    last_used_at = Column(DateTime(timezone=True), nullable=True)
+    created_at = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
+    last_used_at = Column(TIMESTAMP(timezone=False), nullable=True)
     active = Column(Boolean, default=True)
 
 
@@ -323,7 +321,7 @@ class CustomColumn(Base):
     data_type = Column(String, nullable=False)
     default_value = Column(String, nullable=True)
     user_visible = Column(Boolean, default=True)
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    created_at = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
 
 
 class SystemMetric(Base):
@@ -332,7 +330,7 @@ class SystemMetric(Base):
     __tablename__ = "system_metrics"
 
     id = Column(Integer, primary_key=True)
-    timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    timestamp = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
     data = Column(JSON, nullable=False)
 
 
@@ -345,7 +343,7 @@ class SyncLog(Base):
     action = Column(String, nullable=False)
     origin = Column(String, nullable=False)
     target = Column(String, nullable=False)
-    timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    timestamp = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
     user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
 
 
@@ -359,7 +357,7 @@ class ConflictLog(Base):
     cloud_version = Column(Integer, nullable=False)
     resolved_version = Column(Integer, nullable=False)
     resolution_time = Column(
-        DateTime(timezone=True), default=datetime.now(timezone.utc)
+        TIMESTAMP(timezone=False), default=datetime.now(timezone.utc)
     )
 
 
@@ -370,7 +368,7 @@ class DuplicateResolutionLog(Base):
     model_name = Column(String, nullable=False)
     kept_id = Column(Integer, nullable=False)
     removed_id = Column(Integer, nullable=False)
-    timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    timestamp = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
 
 
 class DeletionLog(Base):
@@ -380,7 +378,7 @@ class DeletionLog(Base):
     record_id = Column(Integer, nullable=False)
     model_name = Column(String, nullable=False)
     deleted_by = Column(Integer, ForeignKey("users.id"), nullable=True)
-    deleted_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    deleted_at = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
     origin = Column(String, nullable=True)
 
 
@@ -392,7 +390,7 @@ class SyncIssue(Base):
     field_name = Column(String, nullable=False)
     issue_type = Column(String, nullable=False)
     instance = Column(String, nullable=False)
-    timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    timestamp = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
 
 
 class SyncError(Base):
@@ -403,14 +401,14 @@ class SyncError(Base):
     action = Column(String, nullable=False)
     error_trace = Column(Text, nullable=False)
     error_hash = Column(String, unique=True, nullable=False)
-    timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    timestamp = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
 
 
 class BootError(Base):
     __tablename__ = "boot_errors"
 
     id = Column(Integer, primary_key=True)
-    timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    timestamp = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
     error_message = Column(String, nullable=False)
     traceback = Column(Text, nullable=False)
     instance_type = Column(String, nullable=False)
@@ -425,7 +423,7 @@ class DBError(Base):
     error_message = Column(String, nullable=False)
     traceback = Column(Text, nullable=False)
     user = Column(String, nullable=True)
-    timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    timestamp = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
 
 
 class ManualSQLError(Base):
@@ -435,7 +433,7 @@ class ManualSQLError(Base):
     statement = Column(Text, nullable=False)
     error_message = Column(String, nullable=False)
     traceback = Column(Text, nullable=False)
-    timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    timestamp = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
 
 
 class SchemaValidationIssue(Base):
@@ -447,7 +445,7 @@ class SchemaValidationIssue(Base):
     expected_type = Column(String, nullable=True)
     actual_type = Column(String, nullable=True)
     issue_type = Column(String, nullable=False)
-    timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    timestamp = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
 
 
 class SchemaVersion(Base):
@@ -455,7 +453,7 @@ class SchemaVersion(Base):
 
     id = Column(Integer, primary_key=True)
     alembic_revision_id = Column(String, nullable=False)
-    updated_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    updated_at = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
     instance_type = Column(String, nullable=False)
 
 
@@ -463,7 +461,7 @@ class SchemaReset(Base):
     __tablename__ = "schema_resets"
 
     id = Column(Integer, primary_key=True)
-    timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    timestamp = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
     reason = Column(String, nullable=False)
 
 
@@ -473,7 +471,7 @@ class LocalRecoveryEvent(Base):
     __tablename__ = "local_recovery_events"
 
     id = Column(Integer, primary_key=True)
-    timestamp = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    timestamp = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
     success = Column(Boolean, nullable=False)
     num_records = Column(Integer, nullable=False)
     filename = Column(String, nullable=False)
