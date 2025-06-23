@@ -10,6 +10,11 @@ try:
 except ImportError:
     questionary = None
 
+if not os.environ.get("VIRTUAL_ENV"):
+    print("\N{cross mark} ERROR: Please activate the virtualenv before running installer.py")
+    print("\N{electric light bulb} Run: source venv/bin/activate && python installer.py")
+    sys.exit(1)
+
 
 ENV_TEMPLATE = """ROLE={mode}
 DATABASE_URL={db_url}
@@ -113,7 +118,7 @@ def create_pg_database(name: str, owner: str) -> None:
 def pip_supports_break_system_packages() -> bool:
     """Return True if pip recognizes the --break-system-packages option."""
     result = subprocess.run(
-        ["pip3", "install", "--help"], capture_output=True, text=True
+        ["venv/bin/pip", "install", "--help"], capture_output=True, text=True
     )
     return "--break-system-packages" in result.stdout
 
@@ -186,7 +191,7 @@ def install():
     if questionary is None:
         run("apt-get update")
         run("apt-get install -y python3-pip")
-        run("pip3 install questionary")
+        run("venv/bin/pip install questionary")
         import questionary
 
     mode = questionary.select(
@@ -232,7 +237,7 @@ def install():
     run("curl -fsSL https://deb.nodesource.com/setup_20.x | bash -")
     run("apt-get install -y nodejs")
 
-    run("python3 -m venv venv")
+    run(f"{sys.executable} -m venv venv")
     run("venv/bin/pip install -r requirements.txt")
     run("npm install")
     run("npm run build:web")
@@ -257,9 +262,11 @@ def install():
             run("apt-get install -y certbot python3-certbot-nginx")
             # pyOpenSSL bundled with some distributions crashes against
             # OpenSSL 3.x. Upgrade it before invoking certbot.
-            pip_cmd = "pip3 install --upgrade pyOpenSSL"
+            pip_cmd = "venv/bin/pip install --upgrade pyOpenSSL"
             if pip_supports_break_system_packages():
-                pip_cmd = "pip3 install --break-system-packages --upgrade pyOpenSSL"
+                pip_cmd = (
+                    "venv/bin/pip install --break-system-packages --upgrade pyOpenSSL"
+                )
             run(pip_cmd)
             run(
                 f"certbot --nginx -d {domain} --non-interactive --agree-tos -m admin@{domain}"
@@ -409,7 +416,7 @@ def install():
     except KeyboardInterrupt:
         print("Start script interrupted; exiting installer")
 
-    print("Installation complete.")
+    print("Installation complete. Use the virtualenv for all future Python commands.")
 
 
 if __name__ == "__main__":

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+source "$(dirname "$0")/venv/bin/activate"
 # Start Gunicorn with Uvicorn workers for production
 set -e
 
