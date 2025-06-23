@@ -1,5 +1,5 @@
 from installer import build_env_content
-from installer import run
+from installer import run, create_pg_user
 
 
 def test_build_env_content_handles_quotes():
@@ -62,3 +62,20 @@ def test_run_passes_env(monkeypatch):
     run('echo hi', env={'FOO': 'BAR'})
 
     assert captured['env'] == {'FOO': 'BAR'}
+
+
+def test_create_pg_user_handles_quotes(monkeypatch):
+    captured = {}
+
+    def fake_run(cmd, check=True):
+        captured['cmd'] = cmd
+
+    monkeypatch.setattr('installer.subprocess.run', fake_run)
+
+    create_pg_user('us"er', "pa's\"wd")
+
+    assert captured['cmd'][:5] == ['sudo', '-u', 'postgres', 'psql', '-c']
+    user_sql = 'us"er'.replace('"', '""')
+    pass_sql = "pa's\"wd".replace("'", "''")
+    expected = f"CREATE USER \"{user_sql}\" WITH PASSWORD '{pass_sql}';"
+    assert captured['cmd'][5] == expected
