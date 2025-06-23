@@ -10,11 +10,6 @@ try:
 except ImportError:
     questionary = None
 
-if not os.environ.get("VIRTUAL_ENV"):
-    print("\N{cross mark} ERROR: Please activate the virtualenv before running installer.py")
-    print("\N{electric light bulb} Run: source venv/bin/activate && python installer.py")
-    sys.exit(1)
-
 
 ENV_TEMPLATE = """ROLE={mode}
 DATABASE_URL={db_url}
@@ -422,7 +417,7 @@ def install():
     try:
         start_env = os.environ.copy()
         start_env["PATH"] = str(Path("venv/bin")) + os.pathsep + start_env.get("PATH", "")
-        run("./start.sh", env=start_env)
+        run("venv/bin/python start.sh", env=start_env)
     except KeyboardInterrupt:
         print("Start script interrupted; exiting installer")
 
@@ -432,4 +427,11 @@ def install():
 
 
 if __name__ == "__main__":
+    if not os.environ.get("VIRTUAL_ENV"):
+        if not Path("venv/bin/activate").exists():
+            run("apt-get update")
+            run("apt-get install -y python3-venv")
+            run(f"{sys.executable} -m venv venv")
+        print("🔁 Re-running installer inside virtualenv...")
+        os.execv("venv/bin/python", ["venv/bin/python", "installer.py"])
     install()
