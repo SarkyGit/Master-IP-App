@@ -1,13 +1,26 @@
 import os
 import sys
 from pathlib import Path
+import secrets
+from dotenv import load_dotenv
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import subprocess
 
-if not os.environ.get("SECRET_KEY"):
-    print("\u274c SECRET_KEY is not set in .env. Login sessions will fail.")
-    sys.exit(1)
+# Ensure a .env file exists before loading environment variables
+if not os.path.exists(".env"):
+    with open(".env", "w") as f:
+        pass
+
+load_dotenv()
+
+# Auto-generate a SECRET_KEY if missing and persist it to .env
+if not os.getenv("SECRET_KEY"):
+    generated_key = secrets.token_hex(32)
+    with open(".env", "a") as f:
+        f.write(f"\nSECRET_KEY={generated_key}\n")
+    os.environ["SECRET_KEY"] = generated_key
+    print("\ud83d\udd10 Generated new SECRET_KEY and added it to .env.")
 
 try:
     import questionary
