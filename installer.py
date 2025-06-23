@@ -144,7 +144,7 @@ def lookup_cloud_user(base_url: str, api_key: str, email: str) -> dict | None:
     """Return user data from the cloud if it exists."""
     import httpx
 
-    url = base_url.rstrip("/") + "/api/users/lookup"
+    url = base_url.rstrip("/") + "/api/v1/users/lookup"
     headers = {"Authorization": f"Bearer {api_key}"} if api_key else {}
     try:
         resp = httpx.get(
