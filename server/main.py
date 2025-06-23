@@ -66,6 +66,7 @@ from server.routes import (
     api_vlans_router,
     api_ssh_credentials_router,
     api_system_router,
+    api_user_api_keys_router,
 )
 from modules import load_modules
 from server.routes.api.sync import router as api_sync_router
@@ -327,6 +328,7 @@ app.include_router(org_settings_router.router)
 app.include_router(help_router)
 app.include_router(system_monitor_router)
 app.include_router(api_system_router)
+app.include_router(api_user_api_keys_router)
 
 
 @app.exception_handler(HTTPException)

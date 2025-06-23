@@ -93,6 +93,7 @@ class DummyDB:
             models.SSHCredential: [
                 models.SSHCredential(id=1, name="main", username="root", password="pw", version=1),
             ],
+            models.UserAPIKey: [],
         }
 
     def query(self, model):

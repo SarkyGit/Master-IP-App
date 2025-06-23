@@ -310,6 +310,21 @@ class SiteKey(Base):
     active = Column(Boolean, default=True)
 
 
+class UserAPIKey(Base):
+    """API key linked to an individual user."""
+
+    __tablename__ = "user_api_keys"
+
+    id = Column(UUID(as_uuid=False), primary_key=True, default=uuid4)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    key = Column(String, unique=True, index=True, nullable=False)
+    status = Column(String, nullable=False, default="active")
+    created_at = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
+    last_used_at = Column(TIMESTAMP(timezone=False), nullable=True)
+
+    user = relationship("User")
+
+
 class CustomColumn(Base):
     """Metadata for columns added at runtime."""
 

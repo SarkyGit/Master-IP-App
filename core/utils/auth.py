@@ -1,11 +1,12 @@
 import bcrypt
 from typing import Optional, Callable
+from datetime import datetime, timezone
 
 from fastapi import Request, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from core.utils.db_session import get_db
-from core.models.models import User, Site, SiteMembership
+from core.models.models import User, Site, SiteMembership, UserAPIKey
 from core.auth import verify_token
 
 
@@ -37,6 +38,19 @@ def get_current_user(request: Request, db: Session = Depends(get_db)) -> Optiona
     if auth_header and auth_header.lower().startswith("bearer "):
         token = auth_header.split(" ", 1)[1]
         user_id = verify_token(token)
+        if not user_id:
+            entry = (
+                db.query(UserAPIKey)
+                .filter(UserAPIKey.key == token, UserAPIKey.status == "active")
+                .first()
+            )
+            if entry:
+                entry.last_used_at = datetime.now(timezone.utc)
+                try:
+                    db.commit()
+                except Exception:
+                    db.rollback()
+                return db.query(User).filter_by(id=entry.user_id, is_active=True).first()
     if not user_id:
         user_id = request.session.get("user_id")
     if not user_id:

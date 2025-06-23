@@ -112,6 +112,50 @@
   </div>
 </div>
 {% endif %}
+{% if current_user.id == user.id %}
+<div class="mt-6 w-full">
+  <h2 class="text-lg mb-2">Personal API Access</h2>
+  {% if new_api_key %}
+  <div class="p-2 mb-2 rounded bg-[var(--alert-bg)] flex justify-between items-center">
+    <code class="font-mono break-all">{{ new_api_key }}</code>
+    <button type="button" class="btn ml-2" onclick="navigator.clipboard.writeText('{{ new_api_key }}')">Copy</button>
+  </div>
+  {% endif %}
+  <form method="post" action="/users/me/api-keys/new" class="mb-4">
+    <button type="submit" class="btn">Generate New Key</button>
+  </form>
+  <div class="w-full overflow-auto">
+    <table class="min-w-full table-fixed text-left">
+      <thead>
+        <tr>
+          <th class="px-4 py-2 text-left">Key</th>
+          <th class="px-4 py-2 text-left">Status</th>
+          <th class="px-4 py-2 text-left">Created At</th>
+          <th class="px-4 py-2 text-left">Last Used</th>
+          <th style="width: 80px; min-width: 80px; max-width: 80px;"></th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for k in api_keys %}
+        <tr class="border-t border-gray-700">
+          <td class="px-4 py-2 font-mono break-all">{{ k.key[:8] }}...</td>
+          <td class="px-4 py-2">{{ k.status }}</td>
+          <td class="px-4 py-2">{{ k.created_at }}</td>
+          <td class="px-4 py-2">{{ k.last_used_at or 'never' }}</td>
+          <td class="px-4 py-2 text-center" style="width: 80px; min-width: 80px; max-width: 80px;">
+            <form method="post" action="/users/me/api-keys/{{ k.id }}/delete" style="display:inline;">
+              <button type="submit" class="icon-btn" title="Revoke" onclick="return confirm('Revoke key?')">
+                {{ include_icon('trash-2','text-red-500','1.5') }}
+              </button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
 {% endblock %}
 
 {% block extra_scripts %}
