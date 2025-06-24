@@ -2,6 +2,39 @@ import subprocess
 import sys
 import os
 
+# Step 1: Ensure pip is available
+try:
+    subprocess.run([sys.executable, "-m", "pip", "--version"], check=True, stdout=subprocess.DEVNULL)
+except subprocess.CalledProcessError:
+    try:
+        import ensurepip
+        print("pip not found. Bootstrapping...")
+        ensurepip.bootstrap()
+    except Exception as e:
+        print(f"❌ Failed to install pip: {e}")
+        sys.exit(1)
+
+# Step 2: Ensure critical Python packages are installed globally
+REQUIRED_MODULES = ["sqlalchemy", "psycopg2", "dotenv", "questionary"]
+
+missing = []
+for mod in REQUIRED_MODULES:
+    try:
+        __import__(mod)
+    except ImportError:
+        missing.append(mod)
+
+if missing:
+    try:
+        print(f"Installing missing Python modules: {', '.join(missing)}")
+    except UnicodeEncodeError:
+        print("Installing missing Python modules...")
+
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "--upgrade", "pip"])
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"])
+    print("✅ Python dependencies installed. Re-running installer...")
+    os.execv(sys.executable, [sys.executable] + sys.argv)
+
 
 def _pip_available() -> bool:
     """Return True if pip is installed."""
@@ -414,11 +447,7 @@ def install():
             run("apt-get install -y certbot python3-certbot-nginx")
             # pyOpenSSL bundled with some distributions crashes against
             # OpenSSL 3.x. Upgrade it before invoking certbot.
-            pip_cmd = "venv/bin/pip install --upgrade pyOpenSSL"
-            if pip_supports_break_system_packages():
-                pip_cmd = (
-                    "venv/bin/pip install --break-system-packages --upgrade pyOpenSSL"
-                )
+            pip_cmd = "python3 -m pip install --upgrade pyOpenSSL"
             run(pip_cmd)
             run(
                 f"certbot --nginx -d {domain} --non-interactive --agree-tos -m admin@{domain}"
