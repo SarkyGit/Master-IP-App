@@ -646,32 +646,37 @@ def install():
         SessionLocal.configure(bind=engine)
         session = SessionLocal()
 
+        active_site = None
         try:
             existing = session.query(User).filter_by(email=admin_email).first()
+            active_site = session.query(Site).first()
+
             if existing:
                 print("Admin user already exists. Skipping creation.")
-                return
-
-            new_user = User(
-                email=admin_email,
-                hashed_password=hashed_pw,
-                role="superadmin",
-                cloud_user_id=cloud_user_id if from_cloud else None,
-            )
-            try:
-                session.add(new_user)
-                session.flush()
-                session.commit()
-            except Exception:
-                session.rollback()
-            active_site = session.query(Site).first()
-            if active_site:
+            else:
+                new_user = User(
+                    email=admin_email,
+                    hashed_password=hashed_pw,
+                    role="superadmin",
+                    cloud_user_id=cloud_user_id if from_cloud else None,
+                )
                 try:
-                    session.add(SiteMembership(user_id=new_user.id, site_id=active_site.id))
+                    session.add(new_user)
                     session.flush()
                     session.commit()
                 except Exception:
                     session.rollback()
+
+                if active_site:
+                    try:
+                        session.add(
+                            SiteMembership(user_id=new_user.id, site_id=active_site.id)
+                        )
+                        session.flush()
+                        session.commit()
+                    except Exception:
+                        session.rollback()
+
         finally:
             session.close()
 
