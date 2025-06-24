@@ -693,19 +693,19 @@ def install():
                 api_key=cloud_api_key,
                 local_site_id=active_site.id,
             )
-            print("\u2705 Cloud sync complete.")
+            print("✅ Cloud sync complete.")
         except Exception as e:
-            print(f"\u26a0\ufe0f Cloud sync failed: {e}")
+            print(f"⚠️ Cloud sync failed: {e}")
             print("Installer will continue without cloud data.")
 
+    # Optionally start the app (comment this out if not desired)
     try:
-        start_env = os.environ.copy()
-        start_env["PATH"] = (
-            str(Path("venv/bin")) + os.pathsep + start_env.get("PATH", "")
+        print("🚀 Starting app server...")
+        subprocess.run(
+            ["uvicorn", "server.main:app", "--host", "0.0.0.0", "--port", "8000"]
         )
-        run("bash run_app.sh", env=start_env)
-    except KeyboardInterrupt:
-        print("Start script interrupted; exiting installer")
+    except Exception as e:
+        print(f"⚠️ Failed to start app server: {e}")
 
     print(
         "Installation complete. The virtual environment is fully self-contained and can run on a fresh system without preinstalled Python packages."
