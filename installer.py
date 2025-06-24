@@ -12,11 +12,13 @@ for mod in REQUIRED_MODULES:
         missing.append(mod)
 
 if missing:
-    print(f"\ud83d\udce6 Installing missing Python modules: {', '.join(missing)}")
-    subprocess.check_call(
-        [sys.executable, "-m", "pip", "install", "-r", "requirements.txt"]
-    )
-    print("\u2705 Dependencies installed. Re-running installer...")
+    try:
+        print(f"📦 Installing missing Python modules: {', '.join(missing)}")
+    except UnicodeEncodeError:
+        print(f"Installing missing Python modules: {', '.join(missing)}")
+
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"])
+    print("✅ Dependencies installed. Re-running installer...")
     os.execv(sys.executable, [sys.executable] + sys.argv)
 
 from pathlib import Path
