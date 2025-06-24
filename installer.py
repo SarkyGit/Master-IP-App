@@ -690,14 +690,11 @@ def install():
 
     if sync_enabled:
         print("🔄 Syncing from cloud...")
-        from core.sync.client import sync_pull_all
-
         try:
-            sync_pull_all(
-                base_url=cloud_url,
-                api_key=cloud_api_key,
-                local_site_id=active_site.id,
-            )
+            import asyncio
+            from server.workers import cloud_sync
+
+            asyncio.run(cloud_sync.run_sync_once())
             print("✅ Cloud sync complete.")
         except Exception as e:
             print(f"⚠️ Cloud sync failed: {e}")
