@@ -2,6 +2,21 @@ import subprocess
 import sys
 import os
 
+# Step 0: Fix broken Python installs missing pip and ensurepip
+def fix_python_runtime():
+    try:
+        subprocess.run(["python3", "-m", "pip", "--version"], check=True, stdout=subprocess.DEVNULL)
+    except subprocess.CalledProcessError:
+        print("⚠️ pip not found. Attempting to install via apt...")
+        try:
+            subprocess.run(["apt", "update"], check=True)
+            subprocess.run(["apt", "install", "-y", "python3-pip", "python3-venv"], check=True)
+        except Exception as e:
+            print(f"❌ Failed to install pip/venv via apt: {e}")
+            sys.exit(1)
+
+fix_python_runtime()
+
 # Step 1: Ensure pip is available
 try:
     subprocess.run([sys.executable, "-m", "pip", "--version"], check=True, stdout=subprocess.DEVNULL)
