@@ -2,6 +2,21 @@ import subprocess
 import sys
 import os
 
+# Bootstrap pip if not available
+try:
+    subprocess.run([sys.executable, "-m", "pip", "--version"], check=True, stdout=subprocess.DEVNULL)
+except subprocess.CalledProcessError:
+    try:
+        import ensurepip
+        print("pip not found. Bootstrapping with ensurepip...")
+        ensurepip.bootstrap()
+    except Exception as e:
+        try:
+            print(f"❌ Failed to install pip: {e}")
+        except UnicodeEncodeError:
+            print(f"Failed to install pip: {e}")
+        sys.exit(1)
+
 REQUIRED_MODULES = ["sqlalchemy", "psycopg2", "dotenv", "questionary"]
 
 missing = []
