@@ -49,6 +49,7 @@ from .api.sync import router as api_sync_router
 from .api.register_site import router as register_site_router
 from .api.system import router as api_system_router
 from .api.user_api_keys import router as api_user_api_keys_router
+from .api.cloud import router as cloud_verify_router
 
 __all__ = [
     "auth_router",
@@ -102,4 +103,5 @@ __all__ = [
     "register_site_router",
     "api_system_router",
     "api_user_api_keys_router",
+    "cloud_verify_router",
 ]
