@@ -633,12 +633,15 @@ def install():
 
     if mode != "cloud":
         # create admin account using selected data
-        from core.utils.db_session import SessionLocal
+        from core.utils.db_session import engine, SessionLocal
         from core.models.models import User, Site, SiteMembership
 
+        # Ensure session is bound before use
+        SessionLocal.configure(bind=engine)
+        session = SessionLocal()
+
         try:
-            db = SessionLocal()
-            existing = db.query(User).filter_by(email=admin_email).first()
+            existing = session.query(User).filter_by(email=admin_email).first()
             if existing:
                 print("Admin user already exists. Skipping creation.")
                 return
@@ -650,21 +653,21 @@ def install():
                 cloud_user_id=cloud_user_id if from_cloud else None,
             )
             try:
-                db.add(new_user)
-                db.flush()
-                db.commit()
+                session.add(new_user)
+                session.flush()
+                session.commit()
             except Exception:
-                db.rollback()
-            active_site = db.query(Site).first()
+                session.rollback()
+            active_site = session.query(Site).first()
             if active_site:
                 try:
-                    db.add(SiteMembership(user_id=new_user.id, site_id=active_site.id))
-                    db.flush()
-                    db.commit()
+                    session.add(SiteMembership(user_id=new_user.id, site_id=active_site.id))
+                    session.flush()
+                    session.commit()
                 except Exception:
-                    db.rollback()
+                    session.rollback()
         finally:
-            db.close()
+            session.close()
 
     if not sync_enabled:
         try:
