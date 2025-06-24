@@ -13,7 +13,9 @@ for mod in REQUIRED_MODULES:
 
 if missing:
     print(f"\ud83d\udce6 Installing missing Python modules: {', '.join(missing)}")
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"])
+    subprocess.check_call(
+        [sys.executable, "-m", "pip", "install", "-r", "requirements.txt"]
+    )
     print("\u2705 Dependencies installed. Re-running installer...")
     os.execv(sys.executable, [sys.executable] + sys.argv)
 
@@ -200,61 +202,6 @@ def ensure_ipapp_user() -> None:
             encoding="utf-8",
         )
         os.chmod(sudoers, 0o440)
-
-
-def lookup_cloud_user(base_url: str, api_key: str, email: str) -> dict | None:
-    """Return user data from the cloud if it exists."""
-    import httpx
-
-    url = base_url.rstrip("/") + "/api/v1/users/lookup"
-    headers = {"Authorization": f"Bearer {api_key}"} if api_key else {}
-    try:
-        resp = httpx.get(
-            url,
-            params={"email": email},
-            headers=headers,
-            timeout=10,
-        )
-        if resp.status_code == 404:
-            return None
-        resp.raise_for_status()
-        data = resp.json()
-
-        # Log the result for debugging
-        print("🔍 Cloud user lookup response:", data)
-
-        # If unauthorized or malformed, abort early
-        if "detail" in data and "not authenticated" in str(data["detail"]).lower():
-            print("❌ API key is not authorized to look up users.")
-            return None
-
-        # If 'id' is missing, this is not a valid user record
-        if "id" not in data:
-            print("⚠️ Cloud response did not include a user ID; treating as not found.")
-            return None
-
-        return data
-    except Exception as exc:  # pragma: no cover - best effort
-        print(f"User lookup failed: {exc}")
-        return None
-
-
-def create_cloud_user(base_url: str, api_key: str, data: dict) -> dict | None:
-    """Create a user on the cloud server and return the result."""
-    import httpx
-
-    url = base_url.rstrip("/") + "/api/v1/users/"
-    headers = {"Authorization": f"Bearer {api_key}"}
-    try:
-        resp = httpx.post(url, json=data, headers=headers, timeout=10)
-        resp.raise_for_status()
-        result = resp.json()
-        if not result:
-            return None
-        return result
-    except Exception as exc:  # pragma: no cover - best effort
-        print(f"User creation failed: {exc}")
-        return None
 
 
 from sqlalchemy.orm import Session
@@ -489,10 +436,13 @@ def install():
                 cloud_api_key = ""
                 if not cloud_url:
                     break
-                cloud_api_key = questionary.text("Cloud API Key (optional)").ask().strip()
+                cloud_api_key = (
+                    questionary.text("Cloud API Key (optional)").ask().strip()
+                )
                 if not cloud_api_key:
                     break
                 import requests
+
                 try:
                     response = requests.get(
                         f"{cloud_url.rstrip('/')}/api/v1/users/me",
