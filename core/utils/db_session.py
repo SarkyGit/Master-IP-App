@@ -5,11 +5,13 @@ import os
 from core.utils.database import Base
 
 # Import models so that Base.metadata is aware of them before creating tables
-from core import models  # noqa: F401
+import core.models  # noqa: F401
 
 DATABASE_URL = os.environ.get("DATABASE_URL")
 if DATABASE_URL and not DATABASE_URL.startswith("postgresql"):
-    raise RuntimeError("Only PostgreSQL is supported. DATABASE_URL must begin with 'postgresql'.")
+    raise RuntimeError(
+        "Only PostgreSQL is supported. DATABASE_URL must begin with 'postgresql'."
+    )
 engine = create_engine(DATABASE_URL) if DATABASE_URL else None
 
 
@@ -58,7 +60,10 @@ class SafeSession(Session):
             import traceback
             from core.utils.schema import log_db_error
 
-            models = {obj.__class__.__name__ for obj in self.new.union(self.dirty).union(self.deleted)}
+            models = {
+                obj.__class__.__name__
+                for obj in self.new.union(self.dirty).union(self.deleted)
+            }
             log_db_error(
                 ",".join(sorted(models)) or "unknown",
                 "commit",
@@ -67,15 +72,21 @@ class SafeSession(Session):
                 getattr(self, "current_user", None),
             )
 
-_BaseSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine, class_=SafeSession)
 
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine, class_=SafeSession)
+_BaseSessionLocal = sessionmaker(
+    autocommit=False, autoflush=False, bind=engine, class_=SafeSession
+)
+
+SessionLocal = sessionmaker(
+    autocommit=False, autoflush=False, bind=engine, class_=SafeSession
+)
 
 # Import module models so all tables are registered before creation
 import modules.inventory.models  # noqa: F401
 import modules.network.models  # noqa: F401
 
 # Database schema managed exclusively via Alembic migrations
+
 
 @event.listens_for(Session, "do_orm_execute")
 def _filter_deleted(execute_state):
