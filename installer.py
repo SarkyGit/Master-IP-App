@@ -31,6 +31,9 @@ if missing:
         print("Installing missing Python modules...")
 
     subprocess.check_call([sys.executable, "-m", "pip", "install", "--upgrade", "pip"])
+    if not os.path.exists("requirements.txt"):
+        print("\u274c requirements.txt not found. Cannot proceed.")
+        sys.exit(1)
     subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"])
     print("✅ Python dependencies installed. Re-running installer...")
     os.execv(sys.executable, [sys.executable] + sys.argv)
@@ -110,6 +113,10 @@ if missing:
         print(f"📦 Installing missing Python modules: {', '.join(missing)}")
     except UnicodeEncodeError:
         print(f"Installing missing Python modules: {', '.join(missing)}")
+
+    if not os.path.exists("requirements.txt"):
+        print("\u274c requirements.txt not found. Cannot proceed.")
+        sys.exit(1)
 
     subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"])
     print("✅ Dependencies installed. Re-running installer...")
@@ -422,6 +429,9 @@ def install():
     run("apt-get install -y nodejs")
 
     run(f"{sys.executable} -m venv venv")
+    if not os.path.exists("requirements.txt"):
+        print("\u274c requirements.txt not found. Cannot proceed.")
+        sys.exit(1)
     run("venv/bin/pip install -r requirements.txt")
     reload_dotenv()
     run("npm install")
