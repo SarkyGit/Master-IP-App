@@ -560,10 +560,14 @@ def install():
                     break
                 import requests
 
+                headers = {
+                    "Authorization": f"Bearer {cloud_api_key}"
+                }
+
                 try:
                     response = requests.get(
-                        f"{cloud_url.rstrip('/')}/api/v1/users/me",
-                        headers={"Authorization": f"Bearer {cloud_api_key}"},
+                        f"{cloud_url.rstrip('/')}/api/cloud/verify",
+                        headers=headers,
                         timeout=10,
                     )
                     response.raise_for_status()
@@ -572,12 +576,9 @@ def install():
                         f"\u2705 Cloud API key validated. Connected as {cloud_user_email}."
                     )
                     break
-                except Exception as e:
+                except requests.exceptions.RequestException as e:
                     print(f"\u274c Invalid Cloud API Key: {e}")
-                    retry = questionary.confirm(
-                        "Retry cloud connection?", default=False
-                    ).ask()
-                    if not retry:
+                    if not questionary.confirm("Retry cloud connection?").ask():
                         print("Installer will continue without cloud sync.")
                         cloud_url = None
                         cloud_api_key = None
