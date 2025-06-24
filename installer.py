@@ -62,6 +62,7 @@ def _bootstrap_pip() -> None:
 
 _bootstrap_pip()
 
+
 REQUIRED_MODULES = ["sqlalchemy", "psycopg2", "dotenv", "questionary"]
 
 missing = []
