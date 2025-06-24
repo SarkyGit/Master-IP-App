@@ -482,31 +482,39 @@ def install():
     cloud_user_email = None
     if mode == "local":
         if interactive:
-            cloud_url = questionary.text("Cloud base URL (optional)").ask().strip()
+            cloud_url = ""
             cloud_api_key = ""
-            if cloud_url:
-                cloud_api_key = (
-                    questionary.text("Cloud API Key (optional)").ask().strip()
-                )
-
-            if cloud_url and cloud_api_key:
+            while True:
+                cloud_url = questionary.text("Cloud base URL (optional)").ask().strip()
+                cloud_api_key = ""
+                if not cloud_url:
+                    break
+                cloud_api_key = questionary.text("Cloud API Key (optional)").ask().strip()
+                if not cloud_api_key:
+                    break
                 import requests
-
                 try:
                     response = requests.get(
                         f"{cloud_url.rstrip('/')}/api/v1/users/me",
                         headers={"Authorization": f"Bearer {cloud_api_key}"},
+                        timeout=10,
                     )
                     response.raise_for_status()
                     cloud_user_email = response.json().get("email")
                     print(
                         f"\u2705 Cloud API key validated. Connected as {cloud_user_email}."
                     )
+                    break
                 except Exception as e:
                     print(f"\u274c Invalid Cloud API Key: {e}")
-                    print("Installer will continue without cloud sync.")
-                    cloud_url = None
-                    cloud_api_key = None
+                    retry = questionary.confirm(
+                        "Retry cloud connection?", default=False
+                    ).ask()
+                    if not retry:
+                        print("Installer will continue without cloud sync.")
+                        cloud_url = None
+                        cloud_api_key = None
+                        break
 
             sync_enabled = bool(cloud_user_email and cloud_api_key)
 
