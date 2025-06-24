@@ -2,6 +2,11 @@ import subprocess
 import sys
 import os
 
+# Add project root to sys.path if not already there
+app_root = os.path.dirname(os.path.abspath(__file__))
+if app_root not in sys.path:
+    sys.path.insert(0, app_root)
+
 # Step 0: Fix broken Python installs missing pip and ensurepip
 def fix_python_runtime():
     try:
@@ -145,7 +150,8 @@ try:
 except ImportError:  # pragma: no cover - environment may lack dependency
     load_dotenv = None
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+if str(Path(__file__).resolve().parent) not in sys.path:
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 # -- Environment setup -----------------------------------------------------
 if not os.path.exists(".env"):
