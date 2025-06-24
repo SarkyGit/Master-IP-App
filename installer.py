@@ -2,6 +2,66 @@ import subprocess
 import sys
 import os
 
+
+def _pip_available() -> bool:
+    """Return True if pip is installed."""
+    return (
+        subprocess.run(
+            [sys.executable, "-m", "pip", "--version"],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        ).returncode
+        == 0
+    )
+
+
+def _bootstrap_pip() -> None:
+    """Ensure pip is installed via ensurepip or apt-get."""
+    if _pip_available():
+        return
+
+    try:
+        import ensurepip
+
+        try:
+            print("pip not found. Bootstrapping with ensurepip...")
+        except UnicodeEncodeError:
+            print("pip not found. Bootstrapping with ensurepip...")
+        ensurepip.bootstrap()
+        if _pip_available():
+            return
+    except Exception as e:
+        try:
+            print(f"ensurepip failed: {e}")
+        except UnicodeEncodeError:
+            print("ensurepip failed.")
+
+    if os.geteuid() == 0:
+        try:
+            print("Attempting to install pip via apt-get...")
+        except UnicodeEncodeError:
+            print("Installing pip via apt-get...")
+        try:
+            subprocess.check_call(["apt-get", "update"])
+            subprocess.check_call(["apt-get", "install", "-y", "python3-pip"])
+            if _pip_available():
+                return
+        except Exception as apt_exc:
+            try:
+                print(f"Failed to install pip via apt-get: {apt_exc}")
+            except UnicodeEncodeError:
+                print("Failed to install pip via apt-get.")
+    else:
+        try:
+            print("pip is required. Please install pip and re-run the installer.")
+        except UnicodeEncodeError:
+            print("pip missing. Please install manually.")
+
+    sys.exit(1)
+
+
+_bootstrap_pip()
+
 REQUIRED_MODULES = ["sqlalchemy", "psycopg2", "dotenv", "questionary"]
 
 missing = []
