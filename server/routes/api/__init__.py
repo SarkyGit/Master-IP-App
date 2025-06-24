@@ -6,6 +6,7 @@ from .ssh_credentials import router as ssh_credentials_router
 from .sync import router as sync_router
 from .check_in import router as check_in_router
 from .system import router as system_metrics_router
+from .cloud import router as cloud_verify_router
 
 __all__ = [
     "api_router",
@@ -16,4 +17,5 @@ __all__ = [
     "sync_router",
     "check_in_router",
     "system_metrics_router",
+    "cloud_verify_router",
 ]
