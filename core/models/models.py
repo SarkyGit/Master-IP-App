@@ -32,7 +32,12 @@ class Site(Base):
     name = Column(String, unique=True, nullable=False)
     description = Column(Text, nullable=True)
     created_by_id = Column(Integer, ForeignKey("users.id"), nullable=True)
-    updated_at = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
+    updated_at = Column(
+        TIMESTAMP(timezone=False),
+        default=datetime.now(timezone.utc),
+        onupdate=datetime.now(timezone.utc),
+        nullable=False,
+    )
     deleted_at = Column(TIMESTAMP(timezone=False), nullable=True)
     created_at = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
 
@@ -103,7 +108,12 @@ class User(Base):
     ssh_username = Column(String, nullable=True)
     ssh_password = Column(String, nullable=True)
     ssh_port = Column(Integer, nullable=True, default=22)
-    updated_at = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
+    updated_at = Column(
+        TIMESTAMP(timezone=False),
+        default=datetime.now(timezone.utc),
+        onupdate=datetime.now(timezone.utc),
+        nullable=False,
+    )
     deleted_at = Column(TIMESTAMP(timezone=False), nullable=True)
     created_at = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
     last_login = Column(TIMESTAMP(timezone=False), nullable=True)
