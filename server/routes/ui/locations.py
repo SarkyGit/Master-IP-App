@@ -5,7 +5,9 @@ from sqlalchemy.orm import Session
 from core.utils.db_session import get_db
 from core.utils.auth import require_role
 from core.utils.templates import templates
-from modules.inventory.models import Location, Site
+# Site model lives in the core models package
+from modules.inventory.models import Location
+from core.models.models import Site
 from core.utils.deletion import soft_delete
 
 LOCATION_TYPES = ["Fixed", "Remote", "Mobile"]
