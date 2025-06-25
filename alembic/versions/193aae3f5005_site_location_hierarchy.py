@@ -36,6 +36,8 @@ def upgrade() -> None:
         "UPDATE devices SET site_id = 100 WHERE site_id IS NULL OR site_id NOT IN (SELECT id FROM sites)"
     )
 
+    op.execute("UPDATE devices SET location_id = NULL WHERE site_id = 100")
+
     op.execute(
         "UPDATE locations SET site_id = (SELECT id FROM sites WHERE id <> 100 ORDER BY id LIMIT 1) WHERE site_id IS NULL"
     )
