@@ -111,10 +111,9 @@
     </div>
     <div class="flex flex-col flex-1 min-w-[280px]">
       <label for="site_id" class="mb-1 fw-bold block">Site</label>
-      <select id="site_id" name="site_id" class="form-select w-full">
-        <option value="">-- None --</option>
+      <select id="site_id" name="site_id" class="form-select w-full" required>
         {% for site in sites %}
-        <option value="{{ site.id }}" {% if device and device.site_id == site.id %}selected{% endif %}>{{ site.name }}</option>
+        <option value="{{ site.id }}" {% if device and device.site_id == site.id %}selected{% endif %}>{{ 'Unassigned' if site.id == 100 else site.name }}</option>
         {% endfor %}
       </select>
     </div>

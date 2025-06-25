@@ -47,21 +47,30 @@ def main():
             except Exception:
                 db.rollback()
 
-        # Seed default location
-        loc = db.query(Location).filter_by(name="Main Site").first()
-        if not loc:
-            loc = Location(name="Main Site", location_type="Fixed")
+        # Seed default sites
+        site = db.query(Site).filter_by(name="Main Site").first()
+        if not site:
+            site = Site(id=1, name="Main Site", description="Default site")
             try:
-                db.add(loc)
+                db.add(site)
+                db.commit()
+            except Exception:
+                db.rollback()
+        virtual = db.query(Site).filter_by(id=100).first()
+        if not virtual:
+            virtual = Site(id=100, name="Virtual Warehouse", description="System default")
+            try:
+                db.add(virtual)
                 db.commit()
             except Exception:
                 db.rollback()
 
-        site = db.query(Site).filter_by(name="Main Site").first()
-        if not site:
-            site = Site(name="Main Site", description="Default site")
+        # Seed default location
+        loc = db.query(Location).filter_by(name="Main Site").first()
+        if not loc:
+            loc = Location(name="Main Site", location_type="Fixed", site_id=site.id)
             try:
-                db.add(site)
+                db.add(loc)
                 db.commit()
             except Exception:
                 db.rollback()

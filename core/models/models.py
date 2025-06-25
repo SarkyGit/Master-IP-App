@@ -39,6 +39,7 @@ class Site(Base):
     created_by = relationship("User")
     devices = relationship("Device", back_populates="site")
     memberships = relationship("SiteMembership", back_populates="site")
+    locations = relationship("Location", back_populates="site")
 
 
 class SiteMembership(Base):

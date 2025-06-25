@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from core.utils.db_session import get_db
 from core.utils.auth import require_role
 from core.utils.templates import templates
-from modules.inventory.models import Location
+from modules.inventory.models import Location, Site
 from core.utils.deletion import soft_delete
 
 LOCATION_TYPES = ["Fixed", "Remote", "Mobile"]
@@ -23,13 +23,19 @@ async def list_locations(request: Request, db: Session = Depends(get_db), curren
     return templates.TemplateResponse("location_list.html", context)
 
 @router.get("/admin/locations/new")
-async def new_location_form(request: Request, current_user=Depends(require_role("superadmin"))):
+async def new_location_form(
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("superadmin")),
+):
+    sites = db.query(Site).filter(Site.id != 100).all()
     context = {
         "request": request,
         "location": None,
         "form_title": "New Location",
         "error": None,
         "location_types": LOCATION_TYPES,
+        "sites": sites,
         "current_user": current_user,
     }
     return templates.TemplateResponse("location_form.html", context)
@@ -39,6 +45,7 @@ async def create_location(
     request: Request,
     name: str = Form(...),
     location_type: str = Form(...),
+    site_id: int = Form(...),
     db: Session = Depends(get_db),
     current_user=Depends(require_role("superadmin")),
 ):
@@ -53,7 +60,18 @@ async def create_location(
             "current_user": current_user,
         }
         return templates.TemplateResponse("location_form.html", context)
-    loc = Location(name=name, location_type=location_type)
+    if site_id == 100:
+        context = {
+            "request": request,
+            "location": {"name": name, "location_type": location_type},
+            "form_title": "New Location",
+            "error": "Cannot assign location to Virtual Warehouse",
+            "location_types": LOCATION_TYPES,
+            "sites": db.query(Site).filter(Site.id != 100).all(),
+            "current_user": current_user,
+        }
+        return templates.TemplateResponse("location_form.html", context)
+    loc = Location(name=name, location_type=location_type, site_id=site_id)
     db.add(loc)
     db.commit()
     return RedirectResponse(url="/admin/locations", status_code=302)
@@ -63,12 +81,14 @@ async def edit_location_form(loc_id: int, request: Request, db: Session = Depend
     loc = db.query(Location).filter(Location.id == loc_id).first()
     if not loc:
         raise HTTPException(status_code=404, detail="Location not found")
+    sites = db.query(Site).filter(Site.id != 100).all()
     context = {
         "request": request,
         "location": loc,
         "form_title": "Edit Location",
         "error": None,
         "location_types": LOCATION_TYPES,
+        "sites": sites,
         "current_user": current_user,
     }
     return templates.TemplateResponse("location_form.html", context)
@@ -79,6 +99,7 @@ async def update_location(
     request: Request,
     name: str = Form(...),
     location_type: str = Form(...),
+    site_id: int = Form(...),
     db: Session = Depends(get_db),
     current_user=Depends(require_role("superadmin")),
 ):
@@ -98,8 +119,22 @@ async def update_location(
         loc.name = name
         loc.location_type = location_type
         return templates.TemplateResponse("location_form.html", context)
+    if site_id == 100:
+        context = {
+            "request": request,
+            "location": loc,
+            "form_title": "Edit Location",
+            "error": "Cannot assign location to Virtual Warehouse",
+            "location_types": LOCATION_TYPES,
+            "sites": db.query(Site).filter(Site.id != 100).all(),
+            "current_user": current_user,
+        }
+        loc.name = name
+        loc.location_type = location_type
+        return templates.TemplateResponse("location_form.html", context)
     loc.name = name
     loc.location_type = location_type
+    loc.site_id = site_id
     db.commit()
     return RedirectResponse(url="/admin/locations", status_code=302)
 

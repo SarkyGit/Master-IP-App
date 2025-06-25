@@ -10,6 +10,8 @@ from sqlalchemy import (
     Boolean,
     Table,
     JSON,
+    CheckConstraint,
+    select,
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID, TIMESTAMP, DOUBLE_PRECISION
@@ -20,6 +22,9 @@ from sqlalchemy import event
 
 class Location(Base):
     __tablename__ = "locations"
+    __table_args__ = (
+        CheckConstraint("site_id <> 100", name="ck_locations_not_virtual"),
+    )
 
     id = Column(Integer, primary_key=True)
     uuid = Column(UUID(as_uuid=False), default=uuid4, unique=True, nullable=False, index=True)
@@ -31,6 +36,10 @@ class Location(Base):
     updated_at = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
     deleted_at = Column(TIMESTAMP(timezone=False), nullable=True)
     created_at = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
+
+    site_id = Column(Integer, ForeignKey("sites.id"), nullable=False)
+
+    site = relationship("Site", back_populates="locations")
 
     devices = relationship("Device", back_populates="location_ref")
 
@@ -79,6 +88,12 @@ class Tag(Base):
 
 class Device(Base):
     __tablename__ = "devices"
+    __table_args__ = (
+        CheckConstraint(
+            "site_id != 100 OR location_id IS NULL",
+            name="ck_devices_virtual_no_location",
+        ),
+    )
 
     id = Column(Integer, primary_key=True)
     uuid = Column(UUID(as_uuid=False), default=uuid4, unique=True, nullable=False, index=True)
@@ -94,7 +109,7 @@ class Device(Base):
     serial_number = Column(String, nullable=True)
     device_type_id = Column(Integer, ForeignKey("device_types.id"), nullable=False)
     location_id = Column(Integer, ForeignKey("locations.id"), nullable=True)
-    site_id = Column(Integer, ForeignKey("sites.id"), nullable=True)
+    site_id = Column(Integer, ForeignKey("sites.id"), nullable=False, server_default="100")
     on_lasso = Column(Boolean, default=False)
     on_r1 = Column(Boolean, default=False)
     priority = Column(Boolean, default=False)
@@ -169,6 +184,24 @@ def _update_timestamp(mapper, connection, target) -> None:
     target.updated_at = datetime.now(timezone.utc)
 
 
+def _check_device_site(mapper, connection, target) -> None:
+    """Ensure location belongs to same site and virtual site has no location."""
+    if target.site_id == 100:
+        if target.location_id is not None:
+            raise ValueError("Devices in Virtual Warehouse cannot have a location")
+        return
+    if target.location_id is None:
+        return
+    loc_site_id = connection.execute(
+        select(Location.site_id).where(Location.id == target.location_id)
+    ).scalar_one_or_none()
+    if loc_site_id is None or loc_site_id != target.site_id:
+        raise ValueError("Device location must belong to the same site")
+
+
 for _model in (Device, DeviceType, Location, Tag):
     event.listen(_model, "before_update", _update_timestamp)
+
+event.listen(Device, "before_insert", _check_device_site)
+event.listen(Device, "before_update", _check_device_site)
 

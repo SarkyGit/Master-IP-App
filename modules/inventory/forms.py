@@ -30,6 +30,8 @@ class DeviceBase(BaseSchema):
     vlan_id: int | None = None
     manufacturer: str | None = None
     model: str | None = None
+    site_id: int
+    location_id: int | None = None
 
 
 class DeviceCreate(BaseModel):
@@ -38,6 +40,8 @@ class DeviceCreate(BaseModel):
     vlan_id: int | None = None
     manufacturer: str | None = None
     model: str | None = None
+    site_id: int
+    location_id: int | None = None
     version: int = Field(1, ge=1)
     conflict_data: list[ConflictEntry] | None = None
 
@@ -59,6 +63,8 @@ class DeviceUpdate(BaseModel):
     vlan_id: int | None = None
     manufacturer: str | None = None
     model: str | None = None
+    site_id: int | None = None
+    location_id: int | None = None
     version: int | None = Field(None, ge=1)
     conflict_data: list[ConflictEntry] | None = None
 
@@ -101,11 +107,13 @@ class DeviceTypeUpdate(BaseModel):
 class LocationBase(BaseSchema):
     name: str
     location_type: str = "Fixed"
+    site_id: int
 
 
 class LocationCreate(BaseModel):
     name: str
     location_type: str = "Fixed"
+    site_id: int
     version: int = Field(1, ge=1)
     conflict_data: list[ConflictEntry] | None = None
 
@@ -119,6 +127,7 @@ class LocationRead(LocationBase):
 class LocationUpdate(BaseModel):
     name: str | None = None
     location_type: str | None = None
+    site_id: int | None = None
     version: int | None = Field(None, ge=1)
     conflict_data: list[ConflictEntry] | None = None
 

@@ -160,7 +160,7 @@ def update_device_complete_tag(db: Session, device: Device, user: User | None = 
         device.manufacturer,
         device.serial_number,
         device.device_type_id,
-        device.location_id,
+        device.site_id,
         device.vlan_id,
         device.ssh_credential_id,
         device.snmp_community_id,
