@@ -60,6 +60,12 @@ window.monitor = function(){
       const ctxL = document.getElementById('loadChart');
       const ctxN = document.getElementById('netChart');
       const ctxD = document.getElementById('diskChart');
+      // destroy charts if already created (handles page re-inits)
+      if(this.cpuChart){this.cpuChart.destroy();}
+      if(this.memChart){this.memChart.destroy();}
+      if(this.loadChart){this.loadChart.destroy();}
+      if(this.netChart){this.netChart.destroy();}
+      if(this.diskChart){this.diskChart.destroy();}
       this.cpuChart = new Chart(ctxC,{type:'line',data:{labels:[],datasets:[]},options:{animation:false}});
       this.memChart = new Chart(ctxM,{type:'line',data:{labels:[],datasets:[{label:'% Used',data:[],borderColor:'#60a5fa'}]},options:{animation:false}});
       this.loadChart = new Chart(ctxL,{type:'bar',data:{labels:['1m','5m','15m'],datasets:[{label:'load',data:[],backgroundColor:'#fbbf24'}]},options:{animation:false}});
