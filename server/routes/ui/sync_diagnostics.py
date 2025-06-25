@@ -20,8 +20,19 @@ import httpx
 router = APIRouter()
 
 
+def _safe_query(logger: logging.Logger, default, func):
+    """Execute DB query safely with error logging."""
+    try:
+        return func()
+    except Exception as exc:  # pragma: no cover - best effort
+        logger.exception("Cloud sync query failed: %s", exc)
+        return default
+
+
 def _render_sync(request: Request, db: Session, current_user, message: str = ""):
-    tunables = {t.name: t.value for t in db.query(SystemTunable).all()}
+    log = logging.getLogger(__name__)
+    tun_list = _safe_query(log, [], lambda: db.query(SystemTunable).all())
+    tunables = {t.name: t.value for t in tun_list}
     def _fmt(name: str) -> str:
         val = tunables.get(name)
         if not val:
@@ -57,27 +68,33 @@ def _render_sync(request: Request, db: Session, current_user, message: str = "")
         except Exception:
             pass
 
-    history = (
-        db.query(AuditLog)
+    history = _safe_query(
+        log,
+        [],
+        lambda: db.query(AuditLog)
         .filter(AuditLog.action_type.in_(["key_auth_ok", "key_auth_fail"]))
         .order_by(AuditLog.timestamp.desc())
         .limit(20)
-        .all()
+        .all(),
     )
-    keys = db.query(SiteKey).order_by(SiteKey.created_at.desc()).all()
+    keys = _safe_query(
+        log, [], lambda: db.query(SiteKey).order_by(SiteKey.created_at.desc()).all()
+    )
 
     sites = []
     key_map: dict[str, list[SiteKey]] = {}
     name_map: dict[str, str] = {}
     role = "local"
     if settings.role == "cloud":
-        sites = db.query(ConnectedSite).order_by(ConnectedSite.site_id).all()
+        sites = _safe_query(
+            log, [], lambda: db.query(ConnectedSite).order_by(ConnectedSite.site_id).all()
+        )
         for k in keys:
             key_map.setdefault(k.site_id, []).append(k)
             name_map[k.site_id] = k.site_name
         role = "cloud"
 
-    groups = grouped_tunables(db)
+    groups = _safe_query(log, {}, lambda: grouped_tunables(db))
     sync_groups = groups.get("Sync", {})
 
     enabled = tunables.get("Enable Cloud Sync", "false").lower() in {"true", "1", "yes"}
