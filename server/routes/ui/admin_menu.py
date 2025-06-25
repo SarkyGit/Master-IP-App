@@ -20,7 +20,6 @@ async def super_admin_menu(
     items = [
         {"label": "My Profile", "href": "/users/me"},
         {"label": "Organisation Settings", "href": "/admin/org-settings", "category": "System"},
-        {"label": "System Monitor", "href": "/admin/system-monitor", "category": "System"},
         {"label": "Cloud Sync / API's", "href": "/admin/cloud-sync"},
     ]
     for item in items:
