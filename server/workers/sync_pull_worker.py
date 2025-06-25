@@ -29,6 +29,7 @@ from sqlalchemy import inspect
 from server.workers import sync_push_worker
 from core.utils.deletion import soft_delete
 from core.utils.serialization import to_jsonable
+from core.utils import timestamp
 
 
 def make_json_safe(val: Any) -> Any:
@@ -345,17 +346,18 @@ async def pull_once(log: logging.Logger) -> None:
                         continue
                     print(f"[⏩] No new records for '{model_name}' since {since}")
                     continue
-                _soft_delete(obj, 0, "cloud")
-                obj.deleted_at = remote_ts_dt
-                obj.updated_at = remote_ts_dt
-                obj.version = version
-                obj.sync_state = sync_push_worker._serialize(obj)
-                try:
-                    db.commit()
-                except Exception as exc:
-                    db.rollback()
-                    log_sync_error(model_name, "update", exc)
-                    continue
+                with timestamp.suspend_timestamp_updates([model_cls]):
+                    _soft_delete(obj, 0, "cloud")
+                    obj.deleted_at = remote_ts_dt
+                    obj.updated_at = remote_ts_dt
+                    obj.version = version
+                    obj.sync_state = sync_push_worker._serialize(obj)
+                    try:
+                        db.commit()
+                    except Exception as exc:
+                        db.rollback()
+                        log_sync_error(model_name, "update", exc)
+                        continue
                 continue
             if obj:
                 try:
