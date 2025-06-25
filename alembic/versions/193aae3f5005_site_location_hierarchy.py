@@ -29,8 +29,7 @@ def upgrade() -> None:
             "INSERT INTO sites (id, uuid, version, name, created_at, updated_at) "
             "VALUES (100, :uuid, 1, 'Virtual Warehouse', now(), now()) "
             "ON CONFLICT (id) DO NOTHING"
-        ),
-        {"uuid": str(uuid4())},
+        ).bindparams(uuid=str(uuid4()))
     )
 
     op.execute(
