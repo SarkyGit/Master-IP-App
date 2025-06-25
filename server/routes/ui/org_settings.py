@@ -6,7 +6,7 @@ from core.utils.auth import require_role
 from core.utils.templates import templates
 from core.utils.db_session import get_db
 from core.utils.paths import STATIC_DIR
-from core.models.models import User
+from core.models.models import User, Site
 from modules.inventory.models import Location, DeviceType
 from server.routes.ui.admin_images import MENU_LABELS, slugify
 
@@ -21,12 +21,14 @@ async def org_settings_page(
     logo_exists = os.path.exists(os.path.join(STATIC_DIR, "logo.png"))
     locations = db.query(Location).all()
     users = db.query(User).order_by(User.created_at.desc()).all()
+    sites = db.query(Site).all()
     context = {
         "request": request,
         "current_user": current_user,
         "logo_exists": logo_exists,
         "locations": locations,
         "users": users,
+        "sites": sites,
     }
     return templates.TemplateResponse("org_settings.html", context)
 
