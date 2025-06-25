@@ -213,19 +213,23 @@ async def push_once(log: logging.Logger) -> None:
             "POST", push_url, payload, log, site_id, api_key
         )
 
-        models_to_suspend = {
-            type(obj) for obj in pushed_objs if hasattr(obj, "sync_state")
-        }
-        with timestamp.suspend_timestamp_updates(models_to_suspend):
-            for obj in pushed_objs:
-                if hasattr(obj, "sync_state"):
-                    obj.sync_state = _serialize(obj)
-            try:
-                db.commit()
-            except Exception as exc:
-                db.rollback()
-                log_sync_error("push_commit", "update", exc)
-                raise
+        updated_models: set[type] = set()
+        for obj in pushed_objs:
+            if not hasattr(obj, "sync_state"):
+                continue
+            new_state = _serialize(obj)
+            if obj.sync_state != new_state:
+                obj.sync_state = new_state
+                updated_models.add(type(obj))
+
+        if updated_models:
+            with timestamp.suspend_timestamp_updates(updated_models):
+                try:
+                    db.commit()
+                except Exception as exc:
+                    db.rollback()
+                    log_sync_error("push_commit", "update", exc)
+                    raise
 
         conflicts = 0
         if isinstance(result, dict):
