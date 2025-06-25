@@ -16,6 +16,14 @@
         {% endfor %}
       </select>
     </div>
+    <div class="form-item space-y-2">
+      <label for="site_id" class="block">Site</label>
+      <select id="site_id" name="site_id" class="w-full p-2 rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)]" required>
+        {% for site in sites %}
+        <option value="{{ site.id }}" {% if location and location.site_id == site.id %}selected{% endif %}>{{ site.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
   </div>
   {% if error %}
   <p class="p-2 rounded bg-[var(--alert-bg)]">{{ error }}</p>

@@ -26,11 +26,12 @@ if not db.query(User).filter_by(username="codexuser").first():
         db.rollback()
 
 devtype = DeviceType(name="Test Type")
-location = Location(name="Test Location")
+site = Site(id=100, name="Virtual Warehouse")
+location = Location(name="Test Location", site_id=site.id)
 tag = Tag(name="codex")
 
 try:
-    db.add_all([devtype, location, tag])
+    db.add_all([devtype, site, location, tag])
     db.flush()
 except Exception:
     db.rollback()
@@ -42,6 +43,7 @@ device = Device(
     asset_tag="C-100",
     device_type_id=devtype.id,
     location_id=location.id,
+    site_id=site.id,
     tags=[tag],
 )
 
