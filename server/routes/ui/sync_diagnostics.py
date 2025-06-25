@@ -114,10 +114,11 @@ def _render_sync(request: Request, db: Session, current_user, message: str = "")
             )
             resp.raise_for_status()
             remote_rev = resp.json().get("revision")
-            if remote_rev and remote_rev != local_rev:
-                schema_mismatch = True
-        except Exception:
-            pass
+        except Exception as exc:  # pragma: no cover - best effort
+            log.warning("Failed to fetch remote schema: %s", exc)
+            remote_rev = None
+        if remote_rev and local_rev and remote_rev != local_rev:
+            schema_mismatch = True
 
     context = {
         "request": request,
