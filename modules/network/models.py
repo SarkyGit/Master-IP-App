@@ -27,7 +27,12 @@ class VLAN(Base):
     sync_state = Column(JSON, nullable=True)
     tag = Column(Integer, unique=True, nullable=False)
     description = Column(String, nullable=True)
-    updated_at = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
+    updated_at = Column(
+        TIMESTAMP(timezone=False),
+        default=datetime.now(timezone.utc),
+        onupdate=datetime.now(timezone.utc),
+        nullable=False,
+    )
     deleted_at = Column(TIMESTAMP(timezone=False), nullable=True)
     created_at = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
 
@@ -46,7 +51,12 @@ class SSHCredential(Base):
     username = Column(String, nullable=False)
     password = Column(String, nullable=True)
     private_key = Column(Text, nullable=True)
-    updated_at = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
+    updated_at = Column(
+        TIMESTAMP(timezone=False),
+        default=datetime.now(timezone.utc),
+        onupdate=datetime.now(timezone.utc),
+        nullable=False,
+    )
     deleted_at = Column(TIMESTAMP(timezone=False), nullable=True)
     created_at = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
 
@@ -64,7 +74,12 @@ class SNMPCommunity(Base):
     name = Column(String, unique=True, nullable=False)
     community_string = Column(String, nullable=False)
     snmp_version = Column(String, nullable=False)
-    updated_at = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
+    updated_at = Column(
+        TIMESTAMP(timezone=False),
+        default=datetime.now(timezone.utc),
+        onupdate=datetime.now(timezone.utc),
+        nullable=False,
+    )
     deleted_at = Column(TIMESTAMP(timezone=False), nullable=True)
     created_at = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
 

@@ -33,7 +33,12 @@ class Location(Base):
     sync_state = Column(JSON, nullable=True)
     name = Column(String, unique=True, nullable=False)
     location_type = Column(String, nullable=False, default="Fixed")
-    updated_at = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
+    updated_at = Column(
+        TIMESTAMP(timezone=False),
+        default=datetime.now(timezone.utc),
+        onupdate=datetime.now(timezone.utc),
+        nullable=False,
+    )
     deleted_at = Column(TIMESTAMP(timezone=False), nullable=True)
     created_at = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
 
@@ -55,7 +60,12 @@ class DeviceType(Base):
     name = Column(String, unique=True, nullable=False)
     upload_icon = Column(String, nullable=True)
     upload_image = Column(String, nullable=True)
-    updated_at = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
+    updated_at = Column(
+        TIMESTAMP(timezone=False),
+        default=datetime.now(timezone.utc),
+        onupdate=datetime.now(timezone.utc),
+        nullable=False,
+    )
     deleted_at = Column(TIMESTAMP(timezone=False), nullable=True)
     created_at = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
 
@@ -79,7 +89,12 @@ class Tag(Base):
     conflict_data = Column(JSON, nullable=True)
     sync_state = Column(JSON, nullable=True)
     name = Column(String, unique=True, nullable=False)
-    updated_at = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
+    updated_at = Column(
+        TIMESTAMP(timezone=False),
+        default=datetime.now(timezone.utc),
+        onupdate=datetime.now(timezone.utc),
+        nullable=False,
+    )
     deleted_at = Column(TIMESTAMP(timezone=False), nullable=True)
     created_at = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
 
@@ -119,7 +134,12 @@ class Device(Base):
     snmp_community_id = Column(Integer, ForeignKey("snmp_communities.id"))
     created_at = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
     created_by_id = Column(Integer, ForeignKey("users.id"), nullable=True)
-    updated_at = Column(TIMESTAMP(timezone=False), default=datetime.now(timezone.utc))
+    updated_at = Column(
+        TIMESTAMP(timezone=False),
+        default=datetime.now(timezone.utc),
+        onupdate=datetime.now(timezone.utc),
+        nullable=False,
+    )
     last_seen = Column(TIMESTAMP(timezone=False), nullable=True)
 
     uptime_seconds = Column(Integer, nullable=True)
