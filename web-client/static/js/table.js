@@ -169,7 +169,9 @@ function setupTablePrefs() {
     const tableId = `${pathId}_${idx}`
     table.dataset.tableId = tableId
     initResize(table, tableId)
-    insertCustomizeButton(table, tableId)
+    if (!table.dataset.manualCustomizeButton) {
+      insertCustomizeButton(table, tableId)
+    }
     loadPrefs(table, tableId)
   })
 }

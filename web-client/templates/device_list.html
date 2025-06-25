@@ -11,6 +11,7 @@
 <form method="post" action="{{ request.url_for('bulk_delete_devices') }}" x-data="tableControls()" id="device-table-form" class="space-y-2 full-width" data-bulk-delete-url="{{ request.url_for('bulk_delete_devices') }}" data-bulk-update-url="{{ request.url_for('bulk_update_devices') }}" style="display:inline;">
 <div class="flex justify-end items-center">
   <input x-model="search" type="text" placeholder="Search" class="rounded bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--border-color)] px-2 py-1" />
+  <button type="button" hx-get="/devices/column-prefs" hx-target="#modal" hx-swap="innerHTML" class="ml-2 px-2 py-1 bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] rounded">Customise Columns</button>
   {% if refresh_button is defined %}{{ refresh_button }}{% endif %}
 </div>
 <div class="flex justify-between items-center bg-[var(--card-bg)] px-2 py-1 rounded">
@@ -32,7 +33,7 @@
   <a href="" aria-label="Refresh">{{ include_icon('refresh-ccw','', '5') }}</a>
 </div>
 <div class="w-full overflow-auto">
-<table class="min-w-full table-fixed text-left border-collapse devices-table">
+<table class="min-w-full table-fixed text-left border-collapse devices-table" data-manual-customize-button="true">
   <thead>
     <tr>
       <th class="table-cell checkbox-col no-resize" style="width: 40px; min-width: 40px; max-width: 40px;"><input type="checkbox" id="select-all" @change="toggleAll($event.target.checked)"></th>
