@@ -34,7 +34,6 @@ def ensure_min_python() -> None:
                 "-y",
                 "python3.12",
                 "python3.12-venv",
-                "python3.12-distutils",
             ]
         )
     except Exception as exc:  # pragma: no cover - best effort
@@ -74,7 +73,6 @@ def fix_python_runtime():
                     "-y",
                     "python3-pip",
                     "python3-venv",
-                    "python3-distutils",
                 ],
                 check=True,
             )
@@ -82,12 +80,13 @@ def fix_python_runtime():
             print(f"❌ Failed to install pip/venv via apt: {e}")
             sys.exit(1)
 
-    # Ensure distutils for the running Python version is installed
+    # Ensure distutils module if available for this Python version
     try:
         import distutils  # noqa: F401
     except Exception:
-        pkg = f"python{sys.version_info.major}.{sys.version_info.minor}-distutils"
-        subprocess.run(["apt-get", "install", "-y", pkg])
+        if sys.version_info < (3, 12):
+            pkg = f"python{sys.version_info.major}.{sys.version_info.minor}-distutils"
+            subprocess.run(["apt-get", "install", "-y", pkg])
 
 fix_python_runtime()
 
@@ -488,7 +487,7 @@ def install():
     # Ensure the venv module is available before any pip or venv commands
     run("apt-get update")
     try:
-        run("apt-get install -y python3-venv python3-distutils")
+        run("apt-get install -y python3-venv")
     except subprocess.CalledProcessError:
         print(
             "\N{CROSS MARK} Failed to install python3-venv. This is required to create a virtual environment."
@@ -550,7 +549,7 @@ def install():
 
     run("apt-get update")
     run(
-        "apt-get install -y git python3 python3-venv python3-pip python3-distutils postgresql curl python-is-python3"
+        "apt-get install -y git python3 python3-venv python3-pip postgresql curl python-is-python3"
     )
     if install_nginx:
         run("apt-get install -y nginx")
@@ -843,7 +842,7 @@ if __name__ == "__main__":
     if not os.environ.get("VIRTUAL_ENV"):
         if not Path("venv/bin/activate").exists():
             run("apt-get update")
-            run("apt-get install -y python3-venv python3-distutils")
+            run("apt-get install -y python3-venv")
             run(f"{sys.executable} -m venv venv")
         print("🔁 Re-running installer inside virtualenv...")
         os.environ["VIRTUAL_ENV"] = str(Path("venv").resolve())
