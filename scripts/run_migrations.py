@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 
 # Ensure repository root is on the Python path so ``core`` imports resolve
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from core.utils.schema import safe_alembic_upgrade
 
