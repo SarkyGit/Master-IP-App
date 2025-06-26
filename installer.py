@@ -1,13 +1,50 @@
 import subprocess
 import sys
 import os
+from pathlib import Path
 
 """Installer entry point and helpers."""
 
-# Require Python 3.12 or newer. Tests import this module so it
-# should not exit for valid newer versions.
-if sys.version_info < (3, 12):
-    sys.stderr.write("Installer requires Python 3.12+\n")
+MIN_PYTHON = (3, 12)
+
+
+def ensure_min_python() -> None:
+    """Install Python 3.12 if the current interpreter is too old."""
+    if sys.version_info >= MIN_PYTHON:
+        return
+
+    try:
+        print("Python 3.12+ required. Installing...")
+    except UnicodeEncodeError:
+        print("Installing python 3.12...")
+
+    try:
+        subprocess.check_call(["apt-get", "update"])
+        subprocess.check_call(
+            ["apt-get", "install", "-y", "software-properties-common"]
+        )
+        subprocess.check_call(
+            ["add-apt-repository", "-y", "ppa:deadsnakes/ppa"]
+        )
+        subprocess.check_call(["apt-get", "update"])
+        subprocess.check_call(
+            ["apt-get", "install", "-y", "python3.12", "python3.12-venv"]
+        )
+    except Exception as exc:  # pragma: no cover - best effort
+        try:
+            print(f"\u274c Failed to install Python 3.12: {exc}")
+        except Exception:
+            print("Failed to install Python 3.12")
+        sys.exit(1)
+
+    python_bin = Path("/usr/bin/python3.12")
+    if python_bin.exists():
+        os.execv(python_bin.as_posix(), [python_bin.as_posix()] + sys.argv)
+
+    try:
+        print("\u274c Python 3.12 not found after installation.")
+    except UnicodeEncodeError:
+        print("Python 3.12 install failed")
     sys.exit(1)
 
 # Add project root to sys.path if not already there
@@ -163,8 +200,14 @@ if str(Path(__file__).resolve().parent) not in sys.path:
 
 # -- Environment setup -----------------------------------------------------
 if not os.path.exists(".env"):
-    with open(".env", "w") as f:
-        pass
+    try:
+        with open(".env", "w") as f:
+            pass
+    except Exception as exc:  # pragma: no cover - best effort
+        try:
+            print(f"\u26a0\ufe0f Unable to create .env: {exc}")
+        except Exception:
+            print("Could not create .env")
 
 try:
     from dotenv import load_dotenv
@@ -176,8 +219,14 @@ except ImportError:
 secret_key_value = os.getenv("SECRET_KEY")
 if not secret_key_value:
     generated_key = secrets.token_hex(32)
-    with open(".env", "a") as f:
-        f.write(f"\nSECRET_KEY={generated_key}\n")
+    try:
+        with open(".env", "a") as f:
+            f.write(f"\nSECRET_KEY={generated_key}\n")
+    except Exception as exc:  # pragma: no cover - best effort
+        try:
+            print(f"\u26a0\ufe0f Could not write SECRET_KEY to .env: {exc}")
+        except Exception:
+            print("Could not write SECRET_KEY to .env")
     secret_key_value = generated_key
     try:
         print("Generated new SECRET_KEY and added it to .env.")
@@ -760,6 +809,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Master IP App installer")
     parser.add_argument("--test-harness", action="store_true", help="run internal harness and exit")
     args = parser.parse_args()
+
+    ensure_min_python()
 
     if args.test_harness:
         print(test_harness())
