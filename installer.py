@@ -2,8 +2,12 @@ import subprocess
 import sys
 import os
 
-if sys.version_info[:2] != (3, 10):
-    sys.stderr.write("Installer requires Python 3.10\n")
+"""Installer entry point and helpers."""
+
+# Require Python 3.12 or newer. Tests import this module so it
+# should not exit for valid newer versions.
+if sys.version_info < (3, 12):
+    sys.stderr.write("Installer requires Python 3.12+\n")
     sys.exit(1)
 
 # Add project root to sys.path if not already there
@@ -243,7 +247,8 @@ def run(cmd: str, env: dict | None = None) -> None:
 
 def test_harness() -> str:
     """Minimal environment check used by the test suite."""
-    if sys.version_info[:2] != (3, 10):
+    # Accept Python 3.12 or newer
+    if sys.version_info < (3, 12):
         return f"invalid python {sys.version.split()[0]}"
     try:
         import sqlalchemy  # noqa: F401
@@ -349,11 +354,10 @@ from sqlalchemy import create_engine
 
 def create_admin_user(admin_email: str, admin_password: str) -> None:
     """Seed the local admin user without contacting any cloud services."""
-    import modules.inventory.models  # noqa: F401  # ensure Device model loaded
-    from core.models.models import User, Site, SiteMembership
-    from core.utils.auth import get_password_hash as hash_password
     from core.utils.schema import safe_alembic_upgrade
     import core.utils.db_session as db_session
+    from core.utils.auth import get_password_hash as hash_password
+    from core.models.models import User, Site, SiteMembership
 
     # Ensure an active engine and bound SessionLocal
     if db_session.engine is None:
@@ -363,9 +367,12 @@ def create_admin_user(admin_email: str, admin_password: str) -> None:
         db_session.engine = create_engine(db_url)
         db_session.SessionLocal.configure(bind=db_session.engine)
         safe_alembic_upgrade()
+        import modules.inventory.models  # ensure Device model loaded after upgrade
     elif db_session.SessionLocal.kw.get("bind") is None:
         db_session.SessionLocal.configure(bind=db_session.engine)
-
+        safe_alembic_upgrade()
+        import modules.inventory.models  # ensure Device model loaded after upgrade
+    
     db = db_session.SessionLocal()
     try:
         site = db.query(Site).first()
