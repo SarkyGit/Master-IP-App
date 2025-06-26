@@ -2,6 +2,7 @@
 """Apply Alembic migrations safely."""
 import logging
 import sys
+import os
 from pathlib import Path
 
 # Ensure repository root is on the Python path so ``core`` imports resolve
