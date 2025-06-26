@@ -2,6 +2,10 @@ import subprocess
 import sys
 import os
 
+if sys.version_info[:2] != (3, 10):
+    sys.stderr.write("Installer requires Python 3.10\n")
+    sys.exit(1)
+
 # Add project root to sys.path if not already there
 app_root = os.path.dirname(os.path.abspath(__file__))
 if app_root not in sys.path:
@@ -235,6 +239,18 @@ def run(cmd: str, env: dict | None = None) -> None:
     """Run a shell command, optionally with a custom environment."""
     print(f"Running: {cmd}")
     subprocess.run(cmd, shell=True, check=True, env=env)
+
+
+def test_harness() -> str:
+    """Minimal environment check used by the test suite."""
+    if sys.version_info[:2] != (3, 10):
+        return f"invalid python {sys.version.split()[0]}"
+    try:
+        import sqlalchemy  # noqa: F401
+        import psycopg2  # noqa: F401
+    except Exception as exc:  # pragma: no cover - best effort
+        return f"missing deps: {exc}"
+    return "ok"
 
 
 def pg_role_exists(role: str) -> bool:
@@ -732,6 +748,16 @@ def install():
 
 
 if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Master IP App installer")
+    parser.add_argument("--test-harness", action="store_true", help="run internal harness and exit")
+    args = parser.parse_args()
+
+    if args.test_harness:
+        print(test_harness())
+        sys.exit(0)
+
     if not os.environ.get("VIRTUAL_ENV"):
         if not Path("venv/bin/activate").exists():
             run("apt-get update")

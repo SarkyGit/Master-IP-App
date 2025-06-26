@@ -1,5 +1,5 @@
 from installer import build_env_content
-from installer import run, create_pg_user
+from installer import run, create_pg_user, test_harness
 
 
 def test_build_env_content_handles_quotes():
@@ -44,3 +44,7 @@ def test_create_pg_user_handles_quotes(monkeypatch):
     pass_sql = "pa's\"wd".replace("'", "''")
     expected = f"CREATE USER \"{user_sql}\" WITH PASSWORD '{pass_sql}';"
     assert captured["cmd"][5] == expected
+
+
+def test_test_harness_ok():
+    assert test_harness() == "ok"
