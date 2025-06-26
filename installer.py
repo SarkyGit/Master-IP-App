@@ -1,9 +1,50 @@
 import subprocess
 import sys
 import os
+from pathlib import Path
 
-if sys.version_info[:2] != (3, 10):
-    sys.stderr.write("Installer requires Python 3.10\n")
+"""Installer entry point and helpers."""
+
+MIN_PYTHON = (3, 12)
+
+
+def ensure_min_python() -> None:
+    """Install Python 3.12 if the current interpreter is too old."""
+    if sys.version_info >= MIN_PYTHON:
+        return
+
+    try:
+        print("Python 3.12+ required. Installing...")
+    except UnicodeEncodeError:
+        print("Installing python 3.12...")
+
+    try:
+        subprocess.check_call(["apt-get", "update"])
+        subprocess.check_call(
+            ["apt-get", "install", "-y", "software-properties-common"]
+        )
+        subprocess.check_call(
+            ["add-apt-repository", "-y", "ppa:deadsnakes/ppa"]
+        )
+        subprocess.check_call(["apt-get", "update"])
+        subprocess.check_call(
+            ["apt-get", "install", "-y", "python3.12", "python3.12-venv"]
+        )
+    except Exception as exc:  # pragma: no cover - best effort
+        try:
+            print(f"\u274c Failed to install Python 3.12: {exc}")
+        except Exception:
+            print("Failed to install Python 3.12")
+        sys.exit(1)
+
+    python_bin = Path("/usr/bin/python3.12")
+    if python_bin.exists():
+        os.execv(python_bin.as_posix(), [python_bin.as_posix()] + sys.argv)
+
+    try:
+        print("\u274c Python 3.12 not found after installation.")
+    except UnicodeEncodeError:
+        print("Python 3.12 install failed")
     sys.exit(1)
 
 # Add project root to sys.path if not already there
@@ -159,8 +200,14 @@ if str(Path(__file__).resolve().parent) not in sys.path:
 
 # -- Environment setup -----------------------------------------------------
 if not os.path.exists(".env"):
-    with open(".env", "w") as f:
-        pass
+    try:
+        with open(".env", "w") as f:
+            pass
+    except Exception as exc:  # pragma: no cover - best effort
+        try:
+            print(f"\u26a0\ufe0f Unable to create .env: {exc}")
+        except Exception:
+            print("Could not create .env")
 
 try:
     from dotenv import load_dotenv
@@ -172,8 +219,14 @@ except ImportError:
 secret_key_value = os.getenv("SECRET_KEY")
 if not secret_key_value:
     generated_key = secrets.token_hex(32)
-    with open(".env", "a") as f:
-        f.write(f"\nSECRET_KEY={generated_key}\n")
+    try:
+        with open(".env", "a") as f:
+            f.write(f"\nSECRET_KEY={generated_key}\n")
+    except Exception as exc:  # pragma: no cover - best effort
+        try:
+            print(f"\u26a0\ufe0f Could not write SECRET_KEY to .env: {exc}")
+        except Exception:
+            print("Could not write SECRET_KEY to .env")
     secret_key_value = generated_key
     try:
         print("Generated new SECRET_KEY and added it to .env.")
@@ -243,7 +296,8 @@ def run(cmd: str, env: dict | None = None) -> None:
 
 def test_harness() -> str:
     """Minimal environment check used by the test suite."""
-    if sys.version_info[:2] != (3, 10):
+    # Accept Python 3.12 or newer
+    if sys.version_info < (3, 12):
         return f"invalid python {sys.version.split()[0]}"
     try:
         import sqlalchemy  # noqa: F401
@@ -349,11 +403,10 @@ from sqlalchemy import create_engine
 
 def create_admin_user(admin_email: str, admin_password: str) -> None:
     """Seed the local admin user without contacting any cloud services."""
-    import modules.inventory.models  # noqa: F401  # ensure Device model loaded
-    from core.models.models import User, Site, SiteMembership
-    from core.utils.auth import get_password_hash as hash_password
     from core.utils.schema import safe_alembic_upgrade
     import core.utils.db_session as db_session
+    from core.utils.auth import get_password_hash as hash_password
+    from core.models.models import User, Site, SiteMembership
 
     # Ensure an active engine and bound SessionLocal
     if db_session.engine is None:
@@ -363,9 +416,12 @@ def create_admin_user(admin_email: str, admin_password: str) -> None:
         db_session.engine = create_engine(db_url)
         db_session.SessionLocal.configure(bind=db_session.engine)
         safe_alembic_upgrade()
+        import modules.inventory.models  # ensure Device model loaded after upgrade
     elif db_session.SessionLocal.kw.get("bind") is None:
         db_session.SessionLocal.configure(bind=db_session.engine)
-
+        safe_alembic_upgrade()
+        import modules.inventory.models  # ensure Device model loaded after upgrade
+    
     db = db_session.SessionLocal()
     try:
         site = db.query(Site).first()
@@ -753,6 +809,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Master IP App installer")
     parser.add_argument("--test-harness", action="store_true", help="run internal harness and exit")
     args = parser.parse_args()
+
+    ensure_min_python()
 
     if args.test_harness:
         print(test_harness())
