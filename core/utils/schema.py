@@ -82,6 +82,23 @@ def safe_alembic_upgrade(
         except Exception as exc:
             logging.getLogger(__name__).error("Alembic upgrade failed: %s", exc)
             raise
+        finally:
+            try:
+                mod = sys.modules.get("core")
+                if mod and not getattr(mod, "__path__", None):
+                    for name in [
+                        "core.utils",
+                        "core.models.models",
+                        "core.models",
+                        "core",
+                    ]:
+                        if name in sys.modules:
+                            sys.modules.pop(name, None)
+                    import importlib
+                    importlib.invalidate_caches()
+                    importlib.import_module("core")
+            except Exception:
+                pass
 
 
 def verify_schema() -> str:
