@@ -87,6 +87,8 @@ def safe_alembic_upgrade(
                 mod = sys.modules.get("core")
                 if mod and not getattr(mod, "__path__", None):
                     for name in [
+                        "core.utils.db_session",
+                        "core.utils.database",
                         "core.utils",
                         "core.models.models",
                         "core.models",
