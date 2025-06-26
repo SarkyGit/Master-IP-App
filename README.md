@@ -246,6 +246,15 @@ the first invocation and the initialised database is cached under
 All tests should pass without errors. Node.js packages are not required when
 running the tests.
 
+### Installer Harness
+
+The installer exposes a minimal test harness used by the unit tests. It can
+be invoked manually with:
+
+```bash
+python3 installer.py --test-harness
+```
+
 
 # Mobile Client
 
