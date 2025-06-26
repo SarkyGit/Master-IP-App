@@ -328,8 +328,7 @@ def ensure_ipapp_user() -> None:
         os.chmod(sudoers, 0o440)
 
 
-from sqlalchemy.orm import Session
-from core.utils.db_session import engine
+from sqlalchemy import create_engine
 from core.models.models import Site, SiteMembership
 
 
@@ -337,8 +336,21 @@ def create_admin_user(admin_email: str, admin_password: str) -> None:
     """Seed the local admin user without contacting any cloud services."""
     from core.models.models import User
     from core.utils.auth import get_password_hash as hash_password
+    from core.utils.schema import safe_alembic_upgrade
+    import core.utils.db_session as db_session
 
-    db = Session(engine)
+    # Ensure an active engine and bound SessionLocal
+    if db_session.engine is None:
+        db_url = os.environ.get("DATABASE_URL")
+        if not db_url:
+            raise RuntimeError("DATABASE_URL is not set")
+        db_session.engine = create_engine(db_url)
+        db_session.SessionLocal.configure(bind=db_session.engine)
+        safe_alembic_upgrade()
+    elif db_session.SessionLocal.kw.get("bind") is None:
+        db_session.SessionLocal.configure(bind=db_session.engine)
+
+    db = db_session.SessionLocal()
     try:
         site = db.query(Site).first()
         if not site:
