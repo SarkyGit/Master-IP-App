@@ -329,12 +329,12 @@ def ensure_ipapp_user() -> None:
 
 
 from sqlalchemy import create_engine
-from core.models.models import Site, SiteMembership
 
 
 def create_admin_user(admin_email: str, admin_password: str) -> None:
     """Seed the local admin user without contacting any cloud services."""
-    from core.models.models import User
+    import modules.inventory.models  # noqa: F401  # ensure Device model loaded
+    from core.models.models import User, Site, SiteMembership
     from core.utils.auth import get_password_hash as hash_password
     from core.utils.schema import safe_alembic_upgrade
     import core.utils.db_session as db_session
@@ -652,6 +652,7 @@ def install():
     if mode != "cloud":
         # create admin account using selected data
         from core.utils.db_session import engine, SessionLocal
+        import modules.inventory.models  # noqa: F401  # ensure Device model loaded
         from core.models.models import User, Site, SiteMembership
 
         # Ensure session is bound before use
