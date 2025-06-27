@@ -7,7 +7,10 @@ import sqlalchemy as sa
 import testing.postgresql
 import shutil
 
-PG_CACHE_DIR = os.path.join(os.path.dirname(__file__), ".pg_cache")
+PG_CACHE_DIR = os.environ.get(
+    "PG_CACHE_DIR",
+    os.path.join(os.path.dirname(__file__), ".pg_cache"),
+)
 if os.environ.get("RESET_TEST_DB"):
     shutil.rmtree(PG_CACHE_DIR, ignore_errors=True)
 
