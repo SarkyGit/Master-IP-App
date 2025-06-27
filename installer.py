@@ -23,9 +23,7 @@ def ensure_min_python() -> None:
         subprocess.check_call(
             ["apt-get", "install", "-y", "software-properties-common"]
         )
-        subprocess.check_call(
-            ["add-apt-repository", "-y", "ppa:deadsnakes/ppa"]
-        )
+        subprocess.check_call(["add-apt-repository", "-y", "ppa:deadsnakes/ppa"])
         subprocess.check_call(["apt-get", "update"])
         subprocess.check_call(
             [
@@ -53,15 +51,19 @@ def ensure_min_python() -> None:
         print("Python 3.12 install failed")
     sys.exit(1)
 
+
 # Add project root to sys.path if not already there
 app_root = os.path.dirname(os.path.abspath(__file__))
 if app_root not in sys.path:
     sys.path.insert(0, app_root)
 
+
 # Step 0: Fix broken Python installs missing pip and ensurepip
 def fix_python_runtime():
     try:
-        subprocess.run(["python3", "-m", "pip", "--version"], check=True, stdout=subprocess.DEVNULL)
+        subprocess.run(
+            ["python3", "-m", "pip", "--version"], check=True, stdout=subprocess.DEVNULL
+        )
     except subprocess.CalledProcessError:
         print("⚠️ pip not found. Attempting to install via apt...")
         try:
@@ -80,22 +82,31 @@ def fix_python_runtime():
             print(f"❌ Failed to install pip/venv via apt: {e}")
             sys.exit(1)
 
-    # Ensure distutils module if available for this Python version
+    # Ensure distutils module which pip relies on
     try:
         import distutils  # noqa: F401
     except Exception:
-        if sys.version_info < (3, 12):
-            pkg = f"python{sys.version_info.major}.{sys.version_info.minor}-distutils"
-            subprocess.run(["apt-get", "install", "-y", pkg])
+        pkg = f"python{sys.version_info.major}.{sys.version_info.minor}-distutils"
+        try:
+            subprocess.run(["apt-get", "update"], check=True)
+            subprocess.run(["apt-get", "install", "-y", pkg], check=True)
+        except Exception as e:
+            print(f"⚠️ Failed to install {pkg}: {e}")
+
 
 fix_python_runtime()
 
 # Step 1: Ensure pip is available
 try:
-    subprocess.run([sys.executable, "-m", "pip", "--version"], check=True, stdout=subprocess.DEVNULL)
+    subprocess.run(
+        [sys.executable, "-m", "pip", "--version"],
+        check=True,
+        stdout=subprocess.DEVNULL,
+    )
 except subprocess.CalledProcessError:
     try:
         import ensurepip
+
         print("pip not found. Bootstrapping...")
         ensurepip.bootstrap()
     except Exception as e:
@@ -122,7 +133,9 @@ if missing:
     if not os.path.exists("requirements.txt"):
         print("\u274c requirements.txt not found. Cannot proceed.")
         sys.exit(1)
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"])
+    subprocess.check_call(
+        [sys.executable, "-m", "pip", "install", "-r", "requirements.txt"]
+    )
     print("✅ Python dependencies installed. Re-running installer...")
     os.execv(sys.executable, [sys.executable] + sys.argv)
 
@@ -206,7 +219,9 @@ if missing:
         print("\u274c requirements.txt not found. Cannot proceed.")
         sys.exit(1)
 
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"])
+    subprocess.check_call(
+        [sys.executable, "-m", "pip", "install", "-r", "requirements.txt"]
+    )
     print("✅ Dependencies installed. Re-running installer...")
     os.execv(sys.executable, [sys.executable] + sys.argv)
 
@@ -444,7 +459,7 @@ def create_admin_user(admin_email: str, admin_password: str) -> None:
         db_session.SessionLocal.configure(bind=db_session.engine)
         safe_alembic_upgrade()
         import modules.inventory.models  # ensure Device model loaded after upgrade
-    
+
     db = db_session.SessionLocal()
     try:
         site = db.query(Site).first()
@@ -673,9 +688,7 @@ def install():
                     break
                 import requests
 
-                headers = {
-                    "Authorization": f"Bearer {cloud_api_key}"
-                }
+                headers = {"Authorization": f"Bearer {cloud_api_key}"}
 
                 try:
                     response = requests.get(
@@ -830,7 +843,9 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(description="Master IP App installer")
-    parser.add_argument("--test-harness", action="store_true", help="run internal harness and exit")
+    parser.add_argument(
+        "--test-harness", action="store_true", help="run internal harness and exit"
+    )
     args = parser.parse_args()
 
     ensure_min_python()
