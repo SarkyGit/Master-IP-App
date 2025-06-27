@@ -31,7 +31,7 @@ This application is a modular FastAPI system using Jinja2 templates, UnoCSS styl
 ## 🔧 Development & Deployment
 
 ### Requirements:
-- Python 3.12+
+- Python 3.11+
 - Node 18+
 - PostgreSQL 14+ (with `psycopg2` installed)
 - Docker (optional, for standardising deployments)

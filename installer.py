@@ -5,50 +5,45 @@ from pathlib import Path
 
 """Installer entry point and helpers."""
 
-MIN_PYTHON = (3, 12)
+MIN_PYTHON = (3, 11)
 
 
 def ensure_min_python() -> None:
-    """Install Python 3.12 if the current interpreter is too old."""
+    """Install Python 3.11 if the current interpreter is too old."""
     if sys.version_info >= MIN_PYTHON:
         return
 
     try:
-        print("Python 3.12+ required. Installing...")
+        print("Python 3.11+ required. Installing...")
     except UnicodeEncodeError:
-        print("Installing python 3.12...")
+        print("Installing python 3.11...")
 
     try:
-        subprocess.check_call(["apt-get", "update"])
-        subprocess.check_call(
-            ["apt-get", "install", "-y", "software-properties-common"]
-        )
-        subprocess.check_call(["add-apt-repository", "-y", "ppa:deadsnakes/ppa"])
         subprocess.check_call(["apt-get", "update"])
         subprocess.check_call(
             [
                 "apt-get",
                 "install",
                 "-y",
-                "python3.12",
-                "python3.12-venv",
+                "python3.11",
+                "python3.11-venv",
             ]
         )
     except Exception as exc:  # pragma: no cover - best effort
         try:
-            print(f"\u274c Failed to install Python 3.12: {exc}")
+            print(f"\u274c Failed to install Python 3.11: {exc}")
         except Exception:
-            print("Failed to install Python 3.12")
+            print("Failed to install Python 3.11")
         sys.exit(1)
 
-    python_bin = Path("/usr/bin/python3.12")
+    python_bin = Path("/usr/bin/python3.11")
     if python_bin.exists():
         os.execv(python_bin.as_posix(), [python_bin.as_posix()] + sys.argv)
 
     try:
-        print("\u274c Python 3.12 not found after installation.")
+        print("\u274c Python 3.11 not found after installation.")
     except UnicodeEncodeError:
-        print("Python 3.12 install failed")
+        print("Python 3.11 install failed")
     sys.exit(1)
 
 
@@ -336,8 +331,8 @@ def run(cmd: str, env: dict | None = None) -> None:
 
 def test_harness() -> str:
     """Minimal environment check used by the test suite."""
-    # Accept Python 3.12 or newer
-    if sys.version_info < (3, 12):
+    # Accept Python 3.11 or newer
+    if sys.version_info < (3, 11):
         return f"invalid python {sys.version.split()[0]}"
     try:
         import sqlalchemy  # noqa: F401
