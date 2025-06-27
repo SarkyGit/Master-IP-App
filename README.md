@@ -36,7 +36,7 @@ The instructions below assume you are starting on a fresh Ubuntu system. Every c
    sudo apt update
    sudo apt install -y git python3 python3-venv python3-pip postgresql curl software-properties-common
    ```
-   The installer upgrades Python to 3.12 automatically if an older version is detected.
+   The installer upgrades Python to 3.11 automatically if an older version is detected.
 
 2. **Install Node.js** (skip if Node.js 18+ is already installed):
    ```bash
