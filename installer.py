@@ -82,16 +82,18 @@ def fix_python_runtime():
             print(f"❌ Failed to install pip/venv via apt: {e}")
             sys.exit(1)
 
-    # Ensure distutils module which pip relies on
+    # Ensure a distutils implementation is available for pip
     try:
         import distutils  # noqa: F401
     except Exception:
-        pkg = f"python{sys.version_info.major}.{sys.version_info.minor}-distutils"
+        # Python 3.12 removed distutils; setuptools provides a drop-in
         try:
-            subprocess.run(["apt-get", "update"], check=True)
-            subprocess.run(["apt-get", "install", "-y", pkg], check=True)
+            subprocess.run(
+                [sys.executable, "-m", "pip", "install", "--upgrade", "setuptools"],
+                check=True,
+            )
         except Exception as e:
-            print(f"⚠️ Failed to install {pkg}: {e}")
+            print(f"⚠️ Failed to install setuptools: {e}")
 
 
 fix_python_runtime()
