@@ -441,7 +441,6 @@ def create_admin_user(admin_email: str, admin_password: str) -> None:
     from core.utils.schema import safe_alembic_upgrade
     import core.utils.db_session as db_session
     from core.utils.auth import get_password_hash as hash_password
-    from core.models.models import User, Site, SiteMembership
 
     # Ensure an active engine and bound SessionLocal
     if db_session.engine is None:
@@ -450,12 +449,12 @@ def create_admin_user(admin_email: str, admin_password: str) -> None:
             raise RuntimeError("DATABASE_URL is not set")
         db_session.engine = create_engine(db_url)
         db_session.SessionLocal.configure(bind=db_session.engine)
-        safe_alembic_upgrade()
-        import modules.inventory.models  # ensure Device model loaded after upgrade
     elif db_session.SessionLocal.kw.get("bind") is None:
         db_session.SessionLocal.configure(bind=db_session.engine)
-        safe_alembic_upgrade()
-        import modules.inventory.models  # ensure Device model loaded after upgrade
+
+    safe_alembic_upgrade()
+    import modules.inventory.models  # ensure Device model loaded after upgrade
+    from core.models.models import User, Site, SiteMembership
 
     db = db_session.SessionLocal()
     try:
