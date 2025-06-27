@@ -93,12 +93,16 @@ def safe_alembic_upgrade(
                         "core.models.models",
                         "core.models",
                         "core",
+                        "modules.inventory.models",
+                        "modules.network.models",
                     ]:
                         if name in sys.modules:
                             sys.modules.pop(name, None)
                     import importlib
                     importlib.invalidate_caches()
                     importlib.import_module("core")
+                    importlib.import_module("modules.inventory.models")
+                    importlib.import_module("modules.network.models")
             except Exception:
                 pass
 
