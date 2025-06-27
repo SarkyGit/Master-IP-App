@@ -2,6 +2,7 @@ import subprocess
 import sys
 import os
 from pathlib import Path
+import shutil
 
 """Installer entry point and helpers."""
 
@@ -195,6 +196,43 @@ def _bootstrap_pip() -> None:
 
 
 _bootstrap_pip()
+
+
+def ensure_postgresql() -> None:
+    """Install PostgreSQL 14+ if required."""
+    initdb_path = shutil.which("initdb")
+    needs_install = False
+    if initdb_path:
+        try:
+            out = subprocess.check_output(["psql", "--version"], text=True)
+            version = int(out.strip().split()[-1].split(".")[0])
+            if version < 14:
+                needs_install = True
+        except Exception as exc:  # pragma: no cover - best effort
+            print(f"⚠️  Unable to detect PostgreSQL version: {exc}")
+            needs_install = True
+    else:
+        needs_install = True
+
+    if not needs_install:
+        return
+
+    try:
+        print("Installing PostgreSQL 14...")
+    except Exception:
+        print("Installing PostgreSQL 14")
+
+    try:
+        subprocess.check_call(["apt-get", "update"])
+        subprocess.check_call(["apt-get", "install", "-y", "postgresql-14"])
+    except Exception as exc:
+        try:
+            print(f"❌ Failed to install PostgreSQL: {exc}")
+        except Exception:
+            print("Failed to install PostgreSQL")
+        sys.exit(1)
+
+
 
 
 REQUIRED_MODULES = ["sqlalchemy", "psycopg2", "dotenv", "questionary"]
@@ -506,6 +544,7 @@ def install():
         sys.exit(1)
 
     ensure_ipapp_user()
+    ensure_postgresql()
 
     if questionary is None:
         run("apt-get update")
