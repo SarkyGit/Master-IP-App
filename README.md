@@ -15,6 +15,13 @@ Tailwind CSS has been removed from the project. Styling and components now rely 
 - `web-client/` stores HTML templates and static assets served by the app.
 - `mobile-client/` is a placeholder for a future mobile application.
 - Deleted records are never removed from the database. Instead `core.utils.deletion.soft_delete()` sets `deleted_at` and clears other fields so normal queries automatically exclude them.
+
+## Production Build Requirements
+
+This repository is intended for production deployments. The Dockerfile uses
+`python:3.11-slim` and the `.python-version` file pins **Python&nbsp;3.11** so all
+environments remain consistent. When building outside of Docker be sure your
+interpreter is Python&nbsp;3.11 to avoid version mismatches.
 ## Module System
 
 Inventory and network features are implemented as optional modules under `modules/`.
